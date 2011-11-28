@@ -17,13 +17,13 @@
 
 #include "Texture.h"
 
-#include <string>
+#include <istream>
 
 namespace Magnum { namespace Examples {
 
 class TGATexture: public Texture2D {
     public:
-        TGATexture(const std::string& filename);
+        TGATexture(std::istream& input);
 
     private:
         #pragma pack(1)

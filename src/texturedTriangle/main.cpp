@@ -14,9 +14,11 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include "Utility/Resource.h"
 #include "Scene.h"
 #include "TexturedTriangle.h"
 
@@ -55,7 +57,9 @@ int main(int argc, char** argv) {
     scene.setCamera(new Magnum::Camera(&scene));
 
     /* Add triangle to the scene */
-    new Magnum::Examples::TexturedTriangle("stone.tga", &scene);
+    Corrade::Utility::Resource rs("data");
+    std::istringstream in(rs.get("stone.tga"));
+    new Magnum::Examples::TexturedTriangle(in, &scene);
 
     /* Main loop calls draw() periodically and setViewport() on window size change */
     glutMainLoop();

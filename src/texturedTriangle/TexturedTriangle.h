@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangle: public Object {
     public:
-        TexturedTriangle(const std::string& textureFilename, Object* parent = 0);
+        TexturedTriangle(std::istream& textureData, Object* parent = 0);
 
         virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 

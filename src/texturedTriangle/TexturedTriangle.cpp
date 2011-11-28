@@ -17,9 +17,11 @@
 
 #include "Buffer.h"
 
+using namespace std;
+
 namespace Magnum { namespace Examples {
 
-TexturedTriangle::TexturedTriangle(const std::string& textureFilename, Object* parent): Object(parent), mesh(Mesh::Triangles, 3), texture(textureFilename) {
+TexturedTriangle::TexturedTriangle(istream& textureData, Object* parent): Object(parent), mesh(Mesh::Triangles, 3), texture(textureData) {
     /* Vertices and texture coordinates, interleaved */
     GLfloat data[] = {
         -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f,  /* Lower left vertex */

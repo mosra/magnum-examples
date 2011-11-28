@@ -15,23 +15,19 @@
 
 #include "TGATexture.h"
 
-#include <iostream>
-#include <fstream>
+#include "Utility/Debug.h"
 
 using namespace std;
+using namespace Corrade::Utility;
 using namespace Magnum::Math;
 
 namespace Magnum { namespace Examples {
 
-TGATexture::TGATexture(const std::string& filename) {
-    ifstream image(filename.c_str(), ifstream::binary);
-    if(!image.good()) {
-        image.close();
-        return;
-    }
+TGATexture::TGATexture(istream& input) {
+    if(!input.good()) return;
 
     Header header;
-    image.read(reinterpret_cast<char*>(&header), sizeof(Header));
+    input.read(reinterpret_cast<char*>(&header), sizeof(Header));
 
     ColorFormat colorFormat;
     int internalFormat;
@@ -46,14 +42,13 @@ TGATexture::TGATexture(const std::string& filename) {
             internalFormat = RGBA;
             break;
         default:
-            cerr << (int) header.bpp << endl;
+            Error() << "TGATexture: unsupported bits-per-pixel:" << (int) header.bpp;
             return;
     }
 
     size_t size = header.width*header.height*header.bpp/8;
     GLubyte* buffer = new GLubyte[size];
-    image.read(reinterpret_cast<char*>(buffer), size);
-    image.close();
+    input.read(reinterpret_cast<char*>(buffer), size);
 
     GLsizei dimensions[] = {header.width, header.height};
 

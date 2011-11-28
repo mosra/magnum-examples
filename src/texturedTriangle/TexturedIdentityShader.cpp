@@ -15,11 +15,16 @@
 
 #include "TexturedIdentityShader.h"
 
+#include "Utility/Resource.h"
+
+using namespace Corrade::Utility;
+
 namespace Magnum { namespace Examples {
 
 TexturedIdentityShader::TexturedIdentityShader() {
-    Shader* vertexShader = Shader::fromFile(Shader::Vertex, "TexturedIdentityShader.vert");
-    Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "TexturedIdentityShader.frag");
+    Resource rs("data");
+    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("TexturedIdentityShader.vert"));
+    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("TexturedIdentityShader.frag"));
 
     attachShader(vertexShader);
     attachShader(fragmentShader);
