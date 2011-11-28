@@ -15,11 +15,17 @@
 
 #include "IdentityShader.h"
 
+#include "Utility/Resource.h"
+
+using namespace Corrade::Utility;
+
 namespace Magnum { namespace Examples {
 
 IdentityShader::IdentityShader() {
-    Shader* vertexShader = Shader::fromFile(Shader::Vertex, "IdentityShader.vert");
-    Shader* fragmentShader = Shader::fromFile(Shader::Fragment, "IdentityShader.frag");
+    Resource rs("shader");
+
+    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("IdentityShader.vert"));
+    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("IdentityShader.frag"));
 
     attachShader(vertexShader);
     attachShader(fragmentShader);
