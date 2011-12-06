@@ -4,5 +4,6 @@ find_package(GLUT REQUIRED)
 
 include_directories(${CORRADE_INCLUDE_DIR} ${MAGNUM_INCLUDE_DIR})
 
+add_subdirectory(cubemap)
 add_subdirectory(triangle)
 add_subdirectory(texturedTriangle)
