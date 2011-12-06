@@ -38,8 +38,8 @@ TexturedTriangle::TexturedTriangle(istream& textureData, Object* parent): Object
     mesh.bindAttribute<Vector2>(buffer, TexturedIdentityShader::TextureCoordinates);
 
     /* Texture */
-    texture.setMagnificationFilter(TGATexture::Linear);
-    texture.setMinificationFilter(TGATexture::Linear);
+    texture.setMagnificationFilter(TGATexture::LinearFilter);
+    texture.setMinificationFilter(TGATexture::LinearFilter);
     texture.setWrapping(Math::Vector2<TGATexture::Wrapping>(TGATexture::ClampToEdge, TGATexture::ClampToEdge));
 }
 
