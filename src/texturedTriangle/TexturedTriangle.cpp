@@ -46,7 +46,7 @@ TexturedTriangle::TexturedTriangle(istream& textureData, Object* parent): Object
 void TexturedTriangle::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {
     texture.bind();
     shader.use();
-    shader.setTextureUniform(0);
+    shader.setTextureUniform(&texture);
     mesh.draw();
 }
 

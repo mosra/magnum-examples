@@ -28,8 +28,8 @@ class TexturedIdentityShader: public AbstractShaderProgram {
 
         TexturedIdentityShader();
 
-        inline void setTextureUniform(GLuint level) {
-            setUniform(textureUniform, level);
+        inline void setTextureUniform(const AbstractTexture* texture) {
+            setUniform(textureUniform, texture);
         }
 
     private:
