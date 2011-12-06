@@ -26,7 +26,7 @@ class TexturedTriangle: public Object {
     public:
         TexturedTriangle(std::istream& textureData, Object* parent = 0);
 
-        virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
+        void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 
     private:
         Mesh mesh;

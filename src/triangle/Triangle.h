@@ -25,7 +25,7 @@ class Triangle: public Object {
     public:
         Triangle(Object* parent = 0);
 
-        virtual void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
+        void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 
     private:
         Mesh mesh;
