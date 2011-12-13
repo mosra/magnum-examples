@@ -18,9 +18,14 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include "PluginManager/PluginManager.h"
 #include "Utility/Resource.h"
+
+#include "AbstractImporter.h"
 #include "Scene.h"
 #include "TexturedTriangle.h"
+
+#include "configure.h"
 
 Magnum::Scene* s;
 
@@ -56,10 +61,24 @@ int main(int argc, char** argv) {
     /* Every scene needs a camera */
     scene.setCamera(new Magnum::Camera(&scene));
 
-    /* Add triangle to the scene */
+    /* Load TGA importer plugin */
+    Corrade::PluginManager::PluginManager<Magnum::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    Magnum::AbstractImporter* importer;
+    if(manager.load("TGAImporter") != Corrade::PluginManager::AbstractPluginManager::LoadOk || !(importer = manager.instance("TGAImporter"))) {
+        Corrade::Utility::Error() << "Cannot load TGAImporter plugin from" << PLUGIN_IMPORTER_DIR;
+        return 2;
+    }
+
+    /* Load the texture */
     Corrade::Utility::Resource rs("data");
     std::istringstream in(rs.get("stone.tga"));
-    new Magnum::Examples::TexturedTriangle(in, &scene);
+    if(!importer->open(in) || !importer->image2DCount()) {
+        Corrade::Utility::Error() << "Cannot load texture";
+        return 3;
+    }
+
+    new Magnum::Examples::TexturedTriangle(importer->image2D(0).get(), &scene);
+    delete importer;
 
     /* Main loop calls draw() periodically and setViewport() on window size change */
     glutMainLoop();

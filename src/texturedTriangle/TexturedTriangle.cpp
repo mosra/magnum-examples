@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Examples {
 
-TexturedTriangle::TexturedTriangle(istream& textureData, Object* parent): Object(parent), mesh(Mesh::Triangles, 3), texture(textureData) {
+TexturedTriangle::TexturedTriangle(Image2D* image, Object* parent): Object(parent), mesh(Mesh::Triangles, 3) {
     /* Vertices and texture coordinates, interleaved */
     GLfloat data[] = {
         -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f,  /* Lower left vertex */
@@ -38,9 +38,10 @@ TexturedTriangle::TexturedTriangle(istream& textureData, Object* parent): Object
     mesh.bindAttribute<Vector2>(buffer, TexturedIdentityShader::TextureCoordinates);
 
     /* Texture */
-    texture.setMagnificationFilter(TGATexture::Filter::LinearInterpolation);
-    texture.setMinificationFilter(TGATexture::Filter::LinearInterpolation);
-    texture.setWrapping(Math::Vector2<TGATexture::Wrapping>(TGATexture::Wrapping::ClampToEdge, TGATexture::Wrapping::ClampToEdge));
+    texture.setData(0, Texture2D::InternalFormat::RGB, image);
+    texture.setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
+    texture.setMinificationFilter(Texture2D::Filter::LinearInterpolation);
+    texture.setWrapping(Math::Vector2<AbstractTexture::Wrapping>(Texture2D::Wrapping::ClampToEdge, Texture2D::Wrapping::ClampToEdge));
 }
 
 void TexturedTriangle::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {

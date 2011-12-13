@@ -17,21 +17,21 @@
 
 #include "Object.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "TexturedIdentityShader.h"
-#include "TGATexture.h"
 
 namespace Magnum { namespace Examples {
 
 class TexturedTriangle: public Object {
     public:
-        TexturedTriangle(std::istream& textureData, Object* parent = 0);
+        TexturedTriangle(Image2D* image, Object* parent = 0);
 
         void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 
     private:
         Mesh mesh;
         TexturedIdentityShader shader;
-        TGATexture texture;
+        Texture2D texture;
 };
 
 }}
