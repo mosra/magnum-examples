@@ -30,16 +30,16 @@ TGATexture::TGATexture(istream& input) {
     input.read(reinterpret_cast<char*>(&header), sizeof(Header));
 
     ColorFormat colorFormat;
-    int internalFormat;
+    InternalFormat internalFormat;
 
     switch(header.bpp) {
         case 24:
-            colorFormat = BGR;
-            internalFormat = RGB;
+            colorFormat = ColorFormat::BGR;
+            internalFormat = InternalFormat::RGB;
             break;
         case 32:
-            colorFormat = BGRA;
-            internalFormat = RGBA;
+            colorFormat = ColorFormat::BGRA;
+            internalFormat = InternalFormat::RGBA;
             break;
         default:
             Error() << "TGATexture: unsupported bits-per-pixel:" << (int) header.bpp;
