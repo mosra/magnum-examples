@@ -7,8 +7,8 @@ Dependencies
 ------------
 
  * CMake    - for building
- * OpenGL headers (on Linux most probably shipped with Mesa)
- * GLEW     - OpenGL extension wrangler
+ * Magnum engine (https://github.com/mosra/magnum)
+ * Magnum plugins (https://github.com/mosra/magnum-plugins)
  * GLUT
 
 Compilation, installation
