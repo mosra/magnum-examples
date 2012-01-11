@@ -34,6 +34,7 @@ using namespace Magnum;
 
 Scene* s;
 shared_ptr<Object> o;
+bool wireframe;
 
 /* Wrapper functions so GLUT can handle that */
 void setViewport(int w, int h) {
@@ -63,6 +64,10 @@ void events(int key, int x, int y) {
             break;
         case GLUT_KEY_PAGE_DOWN:
             s->camera()->translate(0, 0, 0.5);
+            break;
+        case GLUT_KEY_HOME:
+            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
+            wireframe = !wireframe;
             break;
     }
 
@@ -106,6 +111,7 @@ int main(int argc, char** argv) {
     /* Initialize scene */
     Scene scene;
     s = &scene;
+    wireframe = false;
     scene.setFeature(Scene::DepthTest, true);
 
     /* Every scene needs a camera */
