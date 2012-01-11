@@ -35,6 +35,7 @@ using namespace Magnum;
 Scene* s;
 shared_ptr<Object> o;
 bool wireframe;
+Vector3 previousPosition;
 
 /* Wrapper functions so GLUT can handle that */
 void setViewport(int w, int h) {
@@ -74,6 +75,57 @@ void events(int key, int x, int y) {
     glutPostRedisplay();
 }
 
+Vector3 positionOnSphere(int x, int y) {
+    Math::Vector2<unsigned int> viewport = s->camera()->viewport();
+    Vector2 position(x*2.0f/viewport.x() - 1.0f,
+                     y*2.0f/viewport.y() - 1.0f);
+
+    GLfloat length = position.length();
+    Vector3 result(length > 1.0f ? position : Vector3(position, 1.0f - length));
+    result.setY(-result.y());
+    return result.normalized();
+}
+
+void mouseEvents(int button, int state, int x, int y) {
+    switch(button) {
+        case GLUT_LEFT_BUTTON:
+            if(state == GLUT_DOWN) previousPosition = positionOnSphere(x, y);
+            else previousPosition = Vector3();
+            break;
+        case 3:
+        case 4:
+            if(state == GLUT_UP) return;
+
+            /* Distance between origin and near camera clipping plane */
+            GLfloat distance = s->camera()->transformation().at(3).z()-0-s->camera()->near();
+
+            /* Move 15% of the distance back or forward */
+            if(button == 3)
+                distance *= 1 - 1/0.85f;
+            else
+                distance *= 1 - 0.85f;
+            s->camera()->translate(0, 0, distance);
+
+            glutPostRedisplay();
+            break;
+    }
+}
+
+void dragEvents(int x, int y) {
+    Vector3 currentPosition = positionOnSphere(x, y);
+
+    Vector3 axis = Vector3::cross(previousPosition, currentPosition);
+
+    if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+
+    GLfloat angle = acos(previousPosition*currentPosition);
+    o->rotate(angle, axis);
+
+    previousPosition = currentPosition;
+
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
     if(argc != 2) {
         cout << "Usage: " << argv[0] << " file.dae" << endl;
@@ -99,6 +151,8 @@ int main(int argc, char** argv) {
     glutCreateWindow("Magnum viewer");
     glutReshapeFunc(setViewport);
     glutSpecialFunc(events);
+    glutMouseFunc(mouseEvents);
+    glutMotionFunc(dragEvents);
     glutDisplayFunc(draw);
 
     /* Init GLEW */
