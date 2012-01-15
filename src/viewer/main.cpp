@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
@@ -34,7 +35,11 @@ using namespace Magnum;
 
 Scene* s;
 shared_ptr<Object> o;
-bool wireframe;
+chrono::high_resolution_clock::time_point before;
+bool wireframe, fps;
+size_t frames;
+double totalfps;
+size_t totalmeasurecount;
 Vector3 previousPosition;
 
 /* Wrapper functions so GLUT can handle that */
@@ -42,8 +47,26 @@ void setViewport(int w, int h) {
     s->setViewport(w, h);
 }
 void draw() {
+    if(fps) {
+        chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
+        double duration = chrono::duration<double>(now-before).count();
+        if(duration > 3.5) {
+            cout << frames << " frames in " << duration << " sec: "
+                 << frames/duration << " FPS         \r";
+            cout.flush();
+            totalfps += frames/duration;
+            before = now;
+            frames = 0;
+            ++totalmeasurecount;
+        }
+    }
     s->draw();
     glutSwapBuffers();
+
+    if(fps) {
+        ++frames;
+        glutPostRedisplay();
+    }
 }
 
 void events(int key, int x, int y) {
@@ -69,6 +92,17 @@ void events(int key, int x, int y) {
         case GLUT_KEY_HOME:
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
             wireframe = !wireframe;
+            break;
+        case GLUT_KEY_END:
+            if(fps) cout << "Average FPS on " << s->camera()->viewport().x()
+                << 'x' << s->camera()->viewport().y() << " from "
+                << totalmeasurecount << " measures: "
+                << totalfps/totalmeasurecount << "          " << endl;
+            else before = chrono::high_resolution_clock::now();
+
+            fps = !fps;
+            frames = totalmeasurecount = 0;
+            totalfps = 0;
             break;
     }
 
@@ -166,6 +200,7 @@ int main(int argc, char** argv) {
     Scene scene;
     s = &scene;
     wireframe = false;
+    fps = false;
     scene.setFeature(Scene::DepthTest, true);
 
     /* Every scene needs a camera */
