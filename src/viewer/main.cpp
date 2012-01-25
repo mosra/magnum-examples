@@ -25,6 +25,7 @@
 
 #include "Scene.h"
 #include "AbstractImporter.h"
+#include "MeshTools/Tipsify.h"
 
 #include "configure.h"
 
@@ -216,6 +217,13 @@ int main(int argc, char** argv) {
 
     if(colladaImporter->objectCount() == 0)
         return 5;
+
+    /* Optimize vertices */
+    shared_ptr<AbstractImporter::MeshData> meshData = colladaImporter->meshData(0);
+    if(meshData && meshData->indices() && meshData->vertices(0)) {
+        Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
+        MeshTools::tipsify(*meshData->indices(), meshData->vertices(0)->size(), 24);
+    }
 
     o = colladaImporter->object(0);
     if(!o) return 6;
