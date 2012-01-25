@@ -178,6 +178,10 @@ int main(int argc, char** argv) {
         Error() << "Could not instance ColladaImporter plugin";
         return 3;
     }
+    if(!(colladaImporter->features() & AbstractImporter::OpenFile)) {
+        Error() << "ColladaImporter cannot open files";
+        return 7;
+    }
 
     /* Init GLUT */
     glutInit(&argc, argv);
@@ -211,8 +215,7 @@ int main(int argc, char** argv) {
     scene.setCamera(camera);
 
     /* Load file */
-    ifstream in(argv[1]);
-    if(!colladaImporter->open(in))
+    if(!colladaImporter->open(argv[1]))
         return 4;
 
     if(colladaImporter->objectCount() == 0)
@@ -231,7 +234,6 @@ int main(int argc, char** argv) {
 
     colladaImporter->close();
     delete colladaImporter.release();
-    in.close();
 
     /* Main loop calls draw() periodically and setViewport() on window size change */
     glutMainLoop();
