@@ -19,10 +19,9 @@
 
 #include "Utility/Resource.h"
 
-#include "AbstractImporter.h"
 #include "CubeMapTexture.h"
 #include "Scene.h"
-
+#include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
 
 #include "Reflector.h"
@@ -32,7 +31,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
+CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
     Buffer* buffer = cube.addBuffer(false);
     Primitives::Cube().build(&cube, buffer);
     cube.bindAttribute<Vector4>(buffer, CubeMapShader::Vertex);
@@ -40,7 +39,7 @@ CubeMap::CubeMap(AbstractImporter* importer, const string& prefix, Object* paren
     scale(20.0f, 20.0f, 20.0f);
 
     /* Textures */
-    shared_ptr<Image2D> image;
+    shared_ptr<Trade::Image2D> image;
     importer->open(prefix + "+x.tga");
     image = importer->image2D(0);
     texture.setDataPositiveX(0, AbstractTexture::InternalFormat::RGB, image.get());

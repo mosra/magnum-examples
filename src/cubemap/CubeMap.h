@@ -23,7 +23,9 @@
 
 namespace Magnum {
 
-class AbstractImporter;
+namespace Trade {
+    class AbstractImporter;
+}
 
 namespace Examples {
 
@@ -31,7 +33,7 @@ class Reflector;
 
 class CubeMap: public Object {
     public:
-        CubeMap(AbstractImporter* importer, const std::string& prefix, Object* parent);
+        CubeMap(Trade::AbstractImporter* importer, const std::string& prefix, Object* parent);
 
         void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 

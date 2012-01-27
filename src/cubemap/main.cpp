@@ -20,7 +20,7 @@
 #include "PluginManager/PluginManager.h"
 
 #include "Scene.h"
-#include "AbstractImporter.h"
+#include "Trade/AbstractImporter.h"
 
 #include "CubeMap.h"
 #include "configure.h"
@@ -92,8 +92,8 @@ int main(int argc, char** argv) {
     camera->translate(0, 0, 3);
 
     /* Load TGA importer plugin */
-    PluginManager<AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
-    AbstractImporter* importer;
+    PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    Trade::AbstractImporter* importer;
     if(manager.load("TGAImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TGAImporter"))) {
         Error() << "Cannot load TGAImporter plugin from" << PLUGIN_IMPORTER_DIR;
         return 2;

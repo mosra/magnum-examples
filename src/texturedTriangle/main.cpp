@@ -21,8 +21,8 @@
 #include "PluginManager/PluginManager.h"
 #include "Utility/Resource.h"
 
-#include "AbstractImporter.h"
 #include "Scene.h"
+#include "Trade/AbstractImporter.h"
 #include "TexturedTriangle.h"
 
 #include "configure.h"
@@ -62,8 +62,8 @@ int main(int argc, char** argv) {
     scene.setCamera(new Magnum::Camera(&scene));
 
     /* Load TGA importer plugin */
-    Corrade::PluginManager::PluginManager<Magnum::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
-    Magnum::AbstractImporter* importer;
+    Corrade::PluginManager::PluginManager<Magnum::Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    Magnum::Trade::AbstractImporter* importer;
     if(manager.load("TGAImporter") != Corrade::PluginManager::AbstractPluginManager::LoadOk || !(importer = manager.instance("TGAImporter"))) {
         Corrade::Utility::Error() << "Cannot load TGAImporter plugin from" << PLUGIN_IMPORTER_DIR;
         return 2;

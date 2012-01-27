@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangle: public Object {
     public:
-        TexturedTriangle(Image2D* image, Object* parent = 0);
+        TexturedTriangle(Trade::Image2D* image, Object* parent = 0);
 
         void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
 
