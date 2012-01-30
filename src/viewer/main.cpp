@@ -24,7 +24,7 @@
 #include "PluginManager/PluginManager.h"
 
 #include "Scene.h"
-#include "AbstractImporter.h"
+#include "Trade/AbstractImporter.h"
 #include "MeshTools/Tipsify.h"
 
 #include "configure.h"
@@ -168,17 +168,17 @@ int main(int argc, char** argv) {
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager<AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
         return 2;
     }
-    unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
         return 3;
     }
-    if(!(colladaImporter->features() & AbstractImporter::OpenFile)) {
+    if(!(colladaImporter->features() & Trade::AbstractImporter::OpenFile)) {
         Error() << "ColladaImporter cannot open files";
         return 7;
     }
@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
         return 5;
 
     /* Optimize vertices */
-    shared_ptr<AbstractImporter::MeshData> meshData = colladaImporter->meshData(0);
+    shared_ptr<Trade::AbstractImporter::MeshData> meshData = colladaImporter->meshData(0);
     if(meshData && meshData->indices() && meshData->vertices(0)) {
         Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
         MeshTools::tipsify(*meshData->indices(), meshData->vertices(0)->size(), 24);
