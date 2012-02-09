@@ -66,6 +66,7 @@ void event(int key, int x, int y) {
 int main(int argc, char** argv) {
     /* Init GLUT */
     glutInit(&argc, argv);
+    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
     glutInitWindowSize(800, 600);
     glutCreateWindow("Cube Map example");
