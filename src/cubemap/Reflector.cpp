@@ -30,12 +30,12 @@ Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), s
     sphere.bindAttribute<Vector4>(buffer, ReflectionShader::Vertex);
 }
 
-void Reflector::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {
+void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
     texture->bind();
     shader()->use();
     shader()->setModelViewMatrixUniform(transformationMatrix);
-    shader()->setProjectionMatrixUniform(projectionMatrix);
-    Matrix4 cameraMatrix = scene()->camera()->transformation(false);
+    shader()->setProjectionMatrixUniform(camera->projectionMatrix());
+    Matrix4 cameraMatrix = camera->absoluteTransformation();
     cameraMatrix.set(3, Vector4());
     shader()->setReflectivityUniform(2.0f);
     shader()->setDiffuseColorUniform(Vector3(0.3f, 0.3f, 0.3f));

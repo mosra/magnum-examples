@@ -36,7 +36,7 @@ Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Triangles, 3) {
     mesh.bindAttribute<Vector4>(buffer, IdentityShader::Color);
 }
 
-void Triangle::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {
+void Triangle::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.use();
     mesh.draw();
 }

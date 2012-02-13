@@ -29,7 +29,7 @@ class Reflector: public Object {
     public:
         Reflector(CubeMapTexture* texture, Object* parent = 0);
 
-        void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
+        void draw(const Matrix4& transformationMatrix, Camera* camera);
 
     private:
         IndexedMesh sphere;

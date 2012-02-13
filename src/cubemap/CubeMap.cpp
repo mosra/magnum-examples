@@ -78,10 +78,10 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     reflector->translate(0.3f, 0.0f, 0.0f);
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {
+void CubeMap::draw(const Matrix4& transformationMatrix, Camera* camera) {
     texture.bind();
     shader.use();
-    shader.setModelViewProjectionMatrixUniform(projectionMatrix*transformationMatrix);
+    shader.setModelViewProjectionMatrixUniform(camera->projectionMatrix()*transformationMatrix);
     shader.setTextureUniform(&texture);
     cube.draw();
 }

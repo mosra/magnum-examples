@@ -28,13 +28,14 @@
 #include "configure.h"
 
 Magnum::Scene* s;
+Magnum::Camera* camera;
 
 /* Wrapper functions so GLUT can handle that */
 void setViewport(int w, int h) {
-    s->setViewport(w, h);
+    camera->setViewport(w, h);
 }
 void draw() {
-    s->draw();
+    s->draw(camera);
     glutSwapBuffers();
 }
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv) {
     s = &scene;
 
     /* Every scene needs a camera */
-    scene.setCamera(new Magnum::Camera(&scene));
+    camera = new Magnum::Camera(&scene);
 
     /* Load TGA importer plugin */
     Corrade::PluginManager::PluginManager<Magnum::Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);

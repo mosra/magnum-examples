@@ -26,7 +26,7 @@ class TexturedTriangle: public Object {
     public:
         TexturedTriangle(Trade::Image2D* image, Object* parent = 0);
 
-        void draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix);
+        void draw(const Matrix4& transformationMatrix, Camera* camera);
 
     private:
         Mesh mesh;
