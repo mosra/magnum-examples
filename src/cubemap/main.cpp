@@ -36,10 +36,10 @@ Camera* camera;
 
 /* Wrapper functions so GLUT can handle that */
 void setViewport(int w, int h) {
-    s->setViewport(w, h);
+    camera->setViewport(w, h);
 }
 void draw() {
-    s->draw();
+    s->draw(camera);
     glutSwapBuffers();
 }
 
@@ -88,7 +88,6 @@ int main(int argc, char** argv) {
 
     /* Every scene needs a camera */
     camera = new Camera(&scene);
-    scene.setCamera(camera);
     camera->setPerspective(deg(75), 0.001f, 100);
     camera->translate(0, 0, 3);
 

@@ -44,7 +44,7 @@ TexturedTriangle::TexturedTriangle(Trade::Image2D* image, Object* parent): Objec
     texture.setWrapping(Math::Vector2<AbstractTexture::Wrapping>(Texture2D::Wrapping::ClampToEdge, Texture2D::Wrapping::ClampToEdge));
 }
 
-void TexturedTriangle::draw(const Matrix4& transformationMatrix, const Matrix4& projectionMatrix) {
+void TexturedTriangle::draw(const Matrix4& transformationMatrix, Camera* camera) {
     texture.bind();
     shader.use();
     shader.setTextureUniform(&texture);
