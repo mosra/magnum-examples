@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
         return 3;
     }
 
-    new Magnum::Examples::TexturedTriangle(importer->image2D(0).get(), &scene);
+    new Magnum::Examples::TexturedTriangle(importer->image2D(0), &scene);
     delete importer;
 
     /* Main loop calls draw() periodically and setViewport() on window size change */

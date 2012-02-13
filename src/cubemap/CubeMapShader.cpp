@@ -34,7 +34,7 @@ CubeMapShader::CubeMapShader() {
     link();
 
     modelViewProjectionMatrixUniform = uniformLocation("modelViewProjectionMatrix");
-    textureUniform = uniformLocation("texture");
+    textureUniform = uniformLocation("textureData");
 
     delete vertexShader;
     delete fragmentShader;
