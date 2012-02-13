@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <memory>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
@@ -23,20 +24,26 @@
 #include "Utility/Directory.h"
 #include "PluginManager/PluginManager.h"
 
+#include "IndexedMesh.h"
 #include "Scene.h"
 #include "Trade/AbstractImporter.h"
+#include "Trade/Mesh.h"
 #include "MeshTools/Tipsify.h"
+#include "Shaders/PhongShader.h"
 
+#include "ViewedObject.h"
 #include "configure.h"
 
 using namespace std;
 using namespace Corrade::PluginManager;
 using namespace Corrade::Utility;
 using namespace Magnum;
+using namespace Magnum::Shaders;
+using namespace Magnum::Examples;
 
 Scene* s;
 Camera* camera;
-shared_ptr<Object> o;
+Object* o;
 chrono::high_resolution_clock::time_point before;
 bool wireframe, fps;
 size_t frames;
@@ -219,27 +226,49 @@ int main(int argc, char** argv) {
     if(!colladaImporter->open(argv[1]))
         return 4;
 
-    if(colladaImporter->objectCount() == 0)
+    if(colladaImporter->meshCount() == 0)
         return 5;
 
-    /* Optimize vertices */
-    shared_ptr<Trade::AbstractImporter::MeshData> meshData = colladaImporter->meshData(0);
-    if(meshData && meshData->indices() && meshData->vertices(0)) {
-        Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
-        MeshTools::tipsify(*meshData->indices(), meshData->vertices(0)->size(), 24);
-    }
+    Trade::Mesh* data = colladaImporter->mesh(0);
 
-    o = colladaImporter->object(0);
-    if(!o) return 6;
-    o->setParent(&scene);
+    /* Optimize vertices */
+    if(data && data->indices() && data->vertexArrayCount() == 1) {
+        Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
+        MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+    } else return 6;
+
+    /* Interleave mesh data */
+    struct VertexData {
+        Vector4 vertex;
+        Vector3 normal;
+    };
+    vector<VertexData> interleavedMeshData;
+    interleavedMeshData.reserve(data->vertices(0)->size());
+    for(size_t i = 0; i != data->vertices(0)->size(); ++i) {
+        interleavedMeshData.push_back({
+            (*data->vertices(0))[i],
+            (*data->normals(0))[i]
+        });
+    }
+    MeshBuilder<VertexData> builder;
+    builder.setData(interleavedMeshData.data(), data->indices()->data(), interleavedMeshData.size(), data->indices()->size());
+
+    IndexedMesh* mesh = new IndexedMesh(Mesh::Triangles, interleavedMeshData.size(), 0, 0);
+    Buffer* buffer = mesh->addBuffer(true);
+    mesh->bindAttribute<Vector4>(buffer, PhongShader::Vertex);
+    mesh->bindAttribute<Vector3>(buffer, PhongShader::Normal);
+    builder.build(mesh, buffer, Buffer::DrawStatic, Buffer::DrawStatic);
+
+    PhongShader shader;
+    shader.use();
+    ViewedObject object(mesh, static_cast<Trade::PhongMaterial*>(colladaImporter->material(0)), &shader, &scene);
+    o = &object;
 
     colladaImporter->close();
     delete colladaImporter.release();
 
     /* Main loop calls draw() periodically and setViewport() on window size change */
     glutMainLoop();
-
-    o.reset();
 
     return 0;
 }
