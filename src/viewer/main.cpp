@@ -238,5 +238,8 @@ int main(int argc, char** argv) {
 
     /* Main loop calls draw() periodically and setViewport() on window size change */
     glutMainLoop();
+
+    o.reset();
+
     return 0;
 }
