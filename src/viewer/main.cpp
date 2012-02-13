@@ -35,6 +35,7 @@ using namespace Corrade::Utility;
 using namespace Magnum;
 
 Scene* s;
+Camera* camera;
 shared_ptr<Object> o;
 chrono::high_resolution_clock::time_point before;
 bool wireframe, fps;
@@ -45,7 +46,7 @@ Vector3 previousPosition;
 
 /* Wrapper functions so GLUT can handle that */
 void setViewport(int w, int h) {
-    s->setViewport(w, h);
+    camera->setViewport(w, h);
 }
 void draw() {
     if(fps) {
@@ -61,7 +62,7 @@ void draw() {
             ++totalmeasurecount;
         }
     }
-    s->draw();
+    s->draw(camera);
     glutSwapBuffers();
 
     if(fps) {
@@ -85,18 +86,18 @@ void events(int key, int x, int y) {
             o->rotate(PI/18, 0, 1, 0, false);
             break;
         case GLUT_KEY_PAGE_UP:
-            s->camera()->translate(0, 0, -0.5);
+            camera->translate(0, 0, -0.5);
             break;
         case GLUT_KEY_PAGE_DOWN:
-            s->camera()->translate(0, 0, 0.5);
+            camera->translate(0, 0, 0.5);
             break;
         case GLUT_KEY_HOME:
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
             wireframe = !wireframe;
             break;
         case GLUT_KEY_END:
-            if(fps) cout << "Average FPS on " << s->camera()->viewport().x()
-                << 'x' << s->camera()->viewport().y() << " from "
+            if(fps) cout << "Average FPS on " << camera->viewport().x()
+                << 'x' << camera->viewport().y() << " from "
                 << totalmeasurecount << " measures: "
                 << totalfps/totalmeasurecount << "          " << endl;
             else before = chrono::high_resolution_clock::now();
@@ -111,7 +112,7 @@ void events(int key, int x, int y) {
 }
 
 Vector3 positionOnSphere(int x, int y) {
-    Math::Vector2<unsigned int> viewport = s->camera()->viewport();
+    Math::Vector2<unsigned int> viewport = camera->viewport();
     Vector2 position(x*2.0f/viewport.x() - 1.0f,
                      y*2.0f/viewport.y() - 1.0f);
 
@@ -132,14 +133,14 @@ void mouseEvents(int button, int state, int x, int y) {
             if(state == GLUT_UP) return;
 
             /* Distance between origin and near camera clipping plane */
-            GLfloat distance = s->camera()->transformation().at(3).z()-0-s->camera()->near();
+            GLfloat distance = camera->transformation().at(3).z()-0-camera->near();
 
             /* Move 15% of the distance back or forward */
             if(button == 3)
                 distance *= 1 - 1/0.85f;
             else
                 distance *= 1 - 0.85f;
-            s->camera()->translate(0, 0, distance);
+            camera->translate(0, 0, distance);
 
             glutPostRedisplay();
             break;
@@ -210,10 +211,9 @@ int main(int argc, char** argv) {
     scene.setFeature(Scene::DepthTest, true);
 
     /* Every scene needs a camera */
-    Camera* camera = new Camera(&scene);
+    camera = new Camera(&scene);
     camera->setPerspective(35.0f*PI/180, 0.001f, 100);
     camera->translate(0, 0, 5);
-    scene.setCamera(camera);
 
     /* Load file */
     if(!colladaImporter->open(argv[1]))
