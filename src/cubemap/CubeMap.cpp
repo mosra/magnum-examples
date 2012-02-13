@@ -39,30 +39,30 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     scale(20.0f, 20.0f, 20.0f);
 
     /* Textures */
-    shared_ptr<Trade::Image2D> image;
+    Trade::Image2D* image;
     importer->open(prefix + "+x.tga");
     image = importer->image2D(0);
-    texture.setDataPositiveX(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataPositiveX(0, AbstractTexture::InternalFormat::RGB, image);
 
     importer->open(prefix + "-x.tga");
     image = importer->image2D(0);
-    texture.setDataNegativeX(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataNegativeX(0, AbstractTexture::InternalFormat::RGB, image);
 
     importer->open(prefix + "+y.tga");
     image = importer->image2D(0);
-    texture.setDataPositiveY(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataPositiveY(0, AbstractTexture::InternalFormat::RGB, image);
 
     importer->open(prefix + "-y.tga");
     image = importer->image2D(0);
-    texture.setDataNegativeY(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataNegativeY(0, AbstractTexture::InternalFormat::RGB, image);
 
     importer->open(prefix + "+z.tga");
     image = importer->image2D(0);
-    texture.setDataPositiveZ(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataPositiveZ(0, AbstractTexture::InternalFormat::RGB, image);
 
     importer->open(prefix + "-z.tga");
     image = importer->image2D(0);
-    texture.setDataNegativeZ(0, AbstractTexture::InternalFormat::RGB, image.get());
+    texture.setDataNegativeZ(0, AbstractTexture::InternalFormat::RGB, image);
 
     texture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
     texture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
