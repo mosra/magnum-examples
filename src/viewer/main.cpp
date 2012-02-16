@@ -257,7 +257,7 @@ int main(int argc, char** argv) {
     Buffer* buffer = mesh->addBuffer(true);
     mesh->bindAttribute<Vector4>(buffer, PhongShader::Vertex);
     mesh->bindAttribute<Vector3>(buffer, PhongShader::Normal);
-    builder.build(mesh, buffer, Buffer::DrawStatic, Buffer::DrawStatic);
+    builder.build(mesh, buffer, Buffer::StaticDraw, Buffer::StaticDraw);
 
     PhongShader shader;
     shader.use();
