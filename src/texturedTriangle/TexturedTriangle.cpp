@@ -31,7 +31,7 @@ TexturedTriangle::TexturedTriangle(Trade::Image2D* image, Object* parent): Objec
 
     /* Fill the mesh with data */
     Buffer* buffer = mesh.addBuffer(true);
-    buffer->setData(sizeof(data), data, Buffer::DrawStatic);
+    buffer->setData(sizeof(data), data, Buffer::StaticDraw);
 
     /* Bind attributes (first vertex data, then color data) */
     mesh.bindAttribute<Vector4>(buffer, TexturedIdentityShader::Vertex);
