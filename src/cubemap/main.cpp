@@ -20,6 +20,7 @@
 #include "PluginManager/PluginManager.h"
 
 #include "Scene.h"
+#include "Camera.h"
 #include "Trade/AbstractImporter.h"
 
 #include "CubeMap.h"
@@ -31,7 +32,6 @@ using namespace Corrade::Utility;
 using namespace Magnum;
 using namespace Magnum::Examples;
 
-Scene* s;
 Camera* camera;
 
 /* Wrapper functions so GLUT can handle that */
@@ -39,7 +39,7 @@ void setViewport(int w, int h) {
     camera->setViewport(w, h);
 }
 void draw() {
-    s->draw(camera);
+    camera->draw();
     glutSwapBuffers();
 }
 
@@ -83,7 +83,6 @@ int main(int argc, char** argv) {
 
     /* Initialize scene */
     Scene scene;
-    s = &scene;
     scene.setFeature(Magnum::Scene::DepthTest, true);
 
     /* Every scene needs a camera */

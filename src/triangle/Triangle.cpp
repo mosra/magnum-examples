@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Examples {
 
-Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Triangles, 3) {
+Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Primitive::Triangles, 3) {
     /* Vertices and colors, interleaved */
     Vector4 data[] = {
         Vector4(-0.5f, -0.5f, 0.0f),    Vector4(1.0f, 0.0f, 0.0f),  /* Red lower left vertex */
@@ -29,7 +29,7 @@ Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Triangles, 3) {
 
     /* Fill the mesh with data */
     Buffer* buffer = mesh.addBuffer(true);
-    buffer->setData(sizeof(data), data, Buffer::StaticDraw);
+    buffer->setData(sizeof(data), data, Buffer::Usage::StaticDraw);
 
     /* Bind attributes (first vertex data, then color data) */
     mesh.bindAttribute<Vector4>(buffer, IdentityShader::Vertex);

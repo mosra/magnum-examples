@@ -17,14 +17,14 @@
 
 #include "CubeMapTexture.h"
 #include "MeshBuilder.h"
-#include "Scene.h"
+#include "Camera.h"
 #include "Primitives/Icosphere.h"
 
 #include "ReflectionShader.h"
 
 namespace Magnum { namespace Examples {
 
-Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), sphere(Mesh::Triangles, 0, 0, GL_UNSIGNED_BYTE), texture(texture) {
+Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), texture(texture) {
     Buffer* buffer = sphere.addBuffer(false);
     Primitives::Icosphere<5>().build(&sphere, buffer);
     sphere.bindAttribute<Vector4>(buffer, ReflectionShader::Vertex);

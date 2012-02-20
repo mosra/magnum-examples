@@ -41,7 +41,6 @@ using namespace Magnum;
 using namespace Magnum::Shaders;
 using namespace Magnum::Examples;
 
-Scene* s;
 Camera* camera;
 Object* o;
 chrono::high_resolution_clock::time_point before;
@@ -69,7 +68,7 @@ void draw() {
             ++totalmeasurecount;
         }
     }
-    s->draw(camera);
+    camera->draw();
     glutSwapBuffers();
 
     if(fps) {
@@ -119,7 +118,7 @@ void events(int key, int x, int y) {
 }
 
 Vector3 positionOnSphere(int x, int y) {
-    Math::Vector2<unsigned int> viewport = camera->viewport();
+    Math::Vector2<GLsizei> viewport = camera->viewport();
     Vector2 position(x*2.0f/viewport.x() - 1.0f,
                      y*2.0f/viewport.y() - 1.0f);
 
@@ -212,7 +211,6 @@ int main(int argc, char** argv) {
 
     /* Initialize scene */
     Scene scene;
-    s = &scene;
     wireframe = false;
     fps = false;
     scene.setFeature(Scene::DepthTest, true);
@@ -253,11 +251,11 @@ int main(int argc, char** argv) {
     MeshBuilder<VertexData> builder;
     builder.setData(interleavedMeshData.data(), data->indices()->data(), interleavedMeshData.size(), data->indices()->size());
 
-    IndexedMesh* mesh = new IndexedMesh(Mesh::Triangles, interleavedMeshData.size(), 0, 0);
+    IndexedMesh* mesh = new IndexedMesh;
     Buffer* buffer = mesh->addBuffer(true);
     mesh->bindAttribute<Vector4>(buffer, PhongShader::Vertex);
     mesh->bindAttribute<Vector3>(buffer, PhongShader::Normal);
-    builder.build(mesh, buffer, Buffer::StaticDraw, Buffer::StaticDraw);
+    builder.build(mesh, buffer, Buffer::Usage::StaticDraw, Buffer::Usage::StaticDraw);
 
     PhongShader shader;
     shader.use();

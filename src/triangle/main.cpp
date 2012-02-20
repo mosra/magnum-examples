@@ -18,9 +18,9 @@
 #include <GL/freeglut.h>
 
 #include "Scene.h"
+#include "Camera.h"
 #include "Triangle.h"
 
-Magnum::Scene* s;
 Magnum::Camera* camera;
 
 /* Wrapper functions so GLUT can handle that */
@@ -28,7 +28,7 @@ void setViewport(int w, int h) {
     camera->setViewport(w, h);
 }
 void draw() {
-    s->draw(camera);
+    camera->draw();
     glutSwapBuffers();
 }
 
@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
 
     /* Initialize scene */
     Magnum::Scene scene;
-    s = &scene;
 
     /* Every scene needs a camera */
     camera = new Magnum::Camera(&scene);

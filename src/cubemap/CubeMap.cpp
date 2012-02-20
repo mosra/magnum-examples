@@ -21,6 +21,7 @@
 
 #include "CubeMapTexture.h"
 #include "Scene.h"
+#include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
 
