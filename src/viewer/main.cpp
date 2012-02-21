@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 
     /* Every scene needs a camera */
     camera = new Camera(&scene);
-    camera->setPerspective(35.0f*PI/180, 0.001f, 100);
+    camera->setPerspective(deg(35.0f), 0.001f, 100);
     camera->translate(0, 0, 5);
 
     /* Load file */
