@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 class CubeMapShader: public AbstractShaderProgram {
     public:
         enum Attribute {
-            Vertex = 1
+            Vertex = 0
         };
 
         CubeMapShader();

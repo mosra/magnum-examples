@@ -22,8 +22,8 @@ namespace Magnum { namespace Examples {
 class IdentityShader: public AbstractShaderProgram {
     public:
         enum Attributes {
-            Vertex = 1,
-            Color = 2
+            Vertex = 0,
+            Color = 1
         };
 
         IdentityShader();

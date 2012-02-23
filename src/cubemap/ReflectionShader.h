@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 class ReflectionShader: public AbstractShaderProgram {
     public:
         enum Attribute {
-            Vertex = 1
+            Vertex = 0
         };
 
         ReflectionShader();
