@@ -19,13 +19,13 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Shaders/PhongShader.h"
-#include "Trade/PhongMaterial.h"
+#include "Trade/PhongMaterialData.h"
 
 namespace Magnum { namespace Examples {
 
 class ViewedObject: public Object {
     public:
-        ViewedObject(Mesh* mesh, Trade::PhongMaterial* material, Shaders::PhongShader* shader, Object* parent = nullptr): Object(parent), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
+        ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::PhongShader* shader, Object* parent = nullptr): Object(parent), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
 
         virtual void draw(const Matrix4& transformationMatrix, Camera* camera) {
             shader->use();

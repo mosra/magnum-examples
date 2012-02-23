@@ -21,7 +21,7 @@ using namespace std;
 
 namespace Magnum { namespace Examples {
 
-TexturedTriangle::TexturedTriangle(Trade::Image2D* image, Object* parent): Object(parent), mesh(Mesh::Primitive::Triangles, 3) {
+TexturedTriangle::TexturedTriangle(Trade::ImageData2D* image, Object* parent): Object(parent), mesh(Mesh::Primitive::Triangles, 3) {
     /* Vertices and texture coordinates, interleaved */
     GLfloat data[] = {
         -0.5f, -0.5f, 0.0f, 1.0f,   0.0f, 0.0f,  /* Lower left vertex */

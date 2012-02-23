@@ -40,7 +40,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     scale(20.0f, 20.0f, 20.0f);
 
     /* Textures */
-    Trade::Image2D* image;
+    Trade::ImageData2D* image;
     importer->open(prefix + "+x.tga");
     image = importer->image2D(0);
     texture.setData(CubeMapTexture::PositiveX, 0, AbstractTexture::InternalFormat::RGB, image);

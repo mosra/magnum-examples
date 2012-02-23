@@ -27,7 +27,7 @@
 #include "IndexedMesh.h"
 #include "Scene.h"
 #include "Trade/AbstractImporter.h"
-#include "Trade/Mesh.h"
+#include "Trade/MeshData.h"
 #include "MeshTools/Tipsify.h"
 #include "Shaders/PhongShader.h"
 
@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
     if(colladaImporter->meshCount() == 0)
         return 5;
 
-    Trade::Mesh* data = colladaImporter->mesh(0);
+    Trade::MeshData* data = colladaImporter->mesh(0);
 
     /* Optimize vertices */
     if(data && data->indices() && data->vertexArrayCount() == 1) {
@@ -259,7 +259,7 @@ int main(int argc, char** argv) {
 
     PhongShader shader;
     shader.use();
-    ViewedObject object(mesh, static_cast<Trade::PhongMaterial*>(colladaImporter->material(0)), &shader, &scene);
+    ViewedObject object(mesh, static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0)), &shader, &scene);
     o = &object;
 
     colladaImporter->close();
