@@ -5,6 +5,9 @@ find_package(GLUT REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CORRADE_INCLUDE_DIR} ${MAGNUM_INCLUDE_DIR})
 
 add_library(MagnumExample STATIC AbstractExample.cpp)
+if(WIN32)
+    target_link_libraries(MagnumExample ${CORRADE_UTILITY_LIBRARY})
+endif()
 
 add_subdirectory(cubemap)
 add_subdirectory(triangle)
