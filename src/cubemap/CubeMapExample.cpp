@@ -36,7 +36,7 @@ class CubeMapExample: public AbstractExample {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(75), 0.001f, 100);
-            camera->translate(0, 0, 3);
+            camera->translate(Vector3::zAxis(3));
 
             /* Load TGA importer plugin */
             PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
@@ -75,12 +75,12 @@ class CubeMapExample: public AbstractExample {
 
             if(key == Key::Left || key == Key::Right) {
                 GLfloat yTransform = camera->transformation().at(2, 3);
-                camera->translate(0, -yTransform, 0);
+                camera->translate(Vector3::yAxis(-yTransform));
                 if(key == Key::Left)
                     camera->rotate(deg(10.0f), Vector3::yAxis(), true);
                 else
                     camera->rotate(deg(-10.0f), Vector3::yAxis(), true);
-                camera->translate(0, yTransform, 0);
+                camera->translate(Vector3::yAxis(yTransform));
             }
 
             redraw();

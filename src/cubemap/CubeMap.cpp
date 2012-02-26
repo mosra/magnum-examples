@@ -40,7 +40,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     cube.bindAttribute<Vector4>(buffer, CubeMapShader::Vertex);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
-    scale(20.0f, 20.0f, 20.0f);
+    scale(20.0f);
 
     /* Textures */
     Trade::ImageData2D* image;
@@ -74,12 +74,12 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     texture.generateMipmap();
 
     reflector = new Reflector(&texture, scene());
-    reflector->scale(0.5f, 0.5f, 0.5f);
-    reflector->translate(-0.5f, 0.0f, 0.0f);
+    reflector->scale(0.5f);
+    reflector->translate(Vector3::xAxis(-0.5f));
 
     reflector = new Reflector(&texture, scene());
-    reflector->scale(0.3f, 0.3f, 0.3f);
-    reflector->translate(0.3f, 0.0f, 0.0f);
+    reflector->scale(0.3f);
+    reflector->translate(Vector3::xAxis(0.3f));
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, Camera* camera) {

@@ -69,7 +69,7 @@ class ViewerExample: public AbstractExample {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.001f, 100);
-            camera->translate(0, 0, 5);
+            camera->translate(Vector3::zAxis(5));
 
             /* Load file */
             if(!colladaImporter->open(argv[1]))
@@ -132,22 +132,22 @@ class ViewerExample: public AbstractExample {
         void keyEvent(Key key, const Math::Vector2<int>& position) {
             switch(key) {
                 case Key::Up:
-                    o->rotate(PI/18, -1, 0, 0);
+                    o->rotate(deg(10.0f), Vector3::xAxis(-1));
                     break;
                 case Key::Down:
-                    o->rotate(PI/18, 1, 0, 0);
+                    o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
                 case Key::Left:
-                    o->rotate(PI/18, 0, -1, 0, false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(-1), false);
                     break;
                 case Key::Right:
-                    o->rotate(PI/18, 0, 1, 0, false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(1), false);
                     break;
                 case Key::PageUp:
-                    camera->translate(0, 0, -0.5);
+                    camera->translate(Vector3::zAxis(-0.5));
                     break;
                 case Key::PageDown:
-                    camera->translate(0, 0, 0.5);
+                    camera->translate(Vector3::zAxis(0.5));
                     break;
                 case Key::Home:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
@@ -187,7 +187,7 @@ class ViewerExample: public AbstractExample {
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(0, 0, distance);
+                    camera->translate(Vector3::zAxis(distance));
 
                     redraw();
                     break;
