@@ -10,6 +10,7 @@ if(WIN32)
 endif()
 
 add_subdirectory(cubemap)
+add_subdirectory(motionblur)
 add_subdirectory(triangle)
 add_subdirectory(texturedTriangle)
 add_subdirectory(viewer)
