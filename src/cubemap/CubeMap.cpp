@@ -24,6 +24,7 @@
 #include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
+#include "MeshTools/CompressIndices.h"
 
 #include "Reflector.h"
 
@@ -33,9 +34,11 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Examples {
 
 CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
+    Primitives::Cube cubeData;
     Buffer* buffer = cube.addBuffer(false);
-    Primitives::Cube().build(&cube, buffer);
+    buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
     cube.bindAttribute<Vector4>(buffer, CubeMapShader::Vertex);
+    MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
     scale(20.0f, 20.0f, 20.0f);
 

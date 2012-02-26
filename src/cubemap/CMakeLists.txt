@@ -19,4 +19,4 @@ add_executable(cubeMapExample
     Reflector.cpp
     ReflectionShader.cpp
     ${CubeMapData})
-target_link_libraries(cubeMapExample MagnumExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY})
+target_link_libraries(cubeMapExample MagnumExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${MAGNUM_MESHTOOLS_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY})

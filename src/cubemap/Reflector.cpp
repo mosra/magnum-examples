@@ -16,9 +16,9 @@
 #include "Reflector.h"
 
 #include "CubeMapTexture.h"
-#include "MeshBuilder.h"
 #include "Camera.h"
 #include "Primitives/Icosphere.h"
+#include "MeshTools/CompressIndices.h"
 
 #include "ReflectionShader.h"
 
@@ -26,8 +26,10 @@ namespace Magnum { namespace Examples {
 
 Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), texture(texture) {
     Buffer* buffer = sphere.addBuffer(false);
-    Primitives::Icosphere<5>().build(&sphere, buffer);
+    Primitives::Icosphere<5> sphereData;
+    buffer->setData(*sphereData.vertices(0), Buffer::Usage::StaticDraw);
     sphere.bindAttribute<Vector4>(buffer, ReflectionShader::Vertex);
+    MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
