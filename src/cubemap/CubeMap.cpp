@@ -37,6 +37,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     Primitives::Cube cubeData;
     Buffer* buffer = cube.addBuffer(false);
     buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
+    cube.setVertexCount(cubeData.vertices(0)->size());
     cube.bindAttribute<Vector4>(buffer, CubeMapShader::Vertex);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
