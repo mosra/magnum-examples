@@ -23,6 +23,8 @@
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData.h"
 #include "MeshTools/Tipsify.h"
+#include "MeshTools/Interleave.h"
+#include "MeshTools/CompressIndices.h"
 #include "Shaders/PhongShader.h"
 
 #include "AbstractExample.h"
@@ -77,33 +79,21 @@ class ViewerExample: public AbstractExample {
                 exit(5);
 
             Trade::MeshData* data = colladaImporter->mesh(0);
+            if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
+                exit(6);
 
             /* Optimize vertices */
-            if(data && data->indices() && data->vertexArrayCount() == 1) {
-                Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
-                MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
-            } else exit(6);
+            Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
+            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
 
             /* Interleave mesh data */
-            struct VertexData {
-                Vector4 vertex;
-                Vector3 normal;
-            };
-            vector<VertexData> interleavedMeshData;
-            interleavedMeshData.reserve(data->vertices(0)->size());
-            for(size_t i = 0; i != data->vertices(0)->size(); ++i) {
-                interleavedMeshData.push_back({
-                    (*data->vertices(0))[i],
-                    (*data->normals(0))[i]
-                });
-            }
-            MeshBuilder<VertexData> builder;
-            builder.setData(interleavedMeshData.data(), data->indices()->data(), interleavedMeshData.size(), data->indices()->size());
-
             Buffer* buffer = mesh.addBuffer(true);
             mesh.bindAttribute<Vector4>(buffer, PhongShader::Vertex);
             mesh.bindAttribute<Vector3>(buffer, PhongShader::Normal);
-            builder.build(&mesh, buffer, Buffer::Usage::StaticDraw, Buffer::Usage::StaticDraw);
+            MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
+
+            /* Compress indices */
+            MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
 
             o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0)), &shader, &scene);
 
