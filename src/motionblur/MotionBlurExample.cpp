@@ -42,8 +42,8 @@ class MotionBlurExample: public AbstractExample {
             MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());
             Buffer* buffer = mesh.addBuffer(true);
             MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data.vertices(0), *data.normals(0));
-            mesh.bindAttribute<Vector4>(buffer, PhongShader::Vertex);
-            mesh.bindAttribute<Vector3>(buffer, PhongShader::Normal);
+            mesh.bindAttribute<PhongShader::Vertex>(buffer);
+            mesh.bindAttribute<PhongShader::Normal>(buffer);
 
             /* Add spheres to the scene */
             Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene);

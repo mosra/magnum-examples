@@ -88,8 +88,8 @@ class ViewerExample: public AbstractExample {
 
             /* Interleave mesh data */
             Buffer* buffer = mesh.addBuffer(true);
-            mesh.bindAttribute<Vector4>(buffer, PhongShader::Vertex);
-            mesh.bindAttribute<Vector3>(buffer, PhongShader::Normal);
+            mesh.bindAttribute<PhongShader::Vertex>(buffer);
+            mesh.bindAttribute<PhongShader::Normal>(buffer);
             MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
 
             /* Compress indices */

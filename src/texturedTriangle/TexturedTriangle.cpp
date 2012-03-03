@@ -34,8 +34,8 @@ TexturedTriangle::TexturedTriangle(Trade::ImageData2D* image, Object* parent): O
     buffer->setData(sizeof(data), data, Buffer::Usage::StaticDraw);
 
     /* Bind attributes (first vertex data, then color data) */
-    mesh.bindAttribute<Vector4>(buffer, TexturedIdentityShader::Vertex);
-    mesh.bindAttribute<Vector2>(buffer, TexturedIdentityShader::TextureCoordinates);
+    mesh.bindAttribute<TexturedIdentityShader::Vertex>(buffer);
+    mesh.bindAttribute<TexturedIdentityShader::TextureCoordinates>(buffer);
 
     /* Texture */
     texture.setData(0, Texture2D::InternalFormat::RGB, image);

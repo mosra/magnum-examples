@@ -29,7 +29,7 @@ Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), t
     Primitives::Icosphere<5> sphereData;
     buffer->setData(*sphereData.vertices(0), Buffer::Usage::StaticDraw);
     sphere.setVertexCount(sphereData.vertices(0)->size());
-    sphere.bindAttribute<Vector4>(buffer, ReflectionShader::Vertex);
+    sphere.bindAttribute<ReflectionShader::Vertex>(buffer);
     MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
 }
 

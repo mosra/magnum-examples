@@ -29,7 +29,7 @@ CubeMapShader::CubeMapShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex, "vertex");
+    bindAttribute(Vertex::Location, "vertex");
 
     link();
 

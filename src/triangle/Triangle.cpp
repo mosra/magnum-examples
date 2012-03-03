@@ -32,8 +32,8 @@ Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Primitive::Triang
     buffer->setData(sizeof(data), data, Buffer::Usage::StaticDraw);
 
     /* Bind attributes (first vertex data, then color data) */
-    mesh.bindAttribute<Vector4>(buffer, IdentityShader::Vertex);
-    mesh.bindAttribute<Vector4>(buffer, IdentityShader::Color);
+    mesh.bindAttribute<IdentityShader::Vertex>(buffer);
+    mesh.bindAttribute<IdentityShader::Color>(buffer);
 }
 
 void Triangle::draw(const Matrix4& transformationMatrix, Camera* camera) {

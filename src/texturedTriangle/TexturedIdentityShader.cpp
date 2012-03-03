@@ -29,8 +29,8 @@ TexturedIdentityShader::TexturedIdentityShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex, "vertex");
-    bindAttribute(TextureCoordinates, "textureCoordinates");
+    bindAttribute(Vertex::Location, "vertex");
+    bindAttribute(TextureCoordinates::Location, "textureCoordinates");
 
     link();
 

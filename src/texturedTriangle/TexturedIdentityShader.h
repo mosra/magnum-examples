@@ -21,10 +21,8 @@ namespace Magnum { namespace Examples {
 
 class TexturedIdentityShader: public AbstractShaderProgram {
     public:
-        enum Attributes {
-            Vertex = 0,
-            TextureCoordinates = 1
-        };
+        typedef Attribute<0, Vector4> Vertex;
+        typedef Attribute<1, Vector2> TextureCoordinates;
 
         TexturedIdentityShader();
 

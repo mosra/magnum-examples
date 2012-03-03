@@ -70,7 +70,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex, "vertex");
+    bindAttribute(Vertex::Location, "vertex");
 
     link();
     delete vertexShader;
@@ -94,7 +94,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object*
 
     Buffer* buffer = mesh.addBuffer(false);
     buffer->setData(sizeof(vertices), vertices, Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<Vector4>(buffer, MotionBlurShader::Vertex);
+    mesh.bindAttribute<MotionBlurShader::Vertex>(buffer);
 }
 
 void MotionBlurCamera::MotionBlurCanvas::draw(size_t currentFrame) {

@@ -30,8 +30,8 @@ IdentityShader::IdentityShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex, "vertex");
-    bindAttribute(Color, "color");
+    bindAttribute(Vertex::Location, "vertex");
+    bindAttribute(Color::Location, "color");
 
     link();
 
