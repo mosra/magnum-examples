@@ -95,7 +95,11 @@ class ViewerExample: public AbstractExample {
             /* Compress indices */
             MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
 
-            o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0)), &shader, &scene);
+            /* Get material or create default one */
+            Trade::PhongMaterialData* material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0));
+            if(!material) material = new Trade::PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+
+            o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(material), &shader, &scene);
 
             colladaImporter->close();
             delete colladaImporter.release();
