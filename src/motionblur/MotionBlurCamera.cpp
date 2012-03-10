@@ -44,8 +44,7 @@ void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
 
     /* Initialize previous frames with black color */
     size_t textureSize = size.x()*size.y()*AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte);
-    GLubyte* texture = new GLubyte[textureSize];
-    memset(texture, 0, textureSize);
+    GLubyte* texture = new GLubyte[textureSize]();
     Buffer::unbind(Buffer::Target::PixelPack);
     for(size_t i = 0; i != FrameCount; ++i)
         frames[i]->setData<GLubyte>(0, AbstractTexture::InternalFormat::RGB, size, framebuffer.colorFormat(), texture);
