@@ -36,6 +36,7 @@ using namespace Corrade::PluginManager;
 using namespace Corrade::Utility;
 using namespace Magnum;
 using namespace Magnum::Shaders;
+using namespace Magnum::Trade;
 using namespace Magnum::Examples;
 
 namespace Magnum { namespace Examples {
@@ -186,17 +187,17 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    PluginManager<AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
         exit(1);
     }
-    unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
         exit(2);
     }
-    if(!(colladaImporter->features() & Trade::AbstractImporter::OpenFile)) {
+    if(!(colladaImporter->features() & AbstractImporter::OpenFile)) {
         Error() << "ColladaImporter cannot open files";
         exit(3);
     }
@@ -215,7 +216,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     if(colladaImporter->meshCount() == 0)
         exit(5);
 
-    Trade::MeshData* data = colladaImporter->mesh(0);
+    MeshData* data = colladaImporter->mesh(0);
     if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
         exit(6);
 
@@ -233,10 +234,10 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
 
     /* Get material or create default one */
-    Trade::PhongMaterialData* material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0));
-    if(!material) material = new Trade::PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+    PhongMaterialData* material = static_cast<PhongMaterialData*>(colladaImporter->material(0));
+    if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
 
-    o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(material), &shader, &scene);
+    o = new ViewedObject(&mesh, static_cast<PhongMaterialData*>(material), &shader, &scene);
 
     colladaImporter->close();
     delete colladaImporter.release();
