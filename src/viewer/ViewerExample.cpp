@@ -42,68 +42,7 @@ namespace Magnum { namespace Examples {
 
 class ViewerExample: public AbstractExample {
     public:
-        ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), wireframe(false), fps(false) {
-            if(argc != 2) {
-                cout << "Usage: " << argv[0] << " file.dae" << endl;
-                exit(0);
-            }
-
-            /* Instance ColladaImporter plugin */
-            PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
-            if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
-                Error() << "Could not load ColladaImporter plugin";
-                exit(1);
-            }
-            unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
-            if(!colladaImporter) {
-                Error() << "Could not instance ColladaImporter plugin";
-                exit(2);
-            }
-            if(!(colladaImporter->features() & Trade::AbstractImporter::OpenFile)) {
-                Error() << "ColladaImporter cannot open files";
-                exit(3);
-            }
-
-            scene.setFeature(Scene::DepthTest, true);
-
-            /* Every scene needs a camera */
-            camera = new Camera(&scene);
-            camera->setPerspective(deg(35.0f), 0.001f, 100);
-            camera->translate(Vector3::zAxis(5));
-
-            /* Load file */
-            if(!colladaImporter->open(argv[1]))
-                exit(4);
-
-            if(colladaImporter->meshCount() == 0)
-                exit(5);
-
-            Trade::MeshData* data = colladaImporter->mesh(0);
-            if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
-                exit(6);
-
-            /* Optimize vertices */
-            Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
-            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
-
-            /* Interleave mesh data */
-            Buffer* buffer = mesh.addBuffer(true);
-            mesh.bindAttribute<PhongShader::Vertex>(buffer);
-            mesh.bindAttribute<PhongShader::Normal>(buffer);
-            MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
-
-            /* Compress indices */
-            MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
-
-            /* Get material or create default one */
-            Trade::PhongMaterialData* material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0));
-            if(!material) material = new Trade::PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
-
-            o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(material), &shader, &scene);
-
-            colladaImporter->close();
-            delete colladaImporter.release();
-        }
+        ViewerExample(int& argc, char** argv);
 
     protected:
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
@@ -239,6 +178,69 @@ class ViewerExample: public AbstractExample {
         size_t totalmeasurecount;
         Vector3 previousPosition;
 };
+
+ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), wireframe(false), fps(false) {
+    if(argc != 2) {
+        cout << "Usage: " << argv[0] << " file.dae" << endl;
+        exit(0);
+    }
+
+    /* Instance ColladaImporter plugin */
+    PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
+        Error() << "Could not load ColladaImporter plugin";
+        exit(1);
+    }
+    unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    if(!colladaImporter) {
+        Error() << "Could not instance ColladaImporter plugin";
+        exit(2);
+    }
+    if(!(colladaImporter->features() & Trade::AbstractImporter::OpenFile)) {
+        Error() << "ColladaImporter cannot open files";
+        exit(3);
+    }
+
+    scene.setFeature(Scene::DepthTest, true);
+
+    /* Every scene needs a camera */
+    camera = new Camera(&scene);
+    camera->setPerspective(deg(35.0f), 0.001f, 100);
+    camera->translate(Vector3::zAxis(5));
+
+    /* Load file */
+    if(!colladaImporter->open(argv[1]))
+        exit(4);
+
+    if(colladaImporter->meshCount() == 0)
+        exit(5);
+
+    Trade::MeshData* data = colladaImporter->mesh(0);
+    if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
+        exit(6);
+
+    /* Optimize vertices */
+    Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
+    MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+
+    /* Interleave mesh data */
+    Buffer* buffer = mesh.addBuffer(true);
+    mesh.bindAttribute<PhongShader::Vertex>(buffer);
+    mesh.bindAttribute<PhongShader::Normal>(buffer);
+    MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
+
+    /* Compress indices */
+    MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
+
+    /* Get material or create default one */
+    Trade::PhongMaterialData* material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(0));
+    if(!material) material = new Trade::PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+
+    o = new ViewedObject(&mesh, static_cast<Trade::PhongMaterialData*>(material), &shader, &scene);
+
+    colladaImporter->close();
+    delete colladaImporter.release();
+}
 
 }}
 
