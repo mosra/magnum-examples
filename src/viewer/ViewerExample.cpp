@@ -23,7 +23,7 @@
 #include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData.h"
-#include "Trade/ObjectData.h"
+#include "Trade/MeshObjectData.h"
 #include "Trade/SceneData.h"
 #include "MeshTools/Tipsify.h"
 #include "MeshTools/Interleave.h"
@@ -174,7 +174,7 @@ class ViewerExample: public AbstractExample {
             return result.normalized();
         }
 
-        void addObject(AbstractImporter* colladaImporter, Object* parent, PhongMaterialData* material, size_t objectId);
+        void addObject(AbstractImporter* colladaImporter, Object* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId);
 
         Scene scene;
         Camera* camera;
@@ -225,9 +225,8 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     if(colladaImporter->sceneCount() == 0)
         exit(5);
 
-    /* Get material or create default one */
-    PhongMaterialData* material = static_cast<PhongMaterialData*>(colladaImporter->material(0));
-    if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+    /* Map with materials */
+    unordered_map<size_t, PhongMaterialData*> materials;
 
     /* Default object, parent of all (for manipulation) */
     o = new Object(&scene);
@@ -237,13 +236,16 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
 
     /* Add all children */
     for(size_t objectId: scene->children())
-        addObject(colladaImporter.get(), o, material, objectId);
+        addObject(colladaImporter.get(), o, materials, objectId);
+
+    /* Delete materials, as they are now unused */
+    for(auto i: materials) delete i.second;
 
     colladaImporter->close();
     delete colladaImporter.release();
 }
 
-void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent, PhongMaterialData* material, size_t objectId) {
+void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
     ObjectData* object = colladaImporter->object(objectId);
 
     /* Only meshes for now */
@@ -276,6 +278,17 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
             MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *data->indices());
         }
 
+        /* Use already processed material, if exists */
+        PhongMaterialData* material;
+        auto materialFound = materials.find(static_cast<MeshObjectData*>(object)->material());
+        if(materialFound != materials.end()) material = materialFound->second;
+
+        /* Else get material or create default one */
+        else {
+            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData*>(object)->material()));
+            if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+        }
+
         /* Add object */
         Object* o = new ViewedObject(mesh, material, &shader, parent);
         o->setTransformation(object->transformation());
@@ -283,7 +296,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
     /* Recursively add children */
     for(size_t id: object->children())
-        addObject(colladaImporter, o, material, id);
+        addObject(colladaImporter, o, materials, id);
 }
 
 }}
