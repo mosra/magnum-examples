@@ -16,12 +16,15 @@
 #include <iostream>
 #include <chrono>
 #include <memory>
+#include <unordered_map>
 
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
 #include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData.h"
+#include "Trade/ObjectData.h"
+#include "Trade/SceneData.h"
 #include "MeshTools/Tipsify.h"
 #include "MeshTools/Interleave.h"
 #include "MeshTools/CompressIndices.h"
@@ -44,6 +47,10 @@ namespace Magnum { namespace Examples {
 class ViewerExample: public AbstractExample {
     public:
         ViewerExample(int& argc, char** argv);
+
+        ~ViewerExample() {
+            for(auto i: meshes) delete i.second;
+        }
 
     protected:
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
@@ -167,11 +174,13 @@ class ViewerExample: public AbstractExample {
             return result.normalized();
         }
 
+        void addObject(AbstractImporter* colladaImporter, Object* parent, PhongMaterialData* material, size_t objectId);
+
         Scene scene;
         Camera* camera;
         PhongShader shader;
-        IndexedMesh mesh;
         Object* o;
+        unordered_map<size_t, IndexedMesh*> meshes;
         chrono::high_resolution_clock::time_point before;
         bool wireframe, fps;
         size_t frames;
@@ -213,34 +222,68 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     if(!colladaImporter->open(argv[1]))
         exit(4);
 
-    if(colladaImporter->meshCount() == 0)
+    if(colladaImporter->sceneCount() == 0)
         exit(5);
-
-    MeshData* data = colladaImporter->mesh(0);
-    if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
-        exit(6);
-
-    /* Optimize vertices */
-    Debug() << "Optimizing mesh vertices using Tipsify algorithm (cache size 24)...";
-    MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
-
-    /* Interleave mesh data */
-    Buffer* buffer = mesh.addBuffer(true);
-    mesh.bindAttribute<PhongShader::Vertex>(buffer);
-    mesh.bindAttribute<PhongShader::Normal>(buffer);
-    MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
-
-    /* Compress indices */
-    MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data->indices());
 
     /* Get material or create default one */
     PhongMaterialData* material = static_cast<PhongMaterialData*>(colladaImporter->material(0));
     if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
 
-    o = new ViewedObject(&mesh, static_cast<PhongMaterialData*>(material), &shader, &scene);
+    /* Default object, parent of all (for manipulation) */
+    o = new Object(&scene);
+
+    /* Load the scene */
+    SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
+
+    /* Add all children */
+    for(size_t objectId: scene->children())
+        addObject(colladaImporter.get(), o, material, objectId);
 
     colladaImporter->close();
     delete colladaImporter.release();
+}
+
+void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent, PhongMaterialData* material, size_t objectId) {
+    ObjectData* object = colladaImporter->object(objectId);
+
+    /* Only meshes for now */
+    if(object->instanceType() == ObjectData::InstanceType::Mesh) {
+        /* Use already processed mesh, if exists */
+        IndexedMesh* mesh;
+        auto found = meshes.find(object->instanceId());
+        if(found != meshes.end()) mesh = found->second;
+
+        /* Or create a new one */
+        else {
+            mesh = new IndexedMesh;
+            meshes.insert(make_pair(object->instanceId(), mesh));
+
+            MeshData* data = colladaImporter->mesh(object->instanceId());
+            if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
+                exit(6);
+
+            /* Optimize vertices */
+            Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
+            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+
+            /* Interleave mesh data */
+            Buffer* buffer = mesh->addBuffer(true);
+            mesh->bindAttribute<PhongShader::Vertex>(buffer);
+            mesh->bindAttribute<PhongShader::Normal>(buffer);
+            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
+
+            /* Compress indices */
+            MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *data->indices());
+        }
+
+        /* Add object */
+        Object* o = new ViewedObject(mesh, material, &shader, parent);
+        o->setTransformation(object->transformation());
+    }
+
+    /* Recursively add children */
+    for(size_t id: object->children())
+        addObject(colladaImporter, o, material, id);
 }
 
 }}
