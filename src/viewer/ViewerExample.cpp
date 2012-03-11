@@ -95,10 +95,10 @@ class ViewerExample: public AbstractExample {
                     o->rotate(deg(10.0f), Vector3::yAxis(1), false);
                     break;
                 case Key::PageUp:
-                    camera->translate(Vector3::zAxis(-0.5));
+                    camera->translate(Vector3::zAxis(-0.5), false);
                     break;
                 case Key::PageDown:
-                    camera->translate(Vector3::zAxis(0.5));
+                    camera->translate(Vector3::zAxis(0.5), false);
                     break;
                 case Key::Home:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
@@ -138,7 +138,7 @@ class ViewerExample: public AbstractExample {
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(Vector3::zAxis(distance));
+                    camera->translate(Vector3::zAxis(distance), false);
 
                     redraw();
                     break;
