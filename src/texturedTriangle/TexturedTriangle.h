@@ -18,6 +18,8 @@
 #include "Object.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Trade/ImageData.h"
+
 #include "TexturedIdentityShader.h"
 
 namespace Magnum { namespace Examples {
