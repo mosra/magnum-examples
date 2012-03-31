@@ -37,8 +37,8 @@ class TexturedTriangleExample: public AbstractExample {
             /* Load TGA importer plugin */
             PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
             Trade::AbstractImporter* importer;
-            if(manager.load("TGAImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TGAImporter"))) {
-                Error() << "Cannot load TGAImporter plugin from" << PLUGIN_IMPORTER_DIR;
+            if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
+                Error() << "Cannot load TgaImporter plugin from" << PLUGIN_IMPORTER_DIR;
                 exit(1);
             }
 
