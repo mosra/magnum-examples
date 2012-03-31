@@ -191,7 +191,7 @@ class ViewerExample: public AbstractExample {
 
 ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), wireframe(false), fps(false) {
     if(argc != 2) {
-        cout << "Usage: " << argv[0] << " file.dae" << endl;
+        Debug() << "Usage:" << argv[0] << "file.dae";
         exit(0);
     }
 
