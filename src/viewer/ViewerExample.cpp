@@ -181,6 +181,7 @@ class ViewerExample: public AbstractExample {
         PhongShader shader;
         Object* o;
         unordered_map<size_t, IndexedMesh*> meshes;
+        size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         chrono::high_resolution_clock::time_point before;
         bool wireframe, fps;
         size_t frames;
@@ -189,7 +190,7 @@ class ViewerExample: public AbstractExample {
         Vector3 previousPosition;
 };
 
-ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), wireframe(false), fps(false) {
+ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false), fps(false) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "file.dae";
         exit(0);
@@ -218,6 +219,8 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     camera->setPerspective(deg(35.0f), 0.001f, 100);
     camera->translate(Vector3::zAxis(5));
 
+    Debug() << "Opening file" << argv[1];
+
     /* Load file */
     if(!colladaImporter->open(argv[1]))
         exit(4);
@@ -231,12 +234,17 @@ ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv
     /* Default object, parent of all (for manipulation) */
     o = new Object(&scene);
 
+    Debug() << "Adding default scene...";
+
     /* Load the scene */
     SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
     for(size_t objectId: scene->children())
         addObject(colladaImporter.get(), o, materials, objectId);
+
+    Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
+    Debug() << "    " << vertexCount << "vertices and" << triangleCount << "triangles total.";
 
     /* Delete materials, as they are now unused */
     for(auto i: materials) delete i.second;
@@ -250,6 +258,8 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
     /* Only meshes for now */
     if(object->instanceType() == ObjectData::InstanceType::Mesh) {
+        ++objectCount;
+
         /* Use already processed mesh, if exists */
         IndexedMesh* mesh;
         auto found = meshes.find(object->instanceId());
@@ -257,12 +267,17 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
         /* Or create a new one */
         else {
+            ++meshCount;
+
             mesh = new IndexedMesh;
             meshes.insert(make_pair(object->instanceId(), mesh));
 
             MeshData* data = colladaImporter->mesh(object->instanceId());
             if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
                 exit(6);
+
+            vertexCount += data->vertices(0)->size();
+            triangleCount += data->indices()->size()/3;
 
             /* Optimize vertices */
             Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
@@ -285,6 +300,8 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
         /* Else get material or create default one */
         else {
+            ++materialCount;
+
             material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData*>(object)->material()));
             if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
         }
