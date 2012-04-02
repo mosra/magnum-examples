@@ -16,14 +16,16 @@
 #include "MotionBlurCamera.h"
 
 #include <sstream>
+
 #include "Utility/Resource.h"
+#include "Framebuffer.h"
 
 using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(Object* parent): Camera(parent), framebuffer(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(Object* parent): Camera(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(size_t i = 0; i != FrameCount; ++i) {
         frames[i] = new Texture2D(i);
         frames[i]->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge));
@@ -40,23 +42,23 @@ MotionBlurCamera::~MotionBlurCamera() {
 void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
     Camera::setViewport(size);
 
-    framebuffer.setDimensions(size, Buffer::Usage::DynamicDraw);
-
     /* Initialize previous frames with black color */
-    size_t textureSize = size.x()*size.y()*AbstractTexture::pixelSize(AbstractTexture::ColorFormat::RGB, Type::UnsignedByte);
+    size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(framebuffer.components(), framebuffer.type());
     GLubyte* texture = new GLubyte[textureSize]();
+    framebuffer.setData(size, framebuffer.components(), texture, Buffer::Usage::DynamicDraw);
+    delete texture;
+
     Buffer::unbind(Buffer::Target::PixelPack);
     for(size_t i = 0; i != FrameCount; ++i)
-        frames[i]->setData<GLubyte>(0, AbstractTexture::InternalFormat::RGB, size, framebuffer.colorFormat(), texture);
-    delete[] texture;
+        frames[i]->setData(0, AbstractTexture::Format::RGB, &framebuffer);
 }
 
 void MotionBlurCamera::draw() {
     Camera::draw();
 
-    framebuffer.setDataFromFramebuffer(Magnum::Math::Vector2<GLint>(0, 0));
+    Framebuffer::read({0, 0}, viewport(), framebuffer.components(), framebuffer.type(), &framebuffer, Buffer::Usage::DynamicDraw);
 
-    frames[currentFrame]->setData(0, AbstractTexture::InternalFormat::RGB, &framebuffer);
+    frames[currentFrame]->setData(0, AbstractTexture::Format::RGB, &framebuffer);
 
     canvas.draw(currentFrame);
     currentFrame = (currentFrame+1)%FrameCount;

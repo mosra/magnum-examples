@@ -38,7 +38,7 @@ TexturedTriangle::TexturedTriangle(Trade::ImageData2D* image, Object* parent): O
     mesh.bindAttribute<TexturedIdentityShader::TextureCoordinates>(buffer);
 
     /* Texture */
-    texture.setData(0, Texture2D::InternalFormat::RGB, image);
+    texture.setData(0, Texture2D::Format::RGB, image);
     texture.setMagnificationFilter(Texture2D::Filter::LinearInterpolation);
     texture.setMinificationFilter(Texture2D::Filter::LinearInterpolation);
     texture.setWrapping(Math::Vector2<AbstractTexture::Wrapping>(Texture2D::Wrapping::ClampToEdge, Texture2D::Wrapping::ClampToEdge));
