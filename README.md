@@ -9,6 +9,9 @@ see https://github.com/mosra/magnum . Featured examples:
  * **Cube Map** - Loads cube map texture to simulate open world and displays
    two reflecting spheres inside.
  * **Motion Blur** - Moving spheres with motion blur.
+ * **Framebuffer** - Demonstrates usage of multiple fragment shader outputs
+   and framebuffer operations for displaying different color-corrected
+   versions of the same image.
  * **Viewer** - Opens and displays COLLADA model.
 
 Each example has its own README, explaining the features and key/mouse
