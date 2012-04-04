@@ -6,8 +6,8 @@ see https://github.com/mosra/magnum . Featured examples:
    interpolated colors.
  * **Textured Triangle** - Loads texture and displays triangle with texture on
    it.
- * **Cube Map** - Loads cube map texture to simulate open world and displays
-   two reflecting spheres inside.
+ * **Cube Map** - Demonstrates usage of cube map textures and different
+   texture layers for simulation of open world.
  * **Motion Blur** - Moving spheres with motion blur.
  * **Framebuffer** - Demonstrates usage of multiple fragment shader outputs
    and framebuffer operations for displaying different color-corrected

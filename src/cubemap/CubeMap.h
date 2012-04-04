@@ -41,6 +41,7 @@ class CubeMap: public Object {
         IndexedMesh cube;
         CubeMapShader shader;
         CubeMapTexture texture;
+        Texture2D tarnishTexture;
         Reflector* reflector;
 };
 

@@ -30,6 +30,7 @@ ReflectionShader::ReflectionShader() {
     attachShader(fragmentShader);
 
     bindAttribute(Vertex::Location, "vertex");
+    bindAttribute(TextureCoords::Location, "textureCoords");
 
     link();
 
@@ -39,6 +40,7 @@ ReflectionShader::ReflectionShader() {
     reflectivityUniform = uniformLocation("reflectivity");
     diffuseColorUniform = uniformLocation("diffuseColor");
     textureUniform = uniformLocation("textureData");
+    tarnishTextureUniform = uniformLocation("tarnishTextureData");
 
     delete vertexShader;
     delete fragmentShader;

@@ -10,7 +10,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_resource(CubeMapData data
     CubeMapShader.vert CubeMapShader.frag
-    ReflectionShader.vert ReflectionShader.frag)
+    ReflectionShader.vert ReflectionShader.frag
+    tarnish.tga)
 
 add_executable(cubeMapExample
     CubeMapExample.cpp

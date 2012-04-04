@@ -24,6 +24,7 @@ namespace Magnum { namespace Examples {
 class ReflectionShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector4> Vertex;
+        typedef Attribute<1, Vector2> TextureCoords;
 
         ReflectionShader();
 
@@ -51,13 +52,18 @@ class ReflectionShader: public AbstractShaderProgram {
             setUniform(textureUniform, texture);
         }
 
+        void setTarnishTextureUniform(const Texture2D* texture) {
+            setUniform(tarnishTextureUniform, texture);
+        }
+
     private:
         GLint modelViewMatrixUniform,
             projectionMatrixUniform,
             cameraMatrixUniform,
             reflectivityUniform,
             diffuseColorUniform,
-            textureUniform;
+            textureUniform,
+            tarnishTextureUniform;
 };
 
 }}

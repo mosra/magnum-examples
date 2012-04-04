@@ -33,7 +33,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
+CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
     Primitives::Cube cubeData;
     Buffer* buffer = cube.addBuffer(false);
     buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
@@ -74,12 +74,23 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     texture.setWrapping(Math::Vector2<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge));
     texture.generateMipmap();
 
-    reflector = new Reflector(&texture, scene());
+    /* Tarnish texture */
+    Resource rs("data");
+    std::istringstream in(rs.get("tarnish.tga"));
+    importer->open(in);
+    tarnishTexture.setData(0, AbstractTexture::Format::RGB, importer->image2D(0));
+    tarnishTexture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
+    tarnishTexture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
+    tarnishTexture.setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge});
+    tarnishTexture.generateMipmap();
+
+    reflector = new Reflector(&texture, &tarnishTexture, scene());
     reflector->scale(0.5f);
     reflector->translate(Vector3::xAxis(-0.5f));
 
-    reflector = new Reflector(&texture, scene());
+    reflector = new Reflector(&texture, &tarnishTexture, scene());
     reflector->scale(0.3f);
+    reflector->rotate(deg(37.0f), Vector3::xAxis());
     reflector->translate(Vector3::xAxis(0.3f));
 }
 

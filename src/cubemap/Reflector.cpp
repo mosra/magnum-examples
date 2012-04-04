@@ -17,19 +17,21 @@
 
 #include "CubeMapTexture.h"
 #include "Camera.h"
-#include "Primitives/Icosphere.h"
+#include "Primitives/UVSphere.h"
 #include "MeshTools/CompressIndices.h"
+#include "MeshTools/Interleave.h"
 
 #include "ReflectionShader.h"
 
 namespace Magnum { namespace Examples {
 
-Reflector::Reflector(CubeMapTexture* texture, Object* parent): Object(parent), texture(texture) {
-    Buffer* buffer = sphere.addBuffer(false);
-    Primitives::Icosphere<5> sphereData;
-    buffer->setData(*sphereData.vertices(0), Buffer::Usage::StaticDraw);
+Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent): Object(parent), texture(texture), tarnishTexture(tarnishTexture) {
+    Buffer* buffer = sphere.addBuffer(true);
+    Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
+    MeshTools::interleave(&sphere, buffer, Buffer::Usage::StaticDraw, *sphereData.vertices(0), *sphereData.textureCoords2D(0));
     sphere.setVertexCount(sphereData.vertices(0)->size());
     sphere.bindAttribute<ReflectionShader::Vertex>(buffer);
+    sphere.bindAttribute<ReflectionShader::TextureCoords>(buffer);
     MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
 }
 
@@ -44,6 +46,7 @@ void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader()->setDiffuseColorUniform(Vector3(0.3f, 0.3f, 0.3f));
     shader()->setCameraMatrixUniform(cameraMatrix);
     shader()->setTextureUniform(texture);
+    shader()->setTarnishTextureUniform(tarnishTexture);
     sphere.draw();
 }
 
