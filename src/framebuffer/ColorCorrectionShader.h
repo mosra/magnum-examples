@@ -36,11 +36,11 @@ class ColorCorrectionShader: public AbstractShaderProgram {
             setUniform(matrixUniform, matrix);
         }
 
-        inline void setTextureUniform(Texture2D* texture) {
+        inline void setTextureUniform(const Texture2D* texture) {
             setUniform(textureUniform, texture);
         }
 
-        inline void setCorrectionTextureUniform(BufferedTexture* texture) {
+        inline void setCorrectionTextureUniform(const BufferedTexture* texture) {
             setUniform(correctionTextureUniform, texture);
         }
 
