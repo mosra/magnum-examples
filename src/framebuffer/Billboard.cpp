@@ -14,21 +14,18 @@
 */
 
 #include "Billboard.h"
+
 #include "Buffer.h"
 #include "Camera.h"
+#include "Primitives/Plane.h"
 
 namespace Magnum { namespace Examples {
 
 Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), colorCorrectionTexture(1) {
-    const Vector4 vertices[] = {
-        {1.0f, -1.0f, 0.0f},
-        {1.0f, 1.0f, 0.0f},
-        {-1.0f, -1.0f, 0.0f},
-        {-1.0f, 1.0f, 0.0f}
-    };
+    Primitives::Plane plane;
 
     Buffer* buffer = mesh.addBuffer(false);
-    buffer->setData(sizeof(vertices), vertices, Buffer::Usage::StaticDraw);
+    buffer->setData(*plane.vertices(0), Buffer::Usage::StaticDraw);
     mesh.bindAttribute<ColorCorrectionShader::Vertex>(buffer);
 
     texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder});
