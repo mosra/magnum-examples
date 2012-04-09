@@ -93,6 +93,7 @@ class ViewerExample: public FpsCounterExample {
 
                     setFpsCounterEnabled(!fpsCounterEnabled());
                     break;
+                default: break;
             }
 
             redraw();
