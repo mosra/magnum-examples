@@ -131,7 +131,7 @@ class AbstractExample {
          * Marks the window for redrawing, resulting in call of drawEvent()
          * in the next iteration.
          */
-        inline void redraw() {
+        virtual inline void redraw() {
             glutPostRedisplay();
         }
 
