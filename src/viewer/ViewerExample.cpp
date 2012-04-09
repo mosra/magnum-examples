@@ -13,8 +13,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <iostream>
-#include <chrono>
 #include <memory>
 #include <unordered_map>
 
@@ -30,7 +28,7 @@
 #include "MeshTools/CompressIndices.h"
 #include "Shaders/PhongShader.h"
 
-#include "AbstractExample.h"
+#include "FpsCounterExample.h"
 #include "ViewedObject.h"
 #include "configure.h"
 
@@ -44,7 +42,7 @@ using namespace Magnum::Examples;
 
 namespace Magnum { namespace Examples {
 
-class ViewerExample: public AbstractExample {
+class ViewerExample: public FpsCounterExample {
     public:
         ViewerExample(int& argc, char** argv);
 
@@ -55,29 +53,14 @@ class ViewerExample: public AbstractExample {
     protected:
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
             camera->setViewport(size);
+            FpsCounterExample::viewportEvent(size);
         }
 
         void drawEvent() {
-            if(fps) {
-                chrono::high_resolution_clock::time_point now = chrono::high_resolution_clock::now();
-                double duration = chrono::duration<double>(now-before).count();
-                if(duration > 3.5) {
-                    cout << frames << " frames in " << duration << " sec: "
-                        << frames/duration << " FPS         \r";
-                    cout.flush();
-                    totalfps += frames/duration;
-                    before = now;
-                    frames = 0;
-                    ++totalmeasurecount;
-                }
-            }
             camera->draw();
             swapBuffers();
 
-            if(fps) {
-                ++frames;
-                redraw();
-            }
+            if(fpsCounterEnabled()) redraw();
         }
 
         void keyEvent(Key key, const Math::Vector2<int>& position) {
@@ -105,15 +88,10 @@ class ViewerExample: public AbstractExample {
                     wireframe = !wireframe;
                     break;
                 case Key::End:
-                    if(fps) cout << "Average FPS on " << camera->viewport().x()
-                        << 'x' << camera->viewport().y() << " from "
-                        << totalmeasurecount << " measures: "
-                        << totalfps/totalmeasurecount << "          " << endl;
-                    else before = chrono::high_resolution_clock::now();
+                    if(fpsCounterEnabled()) printCounterStatistics();
+                    else resetCounter();
 
-                    fps = !fps;
-                    frames = totalmeasurecount = 0;
-                    totalfps = 0;
+                    setFpsCounterEnabled(!fpsCounterEnabled());
                     break;
             }
 
@@ -182,15 +160,11 @@ class ViewerExample: public AbstractExample {
         Object* o;
         unordered_map<size_t, IndexedMesh*> meshes;
         size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
-        chrono::high_resolution_clock::time_point before;
-        bool wireframe, fps;
-        size_t frames;
-        double totalfps;
-        size_t totalmeasurecount;
+        bool wireframe;
         Vector3 previousPosition;
 };
 
-ViewerExample::ViewerExample(int& argc, char** argv): AbstractExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false), fps(false) {
+ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "file.dae";
         exit(0);
