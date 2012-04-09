@@ -14,6 +14,7 @@ endif()
 
 add_subdirectory(cubemap)
 add_subdirectory(framebuffer)
+add_subdirectory(benchmark)
 add_subdirectory(motionblur)
 add_subdirectory(triangle)
 add_subdirectory(texturedTriangle)
