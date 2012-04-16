@@ -110,7 +110,7 @@ class ViewerExample: public FpsCounterExample {
                     if(state == MouseState::Up) return;
 
                     /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = camera->transformation().at(3).z()-0-camera->near();
+                    GLfloat distance = camera->transformation()[3].z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
                     if(button == MouseButton::WheelUp)
@@ -133,7 +133,7 @@ class ViewerExample: public FpsCounterExample {
 
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-            GLfloat angle = acos(previousPosition*currentPosition);
+            GLfloat angle = acos(Vector3::dot(previousPosition, currentPosition));
             o->rotate(angle, axis);
 
             previousPosition = currentPosition;

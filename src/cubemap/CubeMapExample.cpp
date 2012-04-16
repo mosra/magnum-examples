@@ -68,13 +68,13 @@ class CubeMapExample: public AbstractExample {
 
         void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {
             if(key == Key::Up)
-                camera->rotate(deg(-10.0f), camera->transformation().at(0).xyz(), true);
+                camera->rotate(deg(-10.0f), camera->transformation()[0].xyz(), true);
 
             if(key == Key::Down)
-                camera->rotate(deg(10.0f), camera->transformation().at(0).xyz(), true);
+                camera->rotate(deg(10.0f), camera->transformation()[0].xyz(), true);
 
             if(key == Key::Left || key == Key::Right) {
-                GLfloat yTransform = camera->transformation().at(2, 3);
+                GLfloat yTransform = camera->transformation()[3][2];
                 camera->translate(Vector3::yAxis(-yTransform));
                 if(key == Key::Left)
                     camera->rotate(deg(10.0f), Vector3::yAxis(), true);
