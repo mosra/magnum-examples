@@ -41,7 +41,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     cube.bindAttribute<CubeMapShader::Vertex>(buffer);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
-    scale(20.0f);
+    scale(Vector3(20.0f));
 
     /* Textures */
     Trade::ImageData2D* image;
@@ -85,11 +85,11 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     tarnishTexture.generateMipmap();
 
     reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(0.5f);
+    reflector->scale(Vector3(0.5f));
     reflector->translate(Vector3::xAxis(-0.5f));
 
     reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(0.3f);
+    reflector->scale(Vector3(0.3f));
     reflector->rotate(deg(37.0f), Vector3::xAxis());
     reflector->translate(Vector3::xAxis(0.3f));
 }

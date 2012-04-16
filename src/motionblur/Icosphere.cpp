@@ -22,7 +22,7 @@
 namespace Magnum { namespace Examples {
 
 Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object* parent): Object(parent), mesh(mesh), shader(shader), color(color) {
-    scale(0.1f);
+    scale(Vector3(0.1f));
 }
 
 void Icosphere::draw(const Matrix4& transformationMatrix, Camera* camera) {

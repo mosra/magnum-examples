@@ -77,9 +77,9 @@ class FramebufferExample: public AbstractExample {
 
         void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {
             if(button == MouseButton::WheelUp)
-                billboard->scale(5.0f/4);
+                billboard->scale(Vector3(5.0f/4));
             else if(button == MouseButton::WheelDown)
-                billboard->scale(4.0f/5);
+                billboard->scale(Vector3(4.0f/5));
 
             previous = position;
             redraw();
