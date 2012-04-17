@@ -102,6 +102,11 @@ class AbstractExample {
             glutSetCursor(static_cast<int>(cursor));
         }
 
+        /** @brief Warp mouse cursor to given coordinates */
+        inline void warpMouseCursor(const Math::Vector2<GLsizei>& position) {
+            glutWarpPointer(position.x(), position.y());
+        }
+
         /** @brief Execute the main loop */
         inline int exec() {
             glutMainLoop();
