@@ -81,6 +81,16 @@ class AbstractExample {
         /** @brief Destructor */
         virtual inline ~AbstractExample() {}
 
+        /**
+         * @brief Enable or disable mouse tracking
+         *
+         * When mouse tracking is enabled, mouseMoveEvent() is called even
+         * when no button is pressed. Mouse tracking is disabled by default.
+         */
+        inline void setMouseTracking(bool enabled) {
+            glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
+        }
+
         /** @brief Execute the main loop */
         inline int exec() {
             glutMainLoop();
@@ -116,6 +126,8 @@ class AbstractExample {
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
+         *
+         * @see setMouseTracking()
          */
         virtual inline void mouseMoveEvent(const Math::Vector2<int>& position) {}
 
