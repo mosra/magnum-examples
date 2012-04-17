@@ -69,6 +69,12 @@ class AbstractExample {
             Down = GLUT_DOWN                /**< Button pressed */
         };
 
+        /** @brief Mouse cursor */
+        enum class MouseCursor: int {
+            Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
+            None = GLUT_CURSOR_NONE         /**< No cursor */
+        };
+
         /**
          * @brief Constructor
          * @param argc      Count of arguments of <tt>main()</tt> function
@@ -89,6 +95,11 @@ class AbstractExample {
          */
         inline void setMouseTracking(bool enabled) {
             glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
+        }
+
+        /** @brief Set mouse cursor */
+        inline void setMouseCursor(MouseCursor cursor) {
+            glutSetCursor(static_cast<int>(cursor));
         }
 
         /** @brief Execute the main loop */
