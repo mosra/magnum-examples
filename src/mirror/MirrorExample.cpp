@@ -13,8 +13,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <functional>
 #include "Scene.h"
 #include "Camera.h"
+#include "MeshTools/GenerateFlatNormals.h"
+#include "MeshTools/CombineIndexedArrays.h"
 #include "Primitives/Cube.h"
 #include "Primitives/Icosphere.h"
 #include "Primitives/Capsule.h"
@@ -26,6 +29,7 @@
 #include "Player.h"
 #include "PointLight.h"
 
+using namespace std;
 using namespace Corrade::Utility;
 using namespace Magnum;
 using namespace Magnum::Shaders;
@@ -43,11 +47,24 @@ class MirrorExample: public FpsCounterExample {
                 ->scale(Vector3(50.0f))->translate(Vector3::yAxis(-1.0f));
 
             /* Cube */
-            (new Solid(Primitives::Cube(), &shader, light, {0.0f, 0.0f, 0.8f}, &scene))
+            Primitives::Cube cube;
+            vector<unsigned int> normalIndices;
+            tie(normalIndices, *cube.normals(0)) = MeshTools::generateFlatNormals(*cube.indices(), *cube.vertices(0));
+            *cube.indices() = MeshTools::combineIndexedArrays(
+                make_tuple(cref(*cube.indices()), ref(*cube.vertices(0))),
+                make_tuple(cref(normalIndices), ref(*cube.normals(0)))
+            );
+            (new Solid(cube, &shader, light, {0.0f, 0.0f, 0.8f}, &scene))
                 ->translate({3.5f, 0.0f, -3.0f});
 
             /* Icosphere */
-            (new Solid(Primitives::Icosphere<0>(), &shader, light, {0.0f, 0.5f, 0.0f}, &scene))
+            Primitives::Icosphere<0> icosphere;
+            tie(normalIndices, *icosphere.normals(0)) = MeshTools::generateFlatNormals(*icosphere.indices(), *icosphere.vertices(0));
+            *icosphere.indices() = MeshTools::combineIndexedArrays(
+                make_tuple(cref(*icosphere.indices()), ref(*icosphere.vertices(0))),
+                make_tuple(cref(normalIndices), ref(*icosphere.normals(0)))
+            );
+            (new Solid(icosphere, &shader, light, {0.0f, 0.5f, 0.0f}, &scene))
                 ->scale(Vector3(1.5f))->translate({-2.5f, 0.0f, -2.5f});
 
             /* Player */
