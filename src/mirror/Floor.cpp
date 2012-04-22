@@ -38,7 +38,7 @@ Floor::Floor(PhongShader* shader, PointLight* light, Object* parent): Object(par
 
 void Floor::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader->use();
-    shader->setLightUniform((camera->cameraMatrix()*light->position()).xyz());
+    shader->setLightUniform(light->position(camera));
     shader->setLightAmbientColorUniform(light->ambientColor());
     shader->setLightDiffuseColorUniform(light->diffuseColor());
     shader->setLightSpecularColorUniform(light->specularColor());

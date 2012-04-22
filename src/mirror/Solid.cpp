@@ -36,7 +36,7 @@ Solid::Solid(const Trade::MeshData& data, Shaders::PhongShader* shader, PointLig
 
 void Solid::draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
     shader->use();
-    shader->setLightUniform((camera->cameraMatrix()*light->position()).xyz());
+    shader->setLightUniform(light->position(camera));
     shader->setLightAmbientColorUniform(light->ambientColor());
     shader->setLightDiffuseColorUniform(light->diffuseColor());
     shader->setLightSpecularColorUniform(light->specularColor());
