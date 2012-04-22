@@ -155,7 +155,7 @@ class MirrorExample: public FpsCounterExample {
             if(grabMouse)
                 warpMouseCursor(player->camera()->viewport()/2);
 
-            sleep(5);
+            Corrade::Utility::sleep(5);
             redraw();
         }
 
