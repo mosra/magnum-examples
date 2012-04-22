@@ -87,8 +87,8 @@ class FramebufferExample: public AbstractExample {
 
         void mouseMoveEvent(const Math::Vector2<int>& position) {
             Math::Vector2<int> delta = position-previous;
-            billboard->translate({static_cast<GLfloat>(delta.x())/camera->viewport().x(),
-                                  -static_cast<GLfloat>(delta.y())/camera->viewport().y(),
+            billboard->translate({GLfloat(delta.x())/camera->viewport().x(),
+                                 -GLfloat(delta.y())/camera->viewport().y(),
                                   0});
             previous = position;
             redraw();
