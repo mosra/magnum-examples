@@ -24,6 +24,7 @@
 #include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
+#include "MeshTools/FlipNormals.h"
 #include "MeshTools/CompressIndices.h"
 
 #include "Reflector.h"
@@ -35,6 +36,7 @@ namespace Magnum { namespace Examples {
 
 CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
     Primitives::Cube cubeData;
+    MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(false);
     buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
     cube.setVertexCount(cubeData.vertices(0)->size());

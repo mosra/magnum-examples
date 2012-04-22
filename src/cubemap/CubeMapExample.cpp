@@ -31,7 +31,8 @@ namespace Magnum { namespace Examples {
 class CubeMapExample: public AbstractExample {
     public:
         CubeMapExample(int& argc, char** argv): AbstractExample(argc, argv, "Cube map example") {
-            scene.setFeature(Magnum::Scene::DepthTest, true);
+            scene.setFeature(Scene::DepthTest, true);
+            scene.setFeature(Scene::FaceCulling, true);
 
             /* Every scene needs a camera */
             camera = new Camera(&scene);
