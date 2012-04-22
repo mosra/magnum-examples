@@ -188,6 +188,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     }
 
     scene.setFeature(Scene::DepthTest, true);
+    scene.setFeature(Scene::FaceCulling, true);
 
     /* Every scene needs a camera */
     camera = new Camera(&scene);

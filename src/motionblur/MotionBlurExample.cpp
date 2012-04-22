@@ -33,6 +33,8 @@ class MotionBlurExample: public AbstractExample {
     public:
         MotionBlurExample(int& argc, char** argv): AbstractExample(argc, argv, "Motion blur example") {
             scene.setFeature(Scene::DepthTest, true);
+            scene.setFeature(Scene::FaceCulling, true);
+
             camera = new MotionBlurCamera(&scene);
             camera->setClearColor({0.1f, 0.1f, 0.1f});
             camera->setPerspective(deg(35.0f), 0.001f, 100);
