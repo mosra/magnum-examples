@@ -130,6 +130,7 @@ class MirrorExample: public FpsCounterExample {
                 ->scale({1.0f, 1.2f, 0.02f})->rotate(deg(-45.0f), Vector3::xAxis())->translate({0.0f, -0.2f, 1.2f});
 
             scene.setFeature(Scene::DepthTest, true);
+            scene.setFeature(Scene::FaceCulling, true);
 
             /* Grab mouse and hide cursor */
             grabMouse = true;
