@@ -31,11 +31,12 @@ namespace Magnum { namespace Examples {
 class CubeMapExample: public AbstractExample {
     public:
         CubeMapExample(int& argc, char** argv): AbstractExample(argc, argv, "Cube map example") {
-            scene.setFeature(Magnum::Scene::DepthTest, true);
+            scene.setFeature(Scene::DepthTest, true);
+            scene.setFeature(Scene::FaceCulling, true);
 
             /* Every scene needs a camera */
             camera = new Camera(&scene);
-            camera->setPerspective(deg(75), 0.001f, 100);
+            camera->setPerspective(deg(55.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3));
 
             /* Load TGA importer plugin */
@@ -68,18 +69,18 @@ class CubeMapExample: public AbstractExample {
 
         void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {
             if(key == Key::Up)
-                camera->rotate(deg(-10.0f), camera->transformation().at(0).xyz(), true);
+                camera->rotate(deg(-10.0f), camera->transformation()[0].xyz());
 
             if(key == Key::Down)
-                camera->rotate(deg(10.0f), camera->transformation().at(0).xyz(), true);
+                camera->rotate(deg(10.0f), camera->transformation()[0].xyz());
 
             if(key == Key::Left || key == Key::Right) {
-                GLfloat yTransform = camera->transformation().at(2, 3);
+                GLfloat yTransform = camera->transformation()[3][2];
                 camera->translate(Vector3::yAxis(-yTransform));
                 if(key == Key::Left)
-                    camera->rotate(deg(10.0f), Vector3::yAxis(), true);
+                    camera->rotate(deg(10.0f), Vector3::yAxis());
                 else
-                    camera->rotate(deg(-10.0f), Vector3::yAxis(), true);
+                    camera->rotate(deg(-10.0f), Vector3::yAxis());
                 camera->translate(Vector3::yAxis(yTransform));
             }
 

@@ -24,6 +24,7 @@
 #include "Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
+#include "MeshTools/FlipNormals.h"
 #include "MeshTools/CompressIndices.h"
 
 #include "Reflector.h"
@@ -35,13 +36,14 @@ namespace Magnum { namespace Examples {
 
 CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
     Primitives::Cube cubeData;
+    MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(false);
     buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
     cube.setVertexCount(cubeData.vertices(0)->size());
     cube.bindAttribute<CubeMapShader::Vertex>(buffer);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
-    scale(20.0f);
+    scale(Vector3(20.0f));
 
     /* Textures */
     Trade::ImageData2D* image;
@@ -85,11 +87,11 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     tarnishTexture.generateMipmap();
 
     reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(0.5f);
+    reflector->scale(Vector3(0.5f));
     reflector->translate(Vector3::xAxis(-0.5f));
 
     reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(0.3f);
+    reflector->scale(Vector3(0.3f));
     reflector->rotate(deg(37.0f), Vector3::xAxis());
     reflector->translate(Vector3::xAxis(0.3f));
 }

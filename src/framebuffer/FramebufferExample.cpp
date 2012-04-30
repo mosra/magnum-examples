@@ -56,7 +56,7 @@ class FramebufferExample: public AbstractExample {
             GLfloat texture[1024];
             for(size_t i = 0; i != 1024; ++i) {
                 GLfloat x = i*2/1023.0-1;
-                texture[i] = (sin(x*PI)/3.7+x+1)/2;
+                texture[i] = (sin(x*Math::Constants<float>::Pi)/3.7f+x+1)/2;
             }
             colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
@@ -77,9 +77,9 @@ class FramebufferExample: public AbstractExample {
 
         void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {
             if(button == MouseButton::WheelUp)
-                billboard->scale(5.0f/4);
+                billboard->scale(Vector3(5.0f/4));
             else if(button == MouseButton::WheelDown)
-                billboard->scale(4.0f/5);
+                billboard->scale(Vector3(4.0f/5));
 
             previous = position;
             redraw();
@@ -87,8 +87,8 @@ class FramebufferExample: public AbstractExample {
 
         void mouseMoveEvent(const Math::Vector2<int>& position) {
             Math::Vector2<int> delta = position-previous;
-            billboard->translate({static_cast<GLfloat>(delta.x())/camera->viewport().x(),
-                                  -static_cast<GLfloat>(delta.y())/camera->viewport().y(),
+            billboard->translate({GLfloat(delta.x())/camera->viewport().x(),
+                                 -GLfloat(delta.y())/camera->viewport().y(),
                                   0});
             previous = position;
             redraw();

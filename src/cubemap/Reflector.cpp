@@ -41,7 +41,7 @@ void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader()->setModelViewMatrixUniform(transformationMatrix);
     shader()->setProjectionMatrixUniform(camera->projectionMatrix());
     Matrix4 cameraMatrix = camera->absoluteTransformation();
-    cameraMatrix.set(3, Vector4());
+    cameraMatrix[3] = Vector4();
     shader()->setReflectivityUniform(2.0f);
     shader()->setDiffuseColorUniform(Vector3(0.3f, 0.3f, 0.3f));
     shader()->setCameraMatrixUniform(cameraMatrix);

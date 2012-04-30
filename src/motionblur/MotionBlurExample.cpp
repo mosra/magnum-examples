@@ -33,6 +33,8 @@ class MotionBlurExample: public AbstractExample {
     public:
         MotionBlurExample(int& argc, char** argv): AbstractExample(argc, argv, "Motion blur example") {
             scene.setFeature(Scene::DepthTest, true);
+            scene.setFeature(Scene::FaceCulling, true);
+
             camera = new MotionBlurCamera(&scene);
             camera->setClearColor({0.1f, 0.1f, 0.1f});
             camera->setPerspective(deg(35.0f), 0.001f, 100);
@@ -53,30 +55,30 @@ class MotionBlurExample: public AbstractExample {
             i->translate(Vector3::yAxis(0.25f));
             i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
             i->translate(Vector3::yAxis(0.25f));
-            i->rotate(deg(120), Vector3::zAxis());
+            i->rotate(deg(120.0f), Vector3::zAxis());
             i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
             i->translate(Vector3::yAxis(0.25f));
-            i->rotate(deg(240), Vector3::zAxis());
+            i->rotate(deg(240.0f), Vector3::zAxis());
 
             spheres[1] = new Object(&scene);
             i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
             i->translate(Vector3::yAxis(0.50f));
             i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
             i->translate(Vector3::yAxis(0.50f));
-            i->rotate(deg(120), Vector3::zAxis());
+            i->rotate(deg(120.0f), Vector3::zAxis());
             i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
             i->translate(Vector3::yAxis(0.50f));
-            i->rotate(deg(240), Vector3::zAxis());
+            i->rotate(deg(240.0f), Vector3::zAxis());
 
             spheres[2] = new Object(&scene);
             i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
             i->translate(Vector3::yAxis(0.75f));
             i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
             i->translate(Vector3::yAxis(0.75f));
-            i->rotate(deg(120), Vector3::zAxis());
+            i->rotate(deg(120.0f), Vector3::zAxis());
             i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
             i->translate(Vector3::yAxis(0.75f));
-            i->rotate(deg(240), Vector3::zAxis());
+            i->rotate(deg(240.0f), Vector3::zAxis());
         }
 
     protected:

@@ -72,16 +72,16 @@ class ViewerExample: public FpsCounterExample {
                     o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
                 case Key::Left:
-                    o->rotate(deg(10.0f), Vector3::yAxis(-1), false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(-1), Object::Transformation::Local);
                     break;
                 case Key::Right:
-                    o->rotate(deg(10.0f), Vector3::yAxis(1), false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(1), Object::Transformation::Local);
                     break;
                 case Key::PageUp:
-                    camera->translate(Vector3::zAxis(-0.5), false);
+                    camera->translate(Vector3::zAxis(-0.5), Object::Transformation::Local);
                     break;
                 case Key::PageDown:
-                    camera->translate(Vector3::zAxis(0.5), false);
+                    camera->translate(Vector3::zAxis(0.5), Object::Transformation::Local);
                     break;
                 case Key::Home:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
@@ -110,14 +110,14 @@ class ViewerExample: public FpsCounterExample {
                     if(state == MouseState::Up) return;
 
                     /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = camera->transformation().at(3).z()-0-camera->near();
+                    GLfloat distance = camera->transformation()[3].z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
                     if(button == MouseButton::WheelUp)
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(Vector3::zAxis(distance), false);
+                    camera->translate(Vector3::zAxis(distance), Object::Transformation::Local);
 
                     redraw();
                     break;
@@ -133,7 +133,7 @@ class ViewerExample: public FpsCounterExample {
 
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-            GLfloat angle = acos(previousPosition*currentPosition);
+            GLfloat angle = acos(Vector3::dot(previousPosition, currentPosition));
             o->rotate(angle, axis);
 
             previousPosition = currentPosition;
@@ -188,6 +188,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     }
 
     scene.setFeature(Scene::DepthTest, true);
+    scene.setFeature(Scene::FaceCulling, true);
 
     /* Every scene needs a camera */
     camera = new Camera(&scene);

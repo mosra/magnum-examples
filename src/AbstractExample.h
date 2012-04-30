@@ -69,6 +69,12 @@ class AbstractExample {
             Down = GLUT_DOWN                /**< Button pressed */
         };
 
+        /** @brief Mouse cursor */
+        enum class MouseCursor: int {
+            Default = GLUT_CURSOR_INHERIT,  /**< Default cursor provided by parent window */
+            None = GLUT_CURSOR_NONE         /**< No cursor */
+        };
+
         /**
          * @brief Constructor
          * @param argc      Count of arguments of <tt>main()</tt> function
@@ -80,6 +86,26 @@ class AbstractExample {
 
         /** @brief Destructor */
         virtual inline ~AbstractExample() {}
+
+        /**
+         * @brief Enable or disable mouse tracking
+         *
+         * When mouse tracking is enabled, mouseMoveEvent() is called even
+         * when no button is pressed. Mouse tracking is disabled by default.
+         */
+        inline void setMouseTracking(bool enabled) {
+            glutPassiveMotionFunc(enabled ? staticMouseMoveEvent : nullptr);
+        }
+
+        /** @brief Set mouse cursor */
+        inline void setMouseCursor(MouseCursor cursor) {
+            glutSetCursor(static_cast<int>(cursor));
+        }
+
+        /** @brief Warp mouse cursor to given coordinates */
+        inline void warpMouseCursor(const Math::Vector2<GLsizei>& position) {
+            glutWarpPointer(position.x(), position.y());
+        }
 
         /** @brief Execute the main loop */
         inline int exec() {
@@ -116,6 +142,8 @@ class AbstractExample {
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
+         *
+         * @see setMouseTracking()
          */
         virtual inline void mouseMoveEvent(const Math::Vector2<int>& position) {}
 
