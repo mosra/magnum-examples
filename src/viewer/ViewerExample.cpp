@@ -72,16 +72,16 @@ class ViewerExample: public FpsCounterExample {
                     o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
                 case Key::Left:
-                    o->rotate(deg(10.0f), Vector3::yAxis(-1), false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(-1), Object::Transformation::Local);
                     break;
                 case Key::Right:
-                    o->rotate(deg(10.0f), Vector3::yAxis(1), false);
+                    o->rotate(deg(10.0f), Vector3::yAxis(1), Object::Transformation::Local);
                     break;
                 case Key::PageUp:
-                    camera->translate(Vector3::zAxis(-0.5), false);
+                    camera->translate(Vector3::zAxis(-0.5), Object::Transformation::Local);
                     break;
                 case Key::PageDown:
-                    camera->translate(Vector3::zAxis(0.5), false);
+                    camera->translate(Vector3::zAxis(0.5), Object::Transformation::Local);
                     break;
                 case Key::Home:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
@@ -117,7 +117,7 @@ class ViewerExample: public FpsCounterExample {
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(Vector3::zAxis(distance), false);
+                    camera->translate(Vector3::zAxis(distance), Object::Transformation::Local);
 
                     redraw();
                     break;
