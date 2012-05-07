@@ -27,7 +27,7 @@ namespace Examples {
 
 class Reflector: public Object {
     public:
-        Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent = 0);
+        Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent = nullptr);
 
         void draw(const Matrix4& transformationMatrix, Camera* camera);
 
