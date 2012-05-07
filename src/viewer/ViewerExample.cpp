@@ -84,7 +84,7 @@ class ViewerExample: public FpsCounterExample {
                     camera->translate(Vector3::zAxis(0.5), Object::Transformation::Local);
                     break;
                 case Key::Home:
-                    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
+                    Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
                     wireframe = !wireframe;
                     break;
                 case Key::End:

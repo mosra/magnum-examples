@@ -33,7 +33,7 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
     texture.setMinificationFilter(AbstractTexture::Filter::LinearInterpolation);
     texture.setData(0, AbstractTexture::Format::RGBA, image);
 
-    colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red, BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
+    colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
 
     scale({1, GLfloat(image->dimensions()[1])/image->dimensions()[0], 1});
 }

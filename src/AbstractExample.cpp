@@ -40,7 +40,8 @@ AbstractExample::AbstractExample(int& argc, char** argv, const std::string& name
     /* Init GLEW */
     GLenum err = glewInit();
     if(err != GLEW_OK) {
-        Error() << "AbstractExample: cannot initialize GLEW: " << glewGetErrorString(err);
+        Error() << "AbstractExample: cannot initialize GLEW:" << glewGetErrorString(err);
+        exit(1);
     }
 }
 
