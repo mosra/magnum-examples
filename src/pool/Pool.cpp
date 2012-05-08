@@ -13,7 +13,7 @@ class Pool: public AbstractExample {
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
             camera->setClearColor(Vector3(0.6f));
-            camera->translate({0.0f, 0.25f, 3.0f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(45.0f), Vector3::yAxis());
+            camera->translate({0.0f, 0.0f, 3.5f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(25.0f), Vector3::yAxis());
 
             /* Add triangle to the scene */
             new Quad(&scene);
@@ -35,9 +35,9 @@ class Pool: public AbstractExample {
             else if(key == Key::Right)
                 camera->rotate(deg(-5.0f), Vector3::yAxis());
             else if(key == Key::Up)
-                camera->translate(Vector3::zAxis(-0.3f), Object::Transformation::Local);
+                camera->rotate(deg(-5.0f), camera->transformation()[0].xyz());
             else if(key == Key::Down)
-                camera->translate(Vector3::zAxis(0.3f), Object::Transformation::Local);
+                camera->rotate(deg(5.0f), camera->transformation()[0].xyz());
 
             redraw();
         }
