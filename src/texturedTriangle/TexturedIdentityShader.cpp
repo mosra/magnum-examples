@@ -23,11 +23,8 @@ namespace Magnum { namespace Examples {
 
 TexturedIdentityShader::TexturedIdentityShader() {
     Resource rs("data");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("TexturedIdentityShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("TexturedIdentityShader.frag"));
-
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("TexturedIdentityShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("TexturedIdentityShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
     bindAttribute(TextureCoordinates::Location, "textureCoordinates");
@@ -35,9 +32,6 @@ TexturedIdentityShader::TexturedIdentityShader() {
     link();
 
     textureUniform = uniformLocation("textureData");
-
-    delete vertexShader;
-    delete fragmentShader;
 }
 
 }}

@@ -24,19 +24,13 @@ namespace Magnum { namespace Examples {
 IdentityShader::IdentityShader() {
     Resource rs("shader");
 
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("IdentityShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("IdentityShader.frag"));
-
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("IdentityShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("IdentityShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
     bindAttribute(Color::Location, "color");
 
     link();
-
-    delete vertexShader;
-    delete fragmentShader;
 }
 
 }}
