@@ -4,9 +4,10 @@
 #include <Image.h>
 #include <Light.h>
 
+using namespace std;
 using namespace Magnum;
 
-Quad::Quad(Light* light, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), light(light) {
+Quad::Quad(const array<Light*, PoolShader::LightCount>& lights, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), lights(lights) {
     /* Generate radial gradient */
     static const unsigned int size = 32;
 
@@ -40,6 +41,9 @@ void Quad::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.setProjectionMatrixUniform(camera->projectionMatrix());
     shader.setCameraDirectionUniform(-(camera->transformation()*Vector4()).xyz());
     shader.setDiffuseTextureUniform(&diffuse);
-    shader.setLightPositionUniform(light->transformation()[3].xyz());
+
+    for(size_t i = 0; i != PoolShader::LightCount; ++i)
+        shader.setLightPositionUniform(i, lights[i]->transformation()[3].xyz());
+
     mesh.draw();
 }

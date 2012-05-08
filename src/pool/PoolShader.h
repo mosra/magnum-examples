@@ -6,6 +6,8 @@
 
 class PoolShader: public Magnum::AbstractShaderProgram {
     public:
+        static const unsigned int LightCount = 5;
+
         PoolShader();
 
         inline void setTransformationMatrixUniform(const Magnum::Matrix4& matrix) {
@@ -24,16 +26,17 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             setUniform(diffuseTextureUniform, texture);
         }
 
-        inline void setLightPositionUniform(const Magnum::Vector3& light) {
-            setUniform(lightUniform, light);
+        inline void setLightPositionUniform(unsigned int id, const Magnum::Vector3& light) {
+            setUniform(lightUniform[id], light);
         }
 
     private:
         GLint transformationMatrixUniform,
             projectionMatrixUniform,
             cameraDirectionUniform,
-            diffuseTextureUniform,
-            lightUniform;
+            diffuseTextureUniform;
+
+        GLint lightUniform[LightCount];
 };
 
 #endif

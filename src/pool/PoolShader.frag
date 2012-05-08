@@ -2,7 +2,7 @@
 
 uniform sampler2D diffuseTexture;
 uniform vec3 cameraDirection;
-uniform vec3 light;
+uniform vec3 light[POOL_LIGHT_COUNT];
 
 in vec3 fragPosition;
 
@@ -40,8 +40,10 @@ void main() {
     texCoord = (texCoord+vec2(1.0))*10;
     fragColor = texture(diffuseTexture, texCoord);
 
-    /* Direction to light */
-    float intensity = max(0.0, dot(normal, normalize(light - intersection)));
+    /* Light intensity */
+    float intensity = 0.0;
+    for(int i = 0; i != POOL_LIGHT_COUNT; ++i)
+        intensity += max(0.0, dot(normal, normalize(light[i] - intersection)));
 
     fragColor.rgb *= intensity;
 }

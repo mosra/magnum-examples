@@ -1,6 +1,7 @@
 #ifndef Quad_h
 #define Quad_h
 
+#include <array>
 #include <Object.h>
 #include <Mesh.h>
 #include <Texture.h>
@@ -13,13 +14,13 @@ namespace Magnum {
 
 class Quad: public Magnum::Object {
     public:
-        Quad(Magnum::Light* light, Object* parent = nullptr);
+        Quad(const std::array<Magnum::Light*, PoolShader::LightCount>& lights, Object* parent = nullptr);
 
         void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
 
     private:
         Magnum::Mesh mesh;
-        Magnum::Light* light;
+        std::array<Magnum::Light*, PoolShader::LightCount> lights;
         Magnum::Texture2D diffuse;
         PoolShader shader;
 };

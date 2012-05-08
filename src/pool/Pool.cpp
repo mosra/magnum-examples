@@ -1,9 +1,12 @@
+#include <array>
 #include <Scene.h>
 #include <Camera.h>
 #include <Light.h>
 
 #include "AbstractExample.h"
 #include "Quad.h"
+
+using namespace std;
 
 namespace Magnum { namespace Examples {
 
@@ -17,11 +20,15 @@ class Pool: public AbstractExample {
             camera->translate({0.0f, 0.0f, 3.5f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(25.0f), Vector3::yAxis());
 
             /* Light */
-            light = new Light(&scene);
-            light->translate({0.0f, -3.0f, 0.0f});
+            array<Light*, PoolShader::LightCount> lights;
+            (lights[0] = new Light(&scene))->translate({0.0f, -3.0f, 0.0f});
+            (lights[1] = new Light(&scene))->translate({-1.5f, 5.5f, -1.5f});
+            (lights[2] = new Light(&scene))->translate({-1.5f, 5.5f, 1.5f});
+            (lights[3] = new Light(&scene))->translate({1.5f, 5.5f, -1.5f});
+            (lights[4] = new Light(&scene))->translate({1.5f, 5.5f, 1.5f});
 
             /* Add triangle to the scene */
-            new Quad(light, &scene);
+            new Quad(lights, &scene);
         }
 
     protected:
@@ -50,7 +57,6 @@ class Pool: public AbstractExample {
     private:
         Scene scene;
         Camera* camera;
-        Light* light;
 };
 
 }}
