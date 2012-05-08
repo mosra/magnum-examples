@@ -29,6 +29,19 @@ class Pool: public AbstractExample {
             swapBuffers();
         }
 
+        virtual void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {
+            if(key == Key::Left)
+                camera->rotate(deg(5.0f), Vector3::yAxis());
+            else if(key == Key::Right)
+                camera->rotate(deg(-5.0f), Vector3::yAxis());
+            else if(key == Key::Up)
+                camera->translate(Vector3::zAxis(-0.3f), Object::Transformation::Local);
+            else if(key == Key::Down)
+                camera->translate(Vector3::zAxis(0.3f), Object::Transformation::Local);
+
+            redraw();
+        }
+
     private:
         Scene scene;
         Camera* camera;
