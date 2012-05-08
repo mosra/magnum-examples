@@ -66,16 +66,12 @@ void MotionBlurCamera::draw() {
 
 MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     Resource rs("shaders");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("MotionBlurShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("MotionBlurShader.frag"));
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("MotionBlurShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("MotionBlurShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
 
     link();
-    delete vertexShader;
-    delete fragmentShader;
 
     stringstream ss;
     for(size_t i = 0; i != MotionBlurCamera::FrameCount; ++i) {

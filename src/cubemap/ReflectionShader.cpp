@@ -23,11 +23,8 @@ namespace Magnum { namespace Examples {
 
 ReflectionShader::ReflectionShader() {
     Resource rs("data");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("ReflectionShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("ReflectionShader.frag"));
-
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("ReflectionShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("ReflectionShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
     bindAttribute(TextureCoords::Location, "textureCoords");
@@ -41,9 +38,6 @@ ReflectionShader::ReflectionShader() {
     diffuseColorUniform = uniformLocation("diffuseColor");
     textureUniform = uniformLocation("textureData");
     tarnishTextureUniform = uniformLocation("tarnishTextureData");
-
-    delete vertexShader;
-    delete fragmentShader;
 }
 
 }}

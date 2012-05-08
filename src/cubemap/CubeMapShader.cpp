@@ -23,8 +23,8 @@ namespace Magnum { namespace Examples {
 
 CubeMapShader::CubeMapShader() {
     Resource rs("data");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("CubeMapShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("CubeMapShader.frag"));
+    Shader vertexShader(Shader::fromData(Shader::Vertex, rs.get("CubeMapShader.vert")));
+    Shader fragmentShader(Shader::fromData(Shader::Fragment, rs.get("CubeMapShader.frag")));
 
     attachShader(vertexShader);
     attachShader(fragmentShader);
@@ -35,9 +35,6 @@ CubeMapShader::CubeMapShader() {
 
     modelViewProjectionMatrixUniform = uniformLocation("modelViewProjectionMatrix");
     textureUniform = uniformLocation("textureData");
-
-    delete vertexShader;
-    delete fragmentShader;
 }
 
 }}
