@@ -7,14 +7,19 @@
 
 #include "PoolShader.h"
 
+namespace Magnum {
+    class Light;
+}
+
 class Quad: public Magnum::Object {
     public:
-        Quad(Object* parent = nullptr);
+        Quad(Magnum::Light* light, Object* parent = nullptr);
 
         void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
 
     private:
         Magnum::Mesh mesh;
+        Magnum::Light* light;
         Magnum::Texture2D diffuse;
         PoolShader shader;
 };

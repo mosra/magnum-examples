@@ -1,5 +1,6 @@
 #include <Scene.h>
 #include <Camera.h>
+#include <Light.h>
 
 #include "AbstractExample.h"
 #include "Quad.h"
@@ -15,8 +16,12 @@ class Pool: public AbstractExample {
             camera->setClearColor(Vector3(0.6f));
             camera->translate({0.0f, 0.0f, 3.5f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(25.0f), Vector3::yAxis());
 
+            /* Light */
+            light = new Light(&scene);
+            light->translate({0.0f, -3.0f, 0.0f});
+
             /* Add triangle to the scene */
-            new Quad(&scene);
+            new Quad(light, &scene);
         }
 
     protected:
@@ -45,6 +50,7 @@ class Pool: public AbstractExample {
     private:
         Scene scene;
         Camera* camera;
+        Light* light;
 };
 
 }}

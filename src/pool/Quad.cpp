@@ -2,10 +2,11 @@
 
 #include <Camera.h>
 #include <Image.h>
+#include <Light.h>
 
 using namespace Magnum;
 
-Quad::Quad(Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
+Quad::Quad(Light* light, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), light(light) {
     /* Generate radial gradient */
     static const unsigned int size = 32;
 
@@ -39,5 +40,6 @@ void Quad::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.setProjectionMatrixUniform(camera->projectionMatrix());
     shader.setCameraDirectionUniform(-(camera->transformation()*Vector4()).xyz());
     shader.setDiffuseTextureUniform(&diffuse);
+    shader.setLightPositionUniform(light->transformation()[3].xyz());
     mesh.draw();
 }
