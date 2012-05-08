@@ -3,7 +3,7 @@
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 
-out vec2 texCoord;
+out vec3 fragPosition;
 
 const vec2 data[4] = vec2[](
     vec2(-1.0,  1.0),
@@ -13,9 +13,9 @@ const vec2 data[4] = vec2[](
 );
 
 void main() {
-    /* Texture coordinate */
-    texCoord = (data[gl_VertexID]+vec2(1.0))*10;
+    vec4 vec = vec4(data[gl_VertexID], 0.0, 1.0).xzyw;
 
     /* Position */
-    gl_Position = projectionMatrix*transformationMatrix*vec4(data[gl_VertexID], 0.0, 1.0).xzyw;
+    fragPosition = vec.xyz;
+    gl_Position = projectionMatrix*transformationMatrix*vec;
 }

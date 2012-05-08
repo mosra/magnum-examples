@@ -37,6 +37,7 @@ void Quad::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.use();
     shader.setTransformationMatrixUniform(transformationMatrix);
     shader.setProjectionMatrixUniform(camera->projectionMatrix());
+    shader.setCameraDirectionUniform(-(camera->transformation()*Vector4()).xyz());
     shader.setDiffuseTextureUniform(&diffuse);
     mesh.draw();
 }
