@@ -28,6 +28,8 @@ PoolShader::PoolShader() {
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     cameraDirectionUniform = uniformLocation("cameraDirection");
     diffuseTextureUniform = uniformLocation("diffuseTexture");
+    waterTextureUniform = uniformLocation("waterTexture");
+    waterTextureTranslationUniform = uniformLocation("waterTextureTranslation");
 
     for(unsigned int i = 0; i != LightCount; ++i) {
         ss.str("");

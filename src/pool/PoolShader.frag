@@ -1,6 +1,8 @@
 #version 330
 
 uniform sampler2D diffuseTexture;
+uniform sampler2D waterTexture;
+uniform vec2 waterTextureTranslation;
 uniform vec3 cameraDirection;
 uniform vec3 light[POOL_LIGHT_COUNT];
 
@@ -13,11 +15,15 @@ void main() {
     vec3 normal = vec3(0);
     vec2 texCoord = vec2(0);
 
+    fragColor = vec4(0, 0, 0, 1);
+
     /* Pool */
     if(fragPosition.x >= -1.0 && fragPosition.x <= 1.0 && fragPosition.z >= -1.0 && fragPosition.z <= 1.0) {
 
         /* Direction from camera to fragment */
         vec3 direction = cameraDirection+fragPosition;
+
+        direction += normalize(texture(waterTexture, (fragPosition.xz+1.0)/2+waterTextureTranslation).xyz)/5;
 
         /* Near */
         if(direction.z > 0 && (intersection = fragPosition + (direction/direction.z)*(1-fragPosition.z)).z > abs(intersection.x)) {

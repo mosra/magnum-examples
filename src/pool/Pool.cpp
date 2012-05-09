@@ -36,6 +36,9 @@ class Pool: public AbstractExample {
         inline void drawEvent() {
             camera->draw();
             swapBuffers();
+
+            Corrade::Utility::sleep(30);
+            redraw();
         }
 
         virtual void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {

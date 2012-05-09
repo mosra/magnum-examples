@@ -30,11 +30,21 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             setUniform(lightUniform[id], light);
         }
 
+        inline void setWaterTextureUniform(const Magnum::Texture2D* texture) {
+            setUniform(waterTextureUniform, texture);
+        }
+
+        inline void setWaterTextureTranslationUniform(const Magnum::Vector2& translation) {
+            setUniform(waterTextureTranslationUniform, translation);
+        }
+
     private:
         GLint transformationMatrixUniform,
             projectionMatrixUniform,
             cameraDirectionUniform,
-            diffuseTextureUniform;
+            diffuseTextureUniform,
+            waterTextureUniform,
+            waterTextureTranslationUniform;
 
         GLint lightUniform[LightCount];
 };

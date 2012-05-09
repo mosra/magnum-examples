@@ -22,7 +22,10 @@ class Quad: public Magnum::Object {
         Magnum::Mesh mesh;
         std::array<Magnum::Light*, PoolShader::LightCount> lights;
         Magnum::Texture2D diffuse;
+        Magnum::Texture2D water;
         PoolShader shader;
+
+        Magnum::Vector2 translation;
 };
 
 #endif
