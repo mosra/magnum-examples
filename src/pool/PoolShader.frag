@@ -48,6 +48,9 @@ void main() {
 
         texCoord = texCoord*10;
 
+        /* More colored water down there */
+        fragColor.rgb = mix(fragColor.rgb, vec3(0.2, 0.67, 0.9), -intersection.y/1.67);
+
     /* Surface */
     } else {
         intersection = fragPosition;
@@ -55,7 +58,7 @@ void main() {
         normal = vec3(0, 1, 0);
     }
 
-    fragColor = texture(diffuseTexture, texCoord);
+    fragColor += texture(diffuseTexture, texCoord);
 
     /* Light intensity */
     float intensity = 0.0;
