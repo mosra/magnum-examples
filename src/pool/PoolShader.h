@@ -6,7 +6,7 @@
 
 class PoolShader: public Magnum::AbstractShaderProgram {
     public:
-        static const unsigned int LightCount = 5;
+        static const unsigned int LightCount = 2;
 
         PoolShader();
 

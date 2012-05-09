@@ -9,35 +9,46 @@ in vec3 fragPosition;
 out vec4 fragColor;
 
 void main() {
-    /* Direction from camera to fragment */
-    vec3 direction = cameraDirection+fragPosition;
-
     vec3 intersection = vec3(0);
     vec3 normal = vec3(0);
     vec2 texCoord = vec2(0);
 
-    /* Near */
-    if(direction.z > 0 && (intersection = fragPosition + (direction/direction.z)*(1-fragPosition.z)).z > abs(intersection.x)) {
-        texCoord = intersection.xy;
-        normal = vec3(0, 0, -1);
+    /* Pool */
+    if(fragPosition.x >= -1.0 && fragPosition.x <= 1.0 && fragPosition.z >= -1.0 && fragPosition.z <= 1.0) {
 
-    /* Far */
-    } else if(direction.z <= 0 && -(intersection = fragPosition + (direction/-direction.z)*(1+fragPosition.z)).z >= abs(intersection.x)) {
-        texCoord = intersection.xy;
-        normal = vec3(0, 0, 1);
+        /* Direction from camera to fragment */
+        vec3 direction = cameraDirection+fragPosition;
 
-    /* Right */
-    } else if(direction.x > 0 && (intersection = fragPosition + (direction/direction.x)*(1-fragPosition.x)).x > abs(intersection.z)) {
-        texCoord = intersection.zy;
-        normal = vec3(-1, 0, 0);
+        /* Near */
+        if(direction.z > 0 && (intersection = fragPosition + (direction/direction.z)*(1-fragPosition.z)).z > abs(intersection.x)) {
+            texCoord = intersection.xy;
+            normal = vec3(0, 0, -1);
 
-    /* Left */
-    } else if(direction.x <= 0 && -(intersection = fragPosition + (direction/-direction.x)*(1+fragPosition.x)).x >= abs(intersection.z)) {
-        texCoord = intersection.zy;
-        normal = vec3(1, 0, 0);
+        /* Far */
+        } else if(direction.z <= 0 && -(intersection = fragPosition + (direction/-direction.z)*(1+fragPosition.z)).z >= abs(intersection.x)) {
+            texCoord = intersection.xy;
+            normal = vec3(0, 0, 1);
+
+        /* Right */
+        } else if(direction.x > 0 && (intersection = fragPosition + (direction/direction.x)*(1-fragPosition.x)).x > abs(intersection.z)) {
+            texCoord = intersection.zy;
+            normal = vec3(-1, 0, 0);
+
+        /* Left */
+        } else if(direction.x <= 0 && -(intersection = fragPosition + (direction/-direction.x)*(1+fragPosition.x)).x >= abs(intersection.z)) {
+            texCoord = intersection.zy;
+            normal = vec3(1, 0, 0);
+        }
+
+        texCoord = texCoord*10;
+
+    /* Surface */
+    } else {
+        intersection = fragPosition;
+        texCoord = fragPosition.xz*10;
+        normal = vec3(0, 1, 0);
     }
 
-    texCoord = (texCoord+vec2(1.0))*10;
     fragColor = texture(diffuseTexture, texCoord);
 
     /* Light intensity */

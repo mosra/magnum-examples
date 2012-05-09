@@ -22,10 +22,7 @@ class Pool: public AbstractExample {
             /* Light */
             array<Light*, PoolShader::LightCount> lights;
             (lights[0] = new Light(&scene))->translate({0.0f, -3.0f, 0.0f});
-            (lights[1] = new Light(&scene))->translate({-1.5f, 5.5f, -1.5f});
-            (lights[2] = new Light(&scene))->translate({-1.5f, 5.5f, 1.5f});
-            (lights[3] = new Light(&scene))->translate({1.5f, 5.5f, -1.5f});
-            (lights[4] = new Light(&scene))->translate({1.5f, 5.5f, 1.5f});
+            (lights[1] = new Light(&scene))->translate({-0.0f, 2.5f, -0.0f});
 
             /* Add triangle to the scene */
             new Quad(lights, &scene);

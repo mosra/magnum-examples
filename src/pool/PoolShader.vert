@@ -6,10 +6,10 @@ uniform mat4 projectionMatrix;
 out vec3 fragPosition;
 
 const vec2 data[4] = vec2[](
-    vec2(-1.0,  1.0),
-    vec2(-1.0, -1.0),
-    vec2( 1.0,  1.0),
-    vec2( 1.0, -1.0)
+    vec2(-2.5,  2.5),
+    vec2(-2.5, -2.5),
+    vec2( 2.5,  2.5),
+    vec2( 2.5, -2.5)
 );
 
 void main() {
