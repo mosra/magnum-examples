@@ -50,6 +50,10 @@ class Pool: public AbstractExample {
                 camera->rotate(deg(-5.0f), camera->transformation()[0].xyz());
             else if(key == Key::Down)
                 camera->rotate(deg(5.0f), camera->transformation()[0].xyz());
+            else if(key == Key::PageUp)
+                camera->translate(Vector3::zAxis(-0.2f), Object::Transformation::Local);
+            else if(key == Key::PageDown)
+                camera->translate(Vector3::zAxis(0.2f), Object::Transformation::Local);
 
             redraw();
         }
