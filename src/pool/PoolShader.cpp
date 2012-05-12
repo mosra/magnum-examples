@@ -25,6 +25,7 @@ PoolShader::PoolShader() {
     link();
 
     transformationMatrixUniform = uniformLocation("transformationMatrix");
+    normalMatrixUniform = uniformLocation("normalMatrix");
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     cameraDirectionUniform = uniformLocation("cameraDirection");
     diffuseTextureUniform = uniformLocation("diffuseTexture");

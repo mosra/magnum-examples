@@ -14,6 +14,10 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             setUniform(transformationMatrixUniform, matrix);
         }
 
+        inline void setNormalMatrixUniform(const Magnum::Matrix3& matrix) {
+            setUniform(normalMatrixUniform, matrix);
+        }
+
         inline void setProjectionMatrixUniform(const Magnum::Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
         }
@@ -40,6 +44,7 @@ class PoolShader: public Magnum::AbstractShaderProgram {
 
     private:
         GLint transformationMatrixUniform,
+            normalMatrixUniform,
             projectionMatrixUniform,
             cameraDirectionUniform,
             diffuseTextureUniform,

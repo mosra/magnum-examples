@@ -68,6 +68,7 @@ void Quad::draw(const Matrix4& transformationMatrix, Camera* camera) {
     water.bind();
     shader.use();
     shader.setTransformationMatrixUniform(transformationMatrix);
+    shader.setNormalMatrixUniform(transformationMatrix.rotation());
     shader.setProjectionMatrixUniform(camera->projectionMatrix());
     shader.setCameraDirectionUniform(-(camera->transformation()*Vector4()).xyz());
     shader.setDiffuseTextureUniform(&diffuse);
@@ -78,7 +79,7 @@ void Quad::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.setWaterTextureTranslationUniform(translation);
 
     for(size_t i = 0; i != PoolShader::LightCount; ++i)
-        shader.setLightPositionUniform(i, lights[i]->transformation()[3].xyz());
+        shader.setLightPositionUniform(i, (camera->cameraMatrix()*lights[i]->position()).xyz());
 
     mesh.draw();
 }

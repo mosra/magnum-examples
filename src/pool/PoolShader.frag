@@ -1,5 +1,7 @@
 #version 330
 
+uniform mat4 transformationMatrix;
+uniform mat3 normalMatrix;
 uniform sampler2D diffuseTexture;
 uniform sampler2D waterTexture;
 uniform vec2 waterTextureTranslation;
@@ -63,7 +65,7 @@ void main() {
     /* Light intensity */
     float intensity = 0.0;
     for(int i = 0; i != POOL_LIGHT_COUNT; ++i)
-        intensity += max(0.0, dot(normal, normalize(light[i] - intersection)));
+        intensity += max(0.0, dot(normalMatrix*normal, normalize(light[i] - (transformationMatrix*vec4(intersection, 1.0)).xyz)));
 
     fragColor.rgb *= intensity;
 }
