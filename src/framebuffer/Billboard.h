@@ -26,7 +26,7 @@ namespace Magnum { namespace Examples {
 
 class Billboard: public Object {
     public:
-        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent = 0);
+        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent = nullptr);
 
         void draw(const Matrix4& transformationMatrix, Camera* camera);
 

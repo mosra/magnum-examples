@@ -23,10 +23,8 @@ namespace Magnum { namespace Examples {
 
 ColorCorrectionShader::ColorCorrectionShader() {
     Resource rs("shader");
-    Shader* vertexShader = Shader::fromData(Shader::Vertex, rs.get("ColorCorrectionShader.vert"));
-    Shader* fragmentShader = Shader::fromData(Shader::Fragment, rs.get("ColorCorrectionShader.frag"));
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Shader::Vertex, rs.get("ColorCorrectionShader.vert")));
+    attachShader(Shader::fromData(Shader::Fragment, rs.get("ColorCorrectionShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
     bindFragmentDataLocation(0, "original");
@@ -34,8 +32,6 @@ ColorCorrectionShader::ColorCorrectionShader() {
     bindFragmentDataLocation(2, "corrected");
 
     link();
-    delete vertexShader;
-    delete fragmentShader;
 
     matrixUniform = uniformLocation("matrix");
     textureUniform = uniformLocation("textureData");

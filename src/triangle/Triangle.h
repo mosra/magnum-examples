@@ -23,7 +23,7 @@ namespace Magnum { namespace Examples {
 
 class Triangle: public Object {
     public:
-        Triangle(Object* parent = 0);
+        Triangle(Object* parent = nullptr);
 
         void draw(const Matrix4& transformationMatrix, Camera* camera);
 

@@ -73,7 +73,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
 
     texture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
     texture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
-    texture.setWrapping(Math::Vector2<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge));
+    texture.setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge));
     texture.generateMipmap();
 
     /* Tarnish texture */
