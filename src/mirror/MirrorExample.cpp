@@ -164,13 +164,13 @@ class MirrorExample: public FpsCounterExample {
                 grabMouse = !grabMouse;
                 setMouseCursor(grabMouse ? MouseCursor::None : MouseCursor::Default);
             } else if(key == Key::Left)
-                player->translate(Vector3::xAxis(-0.125f), false);
+                player->translate(Vector3::xAxis(-0.125f), Object::Transformation::Local);
              else if(key == Key::Right)
-                player->translate(Vector3::xAxis(0.125f), false);
+                player->translate(Vector3::xAxis(0.125f), Object::Transformation::Local);
              else if(key == Key::Up)
-                player->translate(Vector3::zAxis(-0.35f), false);
+                player->translate(Vector3::zAxis(-0.35f), Object::Transformation::Local);
              else if(key == Key::Down)
-                player->translate(Vector3::zAxis(0.35f), false);
+                player->translate(Vector3::zAxis(0.35f), Object::Transformation::Local);
         }
 
         virtual void mouseEvent(MouseButton button, MouseState state, const Magnum::Math::Vector2< int >& position) {
@@ -186,10 +186,10 @@ class MirrorExample: public FpsCounterExample {
         void mouseMoveEvent(const Math::Vector2<int>& position) {
             if(!grabMouse) return;
 
-            player->rotate(rad(PI*(position.x()*2.0f/player->camera()->viewport().x() - 1)), Vector3::yAxis(), false);
+            player->rotate(rad(Math::Constants<float>::Pi*(position.x()*2.0f/player->camera()->viewport().x() - 1)), Vector3::yAxis(), Object::Transformation::Local);
 
             /* Don't rotate under the floor */
-            Matrix4 yRotation = Matrix4::rotation(rad(PI*(position.y()*2.0f/player->camera()->viewport().y() - 1)), Vector3::xAxis())*player->camera()->transformation();
+            Matrix4 yRotation = Matrix4::rotation(rad(Math::Constants<float>::Pi*(position.y()*2.0f/player->camera()->viewport().y() - 1)), Vector3::xAxis())*player->camera()->transformation();
             if(abs(Vector3::dot((yRotation.rotation()*Vector3::yAxis()).normalized(), Vector3(0.0f, 1.0f, -0.5f).normalized()) < 0.6f))
                 return;
 
