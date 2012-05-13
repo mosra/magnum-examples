@@ -3,6 +3,7 @@
 uniform mat4 transformationMatrix;
 uniform mat3 normalMatrix;
 uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
 uniform sampler2D waterTexture;
 uniform vec2 waterTextureTranslation;
 uniform vec3 cameraDirection;
@@ -79,7 +80,8 @@ void main() {
 
     /* Surface */
     } else {
-        fragColor = texture(diffuseTexture, fragPosition.xz*10);
+        vec2 texCoord = fragPosition.xz*10;
+        fragColor = texture(diffuseTexture, texCoord);
 
         float totalIntensity = 0.0;
         vec3 totalHighlight = vec3(0.0);
@@ -101,6 +103,6 @@ void main() {
         }
 
         fragColor.rgb *= totalIntensity;
-        fragColor.rgb += totalHighlight;
+        fragColor.rgb += totalHighlight*(texture(specularTexture, texCoord).r);
     }
 }

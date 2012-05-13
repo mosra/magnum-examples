@@ -30,6 +30,10 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             setUniform(diffuseTextureUniform, texture);
         }
 
+        inline void setSpecularTextureUniform(const Magnum::Texture2D* texture) {
+            setUniform(specularTextureUniform, texture);
+        }
+
         inline void setLightPositionUniform(unsigned int id, const Magnum::Vector3& light) {
             setUniform(lightUniform[id], light);
         }
@@ -48,6 +52,7 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             projectionMatrixUniform,
             cameraDirectionUniform,
             diffuseTextureUniform,
+            specularTextureUniform,
             waterTextureUniform,
             waterTextureTranslationUniform;
 

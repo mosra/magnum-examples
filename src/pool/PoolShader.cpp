@@ -29,6 +29,7 @@ PoolShader::PoolShader() {
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     cameraDirectionUniform = uniformLocation("cameraDirection");
     diffuseTextureUniform = uniformLocation("diffuseTexture");
+    specularTextureUniform = uniformLocation("specularTexture");
     waterTextureUniform = uniformLocation("waterTexture");
     waterTextureTranslationUniform = uniformLocation("waterTextureTranslation");
 
