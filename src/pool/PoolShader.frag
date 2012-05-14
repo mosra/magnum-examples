@@ -1,5 +1,3 @@
-#version 330
-
 uniform mat4 transformationMatrix;
 uniform mat3 normalMatrix;
 uniform sampler2D diffuseTexture;

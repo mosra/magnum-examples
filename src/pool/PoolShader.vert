@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
@@ -13,7 +13,13 @@ const vec2 data[4] = vec2[](
 );
 
 void main() {
-    vec4 vec = vec4(data[gl_VertexID], 0.0, 1.0).xzyw;
+    vec4 vec = vec4(0.0);
+    switch(gl_VertexID) {
+        case 0: vec = vec4(data[0], 0.0, 1.0).xzyw; break;
+        case 1: vec = vec4(data[1], 0.0, 1.0).xzyw; break;
+        case 2: vec = vec4(data[2], 0.0, 1.0).xzyw; break;
+        case 3: vec = vec4(data[3], 0.0, 1.0).xzyw; break;
+    }
 
     /* Position */
     fragPosition = vec.xyz;

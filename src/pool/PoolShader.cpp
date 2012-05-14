@@ -18,7 +18,7 @@ PoolShader::PoolShader() {
 
     /* Fragment shader */
     Shader fragmentShader(Shader::Type::Fragment);
-    fragmentShader.addSource("#define POOL_LIGHT_COUNT " + ss.str() + '\n');
+    fragmentShader.addSource("#version 150\n#define POOL_LIGHT_COUNT " + ss.str() + '\n');
     fragmentShader.addSource(rs.get("PoolShader.frag"));
     attachShader(fragmentShader);
 
