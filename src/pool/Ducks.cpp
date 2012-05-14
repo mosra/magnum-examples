@@ -90,6 +90,12 @@ void Ducks::draw(const Matrix4& transformationMatrix, Camera* camera) {
         ->rotate(deg(2.0f), rotatedAxis.xyz(), Object::Transformation::Local);
 }
 
+void Ducks::flip() {
+    floatingDucksTransformation[0] = floatingDucksTransformation[0]*Matrix4::scaling({1.0f, 1.0f, -1.0f});
+    floatingDucksTransformation[1] = floatingDucksTransformation[1]*Matrix4::scaling({1.0f, 1.0f, -1.0f});
+    floatingDucksTransformation[2] = floatingDucksTransformation[2]*Matrix4::scaling({1.0f, 1.0f, -1.0f});
+}
+
 void Ducks::Duck::draw(const Matrix4& transformationMatrix, Camera* camera) {
     group->shader.use();
     group->shader.setAmbientColorUniform(group->color/2.0f);

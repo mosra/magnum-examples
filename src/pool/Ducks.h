@@ -17,6 +17,8 @@ class Ducks: public Magnum::Object {
 
         void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
 
+        void flip();
+
     private:
         class Duck: public Magnum::Object {
             public:

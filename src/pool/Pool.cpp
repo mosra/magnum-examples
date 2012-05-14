@@ -18,7 +18,7 @@ namespace Magnum { namespace Examples {
 
 class Pool: public AbstractExample {
     public:
-        Pool(int& argc, char** argv): AbstractExample(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR) {
+        Pool(int& argc, char** argv): AbstractExample(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR), ducks(nullptr) {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
@@ -33,7 +33,7 @@ class Pool: public AbstractExample {
 
             /* Add quad and duck */
             new Quad(&manager, lights, &scene);
-            Ducks::tryCreate(&manager, lights[1], &scene);
+            ducks = Ducks::tryCreate(&manager, lights[1], &scene);
         }
 
     protected:
@@ -62,6 +62,8 @@ class Pool: public AbstractExample {
                 camera->translate(Vector3::zAxis(-0.2f), Object::Transformation::Local);
             else if(key == Key::PageDown)
                 camera->translate(Vector3::zAxis(0.2f), Object::Transformation::Local);
+            else if(key == Key::End)
+                ducks->flip();
 
             redraw();
         }
@@ -70,6 +72,7 @@ class Pool: public AbstractExample {
         PluginManager<Trade::AbstractImporter> manager;
         Scene scene;
         Camera* camera;
+        Ducks* ducks;
 };
 
 }}
