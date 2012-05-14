@@ -31,13 +31,12 @@ namespace Magnum { namespace Examples {
 class CubeMapExample: public AbstractExample {
     public:
         CubeMapExample(int& argc, char** argv): AbstractExample(argc, argv, "Cube map example") {
-            scene.setFeature(Scene::DepthTest, true);
-            scene.setFeature(Scene::FaceCulling, true);
-
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(55.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3));
+            Camera::setFeature(Camera::Feature::DepthTest, true);
+            Camera::setFeature(Camera::Feature::FaceCulling, true);
 
             /* Load TGA importer plugin */
             PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);

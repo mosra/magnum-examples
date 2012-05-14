@@ -187,13 +187,12 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         exit(3);
     }
 
-    scene.setFeature(Scene::DepthTest, true);
-    scene.setFeature(Scene::FaceCulling, true);
-
     /* Every scene needs a camera */
     camera = new Camera(&scene);
     camera->setPerspective(deg(35.0f), 0.001f, 100);
     camera->translate(Vector3::zAxis(5));
+    Camera::setFeature(Camera::Feature::DepthTest, true);
+    Camera::setFeature(Camera::Feature::FaceCulling, true);
 
     Debug() << "Opening file" << argv[1];
 

@@ -30,8 +30,6 @@ void Icosphere::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader->setDiffuseColorUniform(color);
     shader->setSpecularColorUniform({1.0f, 1.0f, 1.0f});
     shader->setShininessUniform(20);
-    shader->setLightDiffuseColorUniform({1.0f, 1.0f, 0.75f});
-    shader->setLightSpecularColorUniform({1.0f, 1.0f, 1.0f});
     shader->setLightUniform({3.0f, -3.0f, 3.0f});
     shader->setTransformationMatrixUniform(transformationMatrix);
     shader->setProjectionMatrixUniform(camera->projectionMatrix());
