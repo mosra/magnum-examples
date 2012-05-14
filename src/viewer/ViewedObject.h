@@ -34,9 +34,6 @@ class ViewedObject: public Object {
             shader->setSpecularColorUniform(specularColor);
             shader->setShininessUniform(shininess);
 
-            shader->setLightAmbientColorUniform(Vector3());
-            shader->setLightDiffuseColorUniform(Vector3(1.0f, 1.0f, 1.0f));
-            shader->setLightSpecularColorUniform(Vector3(1.0f, 1.0f, 1.0f));
             shader->setLightUniform(Vector3(-3.0f, 10.0f, 10.0f));
 
             shader->setTransformationMatrixUniform(transformationMatrix);

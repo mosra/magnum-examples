@@ -24,13 +24,12 @@ class Benchmark: public FpsCounterExample {
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
             camera->translate({0.0f, 0.0f, 3.0f});
+            Camera::setFeature(Camera::Feature::DepthTest, true);
+            Camera::setFeature(Camera::Feature::FaceCulling, true);
 
             o = new Sierpinski(&scene);
             o->setIterations(iterations, tipsify);
             o->shader = &interpolated;
-
-            scene.setFeature(Scene::Feature::DepthTest, true);
-            scene.setFeature(Scene::Feature::FaceCulling, true);
 
             setMinimalCounterDuration(10.0f);
             setFpsCounterEnabled(true);
@@ -72,23 +71,23 @@ class Benchmark: public FpsCounterExample {
                 switch(mode) {
                     case Mode::DepthCull:
                         Debug() << "Depth test enabled, face culling enabled";
-                        scene.setFeature(Scene::DepthTest, true);
-                        scene.setFeature(Scene::FaceCulling, true);
+                        Camera::setFeature(Camera::Feature::DepthTest, true);
+                        Camera::setFeature(Camera::Feature::FaceCulling, true);
                         break;
                     case Mode::DepthNoCull:
                         Debug() << "Depth test enabled, face culling disabled";
-                        scene.setFeature(Scene::DepthTest, true);
-                        scene.setFeature(Scene::FaceCulling, false);
+                        Camera::setFeature(Camera::Feature::DepthTest, true);
+                        Camera::setFeature(Camera::Feature::FaceCulling, false);
                         break;
                     case Mode::NoDepthCull:
                         Debug() << "Depth test disabled, face culling enabled";
-                        scene.setFeature(Scene::DepthTest, false);
-                        scene.setFeature(Scene::FaceCulling, true);
+                        Camera::setFeature(Camera::Feature::DepthTest, false);
+                        Camera::setFeature(Camera::Feature::FaceCulling, true);
                         break;
                     case Mode::NoDepthNoCull:
                         Debug() << "Ddepth test disabled, face culling disabled";
-                        scene.setFeature(Scene::DepthTest, false);
-                        scene.setFeature(Scene::FaceCulling, false);
+                        Camera::setFeature(Camera::Feature::DepthTest, false);
+                        Camera::setFeature(Camera::Feature::FaceCulling, false);
                         break;
                 }
             } else if(key == Key::F3) {
