@@ -1,19 +1,15 @@
 #include "Quad.h"
 
-#include <PluginManager/PluginManager.h>
 #include <Camera.h>
 #include <Image.h>
 #include <Light.h>
-#include <Trade/AbstractImporter.h>
-
-#include "configure.h"
 
 using namespace std;
 using namespace Corrade::PluginManager;
 using namespace Corrade::Utility;
 using namespace Magnum;
 
-Quad::Quad(const array<Light*, PoolShader::LightCount>& lights, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), lights(lights), diffuse(0), specular(1), water(2), translation(0.0f, 0.1f) {
+Quad::Quad(PluginManager<Trade::AbstractImporter>* manager, const array<Light*, PoolShader::LightCount>& lights, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), lights(lights), diffuse(0), specular(1), water(2), translation(0.0f, 0.1f) {
     static const unsigned int textureSize = 32;
 
     /* Generate radial gradient */
@@ -49,10 +45,9 @@ Quad::Quad(const array<Light*, PoolShader::LightCount>& lights, Object* parent):
     Image2D specularMapImage({32, 32}, Image2D::Components::Red, Image2D::ComponentType::UnsignedByte, specularMap);
 
     /* Load TGA importer plugin */
-    PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
-        Error() << "Cannot load TgaImporter plugin from" << PLUGIN_IMPORTER_DIR;
+    if(manager->load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager->instance("TgaImporter"))) {
+        Error() << "Cannot load TgaImporter plugin from" << manager->pluginDirectory();
         exit(1);
     }
 

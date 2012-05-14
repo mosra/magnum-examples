@@ -10,5 +10,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_resource(PoolShader pool PoolShader.vert PoolShader.frag normal.tga)
 
-add_executable(pool Pool.cpp PoolShader.cpp Quad.cpp ${PoolShader})
-target_link_libraries(pool MagnumExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_gl_LIBRARY})
+add_executable(pool Ducks.cpp Pool.cpp PoolShader.cpp Quad.cpp ${PoolShader})
+target_link_libraries(pool MagnumExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_SHADERS_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_gl_LIBRARY})
