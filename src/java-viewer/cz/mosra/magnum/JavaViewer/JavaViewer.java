@@ -35,7 +35,7 @@ public class JavaViewer extends JFrame implements ActionListener {
     private class ColoredLabel extends JLabel {
         private static final long serialVersionUID = 0L;
 
-        public ColoredLabel(Color color) {
+        public ColoredLabel(final int id, Color color) {
             setSize(50, 16);
             setOpaque(true);
             setBackground(color);
@@ -44,6 +44,8 @@ public class JavaViewer extends JFrame implements ActionListener {
                     Color background = JColorChooser.showDialog(null, "Select color...", ColoredLabel.this.getBackground());
                     if(background != null) {
                         ColoredLabel.this.setBackground(background);
+                        JavaViewer.this.setLightColor(id, background.getRed()/255.0f, background.getGreen()/255.0f, background.getBlue()/255.0f);
+                        canvas.setRedraw();
                     }
                 }
             });
@@ -55,7 +57,7 @@ public class JavaViewer extends JFrame implements ActionListener {
 
         private JFormattedTextField x_, y_, z_;
 
-        public LightControl(float x, float y, float z, Color color) {
+        public LightControl(int id, float x, float y, float z, Color color) {
             setLayout(new GridLayout(4, 2));
             add(new JLabel("X:"));
             x_ = new JFormattedTextField();
@@ -70,7 +72,7 @@ public class JavaViewer extends JFrame implements ActionListener {
             z_.setValue(1.0f);
             add(z_);
             add(new JLabel("Color:"));
-            add(new ColoredLabel(color));
+            add(new ColoredLabel(id, color));
         }
     }
 
@@ -89,20 +91,18 @@ public class JavaViewer extends JFrame implements ActionListener {
                 {
                     setLayout(new GridLayout(1, 2));
                     add(new JLabel("Clear color:"));
-                    add(new ColoredLabel(Color.lightGray));
-                    add(new JLabel("Ambient light color:"));
-                    add(new ColoredLabel(Color.black));
+                    add(new ColoredLabel(3, Color.lightGray));
                 }
             });
             add(new JSeparator(SwingConstants.HORIZONTAL));
             add(new JLabel("<html><strong>Key light</strong></html>"));
-            add(new LightControl(0.5f, 1.0f, 1.0f, Color.white));
+            add(new LightControl(0, -3.0f, 10.0f, 10.0f, Color.white));
             add(new JSeparator(SwingConstants.HORIZONTAL));
             add(new JLabel("<html><strong>Fill light</strong></html>"));
-            add(new LightControl(0.6f, 1.0f, 1.0f, Color.gray));
+            add(new LightControl(1, 6.0f, 10.0f, 10.0f, Color.gray));
             add(new JSeparator(SwingConstants.HORIZONTAL));
             add(new JLabel("<html><strong>Back light</strong></html>"));
-            add(new LightControl(0.0f, 1.0f, -1.0f, Color.yellow));
+            add(new LightControl(2, 0.0f, 10.0f, -10.0f, Color.yellow));
             add(Box.createVerticalStrut(1000));
         }
     }
@@ -132,6 +132,7 @@ public class JavaViewer extends JFrame implements ActionListener {
 
     private native boolean openCollada(String filename);
     private native void close();
+    private native void setLightColor(int id, float r, float g, float b);
 
     public static void main(String[] args) {
         try {

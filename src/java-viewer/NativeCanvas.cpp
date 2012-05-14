@@ -117,6 +117,15 @@ JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_close(JNIEnv*,
     viewer->close();
 }
 
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_setLightColor(JNIEnv*, jobject, jint id, jfloat r, jfloat g, jfloat b) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    if(id >= 0 && id < 3)
+        viewer->shader()->setLightColorUniform(id, {r, g, b});
+    else if(id == 3)
+        viewer->camera()->setClearColor({r, g, b});
+}
+
 JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_setViewport(JNIEnv* env, jobject canvas, jint width, jint height) {
     CORRADE_ASSERT(viewer, "Unable to access native implementation instance" << width << height, )
 

@@ -54,11 +54,16 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BIN
 
 include_directories(${JNI_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
+corrade_add_resource(Shaders shaders PhongShader.frag PhongShader.vert)
+
 set(JavaViewer_CXX_SRCS
+    JavaViewer.cpp
     NativeCanvas.h
     NativeCanvas.cpp
-    JavaViewer.cpp
+    PhongShader.cpp
+    ViewedObject.cpp
+    ${Shaders}
     )
 
 add_library(NativeCanvas SHARED ${JavaViewer_CXX_SRCS})
-target_link_libraries(NativeCanvas ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_SHADERS_LIBRARY} ${JAVA_AWT_LIBRARY} ${OPENGL_gl_LIBRARY})
+target_link_libraries(NativeCanvas ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY} ${JAVA_AWT_LIBRARY} ${OPENGL_gl_LIBRARY})

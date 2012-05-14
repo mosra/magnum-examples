@@ -19,9 +19,10 @@
 #include <PluginManager/PluginManager.h>
 #include <Scene.h>
 #include <Camera.h>
-#include <Shaders/PhongShader.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/PhongMaterialData.h>
+
+#include "PhongShader.h"
 
 namespace Magnum {
 
@@ -43,19 +44,27 @@ class JavaViewer {
         void release();
         void zoom(int direction);
 
+        inline PhongShader* shader() {
+            return &_shader;
+        }
+
+        inline Camera* camera() {
+            return &_camera;
+        }
+
         inline void drawEvent() {
-            camera.draw();
+            _camera.draw();
         }
 
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
-            camera.setViewport(size);
+            _camera.setViewport(size);
         }
 
     private:
         Scene scene;
-        Camera camera;
+        Camera _camera;
         Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager;
-        Shaders::PhongShader shader;
+        PhongShader _shader;
         Object* o;
         std::unordered_map<size_t, IndexedMesh*> meshes;
         Vector3 previousPosition;
