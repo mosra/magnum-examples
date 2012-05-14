@@ -20,7 +20,7 @@
 namespace Magnum { namespace Examples {
 
 ColorCorrectionCamera::ColorCorrectionCamera(Object* parent): Camera(parent), initialized(false) {
-    setAspectRatioPolicy(Clip);
+    setAspectRatioPolicy(AspectRatioPolicy::Clip);
 }
 
 void ColorCorrectionCamera::draw() {

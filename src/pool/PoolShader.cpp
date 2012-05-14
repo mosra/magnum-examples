@@ -14,10 +14,10 @@ PoolShader::PoolShader() {
     ss << LightCount;
 
     /* Vertex shader */
-    attachShader(Shader::fromData(Shader::Vertex, rs.get("PoolShader.vert")));
+    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("PoolShader.vert")));
 
     /* Fragment shader */
-    Shader fragmentShader(Shader::Fragment);
+    Shader fragmentShader(Shader::Type::Fragment);
     fragmentShader.addSource("#define POOL_LIGHT_COUNT " + ss.str() + '\n');
     fragmentShader.addSource(rs.get("PoolShader.frag"));
     attachShader(fragmentShader);

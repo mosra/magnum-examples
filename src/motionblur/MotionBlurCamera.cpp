@@ -66,8 +66,8 @@ void MotionBlurCamera::draw() {
 
 MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     Resource rs("shaders");
-    attachShader(Shader::fromData(Shader::Vertex, rs.get("MotionBlurShader.vert")));
-    attachShader(Shader::fromData(Shader::Fragment, rs.get("MotionBlurShader.frag")));
+    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("MotionBlurShader.vert")));
+    attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("MotionBlurShader.frag")));
 
     bindAttribute(Vertex::Location, "vertex");
 
