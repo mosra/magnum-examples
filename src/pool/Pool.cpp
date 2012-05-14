@@ -22,7 +22,7 @@ class Pool: public AbstractExample {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
-            camera->setClearColor(Vector3(0.6f));
+            camera->setClearColor({0.9f, 0.95f, 1.0f});
             camera->translate({0.0f, 0.0f, 3.5f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(25.0f), Vector3::yAxis());
             Camera::setFeature(Camera::Feature::DepthTest, true);
 
