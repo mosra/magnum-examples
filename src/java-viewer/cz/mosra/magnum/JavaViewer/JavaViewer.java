@@ -13,14 +13,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -30,8 +28,8 @@ import javax.swing.UIManager;
 public class JavaViewer extends JFrame implements ActionListener {
     static final long serialVersionUID = 0L;
 
-    private JMenuItem openColladaAction;
-    private JMenuItem closeAction;
+    private JButton openCollada;
+    private JButton close;
     private NativeCanvas canvas = new NativeCanvas();
 
     private class ColoredLabel extends JLabel {
@@ -81,11 +79,15 @@ public class JavaViewer extends JFrame implements ActionListener {
 
         SceneControls() {
             super(BoxLayout.Y_AXIS);
+            add(openCollada = new JButton("Open COLLADA file..."));
+            openCollada.addActionListener(JavaViewer.this);
+            add(close = new JButton("Close file"));
+            close.addActionListener(JavaViewer.this);
             add(new JPanel() {
                 private static final long serialVersionUID = 0L;
 
                 {
-                    setLayout(new GridLayout(2, 2));
+                    setLayout(new GridLayout(1, 2));
                     add(new JLabel("Clear color:"));
                     add(new ColoredLabel(Color.lightGray));
                     add(new JLabel("Ambient light color:"));
@@ -111,33 +113,18 @@ public class JavaViewer extends JFrame implements ActionListener {
         add(BorderLayout.CENTER, canvas);
         add(BorderLayout.EAST, new SceneControls());
 
-        /* Menu */
-        JMenuBar menubar = new JMenuBar();
-        setJMenuBar(menubar);
-
-        JMenu file = new JMenu("File");
-        menubar.add(file);
-
-        openColladaAction = new JMenuItem("Open COLLADA file...");
-        openColladaAction.addActionListener(this);
-        file.add(openColladaAction);
-
-        closeAction = new JMenuItem("Close file");
-        closeAction.addActionListener(this);
-        file.add(closeAction);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == openColladaAction) {
+        if(e.getSource() == openCollada) {
             JFileChooser f = new JFileChooser();
             if(f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 if(openCollada(f.getSelectedFile().toString()))
                     canvas.setRedraw();
                 else JOptionPane.showMessageDialog(this, "Cannot open " + f.getSelectedFile() + ". Check log for details.", "Cannot open COLLADA file", JOptionPane.ERROR_MESSAGE);
             }
-        } else if(e.getSource() == closeAction) {
+        } else if(e.getSource() == close) {
             close();
             canvas.setRedraw();
         }
