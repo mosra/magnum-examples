@@ -39,9 +39,19 @@ set(CMAKE_JAVA_COMPILE_FLAGS -Xlint)
 set(CMAKE_JAVA_JAR_ENTRY_POINT cz/mosra/magnum/JavaViewer/JavaViewer)
 add_jar(JavaViewer ${JavaViewer_Java_SRCS})
 
-jni_generate_header(NativeCanvas.h JavaViewer cz.mosra.magnum.JavaViewer.NativeCanvas)
+jni_generate_header(NativeCanvas.h JavaViewer
+    cz.mosra.magnum.JavaViewer.JavaViewer
+    cz.mosra.magnum.JavaViewer.NativeCanvas
+    )
 
 # Native library
+if(NOT WIN32)
+    set(PLUGIN_IMPORTER_DIR ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR})
+else()
+    set(PLUGIN_IMPORTER_DIR importers)
+endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 include_directories(${JNI_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(JavaViewer_CXX_SRCS
@@ -51,4 +61,4 @@ set(JavaViewer_CXX_SRCS
     )
 
 add_library(NativeCanvas SHARED ${JavaViewer_CXX_SRCS})
-target_link_libraries(NativeCanvas ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY} ${JAVA_AWT_LIBRARY} ${OPENGL_gl_LIBRARY})
+target_link_libraries(NativeCanvas ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_SHADERS_LIBRARY} ${JAVA_AWT_LIBRARY} ${OPENGL_gl_LIBRARY})

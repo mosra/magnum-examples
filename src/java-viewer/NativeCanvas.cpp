@@ -20,6 +20,7 @@
 #include "NativeCanvas.h"
 #include "JavaViewer.h"
 
+using namespace std;
 using namespace Magnum;
 using namespace Magnum::Examples;
 using namespace Corrade::Utility;
@@ -93,8 +94,63 @@ JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_construct(JN
     drawingSurface->Unlock(drawingSurface);
 }
 
-JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_draw(JNIEnv *env, jobject panel) {
-    JAWT_DrawingSurface* drawingSurface = awt.GetDrawingSurface(env, panel);
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_destruct(JNIEnv* env, jobject) {
+    delete viewer;
+    viewer = nullptr;
+
+    glXDestroyContext(display, context);
+}
+
+JNIEXPORT jboolean JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_openCollada(JNIEnv* env, jobject, jstring filename) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", false)
+
+    const char* filename_ = env->GetStringUTFChars(filename, nullptr);
+    std::string filename__(filename_);
+    env->ReleaseStringUTFChars(filename, filename_);
+
+    return viewer->openCollada(filename__);
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_setViewport(JNIEnv* env, jobject canvas, jint width, jint height) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance" << width << height, )
+
+    JAWT_DrawingSurface* drawingSurface = awt.GetDrawingSurface(env, canvas);
+    drawingSurface->Lock(drawingSurface);
+
+    glXMakeCurrent(display, window, context);
+    viewer->viewportEvent({width, height});
+
+    drawingSurface->Unlock(drawingSurface);
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_press(JNIEnv*, jobject, jint x, jint y) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    viewer->press({x, y});
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_drag(JNIEnv*, jobject, jint x, jint y) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    viewer->drag({x, y});
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_release(JNIEnv*, jobject) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    viewer->release();
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_zoom(JNIEnv*, jobject, jint direction) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    viewer->zoom(direction);
+}
+
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_draw(JNIEnv* env, jobject canvas) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    JAWT_DrawingSurface* drawingSurface = awt.GetDrawingSurface(env, canvas);
     drawingSurface->Lock(drawingSurface);
 
     glXMakeCurrent(display, window, context);
@@ -103,11 +159,4 @@ JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_draw(JNIEnv 
     glXSwapBuffers(display, window);
 
     drawingSurface->Unlock(drawingSurface);
-}
-
-JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_destruct(JNIEnv *env, jobject panel) {
-    delete viewer;
-    viewer = nullptr;
-
-    glXDestroyContext(display, context);
 }

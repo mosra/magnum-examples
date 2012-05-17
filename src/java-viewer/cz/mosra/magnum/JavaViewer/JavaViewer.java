@@ -1,21 +1,53 @@
 package cz.mosra.magnum.JavaViewer;
 
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.Timer;
+import java.awt.event.ActionListener;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
-public class JavaViewer extends JFrame {
+public class JavaViewer extends JFrame implements ActionListener {
+    static final long serialVersionUID = 0L;
+
+    private JMenuItem openColladaAction;
+    private NativeCanvas canvas = new NativeCanvas();
+
     public JavaViewer() {
         super("Magnum/Java Viewer");
         setSize(800, 600);
-        add(BorderLayout.CENTER, new NativeCanvas());
+        add(BorderLayout.CENTER, canvas);
+
+        /* Menu */
+        JMenuBar menubar = new JMenuBar();
+        setJMenuBar(menubar);
+
+        JMenu file = new JMenu("File");
+        menubar.add(file);
+
+        openColladaAction = new JMenuItem("Open COLLADA file...");
+        openColladaAction.addActionListener(this);
+        file.add(openColladaAction);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == openColladaAction) {
+            JFileChooser f = new JFileChooser();
+            if(f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                if(openCollada(f.getSelectedFile().toString()))
+                    canvas.setRedraw();
+                else JOptionPane.showMessageDialog(this, "Cannot open " + f.getSelectedFile() + ". Check log for details.", "Cannot open COLLADA file", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private native boolean openCollada(String filename);
 
     public static void main(String[] args) {
         try {
