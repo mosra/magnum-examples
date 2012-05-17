@@ -52,9 +52,7 @@ JavaViewer::JavaViewer(): camera(&scene), manager(PLUGIN_IMPORTER_DIR), o(nullpt
 JavaViewer::~JavaViewer() {
     manager.unload("ColladaImporter");
 
-    delete o;
-    for(auto i: meshes)
-        delete i.second;
+    close();
 }
 
 bool JavaViewer::openCollada(const std::string& filename) {
@@ -101,6 +99,14 @@ bool JavaViewer::openCollada(const std::string& filename) {
     delete colladaImporter.release();
 
     return true;
+}
+
+void JavaViewer::close() {
+    delete o;
+    o = nullptr;
+
+    for(auto i: meshes)
+        delete i.second;
 }
 
 void JavaViewer::press(const Math::Vector2<GLsizei>& position) {

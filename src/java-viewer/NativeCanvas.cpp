@@ -111,6 +111,12 @@ JNIEXPORT jboolean JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_openCollad
     return viewer->openCollada(filename__);
 }
 
+JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_close(JNIEnv*, jobject) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
+
+    viewer->close();
+}
+
 JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_NativeCanvas_setViewport(JNIEnv* env, jobject canvas, jint width, jint height) {
     CORRADE_ASSERT(viewer, "Unable to access native implementation instance" << width << height, )
 

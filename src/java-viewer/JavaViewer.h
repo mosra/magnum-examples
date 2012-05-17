@@ -36,6 +36,7 @@ class JavaViewer {
         ~JavaViewer();
 
         bool openCollada(const std::string& filename);
+        void close();
 
         void press(const Math::Vector2<GLsizei>& position);
         void drag(const Math::Vector2<GLsizei>& position);

@@ -15,6 +15,7 @@ public class JavaViewer extends JFrame implements ActionListener {
     static final long serialVersionUID = 0L;
 
     private JMenuItem openColladaAction;
+    private JMenuItem closeAction;
     private NativeCanvas canvas = new NativeCanvas();
 
     public JavaViewer() {
@@ -33,6 +34,10 @@ public class JavaViewer extends JFrame implements ActionListener {
         openColladaAction.addActionListener(this);
         file.add(openColladaAction);
 
+        closeAction = new JMenuItem("Close file");
+        closeAction.addActionListener(this);
+        file.add(closeAction);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -44,10 +49,14 @@ public class JavaViewer extends JFrame implements ActionListener {
                     canvas.setRedraw();
                 else JOptionPane.showMessageDialog(this, "Cannot open " + f.getSelectedFile() + ". Check log for details.", "Cannot open COLLADA file", JOptionPane.ERROR_MESSAGE);
             }
+        } else if(e.getSource() == closeAction) {
+            close();
+            canvas.setRedraw();
         }
     }
 
     private native boolean openCollada(String filename);
+    private native void close();
 
     public static void main(String[] args) {
         try {
