@@ -23,7 +23,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
 
     public final static int PERIOD = 16;
     private boolean constructed = false;
-    private boolean redraw = true;
+    private int redraw = 0;
 
     NativeCanvas() {
         addComponentListener(this);
@@ -33,7 +33,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
     }
 
     public void setRedraw() {
-        redraw = true;
+        redraw = 2; /* Twice to fix issues when resizing window */
     }
 
     public void actionPerformed(ActionEvent evt) {
@@ -42,9 +42,9 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
             constructed = true;
         }
 
-        if(redraw) {
+        if(redraw != 0) {
             draw();
-            redraw = false;
+            --redraw;
         }
     }
 
@@ -57,7 +57,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
             constructed = true;
         }
 
-        redraw = true;
+        setRedraw();
         setViewport(getWidth(), getHeight());
     }
 
@@ -66,7 +66,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
     }
 
     public void mouseDragged(MouseEvent e) {
-        redraw = true;
+        setRedraw();
         drag(e.getX(), e.getY());
     }
 
@@ -75,7 +75,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        redraw = true;
+        setRedraw();
         zoom(e.getWheelRotation());
     }
 
