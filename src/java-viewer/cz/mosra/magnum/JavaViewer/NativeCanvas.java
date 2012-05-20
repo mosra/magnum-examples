@@ -36,6 +36,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
         redraw = 2; /* Twice to fix issues when resizing window */
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         if (!constructed) {
             construct();
@@ -48,6 +49,7 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
         }
     }
 
+    @Override
     public void componentResized(ComponentEvent e) {
         if(getWidth() == 0 || getHeight() == 0)
             return;
@@ -61,30 +63,36 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
         setViewport(getWidth(), getHeight());
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         press(e.getX(), e.getY());
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         setRedraw();
         drag(e.getX(), e.getY());
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         release();
     }
 
+    @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         setRedraw();
         zoom(e.getWheelRotation());
     }
 
+    @Override
     public void addNotify() {
         super.addNotify();
         Timer timer = new Timer(PERIOD, this);
         timer.start();
     }
 
+    @Override
     public void removeNotify() {
         super.removeNotify();
         destruct();
@@ -100,11 +108,11 @@ public class NativeCanvas extends Canvas implements ActionListener, ComponentLis
     public native void draw();
 
     /* Unused stuff. */
-    public void componentHidden(ComponentEvent e) {}
-    public void componentMoved(ComponentEvent e) {}
-    public void componentShown(ComponentEvent e) {}
-    public void mouseClicked(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
-    public void mouseMoved(MouseEvent e) {}
+    @Override public void componentHidden(ComponentEvent e) {}
+    @Override public void componentMoved(ComponentEvent e) {}
+    @Override public void componentShown(ComponentEvent e) {}
+    @Override public void mouseClicked(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
+    @Override public void mouseMoved(MouseEvent e) {}
 }
