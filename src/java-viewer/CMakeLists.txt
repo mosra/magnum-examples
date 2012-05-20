@@ -29,7 +29,20 @@ function(jni_generate_header header_name jar_target)
     set(${header_name} ${out} PARENT_SCOPE)
 endfunction()
 
+if(NOT WIN32)
+    set(PLUGIN_IMPORTER_DIR ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR})
+else()
+    set(PLUGIN_IMPORTER_DIR importers)
+endif()
+
 # JAR and native header
+find_jar(STANFORDIMPORTER_JAR JStanfordImporter PATHS ${PLUGIN_IMPORTER_DIR})
+if(STANFORDIMPORTER_JAR-NOTFOUND)
+    message(ERROR "StanfordImporter JAR was not found")
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/JavaViewer.manifest.cmake ${CMAKE_CURRENT_BINARY_DIR}/JavaViewer.manifest)
+
 set(JavaViewer_Java_SRCS
     cz/mosra/magnum/JavaViewer/JavaViewer.java
     cz/mosra/magnum/JavaViewer/NativeCanvas.java
@@ -37,6 +50,7 @@ set(JavaViewer_Java_SRCS
 
 set(CMAKE_JAVA_COMPILE_FLAGS -Xlint)
 set(CMAKE_JAVA_JAR_ENTRY_POINT cz/mosra/magnum/JavaViewer/JavaViewer)
+set(CMAKE_JAVA_JAR_MANIFEST_FILE ${CMAKE_CURRENT_BINARY_DIR}/JavaViewer.manifest)
 add_jar(JavaViewer ${JavaViewer_Java_SRCS})
 
 jni_generate_header(NativeCanvas.h JavaViewer
@@ -45,11 +59,6 @@ jni_generate_header(NativeCanvas.h JavaViewer
     )
 
 # Native library
-if(NOT WIN32)
-    set(PLUGIN_IMPORTER_DIR ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR})
-else()
-    set(PLUGIN_IMPORTER_DIR importers)
-endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 include_directories(${JNI_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})

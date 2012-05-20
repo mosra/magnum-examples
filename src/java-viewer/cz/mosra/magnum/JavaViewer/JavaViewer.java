@@ -28,7 +28,7 @@ import javax.swing.UIManager;
 public class JavaViewer extends JFrame implements ActionListener {
     static final long serialVersionUID = 0L;
 
-    private JButton openCollada;
+    private JButton openCollada, openStanford;
     private JButton close;
     private NativeCanvas canvas = new NativeCanvas();
 
@@ -83,6 +83,8 @@ public class JavaViewer extends JFrame implements ActionListener {
             super(BoxLayout.Y_AXIS);
             add(openCollada = new JButton("Open COLLADA file..."));
             openCollada.addActionListener(JavaViewer.this);
+            add(openStanford = new JButton("Open Stanford PLY file..."));
+            openStanford.addActionListener(JavaViewer.this);
             add(close = new JButton("Close file"));
             close.addActionListener(JavaViewer.this);
             add(new JPanel() {
@@ -124,6 +126,13 @@ public class JavaViewer extends JFrame implements ActionListener {
                     canvas.setRedraw();
                 else JOptionPane.showMessageDialog(this, "Cannot open " + f.getSelectedFile() + ". Check log for details.", "Cannot open COLLADA file", JOptionPane.ERROR_MESSAGE);
             }
+        } else if(e.getSource() == openStanford) {
+            JFileChooser f = new JFileChooser();
+            if(f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                if(openStanford(f.getSelectedFile().toString()))
+                    canvas.setRedraw();
+                else JOptionPane.showMessageDialog(this, "Cannot open " + f.getSelectedFile() + ". Check log for details.", "Cannot open Stanford PLY file", JOptionPane.ERROR_MESSAGE);
+            }
         } else if(e.getSource() == close) {
             close();
             canvas.setRedraw();
@@ -131,6 +140,7 @@ public class JavaViewer extends JFrame implements ActionListener {
     }
 
     private native boolean openCollada(String filename);
+    private native boolean openStanford(String filename);
     private native void close();
     private native void setLightColor(int id, float r, float g, float b);
 

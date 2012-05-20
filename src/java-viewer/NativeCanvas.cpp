@@ -111,6 +111,16 @@ JNIEXPORT jboolean JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_openCollad
     return viewer->openCollada(filename__);
 }
 
+JNIEXPORT jboolean JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_openStanford(JNIEnv* env, jobject, jstring filename) {
+    CORRADE_ASSERT(viewer, "Unable to access native implementation instance", false)
+
+    const char* filename_ = env->GetStringUTFChars(filename, nullptr);
+    std::string filename__(filename_);
+    env->ReleaseStringUTFChars(filename, filename_);
+
+    return viewer->openStanford(filename__);
+}
+
 JNIEXPORT void JNICALL Java_cz_mosra_magnum_JavaViewer_JavaViewer_close(JNIEnv*, jobject) {
     CORRADE_ASSERT(viewer, "Unable to access native implementation instance", )
 

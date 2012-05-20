@@ -18,6 +18,8 @@
 #include <memory>
 #include <IndexedMesh.h>
 #include <MeshTools/CompressIndices.h>
+#include <MeshTools/CombineIndexedArrays.h>
+#include <MeshTools/GenerateFlatNormals.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/Tipsify.h>
 #include <Trade/MeshData.h>
@@ -47,15 +49,20 @@ JavaViewer::JavaViewer(): _camera(&scene), manager(PLUGIN_IMPORTER_DIR), o(nullp
     _shader.setLightColorUniform(1, Vector3(0.2, 0.0, 0.0));
     _shader.setLightColorUniform(2, Vector3(1.0));
 
-    /* Load ColladaImporter plugin */
+    /* Load ColladaImporter and StanfordImporter plugins */
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
+        exit(1);
+    }
+    if(manager.load("StanfordImporter") != AbstractPluginManager::LoadOk) {
+        Error() << "Could not load StanfordImporter plugin";
         exit(1);
     }
 }
 
 JavaViewer::~JavaViewer() {
     manager.unload("ColladaImporter");
+    manager.unload("StanfordImporter");
 
     close();
 }
@@ -101,6 +108,67 @@ bool JavaViewer::openCollada(const std::string& filename) {
 
     colladaImporter->close();
     delete colladaImporter.release();
+
+    Debug() << "File opened successfully";
+
+    return true;
+}
+
+bool JavaViewer::openStanford(const std::string& filename) {
+    /* Close previously imported file */
+    close();
+
+    /* Instance StanfordImporter plugin */
+    unique_ptr<AbstractImporter> stanfordImporter(manager.instance("StanfordImporter"));
+    if(!stanfordImporter) {
+        Error() << "Could not instance StanfordImporter plugin";
+        return false;
+    }
+
+    Debug() << "Opening Stanford PLY file" << filename;
+
+    /* Load file */
+    if(!stanfordImporter->open(filename)) return false;
+
+    IndexedMesh* mesh = new IndexedMesh;
+    meshes.insert(make_pair(0, mesh));
+
+    MeshData* data = stanfordImporter->mesh(0);
+    if(!data || !data->indices() || !data->vertexArrayCount()) {
+        Warning() << "Mesh data don't have expected features";
+        return false;
+    }
+
+    Debug() << "Creating normals...";
+
+    /* Create normal array */
+    vector<unsigned int> normalIndices;
+    vector<Vector3> normals;
+    tie(normalIndices, normals) = MeshTools::generateFlatNormals(*data->indices(), *data->vertices(0));
+
+    /* Combine vertex and normal indices */
+    vector<unsigned int> indices = MeshTools::combineIndexedArrays(
+        make_tuple(cref(*data->indices()), ref(*data->vertices(0))),
+        make_tuple(cref(normalIndices), ref(normals)));
+
+    /* Optimize vertices */
+    Debug() << "Optimizing vertices of the mesh using Tipsify algorithm (cache size 24)...";
+    MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+
+    /* Interleave mesh data */
+    Buffer* buffer = mesh->addBuffer(true);
+    mesh->bindAttribute<PhongShader::Vertex>(buffer);
+    mesh->bindAttribute<PhongShader::Normal>(buffer);
+    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), normals);
+
+    /* Compress indices */
+    MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, indices);
+
+    /* Add object */
+    o = new ViewedObject(mesh, new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f), &_shader, &scene);
+
+    stanfordImporter->close();
+    delete stanfordImporter.release();
 
     Debug() << "File opened successfully";
 
