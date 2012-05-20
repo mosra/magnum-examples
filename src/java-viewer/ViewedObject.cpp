@@ -24,9 +24,9 @@ void ViewedObject::draw(const Magnum::Matrix4& transformationMatrix, Magnum::Cam
     shader->setSpecularColorUniform(specularColor);
     shader->setShininessUniform(shininess);
 
-    shader->setLightUniform(0, (camera->cameraMatrix()*Vector4(-3.0f, 10.0f, 10.0f)).xyz());
-    shader->setLightUniform(1, (camera->cameraMatrix()*Vector4(6.0f, 10.0f, 10.0f)).xyz());
-    shader->setLightUniform(2, (camera->cameraMatrix()*Vector4(0.0f, 10.0f, -10.0f)).xyz());
+    shader->setLightUniform(0, (camera->cameraMatrix()*Vector4(-30.0f, 100.0f, 100.0f)).xyz());
+    shader->setLightUniform(1, (camera->cameraMatrix()*Vector4(60.0f, 100.0f, 100.0f)).xyz());
+    shader->setLightUniform(2, (camera->cameraMatrix()*Vector4(0.0f, 100.0f, -100.0f)).xyz());
 
     shader->setTransformationMatrixUniform(transformationMatrix);
     shader->setProjectionMatrixUniform(camera->projectionMatrix());

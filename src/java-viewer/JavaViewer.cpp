@@ -37,7 +37,7 @@ using namespace Magnum::Trade;
 namespace Magnum { namespace Examples {
 
 JavaViewer::JavaViewer(): _camera(&scene), manager(PLUGIN_IMPORTER_DIR), o(nullptr) {
-    _camera.setPerspective(deg(35.0f), 0.001f, 100);
+    _camera.setPerspective(deg(35.0f), 0.001f, 1000);
     _camera.translate(Vector3::zAxis(5));
     _camera.setClearColor(Vector3(0.3f));
     Camera::setFeature(Camera::Feature::DepthTest, true);
