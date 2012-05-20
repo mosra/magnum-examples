@@ -60,13 +60,8 @@ JavaViewer::~JavaViewer() {
 }
 
 bool JavaViewer::openCollada(const std::string& filename) {
-    /* Delete previous imported file */
-    if(o) {
-        delete o;
-        for(auto i: meshes)
-            delete i.second;
-        meshes.clear();
-    }
+    /* Close previously imported file */
+    close();
 
     /* Instance ColladaImporter plugin */
     unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
@@ -111,6 +106,7 @@ void JavaViewer::close() {
 
     for(auto i: meshes)
         delete i.second;
+    meshes.clear();
 }
 
 void JavaViewer::press(const Math::Vector2<GLsizei>& position) {
