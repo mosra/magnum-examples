@@ -70,6 +70,8 @@ bool JavaViewer::openCollada(const std::string& filename) {
         return false;
     }
 
+    Debug() << "Opening COLLADA file" << filename;
+
     /* Load file */
     if(!colladaImporter->open(filename)) return false;
 
@@ -84,6 +86,8 @@ bool JavaViewer::openCollada(const std::string& filename) {
     /* Default object, parent of all (for manipulation) */
     o = new Object(&scene);
 
+    Debug() << "Adding default scene...";
+
     /* Load the scene */
     SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
@@ -96,6 +100,8 @@ bool JavaViewer::openCollada(const std::string& filename) {
 
     colladaImporter->close();
     delete colladaImporter.release();
+
+    Debug() << "File opened successfully";
 
     return true;
 }
