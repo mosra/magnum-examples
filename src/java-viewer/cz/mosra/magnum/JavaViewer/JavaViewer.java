@@ -52,68 +52,38 @@ public class JavaViewer extends JFrame implements ActionListener {
         }
     }
 
-    private class LightControl extends JPanel {
-        private static final long serialVersionUID = 0L;
-
-        private JFormattedTextField x_, y_, z_;
-
-        public LightControl(int id, float x, float y, float z, Color color) {
-            setLayout(new GridLayout(4, 2));
-            add(new JLabel("X:"));
-            x_ = new JFormattedTextField();
-            x_.setValue(x);
-            add(x_);
-            add(new JLabel("Y:"));
-            y_ = new JFormattedTextField();
-            y_.setValue(1.0f);
-            add(y_);
-            add(new JLabel("Z:"));
-            z_ = new JFormattedTextField();
-            z_.setValue(1.0f);
-            add(z_);
-            add(new JLabel("Color:"));
-            add(new ColoredLabel(id, color));
-        }
-    }
-
-    private class SceneControls extends Box {
-        private static final long serialVersionUID = 0L;
-
-        SceneControls() {
-            super(BoxLayout.Y_AXIS);
-            add(openCollada = new JButton("Open COLLADA file..."));
-            openCollada.addActionListener(JavaViewer.this);
-            add(openStanford = new JButton("Open Stanford PLY file..."));
-            openStanford.addActionListener(JavaViewer.this);
-            add(close = new JButton("Close file"));
-            close.addActionListener(JavaViewer.this);
-            add(new JPanel() {
-                private static final long serialVersionUID = 0L;
-
-                {
-                    setLayout(new GridLayout(1, 2));
-                    add(new JLabel("Clear color:"));
-                    add(new ColoredLabel(3, Color.lightGray));
-                }
-            });
-            add(new JSeparator(SwingConstants.HORIZONTAL));
-            add(new JLabel("<html><strong>Key light</strong></html>"));
-            add(new LightControl(0, -3.0f, 10.0f, 10.0f, Color.white));
-            add(new JSeparator(SwingConstants.HORIZONTAL));
-            add(new JLabel("<html><strong>Fill light</strong></html>"));
-            add(new LightControl(1, 6.0f, 10.0f, 10.0f, Color.gray));
-            add(new JSeparator(SwingConstants.HORIZONTAL));
-            add(new JLabel("<html><strong>Back light</strong></html>"));
-            add(new LightControl(2, 0.0f, 10.0f, -10.0f, Color.yellow));
-            add(Box.createVerticalStrut(1000));
-        }
-    }
-
     public JavaViewer() {
         super("Magnum/Java Viewer");
         setSize(800, 600);
         add(BorderLayout.CENTER, canvas);
-        add(BorderLayout.EAST, new SceneControls());
+        add(BorderLayout.EAST, new Box(BoxLayout.Y_AXIS) {
+            private static final long serialVersionUID = 0L;
+
+            {
+                add(openCollada = new JButton("Open COLLADA file..."));
+                openCollada.addActionListener(JavaViewer.this);
+                add(openStanford = new JButton("Open Stanford PLY file..."));
+                openStanford.addActionListener(JavaViewer.this);
+                add(close = new JButton("Close file"));
+                close.addActionListener(JavaViewer.this);
+                add(new JPanel() {
+                    private static final long serialVersionUID = 0L;
+
+                    {
+                        setLayout(new GridLayout(4, 2));
+                        add(new JLabel("Clear color:"));
+                        add(new ColoredLabel(3, Color.lightGray));
+                        add(new JLabel("Key light:"));
+                        add(new ColoredLabel(0, new Color(1.0f, 1.0f, 1.0f)));
+                        add(new JLabel("Fill light:"));
+                        add(new ColoredLabel(1, new Color(0.2f, 0.0f, 0.0f)));
+                        add(new JLabel("Back light:"));
+                        add(new ColoredLabel(2, new Color(1.0f, 1.0f, 1.0f)));
+                    }
+                });
+                add(Box.createVerticalStrut(1000));
+            }
+        });
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
