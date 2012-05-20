@@ -17,8 +17,9 @@
 
 #include <memory>
 #include <IndexedMesh.h>
-#include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
+#include <MeshTools/Interleave.h>
+#include <MeshTools/Tipsify.h>
 #include <Trade/MeshData.h>
 #include <Trade/MeshObjectData.h>
 #include <Trade/SceneData.h>
@@ -182,6 +183,10 @@ void JavaViewer::addObject(AbstractImporter* colladaImporter, Object* parent, un
                 Warning() << "Mesh data don't have expected features";
                 return;
             }
+
+            /* Optimize vertices */
+            Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
+            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
 
             /* Interleave mesh data */
             Buffer* buffer = mesh->addBuffer(true);
