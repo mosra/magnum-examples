@@ -56,7 +56,7 @@ class FramebufferExample: public AbstractExample {
             GLfloat texture[1024];
             for(size_t i = 0; i != 1024; ++i) {
                 GLfloat x = i*2/1023.0-1;
-                texture[i] = (sin(x*Math::Constants<float>::Pi)/3.7f+x+1)/2;
+                texture[i] = (sin(x*Math::Constants<float>::pi())/3.7f+x+1)/2;
             }
             colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
