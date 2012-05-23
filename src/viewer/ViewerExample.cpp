@@ -172,7 +172,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager<AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    PluginManager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
         exit(1);

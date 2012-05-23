@@ -1,8 +1,5 @@
-if(NOT WIN32)
-    set(PLUGIN_IMPORTER_DIR ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR})
-else()
-    set(PLUGIN_IMPORTER_DIR importers)
-endif()
+find_package(Magnum REQUIRED MeshTools Primitives)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
