@@ -1,10 +1,6 @@
-if(NOT WIN32)
-    set(PLUGIN_IMPORTER_DIR ${MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR})
-else()
-    set(PLUGIN_IMPORTER_DIR importers)
-endif()
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+find_package(Magnum REQUIRED MeshTools Shaders)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(magnum-viewer ViewerExample.cpp)

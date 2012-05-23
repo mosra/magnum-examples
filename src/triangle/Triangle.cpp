@@ -19,24 +19,21 @@
 
 namespace Magnum { namespace Examples {
 
-Triangle::Triangle(Object* parent): Object(parent), mesh(Mesh::Primitive::Triangles, 3) {
-    /* Vertices and colors, interleaved */
-    Vector4 data[] = {
-        Vector4(-0.5f, -0.5f, 0.0f),    Vector4(1.0f, 0.0f, 0.0f),  /* Red lower left vertex */
-        Vector4(0.5f, -0.5f, 0.0f),     Vector4(0.0f, 1.0f, 0.0f),  /* Green lower right vertex */
-        Vector4(0.0f, 0.5f, 0.0f),      Vector4(0.0f, 0.0f, 1.0f)   /* Blue top vertex */
+Triangle::Triangle(Magnum::Object* parent): Object(parent), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
+    static constexpr Magnum::Vector4 data[] = {
+        Magnum::Vector4(-0.5f, -0.5f, 0.0f),    Magnum::Vector4(1.0f, 0.0f, 0.0f),  /* Left vertex, red color */
+        Magnum::Vector4(0.5f, -0.5f, 0.0f),     Magnum::Vector4(0.0f, 1.0f, 0.0f),  /* Right vertex, green color */
+        Magnum::Vector4(0.0f, 0.5f, 0.0f),      Magnum::Vector4(0.0f, 0.0f, 1.0f)   /* Top vertex, blue color */
     };
 
-    /* Fill the mesh with data */
-    Buffer* buffer = mesh.addBuffer(true);
-    buffer->setData(sizeof(data), data, Buffer::Usage::StaticDraw);
+    Magnum::Buffer* buffer = mesh.addBuffer(Magnum::Mesh::BufferType::Interleaved);
+    buffer->setData(sizeof(data), data, Magnum::Buffer::Usage::StaticDraw);
 
-    /* Bind attributes (first vertex data, then color data) */
-    mesh.bindAttribute<IdentityShader::Vertex>(buffer);
-    mesh.bindAttribute<IdentityShader::Color>(buffer);
+    mesh.bindAttribute<TriangleShader::Vertex>(buffer);
+    mesh.bindAttribute<TriangleShader::Color>(buffer);
 }
 
-void Triangle::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void Triangle::draw(const Magnum::Matrix4&, Magnum::Camera*) {
     shader.use();
     mesh.draw();
 }

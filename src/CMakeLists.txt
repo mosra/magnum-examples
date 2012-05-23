@@ -1,13 +1,13 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x -fvisibility=hidden")
 
-find_package(GLUT REQUIRED)
+find_package(Magnum REQUIRED GlutContext)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CORRADE_INCLUDE_DIR} ${MAGNUM_INCLUDE_DIR})
 
 add_library(MagnumExample STATIC
-    AbstractExample.cpp
     FpsCounterExample.cpp
 )
+target_link_libraries(MagnumExample ${MAGNUM_GLUTCONTEXT_LIBRARY})
 if(WIN32)
     target_link_libraries(MagnumExample ${CORRADE_UTILITY_LIBRARY})
 endif()

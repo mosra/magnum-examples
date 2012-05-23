@@ -16,9 +16,9 @@
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
-#include "AbstractExample.h"
 #include "CubeMap.h"
 #include "configure.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class CubeMapExample: public AbstractExample {
+class CubeMapExample: public Contexts::GlutContext {
     public:
-        CubeMapExample(int& argc, char** argv): AbstractExample(argc, argv, "Cube map example") {
+        CubeMapExample(int& argc, char** argv): GlutContext(argc, argv, "Cube map example") {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(55.0f), 0.001f, 100);
@@ -39,10 +39,10 @@ class CubeMapExample: public AbstractExample {
             Camera::setFeature(Camera::Feature::FaceCulling, true);
 
             /* Load TGA importer plugin */
-            PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+            PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
             Trade::AbstractImporter* importer;
             if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
-                Error() << "Cannot load TGAImporter plugin from" << PLUGIN_IMPORTER_DIR;
+                Error() << "Cannot load TGAImporter plugin from" << manager.pluginDirectory();
                 exit(1);
             }
 
@@ -93,4 +93,7 @@ class CubeMapExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::CubeMapExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::CubeMapExample e(argc, argv);
+    return e.exec();
+}

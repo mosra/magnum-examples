@@ -14,12 +14,12 @@
 */
 
 #include "Scene.h"
+#include "Contexts/GlutContext.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
 #include "Primitives/Icosphere.h"
 #include "Shaders/PhongShader.h"
 
-#include "AbstractExample.h"
 #include "MotionBlurCamera.h"
 #include "IndexedMesh.h"
 #include "Icosphere.h"
@@ -29,9 +29,9 @@ using namespace Magnum::Shaders;
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurExample: public AbstractExample {
+class MotionBlurExample: public Contexts::GlutContext {
     public:
-        MotionBlurExample(int& argc, char** argv): AbstractExample(argc, argv, "Motion blur example") {
+        MotionBlurExample(int& argc, char** argv): GlutContext(argc, argv, "Motion blur example") {
             camera = new MotionBlurCamera(&scene);
             camera->setClearColor({0.1f, 0.1f, 0.1f});
             camera->setPerspective(deg(35.0f), 0.001f, 100);
@@ -41,7 +41,7 @@ class MotionBlurExample: public AbstractExample {
 
             Primitives::Icosphere<3> data;
             MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());
-            Buffer* buffer = mesh.addBuffer(true);
+            Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
             MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data.vertices(0), *data.normals(0));
             mesh.bindAttribute<PhongShader::Vertex>(buffer);
             mesh.bindAttribute<PhongShader::Normal>(buffer);
@@ -107,4 +107,7 @@ class MotionBlurExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::MotionBlurExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::MotionBlurExample e(argc, argv);
+    return e.exec();
+}

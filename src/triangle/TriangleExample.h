@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_IdentityShader_h
-#define Magnum_Examples_IdentityShader_h
+#ifndef Magnum_Examples_TriangleExample_h
+#define Magnum_Examples_TriangleExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,16 +15,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include "Scene.h"
+#include "Camera.h"
+#include "Contexts/GlutContext.h"
 
 namespace Magnum { namespace Examples {
 
-class IdentityShader: public AbstractShaderProgram {
+class TriangleExample: public Magnum::Contexts::GlutContext {
     public:
-        typedef Attribute<0, Vector4> Vertex;
-        typedef Attribute<1, Vector4> Color;
+        TriangleExample(int& argc, char** argv);
 
-        IdentityShader();
+    protected:
+        void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size);
+        void drawEvent();
+
+    private:
+        Magnum::Scene scene;
+        Magnum::Camera camera;
 };
 
 }}

@@ -28,9 +28,9 @@ comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
- * C++ compiler with good C++11 support. Currently the only compiler which
-   supports everything needed is **GCC** >= 4.6. **Clang** >= 3.1 (from SVN)
-   will probably work too.
+ * C++ compiler with good C++11 support. Currently there are two compilers
+   which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
+   >= 3.1.
  * **CMake** >= 2.6
  * **OpenGL headers**, on Linux most probably shipped with Mesa
  * **GLEW** - OpenGL extension wrangler

@@ -4,8 +4,6 @@ project(MagnumExamples)
 option(BUILD_TESTS "Build unit tests (requires Qt4)." OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${MagnumExamples_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
-find_package(MagnumPlugins REQUIRED)
 
 if(BUILD_TESTS)
     find_package(Qt4)

@@ -30,7 +30,7 @@ TexturedTriangle::TexturedTriangle(Trade::ImageData2D* image, Object* parent): O
     };
 
     /* Fill the mesh with data */
-    Buffer* buffer = mesh.addBuffer(true);
+    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
     buffer->setData(sizeof(data), data, Buffer::Usage::StaticDraw);
 
     /* Bind attributes (first vertex data, then color data) */

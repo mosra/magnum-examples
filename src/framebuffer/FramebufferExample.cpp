@@ -15,9 +15,9 @@
 
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
+#include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
-#include "AbstractExample.h"
 #include "Billboard.h"
 #include "ColorCorrectionCamera.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class FramebufferExample: public AbstractExample {
+class FramebufferExample: public Contexts::GlutContext {
     public:
-        FramebufferExample(int& argc, char** argv): AbstractExample(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
+        FramebufferExample(int& argc, char** argv): GlutContext(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
                 exit(0);
@@ -39,10 +39,10 @@ class FramebufferExample: public AbstractExample {
             camera = new ColorCorrectionCamera(&scene);
 
             /* Load TGA importer plugin */
-            PluginManager<Trade::AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+            PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
             Trade::AbstractImporter* importer;
             if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
-                Error() << "Cannot load TgaImporter plugin from" << PLUGIN_IMPORTER_DIR;
+                Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
                 exit(1);
             }
 
@@ -56,7 +56,7 @@ class FramebufferExample: public AbstractExample {
             GLfloat texture[1024];
             for(size_t i = 0; i != 1024; ++i) {
                 GLfloat x = i*2/1023.0-1;
-                texture[i] = (sin(x*Math::Constants<float>::Pi)/3.7f+x+1)/2;
+                texture[i] = (sin(x*Math::Constants<float>::pi())/3.7f+x+1)/2;
             }
             colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
@@ -104,4 +104,7 @@ class FramebufferExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::FramebufferExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::FramebufferExample e(argc, argv);
+    return e.exec();
+}

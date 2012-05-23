@@ -37,7 +37,7 @@ namespace Magnum { namespace Examples {
 CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
     Primitives::Cube cubeData;
     MeshTools::flipFaceWinding(*cubeData.indices());
-    Buffer* buffer = cube.addBuffer(false);
+    Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
     buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
     cube.setVertexCount(cubeData.vertices(0)->size());
     cube.bindAttribute<CubeMapShader::Vertex>(buffer);
