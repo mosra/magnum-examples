@@ -13,38 +13,24 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Scene.h"
-#include "Camera.h"
-#include "Contexts/GlutContext.h"
+#include "TriangleExample.h"
 
 #include "Triangle.h"
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Contexts::GlutContext {
-    public:
-        inline TriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Triangle example") {
-            /* Every scene needs a camera */
-            camera = new Camera(&scene);
+TriangleExample::TriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Triangle example"), camera(&scene) {
+    new Triangle(&scene);
+}
 
-            /* Add triangle to the scene */
-            new Triangle(&scene);
-        }
+void TriangleExample::viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {
+    camera.setViewport(size);
+}
 
-    protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
-            camera->setViewport(size);
-        }
-
-        inline void drawEvent() {
-            camera->draw();
-            swapBuffers();
-        }
-
-    private:
-        Scene scene;
-        Camera* camera;
-};
+void TriangleExample::drawEvent() {
+    camera.draw();
+    swapBuffers();
+}
 
 }}
 

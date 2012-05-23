@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Triangle_h
-#define Magnum_Examples_Triangle_h
+#ifndef Magnum_Examples_TriangleShader_h
+#define Magnum_Examples_TriangleShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,21 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
-#include "Mesh.h"
-#include "TriangleShader.h"
+#include "AbstractShaderProgram.h"
 
 namespace Magnum { namespace Examples {
 
-class Triangle: public Magnum::Object {
+class TriangleShader: public Magnum::AbstractShaderProgram {
     public:
-        Triangle(Magnum::Object* parent = nullptr);
+        typedef Magnum::AbstractShaderProgram::Attribute<0, Vector4> Vertex;
+        typedef Magnum::AbstractShaderProgram::Attribute<1, Vector4> Color;
 
-        void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
-
-    private:
-        Magnum::Mesh mesh;
-        TriangleShader shader;
+        TriangleShader();
 };
 
 }}
