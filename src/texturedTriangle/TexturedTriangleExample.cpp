@@ -17,9 +17,9 @@
 
 #include "Scene.h"
 #include "Camera.h"
+#include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
-#include "AbstractExample.h"
 #include "TexturedTriangle.h"
 
 #include "configure.h"
@@ -29,9 +29,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public AbstractExample {
+class TexturedTriangleExample: public Contexts::GlutContext {
     public:
-        TexturedTriangleExample(int& argc, char** argv): AbstractExample(argc, argv, "Textured triangle example") {
+        TexturedTriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Textured triangle example") {
             camera = new Camera(&scene);
 
             /* Load TGA importer plugin */
@@ -74,4 +74,8 @@ class TexturedTriangleExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::TexturedTriangleExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::TexturedTriangleExample e(argc, argv);
+    return e.exec();
+}
+

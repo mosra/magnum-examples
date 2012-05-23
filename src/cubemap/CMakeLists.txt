@@ -1,4 +1,4 @@
-find_package(Magnum REQUIRED MeshTools Primitives)
+find_package(Magnum REQUIRED GlutContext MeshTools Primitives)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
@@ -17,4 +17,4 @@ add_executable(cubeMapExample
     Reflector.cpp
     ReflectionShader.cpp
     ${CubeMapData})
-target_link_libraries(cubeMapExample MagnumExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${MAGNUM_MESHTOOLS_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY})
+target_link_libraries(cubeMapExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_GLUTCONTEXT_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${MAGNUM_MESHTOOLS_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARY} ${GLUT_LIBRARY})

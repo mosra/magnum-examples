@@ -16,9 +16,9 @@
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
-#include "AbstractExample.h"
 #include "CubeMap.h"
 #include "configure.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class CubeMapExample: public AbstractExample {
+class CubeMapExample: public Contexts::GlutContext {
     public:
-        CubeMapExample(int& argc, char** argv): AbstractExample(argc, argv, "Cube map example") {
+        CubeMapExample(int& argc, char** argv): GlutContext(argc, argv, "Cube map example") {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(55.0f), 0.001f, 100);
@@ -93,4 +93,7 @@ class CubeMapExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::CubeMapExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::CubeMapExample e(argc, argv);
+    return e.exec();
+}

@@ -293,4 +293,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::ViewerExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::ViewerExample e(argc, argv);
+    return e.exec();
+}

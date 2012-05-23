@@ -15,9 +15,9 @@
 
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
+#include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
-#include "AbstractExample.h"
 #include "Billboard.h"
 #include "ColorCorrectionCamera.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class FramebufferExample: public AbstractExample {
+class FramebufferExample: public Contexts::GlutContext {
     public:
-        FramebufferExample(int& argc, char** argv): AbstractExample(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
+        FramebufferExample(int& argc, char** argv): GlutContext(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
                 exit(0);
@@ -104,4 +104,7 @@ class FramebufferExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::FramebufferExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::FramebufferExample e(argc, argv);
+    return e.exec();
+}

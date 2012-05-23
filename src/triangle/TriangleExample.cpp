@@ -15,15 +15,15 @@
 
 #include "Scene.h"
 #include "Camera.h"
+#include "Contexts/GlutContext.h"
 
-#include "AbstractExample.h"
 #include "Triangle.h"
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public AbstractExample {
+class TriangleExample: public Contexts::GlutContext {
     public:
-        inline TriangleExample(int& argc, char** argv): AbstractExample(argc, argv, "Triangle example") {
+        inline TriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Triangle example") {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
 
@@ -48,4 +48,7 @@ class TriangleExample: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::TriangleExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::TriangleExample e(argc, argv);
+    return e.exec();
+}
