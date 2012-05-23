@@ -1,0 +1,17 @@
+namespace Magnum {
+/** @page Examples Examples
+
+ - @subpage ExamplesTriangle - @copybrief ExamplesTriangle
+
+@example triangle/TriangleExample.h
+@example triangle/TriangleExample.cpp
+@example triangle/CMakeLists.txt
+@example triangle/TriangleShader.h
+@example triangle/TriangleShader.cpp
+@example triangle/TriangleShader.vert
+@example triangle/TriangleShader.frag
+@example triangle/Triangle.h
+@example triangle/Triangle.cpp
+
+*/
+}
