@@ -41,7 +41,7 @@ class MotionBlurExample: public Contexts::GlutContext {
 
             Primitives::Icosphere<3> data;
             MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());
-            Buffer* buffer = mesh.addBuffer(true);
+            Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
             MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data.vertices(0), *data.normals(0));
             mesh.bindAttribute<PhongShader::Vertex>(buffer);
             mesh.bindAttribute<PhongShader::Normal>(buffer);
