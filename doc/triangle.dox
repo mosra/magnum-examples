@@ -7,25 +7,24 @@ scene, camera and add simple triangle to the scene.
 
 @tableofcontents
 
-@section ExamplesTriangleContext Setting up, adding camera and scene
+@section ExamplesTriangleContext Setting up, adding objects to the scene
 
 For this example we will use GLUT toolkit, which is implemented in
 Contexts::GlutContext class. We subclass it and implement two required
 functions, one which is called after the window is resized and one for
-rendering into the window. We also need to have scene instance,
-which will take care of all the objects and camera for doing the actual
-rendering.
+rendering into the window. We also need to have scene instance, which will
+take care of all the objects, and camera for doing the actual rendering.
 
 @dontinclude triangle/TriangleExample.h
 @skip class TriangleExample
 @until };
 
-In the constructor we pass necessary arguments to GLutContext class and
-attach the camera to scene. If we wouldn't do that, the camera will not know
-about any objects in the scene and thus won't be able to render anything.
-Next to the camera we added to the scene we also add our triangle, which we
-will implement later. We don't have to care about the instance, the scene will
-delete it on destruction.
+In the constructor we pass necessary arguments to @ref Contexts::GlutContext "GlutContext"
+class and attach the camera to scene. If we wouldn't do that, the camera will
+not know about any objects in the scene and thus won't be able to render
+anything. Next to the camera we added to the scene we also add our triangle,
+which we will implement later. We don't have to care about the instance, the
+scene will delete it on destruction.
 
 @dontinclude triangle/TriangleExample.cpp
 @skip TriangleExample::TriangleExample
