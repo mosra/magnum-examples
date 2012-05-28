@@ -69,8 +69,6 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("MotionBlurShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("MotionBlurShader.frag")));
 
-    bindAttribute(Vertex::Location, "vertex");
-
     link();
 
     stringstream ss;

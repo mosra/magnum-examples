@@ -26,9 +26,6 @@ ReflectionShader::ReflectionShader() {
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("ReflectionShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("ReflectionShader.frag")));
 
-    bindAttribute(Vertex::Location, "vertex");
-    bindAttribute(TextureCoords::Location, "textureCoords");
-
     link();
 
     modelViewMatrixUniform = uniformLocation("modelViewMatrix");

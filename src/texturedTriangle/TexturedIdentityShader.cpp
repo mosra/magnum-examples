@@ -26,9 +26,6 @@ TexturedIdentityShader::TexturedIdentityShader() {
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("TexturedIdentityShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("TexturedIdentityShader.frag")));
 
-    bindAttribute(Vertex::Location, "vertex");
-    bindAttribute(TextureCoordinates::Location, "textureCoordinates");
-
     link();
 
     textureUniform = uniformLocation("textureData");

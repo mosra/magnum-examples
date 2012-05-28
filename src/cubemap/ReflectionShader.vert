@@ -5,8 +5,8 @@ uniform mat4 projectionMatrix;
 uniform mat4 cameraMatrix;
 uniform float reflectivity;
 
-in vec4 vertex;
-in vec2 textureCoords;
+layout(location = 0) in vec4 vertex;
+layout(location = 1) in vec2 textureCoords;
 
 out float factor;
 out vec3 cubeMapTextureCoords;

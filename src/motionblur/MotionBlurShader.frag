@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 #define FrameCount 7
 

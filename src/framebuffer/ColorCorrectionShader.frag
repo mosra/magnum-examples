@@ -6,9 +6,9 @@ uniform samplerBuffer correctionTextureData;
 
 in vec2 textureCoords;
 
-out vec4 original;
-out vec4 grayscale;
-out vec4 corrected;
+layout(location = 0) out vec4 original;
+layout(location = 1) out vec4 grayscale;
+layout(location = 2) out vec4 corrected;
 
 void main() {
     /* Original color */

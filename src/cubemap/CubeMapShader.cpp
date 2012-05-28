@@ -29,8 +29,6 @@ CubeMapShader::CubeMapShader() {
     attachShader(vertexShader);
     attachShader(fragmentShader);
 
-    bindAttribute(Vertex::Location, "vertex");
-
     link();
 
     modelViewProjectionMatrixUniform = uniformLocation("modelViewProjectionMatrix");

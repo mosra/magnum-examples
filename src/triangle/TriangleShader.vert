@@ -1,7 +1,7 @@
 #version 330
 
-in vec4 vertex;
-in vec4 color;
+layout(location = 0) in vec4 vertex;
+layout(location = 1) in vec4 color;
 
 out vec4 varyingColor;
 
