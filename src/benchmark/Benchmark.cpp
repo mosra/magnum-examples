@@ -114,4 +114,7 @@ class Benchmark: public FpsCounterExample {
         int mode;
 };
 
-MAGNUM_EXAMPLE_MAIN(Benchmark)
+int main(int argc, char** argv) {
+    Benchmark e(argc, argv);
+    return e.exec();
+}

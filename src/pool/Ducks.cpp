@@ -48,7 +48,7 @@ Ducks* Ducks::tryCreate(PluginManager<Trade::AbstractImporter>* manager, Light* 
     ducks->color = static_cast<Trade::PhongMaterialData*>(material)->diffuseColor();
 
     /* Interleave mesh data */
-    Buffer* buffer = ducks->mesh.addBuffer(true);
+    Buffer* buffer = ducks->mesh.addBuffer(Mesh::BufferType::Interleaved);
     ducks->mesh.bindAttribute<PhongShader::Vertex>(buffer);
     ducks->mesh.bindAttribute<PhongShader::Normal>(buffer);
     MeshTools::interleave(&ducks->mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));

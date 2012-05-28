@@ -12,7 +12,7 @@ using namespace Magnum;
 using namespace Corrade::Utility;
 
 Sierpinski::Sierpinski(Object* parent): Object(parent), buffer(nullptr) {
-    buffer = mesh.addBuffer(true);
+    buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
 
     mesh.bindAttribute<ColorShader::Vertex>(buffer);
     mesh.bindAttribute<ColorShader::Color>(buffer);

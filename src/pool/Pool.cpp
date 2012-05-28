@@ -3,9 +3,9 @@
 #include <Scene.h>
 #include <Camera.h>
 #include <Light.h>
+#include <Contexts/GlutContext.h>
 #include <Trade/AbstractImporter.h>
 
-#include "AbstractExample.h"
 #include "Quad.h"
 #include "Ducks.h"
 
@@ -16,9 +16,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class Pool: public AbstractExample {
+class Pool: public Contexts::GlutContext {
     public:
-        Pool(int& argc, char** argv): AbstractExample(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR), ducks(nullptr) {
+        Pool(int& argc, char** argv): GlutContext(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR), ducks(nullptr) {
             /* Every scene needs a camera */
             camera = new Camera(&scene);
             camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
@@ -77,4 +77,7 @@ class Pool: public AbstractExample {
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::Pool)
+int main(int argc, char** argv) {
+    Magnum::Examples::Pool e(argc, argv);
+    return e.exec();
+}
