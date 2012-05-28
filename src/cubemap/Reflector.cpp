@@ -26,7 +26,7 @@
 namespace Magnum { namespace Examples {
 
 Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent): Object(parent), texture(texture), tarnishTexture(tarnishTexture) {
-    Buffer* buffer = sphere.addBuffer(true);
+    Buffer* buffer = sphere.addBuffer(Mesh::BufferType::Interleaved);
     Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
     MeshTools::interleave(&sphere, buffer, Buffer::Usage::StaticDraw, *sphereData.vertices(0), *sphereData.textureCoords2D(0));
     sphere.setVertexCount(sphereData.vertices(0)->size());

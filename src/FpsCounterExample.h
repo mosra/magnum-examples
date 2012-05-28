@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractExample.h"
+#include "Contexts/GlutContext.h"
 
 #include <chrono>
 
@@ -23,9 +23,10 @@
 
 namespace Magnum { namespace Examples {
 
-class FpsCounterExample : public Magnum::Examples::AbstractExample {
+/** @brief Base class for examples with FPS counter */
+class FpsCounterExample : public Contexts::GlutContext {
     public:
-        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): AbstractExample(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
+        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): GlutContext(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
 
         /**
          * @brief Minimal duration between printing FPS to console
@@ -96,7 +97,7 @@ class FpsCounterExample : public Magnum::Examples::AbstractExample {
 
     protected:
         /**
-         * @copydoc AbstractExample::viewportEvent()
+         * @copydoc GlutContext::viewportEvent()
          *
          * Calls reset() and saves viewport size.
          * @attention You have to call this function from your viewportEvent()
@@ -108,7 +109,7 @@ class FpsCounterExample : public Magnum::Examples::AbstractExample {
         }
 
         /**
-         * @copydoc AbstractExample::redraw()
+         * @copydoc GlutContext::redraw()
          *
          * Measures FPS in given duration and prints statistics to
          * console.

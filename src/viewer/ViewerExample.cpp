@@ -34,8 +34,6 @@
 
 using namespace std;
 using namespace Corrade::PluginManager;
-using namespace Corrade::Utility;
-using namespace Magnum;
 using namespace Magnum::Shaders;
 using namespace Magnum::Trade;
 using namespace Magnum::Examples;
@@ -172,7 +170,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager<AbstractImporter> manager(PLUGIN_IMPORTER_DIR);
+    PluginManager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
         exit(1);
@@ -259,7 +257,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
             MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
 
             /* Interleave mesh data */
-            Buffer* buffer = mesh->addBuffer(true);
+            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
             mesh->bindAttribute<PhongShader::Vertex>(buffer);
             mesh->bindAttribute<PhongShader::Normal>(buffer);
             MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
@@ -293,4 +291,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
 
 }}
 
-MAGNUM_EXAMPLE_MAIN(Magnum::Examples::ViewerExample)
+int main(int argc, char** argv) {
+    Magnum::Examples::ViewerExample e(argc, argv);
+    return e.exec();
+}

@@ -13,19 +13,13 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "IdentityShader.h"
-
-#include "Utility/Resource.h"
-
-using namespace Corrade::Utility;
+#include "TriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
-IdentityShader::IdentityShader() {
-    Resource rs("shader");
-
-    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("IdentityShader.vert")));
-    attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("IdentityShader.frag")));
+TriangleShader::TriangleShader() {
+    attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Vertex, "TriangleShader.vert"));
+    attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Fragment, "TriangleShader.frag"));
 
     bindAttribute(Vertex::Location, "vertex");
     bindAttribute(Color::Location, "color");

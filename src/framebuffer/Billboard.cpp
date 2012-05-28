@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), colorCorrectionTexture(1) {
     Primitives::Plane plane;
 
-    Buffer* buffer = mesh.addBuffer(false);
+    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
     buffer->setData(*plane.vertices(0), Buffer::Usage::StaticDraw);
     mesh.bindAttribute<ColorCorrectionShader::Vertex>(buffer);
 
