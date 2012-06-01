@@ -21,9 +21,6 @@ TriangleShader::TriangleShader() {
     attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Vertex, "TriangleShader.vert"));
     attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Fragment, "TriangleShader.frag"));
 
-    bindAttribute(Vertex::Location, "vertex");
-    bindAttribute(Color::Location, "color");
-
     link();
 }
 

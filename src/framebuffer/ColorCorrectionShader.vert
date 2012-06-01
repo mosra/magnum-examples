@@ -2,7 +2,7 @@
 
 uniform mat4 matrix;
 
-in vec4 vertex;
+layout(location = 0) in vec4 vertex;
 
 out vec2 textureCoords;
 

@@ -34,8 +34,6 @@
 
 using namespace std;
 using namespace Corrade::PluginManager;
-using namespace Corrade::Utility;
-using namespace Magnum;
 using namespace Magnum::Shaders;
 using namespace Magnum::Trade;
 using namespace Magnum::Examples;

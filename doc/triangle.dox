@@ -53,8 +53,7 @@ and assign vertex position to first slot and color to second:
 @until };
 
 In the constructor we load GLSL sources for fragment and vertex shader, attach
-them to shader program, bind attributes to their locations and link the
-program together:
+them to shader program and link the program together:
 
 @dontinclude triangle/TriangleShader.cpp
 @skip TriangleShader::TriangleShader

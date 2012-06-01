@@ -23,7 +23,6 @@
 
 #include "configure.h"
 
-using namespace Corrade::Utility;
 using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {

@@ -26,11 +26,6 @@ ColorCorrectionShader::ColorCorrectionShader() {
     attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("ColorCorrectionShader.vert")));
     attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("ColorCorrectionShader.frag")));
 
-    bindAttribute(Vertex::Location, "vertex");
-    bindFragmentDataLocation(0, "original");
-    bindFragmentDataLocation(1, "grayscale");
-    bindFragmentDataLocation(2, "corrected");
-
     link();
 
     matrixUniform = uniformLocation("matrix");
