@@ -5,7 +5,6 @@ project(JavaViewer C CXX Java)
 cmake_minimum_required(VERSION 2.8.8)
 
 find_package(Magnum REQUIRED)
-find_package(MagnumPlugins REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Java REQUIRED)
 find_package(JNI REQUIRED)

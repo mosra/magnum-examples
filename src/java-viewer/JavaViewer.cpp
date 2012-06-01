@@ -156,7 +156,7 @@ bool JavaViewer::openStanford(const std::string& filename) {
     MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
 
     /* Interleave mesh data */
-    Buffer* buffer = mesh->addBuffer(true);
+    Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
     mesh->bindAttribute<PhongShader::Vertex>(buffer);
     mesh->bindAttribute<PhongShader::Normal>(buffer);
     MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), normals);
@@ -257,7 +257,7 @@ void JavaViewer::addObject(AbstractImporter* colladaImporter, Object* parent, un
             MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
 
             /* Interleave mesh data */
-            Buffer* buffer = mesh->addBuffer(true);
+            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
             mesh->bindAttribute<PhongShader::Vertex>(buffer);
             mesh->bindAttribute<PhongShader::Normal>(buffer);
             MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
