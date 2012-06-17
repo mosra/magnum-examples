@@ -1,7 +1,10 @@
 namespace Magnum {
-/** @page Examples Examples
+/** @page example-index Examples
+@brief Learn by examples to get started as soon as possible.
 
- - @subpage ExamplesTriangle - @copybrief ExamplesTriangle
+ - @subpage examples-triangle - @copybrief examples-triangle
+
+@todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 
 @example triangle/TriangleExample.h
 @example triangle/TriangleExample.cpp

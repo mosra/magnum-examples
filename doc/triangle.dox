@@ -1,5 +1,5 @@
 namespace Magnum {
-/** @page ExamplesTriangle Your first triangle
+/** @page examples-triangle Your first triangle
 @brief In this example you will learn how to create OpenGL context, setup
 scene, camera and add simple triangle to the scene.
 
@@ -7,7 +7,7 @@ scene, camera and add simple triangle to the scene.
 
 @tableofcontents
 
-@section ExamplesTriangleContext Setting up, adding objects to the scene
+@section examples-triangle-context Setting up, adding objects to the scene
 
 For this example we will use GLUT toolkit, which is implemented in
 Contexts::GlutContext class. We subclass it and implement two required
@@ -42,7 +42,7 @@ so we need to swap the buffers after drawing.
  - @ref triangle/Triangle.cpp
  - @ref triangle/CMakeLists.txt
 
-@section ExamplesTriangleShader Triangle shader
+@section examples-triangle-shader Triangle shader
 
 Our shader is pretty simple - it takes only vertex position and color and
 doesn't need any uniform to operate. We define both attributes as @ref Vector4
@@ -64,7 +64,7 @@ them to shader program and link the program together:
  - @ref triangle/TriangleShader.vert
  - @ref triangle/TriangleShader.frag
 
-@section ExamplesTriangleObject Triangle object
+@section examples-triangle-object Triangle object
 
 Last thing we need to create is the actual triangle. All objects in the scene
 are subclasses of Object. If the object is meant to draw anything on the
