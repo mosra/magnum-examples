@@ -1,6 +1,8 @@
 Here are various examples for Magnum OpenGL 3 engine, demonstrating Magnum
 features, usage and capabilities. If you don't know what Magnum is,
-see https://github.com/mosra/magnum . Featured examples:
+see https://github.com/mosra/magnum. The examples are explained in the
+documentation, which is also available online at
+http://mosra.cz/blog/magnum-doc/example-index.html. Featured examples:
 
  * **Triangle** - *Hello World* of 3D graphics, displaying triangle with
    interpolated colors.
