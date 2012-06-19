@@ -2,7 +2,7 @@ This example demonstrates usage of cube map textures and different texture
 layers for simulation of open world with two tarnish reflective spheres in
 front of the camera.
 
-![Cube Map](https://github.com/mosra/magnum-examples/raw/master/src/cubemap/screenshot.png)
+![Cube Map](https://github.com/mosra/magnum-examples/raw/master/src/cubemap/cubemap.png)
 
 Usage
 -----

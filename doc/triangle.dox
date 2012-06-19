@@ -3,7 +3,7 @@ namespace Magnum {
 @brief In this example you will learn how to create OpenGL context, setup
 scene, camera and add simple triangle to the scene.
 
-@image html triangle/screenshot.png
+@image html triangle/triangle.png
 
 @tableofcontents
 
