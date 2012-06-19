@@ -3,6 +3,7 @@ namespace Magnum {
 @brief Learn by examples to get started as soon as possible.
 
  - @subpage examples-triangle - @copybrief examples-triangle
+ - @subpage examples-textured-triangle - @copybrief examples-textured-triangle
 
 @todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 
@@ -15,6 +16,17 @@ namespace Magnum {
 @example triangle/TriangleShader.frag
 @example triangle/Triangle.h
 @example triangle/Triangle.cpp
+
+@example textured-triangle/TexturedTriangleExample.h
+@example textured-triangle/TexturedTriangleExample.cpp
+@example textured-triangle/configure.h.cmake
+@example textured-triangle/CMakeLists.txt
+@example textured-triangle/TexturedTriangleShader.h
+@example textured-triangle/TexturedTriangleShader.cpp
+@example textured-triangle/TexturedTriangleShader.vert
+@example textured-triangle/TexturedTriangleShader.frag
+@example textured-triangle/TexturedTriangle.h
+@example textured-triangle/TexturedTriangle.cpp
 
 */
 }

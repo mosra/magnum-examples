@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TexturedTriangle_h
-#define Magnum_Examples_TexturedTriangle_h
+#ifndef Magnum_Examples_TexturedTriangleExample_h
+#define Magnum_Examples_TexturedTriangleExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,25 +15,29 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
-#include "Mesh.h"
-#include "Texture.h"
-#include "Trade/ImageData.h"
-
-#include "TexturedIdentityShader.h"
+#include "Scene.h"
+#include "Camera.h"
+#include "Contexts/GlutContext.h"
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangle: public Object {
+class TexturedTriangleExample: public Magnum::Contexts::GlutContext {
     public:
-        TexturedTriangle(Trade::ImageData2D* image, Object* parent = nullptr);
+        TexturedTriangleExample(int& argc, char** argv);
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+    protected:
+        inline void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {
+            camera.setViewport(size);
+        }
+
+        inline void drawEvent() {
+            camera.draw();
+            swapBuffers();
+        }
 
     private:
-        Mesh mesh;
-        TexturedIdentityShader shader;
-        Texture2D texture;
+        Magnum::Scene scene;
+        Magnum::Camera camera;
 };
 
 }}

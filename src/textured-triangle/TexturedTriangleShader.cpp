@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_TexturedIdentityShader_h
-#define Magnum_Examples_TexturedIdentityShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,25 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include "TexturedTriangleShader.h"
+
+#include <Utility/Resource.h>
 
 namespace Magnum { namespace Examples {
 
-class TexturedIdentityShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector4> Vertex;
-        typedef Attribute<1, Vector2> TextureCoordinates;
+TexturedTriangleShader::TexturedTriangleShader() {
+    Corrade::Utility::Resource rs("data");
+    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("TexturedTriangleShader.vert")));
+    attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("TexturedTriangleShader.frag")));
 
-        TexturedIdentityShader();
+    link();
 
-        inline void setTextureUniform(const AbstractTexture* texture) {
-            setUniform(textureUniform, texture);
-        }
+    baseColorUniform = uniformLocation("baseColor");
 
-    private:
-        GLint textureUniform;
-};
+    use();
+    setUniform(uniformLocation("textureData"), TextureLayer);
+}
 
 }}
-
-#endif
