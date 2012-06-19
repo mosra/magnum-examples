@@ -15,12 +15,12 @@
 
 #include "Triangle.h"
 
-#include "Buffer.h"
+#include <Buffer.h>
 
 namespace Magnum { namespace Examples {
 
 Triangle::Triangle(Magnum::Object* parent): Object(parent), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
-    static constexpr Magnum::Vector4 data[] = {
+    constexpr static Magnum::Vector4 data[] = {
         Magnum::Vector4(-0.5f, -0.5f, 0.0f),    Magnum::Vector4(1.0f, 0.0f, 0.0f),  /* Left vertex, red color */
         Magnum::Vector4(0.5f, -0.5f, 0.0f),     Magnum::Vector4(0.0f, 1.0f, 0.0f),  /* Right vertex, green color */
         Magnum::Vector4(0.0f, 0.5f, 0.0f),      Magnum::Vector4(0.0f, 0.0f, 1.0f)   /* Top vertex, blue color */

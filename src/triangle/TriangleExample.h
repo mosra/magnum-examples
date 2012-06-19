@@ -15,9 +15,9 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Scene.h"
-#include "Camera.h"
-#include "Contexts/GlutContext.h"
+#include <Scene.h>
+#include <Camera.h>
+#include <Contexts/GlutContext.h>
 
 namespace Magnum { namespace Examples {
 

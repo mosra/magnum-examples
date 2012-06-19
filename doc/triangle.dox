@@ -38,8 +38,8 @@ so we need to swap the buffers after drawing.
 @until }
 @until }
 
- - @ref triangle/Triangle.h
- - @ref triangle/Triangle.cpp
+ - @ref triangle/TriangleExample.h
+ - @ref triangle/TriangleExample.cpp
  - @ref triangle/CMakeLists.txt
 
 @section examples-triangle-shader Triangle shader

@@ -15,8 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
-#include "Mesh.h"
+#include <Object.h>
+#include <Mesh.h>
 #include "TriangleShader.h"
 
 namespace Magnum { namespace Examples {

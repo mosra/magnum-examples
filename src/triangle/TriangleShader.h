@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 
