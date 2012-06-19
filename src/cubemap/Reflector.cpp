@@ -36,7 +36,6 @@ Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object*
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
-    texture->bind();
     shader()->use();
     shader()->setModelViewMatrixUniform(transformationMatrix);
     shader()->setProjectionMatrixUniform(camera->projectionMatrix());
@@ -45,8 +44,8 @@ void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader()->setReflectivityUniform(2.0f);
     shader()->setDiffuseColorUniform(Vector3(0.3f, 0.3f, 0.3f));
     shader()->setCameraMatrixUniform(cameraMatrix);
-    shader()->setTextureUniform(texture);
-    shader()->setTarnishTextureUniform(tarnishTexture);
+    texture->bind(ReflectionShader::TextureLayer);
+    tarnishTexture->bind(ReflectionShader::TarnishTextureLayer);
     sphere.draw();
 }
 

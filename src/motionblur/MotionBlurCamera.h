@@ -27,7 +27,7 @@ namespace Magnum { namespace Examples {
 
 class MotionBlurCamera: public Camera {
     public:
-        static const size_t FrameCount = 7;
+        static const GLint FrameCount = 7;
 
         MotionBlurCamera(Object* parent = nullptr);
 
@@ -41,14 +41,9 @@ class MotionBlurCamera: public Camera {
             public:
                 typedef Attribute<0, Vector4> Vertex;
 
+                /* Frame texture layers are from 0 to FrameCount */
+
                 MotionBlurShader();
-
-                inline void setFrameUniform(size_t id, Texture2D* frame) {
-                    setUniform(frameUniforms[id], frame);
-                }
-
-            private:
-                GLint frameUniforms[MotionBlurCamera::FrameCount];
         };
 
         class MotionBlurCanvas: public Object {

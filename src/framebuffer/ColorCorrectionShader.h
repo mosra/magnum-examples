@@ -16,7 +16,6 @@
 */
 
 #include "AbstractShaderProgram.h"
-#include "Texture.h"
 
 namespace Magnum { namespace Examples {
 
@@ -30,24 +29,17 @@ class ColorCorrectionShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector4> Vertex;
 
+        static const GLint TextureLayer = 0;
+        static const GLint ColorCorrectionTextureLayer = 1;
+
         ColorCorrectionShader();
 
         inline void setMatrixUniform(const Matrix4& matrix) {
             setUniform(matrixUniform, matrix);
         }
 
-        inline void setTextureUniform(const Texture2D* texture) {
-            setUniform(textureUniform, texture);
-        }
-
-        inline void setCorrectionTextureUniform(const BufferedTexture* texture) {
-            setUniform(correctionTextureUniform, texture);
-        }
-
     private:
-        GLint matrixUniform,
-            textureUniform,
-            correctionTextureUniform;
+        GLint matrixUniform;
 };
 
 }}

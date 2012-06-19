@@ -33,8 +33,10 @@ ReflectionShader::ReflectionShader() {
     cameraMatrixUniform = uniformLocation("cameraMatrix");
     reflectivityUniform = uniformLocation("reflectivity");
     diffuseColorUniform = uniformLocation("diffuseColor");
-    textureUniform = uniformLocation("textureData");
-    tarnishTextureUniform = uniformLocation("tarnishTextureData");
+
+    use();
+    setUniform(uniformLocation("textureData"), TextureLayer);
+    setUniform(uniformLocation("tarnishTextureData"), TarnishTextureLayer);
 }
 
 }}

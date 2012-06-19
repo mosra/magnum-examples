@@ -26,8 +26,8 @@ using namespace Corrade::Utility;
 namespace Magnum { namespace Examples {
 
 MotionBlurCamera::MotionBlurCamera(Object* parent): Camera(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
-    for(size_t i = 0; i != FrameCount; ++i) {
-        frames[i] = new Texture2D(i);
+    for(GLint i = 0; i != FrameCount; ++i) {
+        frames[i] = new Texture2D;
         frames[i]->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge));
         frames[i]->setMinificationFilter(AbstractTexture::Filter::NearestNeighbor);
         frames[i]->setMagnificationFilter(AbstractTexture::Filter::NearestNeighbor);
@@ -35,7 +35,7 @@ MotionBlurCamera::MotionBlurCamera(Object* parent): Camera(parent), framebuffer(
 }
 
 MotionBlurCamera::~MotionBlurCamera() {
-    for(size_t i = 0; i != FrameCount; ++i)
+    for(GLint i = 0; i != FrameCount; ++i)
         delete frames[i];
 }
 
@@ -49,7 +49,7 @@ void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
-    for(size_t i = 0; i != FrameCount; ++i)
+    for(GLint i = 0; i != FrameCount; ++i)
         frames[i]->setData(0, AbstractTexture::Format::RGB, &framebuffer);
 }
 
@@ -71,11 +71,12 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
 
     link();
 
+    use();
     stringstream ss;
-    for(size_t i = 0; i != MotionBlurCamera::FrameCount; ++i) {
+    for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i) {
         ss.str("");
         ss << "frame[" << i << ']';
-        frameUniforms[i] = uniformLocation(ss.str());
+        setUniform(uniformLocation(ss.str()), i);
     }
 }
 
@@ -94,8 +95,8 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object*
 
 void MotionBlurCamera::MotionBlurCanvas::draw(size_t currentFrame) {
     shader.use();
-    for(size_t i = 0; i != MotionBlurCamera::FrameCount; ++i)
-        shader.setFrameUniform((i+currentFrame)%MotionBlurCamera::FrameCount, frames[(i+currentFrame)%MotionBlurCamera::FrameCount]);
+    for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i)
+        frames[i]->bind((i+currentFrame)%MotionBlurCamera::FrameCount);
     mesh.draw();
 }
 

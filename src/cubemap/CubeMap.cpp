@@ -34,7 +34,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
+CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
     Primitives::Cube cubeData;
     MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
@@ -97,10 +97,9 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, Camera* camera) {
-    texture.bind();
     shader.use();
     shader.setModelViewProjectionMatrixUniform(camera->projectionMatrix()*transformationMatrix);
-    shader.setTextureUniform(&texture);
+    texture.bind(CubeMapShader::TextureLayer);
     cube.draw();
 }
 

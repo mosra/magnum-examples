@@ -25,18 +25,16 @@ class CubeMapShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector4> Vertex;
 
+        static const GLint TextureLayer = 0;
+
         CubeMapShader();
 
         void setModelViewProjectionMatrixUniform(const Matrix4& matrix) {
             setUniform(modelViewProjectionMatrixUniform, matrix);
         }
 
-        void setTextureUniform(const CubeMapTexture* texture) {
-            setUniform(textureUniform, texture);
-        }
-
     private:
-        GLint textureUniform, modelViewProjectionMatrixUniform;
+        GLint modelViewProjectionMatrixUniform;
 };
 
 }}

@@ -2,7 +2,7 @@
 #define CORRECTION_TEXTURE_SIZE 1024
 
 uniform sampler2D textureData;
-uniform samplerBuffer correctionTextureData;
+uniform samplerBuffer colorCorrectionTextureData;
 
 in vec2 textureCoords;
 
@@ -20,7 +20,7 @@ void main() {
     grayscale = vec4(gray, gray, gray, 1.0);
 
     /* Color corrected */
-    corrected.r = texelFetch(correctionTextureData, int(color.r*CORRECTION_TEXTURE_SIZE-1)).r;
-    corrected.g = texelFetch(correctionTextureData, int(color.g*CORRECTION_TEXTURE_SIZE-1)).r;
-    corrected.b = texelFetch(correctionTextureData, int(color.b*CORRECTION_TEXTURE_SIZE-1)).r;
+    corrected.r = texelFetch(colorCorrectionTextureData, int(color.r*CORRECTION_TEXTURE_SIZE-1)).r;
+    corrected.g = texelFetch(colorCorrectionTextureData, int(color.g*CORRECTION_TEXTURE_SIZE-1)).r;
+    corrected.b = texelFetch(colorCorrectionTextureData, int(color.b*CORRECTION_TEXTURE_SIZE-1)).r;
 }

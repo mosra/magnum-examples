@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include "BufferedTexture.h"
 #include "Object.h"
 #include "Mesh.h"
 #include "Texture.h"

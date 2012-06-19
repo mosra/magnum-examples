@@ -26,6 +26,9 @@ class ReflectionShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector4> Vertex;
         typedef Attribute<1, Vector2> TextureCoords;
 
+        static const GLint TextureLayer = 0;
+        static const GLint TarnishTextureLayer = 1;
+
         ReflectionShader();
 
         void setModelViewMatrixUniform(const Matrix4& matrix) {
@@ -48,22 +51,12 @@ class ReflectionShader: public AbstractShaderProgram {
             setUniform(diffuseColorUniform, color);
         }
 
-        void setTextureUniform(const CubeMapTexture* texture) {
-            setUniform(textureUniform, texture);
-        }
-
-        void setTarnishTextureUniform(const Texture2D* texture) {
-            setUniform(tarnishTextureUniform, texture);
-        }
-
     private:
         GLint modelViewMatrixUniform,
             projectionMatrixUniform,
             cameraMatrixUniform,
             reflectivityUniform,
-            diffuseColorUniform,
-            textureUniform,
-            tarnishTextureUniform;
+            diffuseColorUniform;
 };
 
 }}

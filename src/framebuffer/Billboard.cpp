@@ -21,7 +21,7 @@
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), colorCorrectionTexture(1) {
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
     Primitives::Plane plane;
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
@@ -41,8 +41,8 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
 void Billboard::draw(const Matrix4& transformationMatrix, Camera* camera) {
     shader.use();
     shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
-    shader.setTextureUniform(&texture);
-    shader.setCorrectionTextureUniform(&colorCorrectionTexture);
+    texture.bind(ColorCorrectionShader::TextureLayer);
+    colorCorrectionTexture.bind(ColorCorrectionShader::ColorCorrectionTextureLayer);
 
     mesh.draw();
 }
