@@ -83,7 +83,8 @@ with `TextureLayer` constant.
 In the constructor we load GLSL sources from compiled-in resources, attach
 and link and then retrieve location for the base color uniform. Then we set
 texture layer uniform to fixed value, so it doesn't have to be set manually
-when using the shader for rendering.
+when using the shader for rendering. With OpenGL 4.2 we can also set it
+explicitly inside the shader itself, see @ref AbstractShaderProgramTextureLayer.
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
 @skip TexturedTriangleShader::TexturedTriangleShader
 @until }
