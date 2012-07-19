@@ -40,7 +40,6 @@ so we need to swap the buffers after drawing.
 
  - @ref triangle/TriangleExample.h
  - @ref triangle/TriangleExample.cpp
- - @ref triangle/CMakeLists.txt
 
 @section examples-triangle-shader Triangle shader
 
@@ -112,6 +111,23 @@ done using our shader and then we draw the mesh:
 
 - @ref triangle/Triangle.h
 - @ref triangle/Triangle.cpp
+
+@section examples-triangle-compilation Compilation
+
+Now we can compile the whole example using CMake. First we find required
+%Magnum package with GlutContext library and add its include dir.
+
+@dontinclude triangle/CMakeLists.txt
+@skip find_package
+@until include_directories
+
+Then we collect our source files, create our executable and link to %Magnum
+libraries.
+
+@skip add_executable
+@until MAGNUM_GLUTCONTEXT_LIBRARIES})
+
+- @ref triangle/CMakeLists.txt
 
 */
 }

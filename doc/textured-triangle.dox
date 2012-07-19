@@ -29,12 +29,7 @@ The basic skeleton of main example class remains the same as in previous
 example. The only difference is the constructor, where we will load the
 texture using TGA importer plugin. The plugins are stored in some directory
 which we need to know. The path is provided in `MAGNUM_PLUGINS_IMPORTER_DIR`
-by CMake, so we use CMake to generate header with this value to have it
-available in the source:
-@include textured-triangle/configure.h.cmake
-@dontinclude textured-triangle/CMakeLists.txt
-@skip configure_file
-@until ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+by CMake, which we will discuss later.
 
 In the constructor we will instantiate the plugin manager with given plugin
 directory and try to load TgaImporter plugin. If the plugin cannot be loaded
@@ -44,14 +39,9 @@ or instantiated, we print error message and exit immediately.
 @until }
 
 Now we need to load the texture. As advertised above, the texture is stored
-as resource in the executable. The resource data are compiled into source
-file using CMake:
-@dontinclude textured-triangle/CMakeLists.txt
-@skipline corrade_add_resource
-
-The resulting file is later compiled into the executable among all other
-files. We now access the resource (using the same group name as specified in
-`CMakeLists.txt` file above) and load the texture image using the plugin:
+as resource in the executable. The resource data will be compiled into source
+file using CMake later. We access the resource and load the texture image
+using the plugin:
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip Corrade::Utility::Resource
 @until }
@@ -66,8 +56,6 @@ when trying to load the plugin again.
 
  - @ref textured-triangle/TexturedTriangleExample.h
  - @ref textured-triangle/TexturedTriangleExample.cpp
- - @ref textured-triangle/configure.h.cmake
- - @ref textured-triangle/CMakeLists.txt
 
 @section examples-textured-triangle-shader Textured triangle shader
 
@@ -126,6 +114,42 @@ color to light red, bind texture to the desired layer and perform the drawing.
 
  - @ref textured-triangle/TexturedTriangle.h
  - @ref textured-triangle/TexturedTriangle.cpp
+
+@section examples-textured-triangle-compilation Compilation
+
+Compilation is not as straightforward as in previous example, because we need
+to get directory with importer plugins and compile the resources into
+executable.
+
+@dontinclude textured-triangle/CMakeLists.txt
+@skip find_package
+@until include_directories
+
+First we find required %Magnum package and use its include dir. We also need
+to include current binary dir, because it will contain our generated
+`configure.h`. We create it from template `configure.h.cmake` with these
+contents:
+
+@include textured-triangle/configure.h.cmake
+
+We then process it with CMake, which will replace
+`${MAGNUM_PLUGINS_IMPORTER_DIR}` with path gathered when looking for %Magnum.
+
+@dontinclude textured-triangle/CMakeLists.txt
+@skip configure_file
+@until ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+
+Now we compile the resources using `corrade_add_resource()` macro. Important
+thing is to use the same resource name as when we were accessing them above
+(`data`). Then we create executable from the result and other source files.
+Last step is linking, the same as previously.
+
+@dontinclude textured-triangle/CMakeLists.txt
+@skip corrade_add_resource
+@until ${MAGNUM_GLUTCONTEXT_LIBRARIES})
+
+ - @ref textured-triangle/configure.h.cmake
+ - @ref textured-triangle/CMakeLists.txt
 
 */
 }
