@@ -37,18 +37,18 @@ void ColorCorrectionCamera::draw() {
     framebuffer.mapForRead(Original);
     Framebuffer::blit({0, 0}, viewport(),
                       {0, viewport().y()/2}, {viewport().x()/2, viewport().y()},
-                      Framebuffer::BlitMask::Color, AbstractTexture::Filter::LinearInterpolation);
+                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
 
     /* Grayscale at top right */
     framebuffer.mapForRead(Grayscale);
     Framebuffer::blit({0, 0}, viewport(), viewport()/2, viewport(),
-                      Framebuffer::BlitMask::Color, AbstractTexture::Filter::LinearInterpolation);
+                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
 
     /* Color corrected at bottom */
     framebuffer.mapForRead(Corrected);
     Framebuffer::blit({0, 0}, viewport(),
                       {viewport().x()/4, 0}, {viewport().x()*3/4, viewport().y()/2},
-                      Framebuffer::BlitMask::Color, AbstractTexture::Filter::LinearInterpolation);
+                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
 }
 
 void ColorCorrectionCamera::setViewport(const Math::Vector2<GLsizei>& size) {

@@ -13,6 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include "Framebuffer.h"
 #include "Scene.h"
 #include "Contexts/GlutContext.h"
 #include "MeshTools/CompressIndices.h"
@@ -33,11 +34,11 @@ class MotionBlurExample: public Contexts::GlutContext {
     public:
         MotionBlurExample(int& argc, char** argv): GlutContext(argc, argv, "Motion blur example") {
             camera = new MotionBlurCamera(&scene);
-            camera->setClearColor({0.1f, 0.1f, 0.1f});
             camera->setPerspective(deg(35.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3.0f));
-            Camera::setFeature(Camera::Feature::DepthTest, true);
-            Camera::setFeature(Camera::Feature::FaceCulling, true);
+            Framebuffer::setClearColor({0.1f, 0.1f, 0.1f});
+            Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
+            Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
             Primitives::Icosphere<3> data;
             MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());

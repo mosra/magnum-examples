@@ -16,6 +16,7 @@
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Framebuffer.h"
 #include "Contexts/GlutContext.h"
 #include "Trade/AbstractImporter.h"
 
@@ -34,8 +35,8 @@ class CubeMapExample: public Contexts::GlutContext {
             camera = new Camera(&scene);
             camera->setPerspective(deg(55.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3));
-            Camera::setFeature(Camera::Feature::DepthTest, true);
-            Camera::setFeature(Camera::Feature::FaceCulling, true);
+            Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
+            Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
             /* Load TGA importer plugin */
             PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);

@@ -19,6 +19,7 @@
 #include "PluginManager/PluginManager.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "Framebuffer.h"
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData.h"
 #include "Trade/MeshObjectData.h"
@@ -180,7 +181,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         Error() << "Could not instance ColladaImporter plugin";
         exit(2);
     }
-    if(!(colladaImporter->features() & AbstractImporter::OpenFile)) {
+    if(!(colladaImporter->features() & AbstractImporter::Feature::OpenFile)) {
         Error() << "ColladaImporter cannot open files";
         exit(3);
     }
@@ -189,8 +190,8 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     camera = new Camera(&scene);
     camera->setPerspective(deg(35.0f), 0.001f, 100);
     camera->translate(Vector3::zAxis(5));
-    Camera::setFeature(Camera::Feature::DepthTest, true);
-    Camera::setFeature(Camera::Feature::FaceCulling, true);
+    Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
+    Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
     Debug() << "Opening file" << argv[1];
 
@@ -276,7 +277,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent,
             ++materialCount;
 
             material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData*>(object)->material()));
-            if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+            if(!material) material = new PhongMaterialData("", {0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
         }
 
         /* Add object */
