@@ -74,7 +74,7 @@ class FramebufferExample: public Contexts::GlutContext {
             swapBuffers();
         }
 
-        void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {
+        void mouseEvent(MouseButton button, MouseState, const Math::Vector2<int>& position) {
             if(button == MouseButton::WheelUp)
                 billboard->scale(Vector3(5.0f/4));
             else if(button == MouseButton::WheelDown)

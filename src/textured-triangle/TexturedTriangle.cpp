@@ -46,7 +46,7 @@ TexturedTriangle::TexturedTriangle(Magnum::Trade::ImageData2D* image, Magnum::Ob
     texture.setWrapping(Magnum::Math::Vector2<Magnum::Texture2D::Wrapping>(Magnum::Texture2D::Wrapping::ClampToEdge));
 }
 
-void TexturedTriangle::draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera) {
+void TexturedTriangle::draw(const Magnum::Matrix4&, Magnum::Camera*) {
     shader.use();
     shader.setBaseColorUniform({1.0f, 0.7f, 0.7f});
     texture.bind(TexturedTriangleShader::TextureLayer);

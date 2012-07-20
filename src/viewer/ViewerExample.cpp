@@ -62,7 +62,7 @@ class ViewerExample: public FpsCounterExample {
             if(fpsCounterEnabled()) redraw();
         }
 
-        void keyEvent(Key key, const Math::Vector2<int>& position) {
+        void keyEvent(Key key, const Math::Vector2<int>&) {
             switch(key) {
                 case Key::Up:
                     o->rotate(deg(10.0f), Vector3::xAxis(-1));

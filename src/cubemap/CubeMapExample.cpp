@@ -66,7 +66,7 @@ class CubeMapExample: public Contexts::GlutContext {
             swapBuffers();
         }
 
-        void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {
+        void keyEvent(Key key, const Magnum::Math::Vector2<int>&) {
             if(key == Key::Up)
                 camera->rotate(deg(-10.0f), camera->transformation()[0].xyz());
 
