@@ -15,9 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Scene.h>
-#include <Camera.h>
+#include <Mesh.h>
 #include <Contexts/GlutContext.h>
+
+#include "TriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
@@ -30,8 +31,8 @@ class TriangleExample: public Magnum::Contexts::GlutContext {
         void drawEvent();
 
     private:
-        Magnum::Scene scene;
-        Magnum::Camera camera;
+        Magnum::Mesh mesh;
+        TriangleShader shader;
 };
 
 }}

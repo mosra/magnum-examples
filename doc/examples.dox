@@ -14,8 +14,6 @@ namespace Magnum {
 @example triangle/TriangleShader.cpp
 @example triangle/TriangleShader.vert
 @example triangle/TriangleShader.frag
-@example triangle/Triangle.h
-@example triangle/Triangle.cpp
 
 @example textured-triangle/TexturedTriangleExample.h
 @example textured-triangle/TexturedTriangleExample.cpp

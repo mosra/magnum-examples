@@ -1,41 +1,67 @@
 namespace Magnum {
 /** @page examples-triangle Your first triangle
-@brief In this example you will learn how to create OpenGL context, setup
-scene, camera and add simple triangle to the scene.
+@brief In this example you will learn how to create OpenGL context and render
+simple colored triangle on the screen.
 
 @image html triangle/triangle.png
 
 @tableofcontents
 
-@section examples-triangle-context Setting up, adding objects to the scene
+@section examples-triangle-context Setting up, preparing the mesh and shader.
 
 For this example we will use GLUT toolkit, which is implemented in
-Contexts::GlutContext class. We subclass it and implement two required
-functions, one which is called after the window is resized and one for
-rendering into the window. We also need to have scene instance, which will
-take care of all the objects, and camera for doing the actual rendering.
+Contexts::GlutContext class. We subclass it and next to the constructor we
+implement two required functions, one which is called after the window is
+resized and one for rendering into the window. We also need mesh with our
+triangle and shader (created below) which will take care of rendering.
 
 @dontinclude triangle/TriangleExample.h
 @skip class TriangleExample
 @until };
 
 In the constructor we pass necessary arguments to @ref Contexts::GlutContext "GlutContext"
-class and attach the camera to scene. If we wouldn't do that, the camera will
-not know about any objects in the scene and thus won't be able to render
-anything. Next to the camera we added to the scene we also add our triangle,
-which we will implement later. We don't have to care about the instance, the
-scene will delete it on destruction.
+class and specify @ref Mesh::Primitive "mesh primitive" and vertex count of
+the triangle mesh.
 
 @dontinclude triangle/TriangleExample.cpp
-@skip TriangleExample::TriangleExample
+@skipline TriangleExample::TriangleExample
+
+Now we specify vertex attributes, consisting of positions and colors. For
+performance reasons it is common to interleave them, so data for each vertex
+are in one continuous place in memory.
+
+@skip data
+@until };
+
+We then add interleaved buffer to the mesh and fill it with the data. The data
+won't be changed or read back into memory during application lifetime, so we
+mark them with appropriate @ref Buffer::Usage "buffer usage".
+
+@skip Buffer
+@until setData
+
+Last thing in preparation of the mesh is to bind attributes in the buffer to
+shader inputs. The binding is done in the same order as physical location of
+vertex attributes in the buffer - first position, then color. Shader inputs
+are defined in `TriangleShader` class, which is explained later.
+
+@skip bindAttribute
 @until }
 
-Function `viewportEvent()` just passes current window size to the camera,
-`drawEvent()` tells camera to draw the scene. The context is double buffered,
-so we need to swap the buffers after drawing.
+Function `viewportEvent()` just passes current window size to the framebuffer,
+so the triangle is rendered at proper size and position.
 
 @skip TriangleExample::viewportEvent
 @until }
+@until }
+
+Function `drawEvent()` will take care about drawing the scene. We clear all
+active buffers (but because we didn't enable depth or stencil buffer, only
+color buffer is cleared), tell that the drawing is done using our shader and
+then we draw the mesh. The context is double buffered, so we need to swap the
+buffers after drawing.
+
+@skip TriangleExample::drawEvent
 @until }
 
  - @ref triangle/TriangleExample.h
@@ -62,55 +88,6 @@ them to shader program and link the program together:
  - @ref triangle/TriangleShader.cpp
  - @ref triangle/TriangleShader.vert
  - @ref triangle/TriangleShader.frag
-
-@section examples-triangle-object Triangle object
-
-Last thing we need to create is the actual triangle. All objects in the scene
-are subclasses of Object. If the object is meant to draw anything on the
-scene, it must reimplement function @ref Object::draw() "draw()". There is
-also mesh which is being drawn and our shader which does the drawing.
-
-@dontinclude triangle/Triangle.h
-@skip class Triangle
-@until }
-
-The constructor is the most complicated part of this example. We must not
-forget to pass `parent` parameter to @ref Object::Object(Object*) "Object constructor",
-otherwise adding the triangle to the scene above wouldn't work. Then we
-specify @ref Mesh::Primitive "mesh primitive" and vertex count of our triangle.
-
-@dontinclude triangle/Triangle.cpp
-@skipline Triangle::Triangle
-
-Now we specify vertex attributes, consisting of positions and colors. For
-performance reasons it is common to interleave them, so data for each vertex
-are in one continuous place in memory.
-
-@skip data
-@until };
-
-We then add interleaved buffer to the mesh and fill it with the data. The data
-won't be changed or read back into memory during application lifetime, so we
-mark them with appropriate @ref Buffer::Usage "buffer usage".
-
-@skip Buffer
-@until setData
-
-Last thing in preparation of the mesh is to bind attributes in the buffer to
-shader inputs. The binding is done in the same order as physical location of
-vertex attributes in the buffer - first position, then color.
-
-@skip bindAttribute
-@until }
-
-The actual drawing function is pretty simple. We just tell that the drawing is
-done using our shader and then we draw the mesh:
-
-@skip draw
-@until }
-
-- @ref triangle/Triangle.h
-- @ref triangle/Triangle.cpp
 
 @section examples-triangle-compilation Compilation
 
