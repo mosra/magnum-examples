@@ -15,9 +15,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Scene.h"
-#include "Camera.h"
-#include "Contexts/GlutContext.h"
+#include <Mesh.h>
+#include <Texture.h>
+#include <Contexts/GlutContext.h>
+
+#include "TexturedTriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
@@ -26,18 +28,13 @@ class TexturedTriangleExample: public Magnum::Contexts::GlutContext {
         TexturedTriangleExample(int& argc, char** argv);
 
     protected:
-        inline void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {
-            camera.setViewport(size);
-        }
-
-        inline void drawEvent() {
-            camera.draw();
-            swapBuffers();
-        }
+        void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size);
+        void drawEvent();
 
     private:
-        Magnum::Scene scene;
-        Magnum::Camera camera;
+        Magnum::Mesh mesh;
+        TexturedTriangleShader shader;
+        Magnum::Texture2D texture;
 };
 
 }}

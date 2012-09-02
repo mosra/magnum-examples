@@ -16,6 +16,7 @@
 */
 
 #include <AbstractShaderProgram.h>
+#include <Color.h>
 
 namespace Magnum { namespace Examples {
 
@@ -28,7 +29,7 @@ class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
 
         TexturedTriangleShader();
 
-        inline void setBaseColorUniform(const Vector3& color) {
+        inline void setBaseColorUniform(const Color3<GLfloat>& color) {
             setUniform(baseColorUniform, color);
         }
 

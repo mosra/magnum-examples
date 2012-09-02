@@ -12,7 +12,6 @@ corrade_add_resource(TexturedTriangleData data
 add_executable(texturedTriangleExample
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
-    TexturedTriangle.cpp
     ${TexturedTriangleData})
 target_link_libraries(texturedTriangleExample
     ${MAGNUM_LIBRARIES}

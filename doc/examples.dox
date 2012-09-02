@@ -23,8 +23,6 @@ namespace Magnum {
 @example textured-triangle/TexturedTriangleShader.cpp
 @example textured-triangle/TexturedTriangleShader.vert
 @example textured-triangle/TexturedTriangleShader.frag
-@example textured-triangle/TexturedTriangle.h
-@example textured-triangle/TexturedTriangle.cpp
 
 */
 }

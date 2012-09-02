@@ -17,23 +17,34 @@ these features:
  - Using textures and managing texture and other uniforms in the shader.
  - Using MeshTools for easier creation of mesh data.
 
-For texturing %Magnum uses two separate terms - images and textures. Textures
-are those created with OpenGL with all filtering parameters, images are just
-the data stored either in client or GPU memory. Images are meant to be fed
-into textures and can be created manually from data, using some importer
-plugin (as we will see below) or for example read from the framebuffer.
-
 @section examples-textured-triangle-setup Setting up and loading the texture
 
-The basic skeleton of main example class remains the same as in previous
-example. The only difference is the constructor, where we will load the
-texture using TGA importer plugin. The plugins are stored in some directory
-which we need to know. The path is provided in `MAGNUM_PLUGINS_IMPORTER_DIR`
-by CMake, which we will discuss later.
+The basic skeleton of main example class remains similar to previous example,
+except for added texture.
+@dontinclude textured-triangle/TexturedTriangleExample.h
+@skip class TexturedTriangle
+@until };
 
-In the constructor we will instantiate the plugin manager with given plugin
-directory and try to load TgaImporter plugin. If the plugin cannot be loaded
-or instantiated, we print error message and exit immediately.
+In the constructor we now have two data arrays - one containing all vertex
+positions and the other containing texture coordinates. We then use
+MeshTools::interleave() which interleaves them together (first position, then
+texture coordinates) and fills the buffer with the result. You may think that
+is is possible to have them interleaved from the beginning (such as using
+array of `GLfloat`s), but sometimes it is inconvenient or not possible (e.g.
+when loading the data from a file).
+@dontinclude textured-triangle/TexturedTriangleExample.cpp
+@skip TexturedTriangleExample::TexturedTriangleExample
+@until textureCoordinates);
+
+We then bind the position and texture coordinate attributes in the buffer to
+shader inputs.
+@skipline mesh.bindAttribute
+@skipline mesh.bindAttribute
+
+Now we will instantiate the plugin manager with plugin directory, which is
+provided by CMake in `MAGNUM_PLUGINS_IMPORTER_DIR` (explained later) and try
+to load TgaImporter plugin. If the plugin cannot be loaded or instantiated, we
+print error message and exit immediately.
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip Corrade::PluginManager::PluginManager
 @until }
@@ -46,13 +57,26 @@ using the plugin:
 @skip Corrade::Utility::Resource
 @until }
 
-After the image is loaded, we pass it to TexturedTriangle object constructor.
+After the image is loaded, we create texture from it. Note that we have to
+explicitly set all texture parameters, otherwise the texture will be
+incomplete.
+@skip texture.setData
+@until texture.setWrapping
+
 The importer is now not needed and we can delete it. If we wouldn't do that,
 next to the obvious memory leak of the instance and data of opened image the
-plugin manager will not be able to unload the plugin, causing problems later
-when trying to load the plugin again.
-@skip new TexturedTriangle
-@until delete
+plugin manager will not be able to unload the plugin, which could cause
+problems later when trying to load the plugin again.
+@skip delete importer
+@until }
+
+The drawing function is again fairly simple. We clear the buffer, bind the
+shader, set base color to light red, bind texture to the desired layer
+(defined in `TexturedTriangleShader`, which is explained later) and perform
+the drawing. Last thing is again buffer swap.
+@skip TexturedTriangleExample::drawEvent
+@until }
+@until }
 
  - @ref textured-triangle/TexturedTriangleExample.h
  - @ref textured-triangle/TexturedTriangleExample.cpp
@@ -81,39 +105,6 @@ explicitly inside the shader itself, see @ref AbstractShaderProgram-texture-laye
  - @ref textured-triangle/TexturedTriangleShader.cpp
  - @ref textured-triangle/TexturedTriangleShader.vert
  - @ref textured-triangle/TexturedTriangleShader.frag
-
-@section examples-textured-triangle-object Textured triangle object
-
-Last thing to do is the actual triangle object. The class is similar to
-the object from previous example, except for added texture.
-@dontinclude textured-triangle/TexturedTriangle.h
-@skip class TexturedTriangle
-@until };
-
-In the constructor we now have two data arrays - one containing all vertex
-positions and the other containing texture coordinates. We then use
-MeshTools::interleave() which interleaves them together and fills the buffer
-with the result. You may think that is is possible to have them interleaved
-from the beginning (such as using array of `GLfloat`s), but sometimes it is
-inconvenient or not possible (e.g. when loading the data from a file).
-@dontinclude textured-triangle/TexturedTriangle.cpp
-@skip constexpr static std::array
-@until MeshTools::interleave
-
-We then bind the attributes in the buffer to shader inputs and set up texture
-from image passed to the constructor. Note that we have to explicitly set all
-texture parameters, otherwise the texture will be incomplete.
-@skip mesh.bindAttribute
-@until texture.setWrapping
-
-The drawing function is again fairly simple. We bind the shader, set base
-color to light red, bind texture to the desired layer and perform the drawing.
-@skip TexturedTriangle::draw
-@until }
-@until }
-
- - @ref textured-triangle/TexturedTriangle.h
- - @ref textured-triangle/TexturedTriangle.cpp
 
 @section examples-textured-triangle-compilation Compilation
 
