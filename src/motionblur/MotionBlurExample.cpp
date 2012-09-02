@@ -84,10 +84,13 @@ class MotionBlurExample: public Contexts::GlutContext {
 
     protected:
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+            Framebuffer::setViewport({0, 0}, size);
+
             camera->setViewport(size);
         }
 
         void drawEvent() {
+            Framebuffer::clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth);
             camera->draw();
             swapBuffers();
 

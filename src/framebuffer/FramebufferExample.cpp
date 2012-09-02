@@ -66,10 +66,12 @@ class FramebufferExample: public Contexts::GlutContext {
 
     protected:
         inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+            Framebuffer::setViewport({0, 0}, size);
             camera->setViewport(size);
         }
 
         inline void drawEvent() {
+            Framebuffer::clear(Framebuffer::Clear::Color);
             camera->draw();
             swapBuffers();
         }

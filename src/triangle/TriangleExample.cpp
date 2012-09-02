@@ -38,7 +38,7 @@ void TriangleExample::viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) 
 }
 
 void TriangleExample::drawEvent() {
-    Magnum::Framebuffer::clear();
+    Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
 
     shader.use();
     mesh.draw();

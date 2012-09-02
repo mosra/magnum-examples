@@ -76,7 +76,7 @@ void TexturedTriangleExample::viewportEvent(const Math::Vector2<GLsizei>& size) 
 }
 
 void TexturedTriangleExample::drawEvent() {
-    Magnum::Framebuffer::clear();
+    Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
 
     shader.use();
     shader.setBaseColorUniform({1.0f, 0.7f, 0.7f});
