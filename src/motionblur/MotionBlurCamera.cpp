@@ -25,7 +25,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(Object* parent): Camera(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::Object3D* parent): Camera3D(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(GLint i = 0; i != FrameCount; ++i) {
         frames[i] = new Texture2D;
         frames[i]->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge));
@@ -80,7 +80,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     }
 }
 
-MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), frames(frames) {
+MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent): Object3D(parent), mesh(Mesh::Primitive::TriangleStrip, 4), frames(frames) {
     const Vector4 vertices[] = {
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},

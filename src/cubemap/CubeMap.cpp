@@ -20,8 +20,8 @@
 #include "Utility/Resource.h"
 
 #include "CubeMapTexture.h"
-#include "Scene.h"
-#include "Camera.h"
+#include "SceneGraph/Scene.h"
+#include "SceneGraph/Camera.h"
 #include "Trade/AbstractImporter.h"
 #include "Primitives/Cube.h"
 #include "MeshTools/FlipNormals.h"
@@ -34,7 +34,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent) {
+CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, SceneGraph::Object3D* parent): Object3D(parent) {
     Primitives::Cube cubeData;
     MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
@@ -96,7 +96,7 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object
     reflector->translate(Vector3::xAxis(0.3f));
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader.use();
     shader.setModelViewProjectionMatrixUniform(camera->projectionMatrix()*transformationMatrix);
     texture.bind(CubeMapShader::TextureLayer);

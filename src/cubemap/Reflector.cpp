@@ -16,8 +16,8 @@
 #include "Reflector.h"
 
 #include "CubeMapTexture.h"
-#include "Camera.h"
 #include "Primitives/UVSphere.h"
+#include "SceneGraph/Camera.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
 
@@ -25,7 +25,7 @@
 
 namespace Magnum { namespace Examples {
 
-Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent): Object(parent), texture(texture), tarnishTexture(tarnishTexture) {
+Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, SceneGraph::Object3D* parent): Object3D(parent), texture(texture), tarnishTexture(tarnishTexture) {
     Buffer* buffer = sphere.addBuffer(Mesh::BufferType::Interleaved);
     Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
     MeshTools::interleave(&sphere, buffer, Buffer::Usage::StaticDraw, *sphereData.vertices(0), *sphereData.textureCoords2D(0));
@@ -35,7 +35,7 @@ Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object*
     MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
 }
 
-void Reflector::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader()->use();
     shader()->setModelViewMatrixUniform(transformationMatrix);
     shader()->setProjectionMatrixUniform(camera->projectionMatrix());

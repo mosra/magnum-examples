@@ -15,17 +15,17 @@
 
 #include "Icosphere.h"
 
-#include "Camera.h"
 #include "Mesh.h"
+#include "SceneGraph/Camera.h"
 #include "Shaders/PhongShader.h"
 
 namespace Magnum { namespace Examples {
 
-Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object* parent): Object(parent), mesh(mesh), shader(shader), color(color) {
+Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, SceneGraph::Object3D* parent): Object3D(parent), mesh(mesh), shader(shader), color(color) {
     scale(Vector3(0.1f));
 }
 
-void Icosphere::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader->use();
     shader->setDiffuseColorUniform(color);
     shader->setSpecularColorUniform({1.0f, 1.0f, 1.0f});

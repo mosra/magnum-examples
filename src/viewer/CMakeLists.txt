@@ -1,4 +1,4 @@
-find_package(Magnum REQUIRED MeshTools Shaders)
+find_package(Magnum REQUIRED MeshTools Shaders SceneGraph)
 
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -10,4 +10,5 @@ target_link_libraries(magnum-viewer
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_EXAMPLE_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES})
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES})

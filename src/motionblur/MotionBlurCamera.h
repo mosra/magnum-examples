@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Camera.h"
+#include "SceneGraph/Camera.h"
 
 #include "Buffer.h"
 #include "BufferedImage.h"
@@ -25,11 +25,11 @@
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurCamera: public Camera {
+class MotionBlurCamera: public SceneGraph::Camera3D {
     public:
         static const GLint FrameCount = 7;
 
-        MotionBlurCamera(Object* parent = nullptr);
+        MotionBlurCamera(Object3D* parent = nullptr);
 
         ~MotionBlurCamera();
 
@@ -46,9 +46,9 @@ class MotionBlurCamera: public Camera {
                 MotionBlurShader();
         };
 
-        class MotionBlurCanvas: public Object {
+        class MotionBlurCanvas: public SceneGraph::Object3D {
             public:
-                MotionBlurCanvas(Texture2D** frames, Object* parent = nullptr);
+                MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent = nullptr);
 
                 void draw(size_t currentFrame);
 

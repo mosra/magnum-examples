@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
+#include "SceneGraph/Object.h"
 #include "IndexedMesh.h"
 
 #include "CubeMapShader.h"
@@ -31,11 +31,11 @@ namespace Examples {
 
 class Reflector;
 
-class CubeMap: public Object {
+class CubeMap: public SceneGraph::Object3D {
     public:
-        CubeMap(Trade::AbstractImporter* importer, const std::string& prefix, Object* parent);
+        CubeMap(Trade::AbstractImporter* importer, const std::string& prefix, SceneGraph::Object3D* parent);
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
         IndexedMesh cube;

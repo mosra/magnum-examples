@@ -14,8 +14,8 @@
 */
 
 #include "PluginManager/PluginManager.h"
-#include "Scene.h"
 #include "Contexts/GlutContext.h"
+#include "SceneGraph/Scene.h"
 #include "Trade/AbstractImporter.h"
 
 #include "Billboard.h"
@@ -74,7 +74,7 @@ class FramebufferExample: public Contexts::GlutContext {
             swapBuffers();
         }
 
-        void mouseEvent(MouseButton button, MouseState, const Math::Vector2<int>& position) {
+        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) {
             if(button == MouseButton::WheelUp)
                 billboard->scale(Vector3(5.0f/4));
             else if(button == MouseButton::WheelDown)
@@ -95,8 +95,8 @@ class FramebufferExample: public Contexts::GlutContext {
 
     private:
         Math::Vector2<int> previous;
-        Scene scene;
-        Camera* camera;
+        SceneGraph::Scene3D scene;
+        SceneGraph::Camera3D* camera;
         Billboard* billboard;
         Buffer colorCorrectionBuffer;
 };

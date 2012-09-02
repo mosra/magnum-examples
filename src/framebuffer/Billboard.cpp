@@ -16,12 +16,12 @@
 #include "Billboard.h"
 
 #include "Buffer.h"
-#include "Camera.h"
 #include "Primitives/Plane.h"
+#include "SceneGraph/Camera.h"
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object3D* parent): Object3D(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
     Primitives::Plane plane;
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
@@ -35,10 +35,10 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
 
     colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
 
-    scale({1, GLfloat(image->dimensions()[1])/image->dimensions()[0], 1});
+    scale(Vector3::yScale(GLfloat(image->dimensions()[1])/image->dimensions()[0]));
 }
 
-void Billboard::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void Billboard::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader.use();
     shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
     texture.bind(ColorCorrectionShader::TextureLayer);

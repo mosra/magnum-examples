@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
+#include "SceneGraph/Object.h"
 #include "IndexedMesh.h"
 #include "ReflectionShader.h"
 
@@ -25,11 +25,11 @@ class CubeMapTexture;
 
 namespace Examples {
 
-class Reflector: public Object {
+class Reflector: public SceneGraph::Object3D {
     public:
-        Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, Object* parent = nullptr);
+        Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, SceneGraph::Object3D* parent = nullptr);
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
         IndexedMesh sphere;

@@ -16,20 +16,20 @@
 */
 
 #include "BufferedTexture.h"
-#include "Object.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "SceneGraph/Object.h"
 #include "Trade/ImageData.h"
 
 #include "ColorCorrectionShader.h"
 
 namespace Magnum { namespace Examples {
 
-class Billboard: public Object {
+class Billboard: public SceneGraph::Object3D {
     public:
-        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent = nullptr);
+        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object3D* parent = nullptr);
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
         Mesh mesh;

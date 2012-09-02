@@ -14,7 +14,7 @@
 */
 
 #include "Framebuffer.h"
-#include "Scene.h"
+#include "SceneGraph/Scene.h"
 #include "Contexts/GlutContext.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
@@ -34,6 +34,7 @@ class MotionBlurExample: public Contexts::GlutContext {
     public:
         MotionBlurExample(int& argc, char** argv): GlutContext(argc, argv, "Motion blur example") {
             camera = new MotionBlurCamera(&scene);
+            camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
             camera->setPerspective(deg(35.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3.0f));
             Framebuffer::setClearColor({0.1f, 0.1f, 0.1f});
@@ -50,7 +51,7 @@ class MotionBlurExample: public Contexts::GlutContext {
             /* Add spheres to the scene */
             Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene);
 
-            spheres[0] = new Object(&scene);
+            spheres[0] = new SceneGraph::Object3D(&scene);
             i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
             i->translate(Vector3::yAxis(0.25f));
             i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
@@ -60,7 +61,7 @@ class MotionBlurExample: public Contexts::GlutContext {
             i->translate(Vector3::yAxis(0.25f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[1] = new Object(&scene);
+            spheres[1] = new SceneGraph::Object3D(&scene);
             i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
             i->translate(Vector3::yAxis(0.50f));
             i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
@@ -70,7 +71,7 @@ class MotionBlurExample: public Contexts::GlutContext {
             i->translate(Vector3::yAxis(0.50f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[2] = new Object(&scene);
+            spheres[2] = new SceneGraph::Object3D(&scene);
             i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
             i->translate(Vector3::yAxis(0.75f));
             i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
@@ -99,11 +100,11 @@ class MotionBlurExample: public Contexts::GlutContext {
         }
 
     private:
-        Scene scene;
-        Camera* camera;
+        SceneGraph::Scene3D scene;
+        SceneGraph::Camera3D* camera;
         IndexedMesh mesh;
         PhongShader shader;
-        Object* spheres[3];
+        SceneGraph::Object3D* spheres[3];
 };
 
 }}

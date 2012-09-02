@@ -14,10 +14,10 @@
 */
 
 #include "PluginManager/PluginManager.h"
-#include "Scene.h"
-#include "Camera.h"
 #include "Framebuffer.h"
 #include "Contexts/GlutContext.h"
+#include "SceneGraph/Scene.h"
+#include "SceneGraph/Camera.h"
 #include "Trade/AbstractImporter.h"
 
 #include "CubeMap.h"
@@ -32,7 +32,8 @@ class CubeMapExample: public Contexts::GlutContext {
     public:
         CubeMapExample(int& argc, char** argv): GlutContext(argc, argv, "Cube map example") {
             /* Every scene needs a camera */
-            camera = new Camera(&scene);
+            camera = new SceneGraph::Camera3D(&scene);
+            camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
             camera->setPerspective(deg(55.0f), 0.001f, 100);
             camera->translate(Vector3::zAxis(3));
             Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
@@ -66,7 +67,7 @@ class CubeMapExample: public Contexts::GlutContext {
             swapBuffers();
         }
 
-        void keyEvent(Key key, const Magnum::Math::Vector2<int>&) {
+        void keyPressEvent(Key key, const Magnum::Math::Vector2<int>&) {
             if(key == Key::Up)
                 camera->rotate(deg(-10.0f), camera->transformation()[0].xyz());
 
@@ -87,8 +88,8 @@ class CubeMapExample: public Contexts::GlutContext {
         }
 
     private:
-        Scene scene;
-        Camera* camera;
+        SceneGraph::Scene3D scene;
+        SceneGraph::Camera3D* camera;
 };
 
 }}

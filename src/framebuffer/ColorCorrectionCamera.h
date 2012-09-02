@@ -15,15 +15,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Camera.h"
 #include "Framebuffer.h"
 #include "Renderbuffer.h"
+#include "SceneGraph/Camera.h"
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionCamera: public Camera {
+class ColorCorrectionCamera: public SceneGraph::Camera3D {
     public:
-        ColorCorrectionCamera(Object* parent = nullptr);
+        ColorCorrectionCamera(SceneGraph::Object3D* parent = nullptr);
 
         void draw();
         void setViewport(const Math::Vector2<GLsizei>& size);
