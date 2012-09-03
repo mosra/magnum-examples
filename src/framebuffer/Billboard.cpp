@@ -25,8 +25,8 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, S
     Primitives::Plane plane;
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*plane.vertices(0), Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<ColorCorrectionShader::Vertex>(buffer);
+    buffer->setData(*plane.positions(0), Buffer::Usage::StaticDraw);
+    mesh.bindAttribute<ColorCorrectionShader::Position>(buffer);
 
     texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder});
     texture.setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation);

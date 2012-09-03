@@ -38,9 +38,9 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, SceneG
     Primitives::Cube cubeData;
     MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
-    cube.setVertexCount(cubeData.vertices(0)->size());
-    cube.bindAttribute<CubeMapShader::Vertex>(buffer);
+    buffer->setData(*cubeData.positions(0), Buffer::Usage::StaticDraw);
+    cube.setVertexCount(cubeData.positions(0)->size());
+    cube.bindAttribute<CubeMapShader::Position>(buffer);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
     scale(Vector3(20.0f));

@@ -27,7 +27,7 @@
 namespace Magnum { namespace Examples {
 
 TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Textured triangle example"), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
-    constexpr static std::array<Vector4, 3> vertices{{
+    constexpr static std::array<Vector4, 3> positions{{
         {-0.5f, -0.5f, 0.0f},
         {0.5f, -0.5f, 0.0f},
         {0.0f, 0.5f, 0.0f}
@@ -40,9 +40,9 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutCo
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
     Magnum::MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw,
-                                  vertices, textureCoordinates);
+                                  positions, textureCoordinates);
 
-    mesh.bindAttribute<TexturedTriangleShader::Vertex>(buffer);
+    mesh.bindAttribute<TexturedTriangleShader::Position>(buffer);
     mesh.bindAttribute<TexturedTriangleShader::TextureCoordinates>(buffer);
 
     /* Load TGA importer plugin */

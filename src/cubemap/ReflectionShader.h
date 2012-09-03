@@ -23,7 +23,7 @@ namespace Magnum { namespace Examples {
 
 class ReflectionShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Vertex;
+        typedef Attribute<0, Vector4> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
         static const GLint TextureLayer = 0;

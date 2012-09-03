@@ -90,7 +90,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGr
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
     buffer->setData(sizeof(vertices), vertices, Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<MotionBlurShader::Vertex>(buffer);
+    mesh.bindAttribute<MotionBlurShader::Position>(buffer);
 }
 
 void MotionBlurCamera::MotionBlurCanvas::draw(size_t currentFrame) {

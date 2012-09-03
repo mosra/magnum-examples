@@ -29,7 +29,7 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutContext(argc, argv
     Magnum::Buffer* buffer = mesh.addBuffer(Magnum::Mesh::BufferType::Interleaved);
     buffer->setData(data, Magnum::Buffer::Usage::StaticDraw);
 
-    mesh.bindAttribute<TriangleShader::Vertex>(buffer);
+    mesh.bindAttribute<TriangleShader::Position>(buffer);
     mesh.bindAttribute<TriangleShader::Color>(buffer);
 }
 

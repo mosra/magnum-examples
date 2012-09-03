@@ -22,7 +22,7 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Vertex;
+        typedef Attribute<0, Vector4> Position;
         typedef Attribute<1, Vector2> TextureCoordinates;
 
         static const GLint TextureLayer = 0;

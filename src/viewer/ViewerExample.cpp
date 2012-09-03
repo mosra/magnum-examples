@@ -252,21 +252,21 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
             meshes.insert(make_pair(object->instanceId(), mesh));
 
             MeshData* data = colladaImporter->mesh(object->instanceId());
-            if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
+            if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
                 exit(6);
 
-            vertexCount += data->vertices(0)->size();
+            vertexCount += data->positions(0)->size();
             triangleCount += data->indices()->size()/3;
 
             /* Optimize vertices */
             Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
-            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+            MeshTools::tipsify(*data->indices(), data->positions(0)->size(), 24);
 
             /* Interleave mesh data */
             Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
-            mesh->bindAttribute<PhongShader::Vertex>(buffer);
+            mesh->bindAttribute<PhongShader::Position>(buffer);
             mesh->bindAttribute<PhongShader::Normal>(buffer);
-            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
+            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->positions(0), *data->normals(0));
 
             /* Compress indices */
             MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *data->indices());

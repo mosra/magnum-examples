@@ -39,7 +39,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
     private:
         class MotionBlurShader: public AbstractShaderProgram {
             public:
-                typedef Attribute<0, Vector4> Vertex;
+                typedef Attribute<0, Vector4> Position;
 
                 /* Frame texture layers are from 0 to FrameCount */
 
