@@ -18,11 +18,12 @@
 #include <fstream>
 
 #include "Utility/Resource.h"
-
+#include <Math/Constants.h>
 #include "CubeMapTexture.h"
 #include "SceneGraph/Scene.h"
 #include "SceneGraph/Camera.h"
 #include "Trade/AbstractImporter.h"
+#include <Trade/ImageData.h>
 #include "Primitives/Cube.h"
 #include "MeshTools/FlipNormals.h"
 #include "MeshTools/CompressIndices.h"

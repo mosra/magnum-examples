@@ -17,6 +17,8 @@
 #include <unordered_map>
 
 #include "PluginManager/PluginManager.h"
+#include <Math/Constants.h>
+#include <IndexedMesh.h>
 #include "Framebuffer.h"
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData.h"

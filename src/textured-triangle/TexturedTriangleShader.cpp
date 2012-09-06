@@ -16,6 +16,7 @@
 #include "TexturedTriangleShader.h"
 
 #include <Utility/Resource.h>
+#include <Shader.h>
 
 namespace Magnum { namespace Examples {
 

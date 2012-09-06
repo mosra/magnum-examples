@@ -14,6 +14,7 @@
 */
 
 #include "PluginManager/PluginManager.h"
+#include <Math/Constants.h>
 #include "Contexts/GlutContext.h"
 #include "SceneGraph/Scene.h"
 #include "Trade/AbstractImporter.h"

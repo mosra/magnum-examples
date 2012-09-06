@@ -21,6 +21,7 @@
 #include <Framebuffer.h>
 #include <MeshTools/Interleave.h>
 #include <Trade/AbstractImporter.h>
+#include <Trade/ImageData.h>
 
 #include "configure.h"
 

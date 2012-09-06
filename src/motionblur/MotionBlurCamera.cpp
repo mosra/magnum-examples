@@ -19,6 +19,7 @@
 
 #include "Utility/Resource.h"
 #include "Framebuffer.h"
+#include <Shader.h>
 
 using namespace std;
 using namespace Corrade::Utility;

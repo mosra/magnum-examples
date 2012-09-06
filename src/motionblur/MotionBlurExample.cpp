@@ -13,6 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Math/Constants.h>
 #include "Framebuffer.h"
 #include "SceneGraph/Scene.h"
 #include "Contexts/GlutContext.h"

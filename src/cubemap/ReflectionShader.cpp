@@ -16,6 +16,7 @@
 #include "ReflectionShader.h"
 
 #include "Utility/Resource.h"
+#include <Shader.h>
 
 using namespace Corrade::Utility;
 

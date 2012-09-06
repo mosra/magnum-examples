@@ -15,6 +15,8 @@
 
 #include "TriangleShader.h"
 
+#include <Shader.h>
+
 namespace Magnum { namespace Examples {
 
 TriangleShader::TriangleShader() {

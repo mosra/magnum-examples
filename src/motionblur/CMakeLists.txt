@@ -13,6 +13,7 @@ add_executable(motionblurExample
 target_link_libraries(motionblurExample
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_GLUTCONTEXT_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES})
