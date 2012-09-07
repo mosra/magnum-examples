@@ -63,10 +63,10 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutCo
     }
 
     /* Set texture data and parameters */
-    texture.setData(0, Magnum::Texture2D::Format::RGB, importer->image2D(0));
-    texture.setMagnificationFilter(Magnum::Texture2D::Filter::LinearInterpolation);
-    texture.setMinificationFilter(Magnum::Texture2D::Filter::LinearInterpolation);
-    texture.setWrapping(Magnum::Math::Vector2<Magnum::Texture2D::Wrapping>(Magnum::Texture2D::Wrapping::ClampToEdge));
+    texture.setData(0, Magnum::Texture2D::Format::RGB, importer->image2D(0))
+        ->setWrapping(Magnum::Math::Vector2<Magnum::Texture2D::Wrapping>(Magnum::Texture2D::Wrapping::ClampToEdge))
+        ->setMagnificationFilter(Magnum::Texture2D::Filter::LinearInterpolation)
+        ->setMinificationFilter(Magnum::Texture2D::Filter::LinearInterpolation);
 
     /* We don't need the importer plugin anymore */
     delete importer;

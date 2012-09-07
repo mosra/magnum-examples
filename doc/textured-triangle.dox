@@ -59,9 +59,9 @@ using the plugin:
 
 After the image is loaded, we create texture from it. Note that we have to
 explicitly set all texture parameters, otherwise the texture will be
-incomplete.
+incomplete. You can use method chaining to save some typing.
 @skip texture.setData
-@until texture.setWrapping
+@until ;
 
 The importer is now not needed and we can delete it. If we wouldn't do that,
 next to the obvious memory leak of the instance and data of opened image the
