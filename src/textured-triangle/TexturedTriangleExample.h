@@ -17,13 +17,13 @@
 
 #include <Mesh.h>
 #include <Texture.h>
-#include <Contexts/GlutContext.h>
+#include <Contexts/GlutWindowContext.h>
 
 #include "TexturedTriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public Magnum::Contexts::GlutContext {
+class TexturedTriangleExample: public Magnum::Contexts::GlutWindowContext {
     public:
         TexturedTriangleExample(int& argc, char** argv);
 

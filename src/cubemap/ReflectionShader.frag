@@ -1,5 +1,3 @@
-#version 330
-
 uniform vec3 diffuseColor;
 uniform samplerCube textureData;
 uniform sampler2D tarnishTextureData;

@@ -1,5 +1,3 @@
-#version 330
-
 #define FrameCount 7
 
 uniform sampler2D frame[FrameCount];

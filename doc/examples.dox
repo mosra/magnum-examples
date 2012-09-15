@@ -8,6 +8,7 @@ namespace Magnum {
 @todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 @todo MotionBlur: handle resizing for the second framebuffer
 @todo MotionBlur: make the canvas non-object (or 2D object)?
+@todo Framebuffer: clearing also colorcorrectioncamera framebuffer
 @todo Framebuffer: port to 2D when there are 2D primitives available
 
 @example triangle/TriangleExample.h

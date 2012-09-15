@@ -1,5 +1,3 @@
-#version 330
-
 uniform samplerCube textureData;
 
 in vec3 textureCoords;

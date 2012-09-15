@@ -16,7 +16,7 @@
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
 #include "Framebuffer.h"
-#include "Contexts/GlutContext.h"
+#include <Contexts/GlutWindowContext.h>
 #include "SceneGraph/Scene.h"
 #include "SceneGraph/Camera.h"
 #include "Trade/AbstractImporter.h"
@@ -29,9 +29,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class CubeMapExample: public Contexts::GlutContext {
+class CubeMapExample: public Contexts::GlutWindowContext {
     public:
-        CubeMapExample(int& argc, char** argv): GlutContext(argc, argv, "Cube map example") {
+        CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Cube map example") {
             /* Every scene needs a camera */
             camera = new SceneGraph::Camera3D(&scene);
             camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);

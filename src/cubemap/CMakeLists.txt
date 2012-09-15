@@ -1,4 +1,8 @@
-find_package(Magnum REQUIRED GlutContext MeshTools Primitives SceneGraph)
+find_package(Magnum REQUIRED
+    GlutWindowContext
+    MeshTools
+    Primitives
+    SceneGraph)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
@@ -19,7 +23,7 @@ add_executable(cubeMapExample
     ${CubeMapData})
 target_link_libraries(cubeMapExample
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTCONTEXT_LIBRARIES}
+    ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES})

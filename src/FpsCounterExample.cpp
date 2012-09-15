@@ -73,7 +73,7 @@ void FpsCounterExample::redraw() {
         }
     }
 
-    GlutContext::redraw();
+    GlutWindowContext::redraw();
 }
 
 void FpsCounterExample::setFpsCounterEnabled(bool enabled) {

@@ -15,18 +15,17 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Contexts/GlutContext.h"
-
 #include <chrono>
+#include <Contexts/GlutWindowContext.h>
 
 #include "Query.h"
 
 namespace Magnum { namespace Examples {
 
 /** @brief Base class for examples with FPS counter */
-class FpsCounterExample : public Contexts::GlutContext {
+class FpsCounterExample : public Contexts::GlutWindowContext {
     public:
-        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): GlutContext(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
+        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): GlutWindowContext(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
 
         /**
          * @brief Minimal duration between printing FPS to console

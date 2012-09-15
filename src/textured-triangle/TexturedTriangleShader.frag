@@ -1,5 +1,3 @@
-#version 330
-
 uniform vec3 baseColor = vec3(1.0, 1.0, 1.0);
 uniform sampler2D textureData;
 

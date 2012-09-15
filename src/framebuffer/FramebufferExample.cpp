@@ -15,7 +15,7 @@
 
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
-#include "Contexts/GlutContext.h"
+#include <Contexts/GlutWindowContext.h>
 #include "SceneGraph/Scene.h"
 #include "Trade/AbstractImporter.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class FramebufferExample: public Contexts::GlutContext {
+class FramebufferExample: public Contexts::GlutWindowContext {
     public:
-        FramebufferExample(int& argc, char** argv): GlutContext(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
+        FramebufferExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
                 exit(0);
@@ -87,7 +87,7 @@ class FramebufferExample: public Contexts::GlutContext {
             redraw();
         }
 
-        void mouseMoveEvent(const Math::Vector2<int>& position) {
+        void mouseMotionEvent(const Math::Vector2<int>& position) {
             Math::Vector2<int> delta = position-previous;
             billboard->translate({GLfloat(delta.x())/camera->viewport().x(),
                                  -GLfloat(delta.y())/camera->viewport().y(),

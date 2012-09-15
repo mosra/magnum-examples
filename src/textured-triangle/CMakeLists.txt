@@ -1,4 +1,4 @@
-find_package(Magnum REQUIRED GlutContext)
+find_package(Magnum REQUIRED GlutWindowContext)
 
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -15,4 +15,4 @@ add_executable(texturedTriangleExample
     ${TexturedTriangleData})
 target_link_libraries(texturedTriangleExample
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTCONTEXT_LIBRARIES})
+    ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})

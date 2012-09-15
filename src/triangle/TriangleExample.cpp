@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Examples {
 
-TriangleExample::TriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Triangle example"), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
+TriangleExample::TriangleExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Triangle example"), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
     constexpr static Magnum::Vector4 data[] = {
         Magnum::Vector4(-0.5f, -0.5f, 0.0f),    Magnum::Vector4(1.0f, 0.0f, 0.0f),  /* Left vertex, red color */
         Magnum::Vector4(0.5f, -0.5f, 0.0f),     Magnum::Vector4(0.0f, 1.0f, 0.0f),  /* Right vertex, green color */

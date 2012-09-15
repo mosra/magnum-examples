@@ -16,7 +16,7 @@
 #include <Math/Constants.h>
 #include "Framebuffer.h"
 #include "SceneGraph/Scene.h"
-#include "Contexts/GlutContext.h"
+#include <Contexts/GlutWindowContext.h>
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
 #include "Primitives/Icosphere.h"
@@ -31,9 +31,9 @@ using namespace Magnum::Shaders;
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurExample: public Contexts::GlutContext {
+class MotionBlurExample: public Contexts::GlutWindowContext {
     public:
-        MotionBlurExample(int& argc, char** argv): GlutContext(argc, argv, "Motion blur example") {
+        MotionBlurExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Motion blur example") {
             camera = new MotionBlurCamera(&scene);
             camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
             camera->setPerspective(deg(35.0f), 0.001f, 100);

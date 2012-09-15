@@ -1,4 +1,3 @@
-#version 330
 #define CORRECTION_TEXTURE_SIZE 1024
 
 uniform sampler2D textureData;

@@ -1,5 +1,3 @@
-#version 330
-
 uniform mat4 matrix;
 
 layout(location = 0) in vec4 vertex;

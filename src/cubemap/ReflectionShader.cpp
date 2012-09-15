@@ -24,8 +24,8 @@ namespace Magnum { namespace Examples {
 
 ReflectionShader::ReflectionShader() {
     Resource rs("data");
-    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("ReflectionShader.vert")));
-    attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("ReflectionShader.frag")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ReflectionShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ReflectionShader.frag")));
 
     link();
 

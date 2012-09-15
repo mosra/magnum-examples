@@ -10,7 +10,7 @@ simple colored triangle on the screen.
 @section examples-triangle-context Setting up, preparing the mesh and shader.
 
 For this example we will use GLUT toolkit, which is implemented in
-Contexts::GlutContext class. We subclass it and next to the constructor we
+Contexts::GlutWindowContext class. We subclass it and next to the constructor we
 implement two required functions, one which is called after the window is
 resized and one for rendering into the window. We also need mesh with our
 triangle and shader (created below) which will take care of rendering.
@@ -19,9 +19,9 @@ triangle and shader (created below) which will take care of rendering.
 @skip class TriangleExample
 @until };
 
-In the constructor we pass necessary arguments to @ref Contexts::GlutContext "GlutContext"
-class and specify @ref Mesh::Primitive "mesh primitive" and vertex count of
-the triangle mesh.
+In the constructor we pass necessary arguments to
+@ref Contexts::GlutWindowContext "GlutWindowContext" class and specify
+@ref Mesh::Primitive "mesh primitive" and vertex count of the triangle mesh.
 
 @dontinclude triangle/TriangleExample.cpp
 @skipline TriangleExample::TriangleExample
