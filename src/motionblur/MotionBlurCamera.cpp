@@ -41,7 +41,7 @@ MotionBlurCamera::~MotionBlurCamera() {
 }
 
 void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
-    Camera::setViewport(size);
+    Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
     size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(framebuffer.components(), framebuffer.type());
@@ -55,7 +55,7 @@ void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
 }
 
 void MotionBlurCamera::draw() {
-    Camera::draw();
+    Camera3D::draw();
 
     Framebuffer::read({0, 0}, viewport(), framebuffer.components(), framebuffer.type(), &framebuffer, Buffer::Usage::DynamicDraw);
 
