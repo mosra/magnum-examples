@@ -154,7 +154,7 @@ class ViewerExample: public FpsCounterExample {
 
             GLfloat length = position.length();
             Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
-            result.setY(-result.y());
+            result.y() *= -1.0f;
             return result.normalized();
         }
 
