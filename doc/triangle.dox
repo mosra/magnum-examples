@@ -8,7 +8,7 @@ simple colored triangle on the screen.
 
 @tableofcontents
 
-@section examples-triangle-context Setting up, preparing the mesh and shader.
+@section examples-triangle-context Setting up, preparing the mesh and shader
 
 For this example we will use GLUT toolkit, which is implemented in
 Contexts::GlutWindowContext class. We subclass it and next to the constructor we
@@ -93,7 +93,7 @@ them to shader program and link the program together:
 @section examples-triangle-compilation Compilation
 
 Now we can compile the whole example using CMake. First we find required
-%Magnum package with GlutContext library and add its include dir.
+%Magnum package with GlutWindowContext library and add its include dir.
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
@@ -103,7 +103,7 @@ Then we collect our source files, create our executable and link to %Magnum
 libraries.
 
 @skip add_executable
-@until MAGNUM_GLUTCONTEXT_LIBRARIES})
+@until MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})
 
 - @ref triangle/CMakeLists.txt
 
