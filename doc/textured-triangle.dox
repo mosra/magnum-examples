@@ -4,6 +4,7 @@ namespace Magnum {
 various new things for simplifying the workflow.
 
 @image html textured-triangle/textured-triangle.png
+@image latex textured-triangle/textured-triangle.png
 
 @tableofcontents
 

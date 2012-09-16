@@ -4,6 +4,7 @@ namespace Magnum {
 simple colored triangle on the screen.
 
 @image html triangle/triangle.png
+@image latex triangle/triangle.png
 
 @tableofcontents
 
