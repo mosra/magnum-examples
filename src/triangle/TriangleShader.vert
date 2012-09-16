@@ -1,10 +1,10 @@
-layout(location = 0) in vec4 vertex;
-layout(location = 1) in vec4 color;
+layout(location = 0) in vec3 vertex;
+layout(location = 1) in vec3 color;
 
-out vec4 varyingColor;
+out vec3 varyingColor;
 
 void main() {
     varyingColor = color;
 
-    gl_Position = vertex;
+    gl_Position.xywz = vec4(vertex, 0.0);
 }

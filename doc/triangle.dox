@@ -29,7 +29,10 @@ In the constructor we pass necessary arguments to
 
 Now we specify vertex attributes, consisting of positions and colors. For
 performance reasons it is common to interleave them, so data for each vertex
-are in one continuous place in memory.
+are in one continuous place in memory. We will cheat a bit here and use
+three-component vectors for both 2D positions and colors (homogeneous 2D
+coordinates and RGB values), so we can interleave them in place. In next
+tutorial we will learn how to interleave them programatically.
 
 @skip data
 @until };

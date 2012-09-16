@@ -21,8 +21,8 @@ namespace Magnum { namespace Examples {
 
 class TriangleShader: public Magnum::AbstractShaderProgram {
     public:
-        typedef Magnum::AbstractShaderProgram::Attribute<0, Vector4> Position;
-        typedef Magnum::AbstractShaderProgram::Attribute<1, Vector4> Color;
+        typedef Magnum::AbstractShaderProgram::Attribute<0, Vector3> Position;
+        typedef Magnum::AbstractShaderProgram::Attribute<1, Vector3> Color;
 
         TriangleShader();
 };

@@ -20,10 +20,10 @@
 namespace Magnum { namespace Examples {
 
 TriangleExample::TriangleExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Triangle example"), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
-    constexpr static Magnum::Vector4 data[] = {
-        Magnum::Vector4(-0.5f, -0.5f, 0.0f),    Magnum::Vector4(1.0f, 0.0f, 0.0f),  /* Left vertex, red color */
-        Magnum::Vector4(0.5f, -0.5f, 0.0f),     Magnum::Vector4(0.0f, 1.0f, 0.0f),  /* Right vertex, green color */
-        Magnum::Vector4(0.0f, 0.5f, 0.0f),      Magnum::Vector4(0.0f, 0.0f, 1.0f)   /* Top vertex, blue color */
+    constexpr static Magnum::Vector3 data[] = {
+        {-0.5f, -0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
+        { 0.5f, -0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
+        { 0.0f,  0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
     };
 
     Magnum::Buffer* buffer = mesh.addBuffer(Magnum::Mesh::BufferType::Interleaved);
