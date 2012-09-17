@@ -138,7 +138,7 @@ Last step is linking, the same as previously.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
-@until ${MAGNUM_GLUTCONTEXT_LIBRARIES})
+@until ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})
 
  - @ref textured-triangle/configure.h.cmake
  - @ref textured-triangle/CMakeLists.txt
