@@ -21,8 +21,8 @@
 #include <IndexedMesh.h>
 #include "Framebuffer.h"
 #include "Trade/AbstractImporter.h"
-#include "Trade/MeshData.h"
-#include "Trade/MeshObjectData.h"
+#include "Trade/MeshData3D.h"
+#include "Trade/MeshObjectData3D.h"
 #include "Trade/SceneData.h"
 #include "MeshTools/Tipsify.h"
 #include "MeshTools/Interleave.h"
@@ -221,7 +221,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
-    for(size_t objectId: scene->children())
+    for(size_t objectId: scene->children3D())
         addObject(colladaImporter.get(), o, materials, objectId);
 
     Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
@@ -235,10 +235,10 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
 }
 
 void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
-    ObjectData* object = colladaImporter->object(objectId);
+    ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
-    if(object->instanceType() == ObjectData::InstanceType::Mesh) {
+    if(object->instanceType() == ObjectData3D::InstanceType::Mesh) {
         ++objectCount;
 
         /* Use already processed mesh, if exists */
@@ -253,7 +253,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
             mesh = new IndexedMesh;
             meshes.insert(make_pair(object->instanceId(), mesh));
 
-            MeshData* data = colladaImporter->mesh(object->instanceId());
+            MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
                 exit(6);
 
@@ -276,14 +276,14 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
 
         /* Use already processed material, if exists */
         PhongMaterialData* material;
-        auto materialFound = materials.find(static_cast<MeshObjectData*>(object)->material());
+        auto materialFound = materials.find(static_cast<MeshObjectData3D*>(object)->material());
         if(materialFound != materials.end()) material = materialFound->second;
 
         /* Else get material or create default one */
         else {
             ++materialCount;
 
-            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData*>(object)->material()));
+            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData3D*>(object)->material()));
             if(!material) material = new PhongMaterialData("", {0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
         }
 
