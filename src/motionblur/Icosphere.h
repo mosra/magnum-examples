@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Color.h>
 #include "SceneGraph/Object.h"
 
 namespace Magnum {
@@ -38,7 +39,7 @@ class Icosphere: public SceneGraph::Object3D {
     private:
         Mesh* mesh;
         Shaders::PhongShader* shader;
-        Vector3 color;
+        Color3<GLfloat> color;
 };
 
 }}

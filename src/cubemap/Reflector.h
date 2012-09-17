@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <CubeMapTexture.h>
 #include "SceneGraph/Object.h"
 #include "IndexedMesh.h"
 #include "ReflectionShader.h"

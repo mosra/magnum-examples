@@ -18,6 +18,7 @@
 #include <sstream>
 
 #include "Utility/Resource.h"
+#include <Math/Point3D.h>
 #include "Framebuffer.h"
 #include <Shader.h>
 
@@ -82,7 +83,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
 }
 
 MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent): Object3D(parent), mesh(Mesh::Primitive::TriangleStrip, 4), frames(frames) {
-    const Vector4 vertices[] = {
+    const Point3D vertices[] = {
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {0.0f, -1.0f, 0.0f},

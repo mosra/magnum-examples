@@ -17,13 +17,11 @@
 
 #include "AbstractShaderProgram.h"
 
-#include "CubeMapTexture.h"
-
 namespace Magnum { namespace Examples {
 
 class CubeMapShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Position;
+        typedef Attribute<0, Point3D> Position;
 
         static const GLint TextureLayer = 0;
 

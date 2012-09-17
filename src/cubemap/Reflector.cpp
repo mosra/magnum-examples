@@ -42,7 +42,7 @@ void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* 
     Matrix4 cameraMatrix = camera->absoluteTransformation();
     cameraMatrix[3] = Vector4();
     shader()->setReflectivityUniform(2.0f);
-    shader()->setDiffuseColorUniform(Vector3(0.3f, 0.3f, 0.3f));
+    shader()->setDiffuseColorUniform(Color3<GLfloat>(0.3f));
     shader()->setCameraMatrixUniform(cameraMatrix);
     texture->bind(ReflectionShader::TextureLayer);
     tarnishTexture->bind(ReflectionShader::TarnishTextureLayer);

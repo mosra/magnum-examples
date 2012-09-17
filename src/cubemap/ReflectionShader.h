@@ -16,14 +16,13 @@
 */
 
 #include "AbstractShaderProgram.h"
-
-#include "CubeMapTexture.h"
+#include <Color.h>
 
 namespace Magnum { namespace Examples {
 
 class ReflectionShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Position;
+        typedef Attribute<0, Point3D> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
         static const GLint TextureLayer = 0;
@@ -47,7 +46,7 @@ class ReflectionShader: public AbstractShaderProgram {
             setUniform(reflectivityUniform, reflectivity);
         }
 
-        void setDiffuseColorUniform(const Vector3& color) {
+        void setDiffuseColorUniform(const Color3<GLfloat>& color) {
             setUniform(diffuseColorUniform, color);
         }
 
