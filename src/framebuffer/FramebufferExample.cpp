@@ -79,27 +79,24 @@ class FramebufferExample: public Contexts::GlutWindowContext {
 
         void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) {
             if(button == MouseButton::WheelUp)
-                billboard->scale(Vector3(5.0f/4));
+                billboard->scale(Vector2(5.0f/4));
             else if(button == MouseButton::WheelDown)
-                billboard->scale(Vector3(4.0f/5));
+                billboard->scale(Vector2(4.0f/5));
 
             previous = position;
             redraw();
         }
 
         void mouseMotionEvent(const Math::Vector2<int>& position) {
-            Math::Vector2<int> delta = position-previous;
-            billboard->translate({GLfloat(delta.x())/camera->viewport().x(),
-                                 -GLfloat(delta.y())/camera->viewport().y(),
-                                  0});
+            billboard->translate(camera->projectionSize()*Vector2::from(position-previous)/Vector2::from(camera->viewport())*Vector2(2.0f, -2.0f));
             previous = position;
             redraw();
         }
 
     private:
         Math::Vector2<int> previous;
-        SceneGraph::Scene3D scene;
-        SceneGraph::Camera3D* camera;
+        SceneGraph::Scene2D scene;
+        SceneGraph::Camera2D* camera;
         Billboard* billboard;
         Buffer colorCorrectionBuffer;
 };

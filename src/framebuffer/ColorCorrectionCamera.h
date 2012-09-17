@@ -21,9 +21,9 @@
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionCamera: public SceneGraph::Camera3D {
+class ColorCorrectionCamera: public SceneGraph::Camera2D {
     public:
-        ColorCorrectionCamera(SceneGraph::Object3D* parent = nullptr);
+        ColorCorrectionCamera(SceneGraph::Object2D* parent = nullptr);
 
         void draw();
         void setViewport(const Math::Vector2<GLsizei>& size);

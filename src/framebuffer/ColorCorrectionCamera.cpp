@@ -19,7 +19,7 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::Object3D* parent): Camera3D(parent), initialized(false) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::Object2D* parent): Camera2D(parent), initialized(false) {
     setAspectRatioPolicy(AspectRatioPolicy::Clip);
 }
 
@@ -28,7 +28,7 @@ void ColorCorrectionCamera::draw() {
     framebuffer.mapForDraw({Original, Grayscale, Corrected});
 
     /* Draw original scene */
-    Camera3D::draw();
+    Camera2D::draw();
 
     /* Draw to screen framebuffer */
     Framebuffer::mapDefaultForDraw({Framebuffer::DefaultDrawAttachment::BackLeft});
@@ -52,7 +52,7 @@ void ColorCorrectionCamera::draw() {
 }
 
 void ColorCorrectionCamera::setViewport(const Math::Vector2<GLsizei>& size) {
-    Camera3D::setViewport(size);
+    Camera2D::setViewport(size);
 
     /* Reet storage for renderbuffer */
     original.setStorage(Renderbuffer::Format::RGB5Alpha1, size);

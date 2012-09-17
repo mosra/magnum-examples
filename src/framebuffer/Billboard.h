@@ -25,11 +25,11 @@
 
 namespace Magnum { namespace Examples {
 
-class Billboard: public SceneGraph::Object3D {
+class Billboard: public SceneGraph::Object2D {
     public:
-        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object3D* parent = nullptr);
+        Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object2D* parent = nullptr);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
+        void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D* camera);
 
     private:
         Mesh mesh;

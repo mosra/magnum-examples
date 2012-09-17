@@ -27,14 +27,14 @@ Fragment data:
 */
 class ColorCorrectionShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position;
+        typedef Attribute<0, Point2D> Position;
 
         static const GLint TextureLayer = 0;
         static const GLint ColorCorrectionTextureLayer = 1;
 
         ColorCorrectionShader();
 
-        inline void setMatrixUniform(const Matrix4& matrix) {
+        inline void setMatrixUniform(const Matrix3& matrix) {
             setUniform(matrixUniform, matrix);
         }
 

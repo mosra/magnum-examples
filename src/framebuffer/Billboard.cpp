@@ -16,16 +16,16 @@
 #include "Billboard.h"
 
 #include "Buffer.h"
-#include "Primitives/Plane.h"
+#include <Primitives/Square.h>
 #include "SceneGraph/Camera.h"
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object3D* parent): Object3D(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
-    Primitives::Plane plane;
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object2D* parent): Object2D(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
+    Primitives::Square square;
 
     Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*plane.positions(0), Buffer::Usage::StaticDraw);
+    buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
     mesh.bindAttribute<ColorCorrectionShader::Position>(buffer);
 
     texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder});
@@ -35,10 +35,10 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, S
 
     colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
 
-    scale(Vector3::yScale(GLfloat(image->dimensions()[1])/image->dimensions()[0]));
+    scale(Vector2::yScale(GLfloat(image->dimensions()[1])/image->dimensions()[0]));
 }
 
-void Billboard::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
+void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D* camera) {
     shader.use();
     shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
     texture.bind(ColorCorrectionShader::TextureLayer);
