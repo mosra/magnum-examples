@@ -15,8 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "SceneGraph/Object.h"
-#include "IndexedMesh.h"
+#include <IndexedMesh.h>
+#include <SceneGraph/Object.h>
 
 #include "CubeMapShader.h"
 #include "CubeMapTexture.h"
@@ -42,7 +42,6 @@ class CubeMap: public SceneGraph::Object3D {
         CubeMapShader shader;
         CubeMapTexture texture;
         Texture2D tarnishTexture;
-        Reflector* reflector;
 };
 
 }}

@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
 #include <Color.h>
 
 namespace Magnum { namespace Examples {
@@ -30,24 +30,29 @@ class ReflectionShader: public AbstractShaderProgram {
 
         ReflectionShader();
 
-        void setModelViewMatrixUniform(const Matrix4& matrix) {
+        inline ReflectionShader* setModelViewMatrix(const Matrix4& matrix) {
             setUniform(modelViewMatrixUniform, matrix);
+            return this;
         }
 
-        void setProjectionMatrixUniform(const Matrix4& matrix) {
+        inline ReflectionShader* setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
+            return this;
         }
 
-        void setCameraMatrixUniform(const Matrix4& matrix) {
+        inline ReflectionShader* setCameraMatrix(const Matrix4& matrix) {
             setUniform(cameraMatrixUniform, matrix);
+            return this;
         }
 
-        void setReflectivityUniform(GLfloat reflectivity) {
+        inline ReflectionShader* setReflectivity(GLfloat reflectivity) {
             setUniform(reflectivityUniform, reflectivity);
+            return this;
         }
 
-        void setDiffuseColorUniform(const Color3<GLfloat>& color) {
+        inline ReflectionShader* setDiffuseColor(const Color3<GLfloat>& color) {
             setUniform(diffuseColorUniform, color);
+            return this;
         }
 
     private:

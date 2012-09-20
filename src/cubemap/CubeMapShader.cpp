@@ -15,7 +15,7 @@
 
 #include "CubeMapShader.h"
 
-#include "Utility/Resource.h"
+#include <Utility/Resource.h>
 #include <Shader.h>
 
 using namespace Corrade::Utility;
@@ -24,11 +24,8 @@ namespace Magnum { namespace Examples {
 
 CubeMapShader::CubeMapShader() {
     Resource rs("data");
-    Shader vertexShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("CubeMapShader.vert")));
-    Shader fragmentShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("CubeMapShader.frag")));
-
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("CubeMapShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("CubeMapShader.frag")));
 
     link();
 

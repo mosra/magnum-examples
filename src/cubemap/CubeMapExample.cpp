@@ -13,13 +13,13 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "PluginManager/PluginManager.h"
+#include <PluginManager/PluginManager.h>
 #include <Math/Constants.h>
-#include "Framebuffer.h"
+#include <Framebuffer.h>
 #include <Contexts/GlutWindowContext.h>
-#include "SceneGraph/Scene.h"
-#include "SceneGraph/Camera.h"
-#include "Trade/AbstractImporter.h"
+#include <SceneGraph/Scene.h>
+#include <SceneGraph/Camera.h>
+#include <Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
 #include "configure.h"
@@ -33,10 +33,10 @@ class CubeMapExample: public Contexts::GlutWindowContext {
     public:
         CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Cube map example") {
             /* Every scene needs a camera */
-            camera = new SceneGraph::Camera3D(&scene);
-            camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
-            camera->setPerspective(deg(55.0f), 0.001f, 100);
-            camera->translate(Vector3::zAxis(3));
+            (camera = new SceneGraph::Camera3D(&scene))
+                ->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend)
+                ->setPerspective(deg(55.0f), 0.001f, 100)
+                ->translate(Vector3::zAxis(3));
             Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
             Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
@@ -79,12 +79,9 @@ class CubeMapExample: public Contexts::GlutWindowContext {
 
             if(key == Key::Left || key == Key::Right) {
                 GLfloat yTransform = camera->transformation()[3][2];
-                camera->translate(Vector3::yAxis(-yTransform));
-                if(key == Key::Left)
-                    camera->rotate(deg(10.0f), Vector3::yAxis());
-                else
-                    camera->rotate(deg(-10.0f), Vector3::yAxis());
-                camera->translate(Vector3::yAxis(yTransform));
+                camera->translate(Vector3::yAxis(-yTransform))
+                    ->rotate(key == Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
+                    ->translate(Vector3::yAxis(yTransform));
             }
 
             redraw();

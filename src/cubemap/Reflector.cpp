@@ -15,11 +15,11 @@
 
 #include "Reflector.h"
 
-#include "CubeMapTexture.h"
-#include "Primitives/UVSphere.h"
-#include "SceneGraph/Camera.h"
-#include "MeshTools/CompressIndices.h"
-#include "MeshTools/Interleave.h"
+#include <CubeMapTexture.h>
+#include <MeshTools/CompressIndices.h>
+#include <MeshTools/Interleave.h>
+#include <Primitives/UVSphere.h>
+#include <SceneGraph/Camera.h>
 
 #include "ReflectionShader.h"
 
@@ -29,23 +29,26 @@ Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, SceneGr
     Buffer* buffer = sphere.addBuffer(Mesh::BufferType::Interleaved);
     Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
     MeshTools::interleave(&sphere, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
-    sphere.setVertexCount(sphereData.positions(0)->size());
-    sphere.bindAttribute<ReflectionShader::Position>(buffer);
-    sphere.bindAttribute<ReflectionShader::TextureCoords>(buffer);
+    sphere.setVertexCount(sphereData.positions(0)->size())
+        ->bindAttribute<ReflectionShader::Position>(buffer)
+        ->bindAttribute<ReflectionShader::TextureCoords>(buffer);
     MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-    shader()->use();
-    shader()->setModelViewMatrixUniform(transformationMatrix);
-    shader()->setProjectionMatrixUniform(camera->projectionMatrix());
     Matrix4 cameraMatrix = camera->absoluteTransformation();
     cameraMatrix[3] = Vector4();
-    shader()->setReflectivityUniform(2.0f);
-    shader()->setDiffuseColorUniform(Color3<GLfloat>(0.3f));
-    shader()->setCameraMatrixUniform(cameraMatrix);
+
+    shader()->use();
+    shader()->setModelViewMatrix(transformationMatrix)
+        ->setProjectionMatrix(camera->projectionMatrix())
+        ->setReflectivity(2.0f)
+        ->setDiffuseColor(Color3<GLfloat>(0.3f))
+        ->setCameraMatrix(cameraMatrix);
+
     texture->bind(ReflectionShader::TextureLayer);
     tarnishTexture->bind(ReflectionShader::TarnishTextureLayer);
+
     sphere.draw();
 }
 

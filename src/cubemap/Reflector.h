@@ -15,12 +15,15 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <CubeMapTexture.h>
-#include "SceneGraph/Object.h"
-#include "IndexedMesh.h"
+#include <SceneGraph/Object.h>
+#include <IndexedMesh.h>
+
 #include "ReflectionShader.h"
 
 namespace Magnum {
+
+template<size_t> class Texture;
+typedef Texture<2> Texture2D;
 
 class CubeMapTexture;
 

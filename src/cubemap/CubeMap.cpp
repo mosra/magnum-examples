@@ -16,17 +16,16 @@
 #include "CubeMap.h"
 
 #include <fstream>
-
-#include "Utility/Resource.h"
+#include <Utility/Resource.h>
 #include <Math/Constants.h>
-#include "CubeMapTexture.h"
-#include "SceneGraph/Scene.h"
-#include "SceneGraph/Camera.h"
-#include "Trade/AbstractImporter.h"
+#include <CubeMapTexture.h>
+#include <MeshTools/FlipNormals.h>
+#include <MeshTools/CompressIndices.h>
+#include <Primitives/Cube.h>
+#include <SceneGraph/Scene.h>
+#include <SceneGraph/Camera.h>
+#include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
-#include "Primitives/Cube.h"
-#include "MeshTools/FlipNormals.h"
-#include "MeshTools/CompressIndices.h"
 
 #include "Reflector.h"
 
@@ -40,8 +39,8 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, SceneG
     MeshTools::flipFaceWinding(*cubeData.indices());
     Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
     buffer->setData(*cubeData.positions(0), Buffer::Usage::StaticDraw);
-    cube.setVertexCount(cubeData.positions(0)->size());
-    cube.bindAttribute<CubeMapShader::Position>(buffer);
+    cube.setVertexCount(cubeData.positions(0)->size())
+        ->bindAttribute<CubeMapShader::Position>(buffer);
     MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
 
     scale(Vector3(20.0f));
@@ -72,34 +71,34 @@ CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, SceneG
     image = importer->image2D(0);
     texture.setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, image);
 
-    texture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
-    texture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
-    texture.setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge));
-    texture.generateMipmap();
+    texture.setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
+        ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
+        ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
+        ->generateMipmap();
 
     /* Tarnish texture */
     Resource rs("data");
     std::istringstream in(rs.get("tarnish.tga"));
     importer->open(in);
-    tarnishTexture.setData(0, AbstractTexture::Format::RGB, importer->image2D(0));
-    tarnishTexture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
-    tarnishTexture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
-    tarnishTexture.setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge});
-    tarnishTexture.generateMipmap();
+    tarnishTexture.setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
+        ->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
+        ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
+        ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
+        ->generateMipmap();
 
-    reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(Vector3(0.5f));
-    reflector->translate(Vector3::xAxis(-0.5f));
+    (new Reflector(&texture, &tarnishTexture, scene()))
+        ->scale(Vector3(0.5f))
+        ->translate(Vector3::xAxis(-0.5f));
 
-    reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(Vector3(0.3f));
-    reflector->rotate(deg(37.0f), Vector3::xAxis());
-    reflector->translate(Vector3::xAxis(0.3f));
+    (new Reflector(&texture, &tarnishTexture, scene()))
+        ->scale(Vector3(0.3f))
+        ->rotate(deg(37.0f), Vector3::xAxis())
+        ->translate(Vector3::xAxis(0.3f));
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader.use();
-    shader.setModelViewProjectionMatrixUniform(camera->projectionMatrix()*transformationMatrix);
+    shader.setModelViewProjectionMatrix(camera->projectionMatrix()*transformationMatrix);
     texture.bind(CubeMapShader::TextureLayer);
     cube.draw();
 }

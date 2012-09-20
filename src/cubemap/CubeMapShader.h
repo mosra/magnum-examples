@@ -15,7 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 
@@ -27,7 +27,7 @@ class CubeMapShader: public AbstractShaderProgram {
 
         CubeMapShader();
 
-        void setModelViewProjectionMatrixUniform(const Matrix4& matrix) {
+        inline void setModelViewProjectionMatrix(const Matrix4& matrix) {
             setUniform(modelViewProjectionMatrixUniform, matrix);
         }
 
