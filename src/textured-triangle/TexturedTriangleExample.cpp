@@ -81,7 +81,7 @@ void TexturedTriangleExample::drawEvent() {
     Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
 
     shader.use();
-    shader.setBaseColorUniform({1.0f, 0.7f, 0.7f});
+    shader.setBaseColor({1.0f, 0.7f, 0.7f});
     texture.bind(TexturedTriangleShader::TextureLayer);
     mesh.draw();
 
