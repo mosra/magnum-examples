@@ -15,13 +15,17 @@
 
 #include <PluginManager/PluginManager.h>
 #include <Math/Constants.h>
+#include <AbstractShaderProgram.h>
 #include <Framebuffer.h>
+#include <IndexedMesh.h>
 #include <Contexts/GlutWindowContext.h>
 #include <SceneGraph/Scene.h>
 #include <SceneGraph/Camera.h>
 #include <Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
+#include "CubeMapResourceManager.h"
+#include "Reflector.h"
 #include "configure.h"
 
 using namespace std;
@@ -47,15 +51,26 @@ class CubeMapExample: public Contexts::GlutWindowContext {
                 Error() << "Cannot load TGAImporter plugin from" << manager.pluginDirectory();
                 exit(1);
             }
+            resourceManager.set<Trade::AbstractImporter>("tga-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
 
             string prefix;
             if(argc == 2)
                 prefix = argv[1];
 
-            /* Add cube map to the scene */
-            new CubeMap(importer, prefix, &scene);
+            /* Add objects to scene */
+            new CubeMap(prefix, &scene);
 
-            delete importer;
+            (new Reflector(&scene))
+                ->scale(Vector3(0.5f))
+                ->translate(Vector3::xAxis(-0.5f));
+
+            (new Reflector(&scene))
+                ->scale(Vector3(0.3f))
+                ->rotate(deg(37.0f), Vector3::xAxis())
+                ->translate(Vector3::xAxis(0.3f));
+
+            /* We don't need the importer anymore */
+            resourceManager.free<Trade::AbstractImporter>();
         }
 
     protected:
@@ -72,10 +87,10 @@ class CubeMapExample: public Contexts::GlutWindowContext {
 
         void keyPressEvent(Key key, const Magnum::Math::Vector2<int>&) {
             if(key == Key::Up)
-                camera->rotate(deg(-10.0f), camera->transformation()[0].xyz());
+                camera->rotate(deg(-10.0f), camera->transformation()[0].xyz().normalized());
 
             if(key == Key::Down)
-                camera->rotate(deg(10.0f), camera->transformation()[0].xyz());
+                camera->rotate(deg(10.0f), camera->transformation()[0].xyz().normalized());
 
             if(key == Key::Left || key == Key::Right) {
                 GLfloat yTransform = camera->transformation()[3][2];
@@ -88,6 +103,7 @@ class CubeMapExample: public Contexts::GlutWindowContext {
         }
 
     private:
+        CubeMapResourceManager resourceManager;
         SceneGraph::Scene3D scene;
         SceneGraph::Camera3D* camera;
 };

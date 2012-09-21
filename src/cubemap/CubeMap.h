@@ -15,13 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <IndexedMesh.h>
+#include <ResourceManager.h>
 #include <SceneGraph/Object.h>
 
-#include "CubeMapShader.h"
-#include "CubeMapTexture.h"
-
 namespace Magnum {
+
+class IndexedMesh;
+class AbstractShaderProgram;
+class CubeMapTexture;
 
 namespace Trade {
     class AbstractImporter;
@@ -29,19 +30,18 @@ namespace Trade {
 
 namespace Examples {
 
-class Reflector;
+class CubeMapShader;
 
 class CubeMap: public SceneGraph::Object3D {
     public:
-        CubeMap(Trade::AbstractImporter* importer, const std::string& prefix, SceneGraph::Object3D* parent);
+        CubeMap(const std::string& prefix, SceneGraph::Object3D* parent);
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
-        IndexedMesh cube;
-        CubeMapShader shader;
-        CubeMapTexture texture;
-        Texture2D tarnishTexture;
+        Resource<IndexedMesh> cube;
+        Resource<AbstractShaderProgram, CubeMapShader> shader;
+        Resource<CubeMapTexture> texture;
 };
 
 }}

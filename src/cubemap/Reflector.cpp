@@ -15,32 +15,68 @@
 
 #include "Reflector.h"
 
+#include <Utility/Resource.h>
 #include <CubeMapTexture.h>
+#include <IndexedMesh.h>
 #include <MeshTools/CompressIndices.h>
 #include <MeshTools/Interleave.h>
 #include <Primitives/UVSphere.h>
 #include <SceneGraph/Camera.h>
+#include <Trade/AbstractImporter.h>
+#include <Trade/ImageData.h>
 
+#include "CubeMapResourceManager.h"
 #include "ReflectionShader.h"
 
 namespace Magnum { namespace Examples {
 
-Reflector::Reflector(CubeMapTexture* texture, Texture2D* tarnishTexture, SceneGraph::Object3D* parent): Object3D(parent), texture(texture), tarnishTexture(tarnishTexture) {
-    Buffer* buffer = sphere.addBuffer(Mesh::BufferType::Interleaved);
-    Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
-    MeshTools::interleave(&sphere, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
-    sphere.setVertexCount(sphereData.positions(0)->size())
-        ->bindAttribute<ReflectionShader::Position>(buffer)
-        ->bindAttribute<ReflectionShader::TextureCoords>(buffer);
-    MeshTools::compressIndices(&sphere, Buffer::Usage::StaticDraw, *sphereData.indices());
+Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
+    CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
+
+    /* Sphere mesh */
+    if(!(sphere = resourceManager->get<IndexedMesh>("sphere"))) {
+        IndexedMesh* mesh = new IndexedMesh;
+        Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
+        Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
+        mesh->bindAttribute<ReflectionShader::Position>(buffer)
+            ->bindAttribute<ReflectionShader::TextureCoords>(buffer);
+        MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *sphereData.indices());
+
+        resourceManager->set("sphere", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+    }
+
+    /* Reflector shader */
+    if(!(shader = resourceManager->get<AbstractShaderProgram, ReflectionShader>("reflector-shader")))
+        resourceManager->set<AbstractShaderProgram>("reflector-shader", new ReflectionShader, ResourceDataState::Final, ResourcePolicy::Resident);
+
+    /* Texture (created in CubeMap class) */
+    texture = resourceManager->get<CubeMapTexture>("texture");
+
+    /* Tarnish texture */
+    if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
+        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
+        Corrade::Utility::Resource rs("data");
+        std::istringstream in(rs.get("tarnish.tga"));
+        importer->open(in);
+
+        Texture2D* tarnishTexture = new Texture2D;
+        tarnishTexture->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
+            ->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
+            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
+            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
+            ->generateMipmap();
+
+        resourceManager->set<Texture2D>("tarnish-texture", tarnishTexture, ResourceDataState::Final, ResourcePolicy::Resident);
+    }
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     Matrix4 cameraMatrix = camera->absoluteTransformation();
     cameraMatrix[3] = Vector4();
 
-    shader()->use();
-    shader()->setModelViewMatrix(transformationMatrix)
+    shader->use();
+    shader->setModelViewMatrix(transformationMatrix)
         ->setProjectionMatrix(camera->projectionMatrix())
         ->setReflectivity(2.0f)
         ->setDiffuseColor(Color3<GLfloat>(0.3f))
@@ -49,13 +85,7 @@ void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* 
     texture->bind(ReflectionShader::TextureLayer);
     tarnishTexture->bind(ReflectionShader::TarnishTextureLayer);
 
-    sphere.draw();
-}
-
-ReflectionShader* Reflector::shader() {
-    static ReflectionShader* _shader = 0;
-    if(!_shader) _shader = new ReflectionShader;
-    return _shader;
+    sphere->draw();
 }
 
 }}

@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Reflector_h
-#define Magnum_Examples_Reflector_h
+#ifndef Magnum_Examples_CubeMapResourceManager_h
+#define Magnum_Examples_CubeMapResourceManager_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,33 +15,25 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <SceneGraph/Object.h>
 #include <ResourceManager.h>
 
 namespace Magnum {
 
-class AbstractShaderProgram;
-class CubeMapTexture;
 class IndexedMesh;
 template<size_t> class Texture;
 typedef Texture<2> Texture2D;
+class CubeMapTexture;
+class AbstractShaderProgram;
+
+namespace Trade {
+    class AbstractImporter;
+}
+
+extern template class ResourceManager<IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 
 namespace Examples {
 
-class ReflectionShader;
-
-class Reflector: public SceneGraph::Object3D {
-    public:
-        Reflector(SceneGraph::Object3D* parent = nullptr);
-
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
-
-    private:
-        Resource<IndexedMesh> sphere;
-        Resource<AbstractShaderProgram, ReflectionShader> shader;
-        Resource<CubeMapTexture> texture;
-        Resource<Texture2D> tarnishTexture;
-};
+typedef ResourceManager<IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
 
 }}
 
