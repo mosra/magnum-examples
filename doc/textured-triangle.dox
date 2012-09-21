@@ -1,7 +1,8 @@
 namespace Magnum {
 /** @page examples-textured-triangle Textured triangle
-@brief This example will add texture to your first triangle and teach you
-various new things for simplifying the workflow.
+@brief Texturing, compiled-in resources, shader uniforms and mesh tools.
+
+- Previous example: @ref examples-triangle
 
 @image html textured-triangle/textured-triangle.png
 @image latex textured-triangle/textured-triangle.png

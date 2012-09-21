@@ -1,7 +1,8 @@
 namespace Magnum {
 /** @page examples-triangle Your first triangle
-@brief In this example you will learn how to create OpenGL context and render
-simple colored triangle on the screen.
+@brief Creating OpenGL context and basic rendering.
+
+- Next example: @ref examples-textured-triangle
 
 @image html triangle/triangle.png
 @image latex triangle/triangle.png
@@ -109,6 +110,8 @@ libraries.
 @until MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})
 
 - @ref triangle/CMakeLists.txt
+
+- Next example: @ref examples-textured-triangle
 
 */
 }
