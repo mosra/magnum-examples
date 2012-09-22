@@ -26,7 +26,7 @@
 #include <Trade/ImageData.h>
 
 #include "CubeMapResourceManager.h"
-#include "ReflectionShader.h"
+#include "ReflectorShader.h"
 
 namespace Magnum { namespace Examples {
 
@@ -37,21 +37,15 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
     if(!(sphere = resourceManager->get<IndexedMesh>("sphere"))) {
         IndexedMesh* mesh = new IndexedMesh;
         Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
+        mesh->bindAttribute<ReflectorShader::Position>(buffer)
+            ->bindAttribute<ReflectorShader::TextureCoords>(buffer);
+
         Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
-        mesh->bindAttribute<ReflectionShader::Position>(buffer)
-            ->bindAttribute<ReflectionShader::TextureCoords>(buffer);
         MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *sphereData.indices());
 
         resourceManager->set("sphere", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
-
-    /* Reflector shader */
-    if(!(shader = resourceManager->get<AbstractShaderProgram, ReflectionShader>("reflector-shader")))
-        resourceManager->set<AbstractShaderProgram>("reflector-shader", new ReflectionShader, ResourceDataState::Final, ResourcePolicy::Resident);
-
-    /* Texture (created in CubeMap class) */
-    texture = resourceManager->get<CubeMapTexture>("texture");
 
     /* Tarnish texture */
     if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
@@ -69,21 +63,26 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
 
         resourceManager->set<Texture2D>("tarnish-texture", tarnishTexture, ResourceDataState::Final, ResourcePolicy::Resident);
     }
+
+    /* Reflector shader */
+    if(!(shader = resourceManager->get<AbstractShaderProgram, ReflectorShader>("reflector-shader")))
+        resourceManager->set<AbstractShaderProgram>("reflector-shader", new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
+
+    /* Texture (created in CubeMap class) */
+    texture = resourceManager->get<CubeMapTexture>("texture");
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-    Matrix4 cameraMatrix = camera->absoluteTransformation();
-    cameraMatrix[3] = Vector4();
-
     shader->use();
-    shader->setModelViewMatrix(transformationMatrix)
+    shader->setTransformationMatrix(transformationMatrix)
+        ->setNormalMatrix(transformationMatrix.rotation())
         ->setProjectionMatrix(camera->projectionMatrix())
         ->setReflectivity(2.0f)
         ->setDiffuseColor(Color3<GLfloat>(0.3f))
-        ->setCameraMatrix(cameraMatrix);
+        ->setCameraMatrix(camera->absoluteTransformation().rotation());
 
-    texture->bind(ReflectionShader::TextureLayer);
-    tarnishTexture->bind(ReflectionShader::TarnishTextureLayer);
+    texture->bind(ReflectorShader::TextureLayer);
+    tarnishTexture->bind(ReflectorShader::TarnishTextureLayer);
 
     sphere->draw();
 }

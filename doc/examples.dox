@@ -4,6 +4,7 @@ namespace Magnum {
 
  - @subpage examples-triangle - @copybrief examples-triangle
  - @subpage examples-textured-triangle - @copybrief examples-textured-triangle
+ - @subpage examples-cubemap - @copybrief examples-cubemap
 
 @todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 @todo MotionBlur: handle resizing for the second framebuffer
@@ -26,6 +27,25 @@ namespace Magnum {
 @example textured-triangle/TexturedTriangleShader.cpp
 @example textured-triangle/TexturedTriangleShader.vert
 @example textured-triangle/TexturedTriangleShader.frag
+
+@example cubemap/CubeMapResourceManager.h
+@example cubemap/CubeMapResourceManager.cpp
+@example cubemap/CubeMapExample.h
+@example cubemap/CubeMapExample.cpp
+@example cubemap/CubeMap.h
+@example cubemap/CubeMap.cpp
+@example cubemap/CubeMapShader.h
+@example cubemap/CubeMapShader.cpp
+@example cubemap/CubeMapShader.vert
+@example cubemap/CubeMapShader.frag
+@example cubemap/Reflector.h
+@example cubemap/Reflector.cpp
+@example cubemap/ReflectorShader.h
+@example cubemap/ReflectorShader.cpp
+@example cubemap/ReflectorShader.vert
+@example cubemap/ReflectorShader.frag
+@example cubemap/configure.h.cmake
+@example cubemap/CMakeLists.txt
 
 */
 }

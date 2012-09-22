@@ -39,8 +39,8 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, 
     /* Set up perspective camera */
     (camera = new SceneGraph::Camera3D(&scene))
         ->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend)
-        ->setPerspective(deg(55.0f), 0.001f, 100)
-        ->translate(Vector3::zAxis(3));
+        ->setPerspective(deg(55.0f), 0.001f, 100.0f)
+        ->translate(Vector3::zAxis(3.0f));
 
     /* Load TGA importer plugin */
     PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -52,7 +52,8 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, 
     resourceManager.set<Trade::AbstractImporter>("tga-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    new CubeMap(argc == 2 ? argv[1] : "", &scene);
+    (new CubeMap(argc == 2 ? argv[1] : "", &scene))
+        ->scale(Vector3(20.0f));
 
     (new Reflector(&scene))
         ->scale(Vector3(0.5f))
@@ -82,15 +83,16 @@ void CubeMapExample::keyPressEvent(Key key, const Magnum::Math::Vector2<int>&) {
     if(key == Key::Up)
         camera->rotate(deg(-10.0f), camera->transformation()[0].xyz().normalized());
 
-    if(key == Key::Down)
+    else if(key == Key::Down)
         camera->rotate(deg(10.0f), camera->transformation()[0].xyz().normalized());
 
-    if(key == Key::Left || key == Key::Right) {
-        GLfloat yTransform = camera->transformation()[3][2];
-        camera->translate(Vector3::yAxis(-yTransform))
+    else if(key == Key::Left || key == Key::Right) {
+        GLfloat translationY = camera->transformation().translation().y();
+        camera->translate(Vector3::yAxis(-translationY))
             ->rotate(key == Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
-            ->translate(Vector3::yAxis(yTransform));
-    }
+            ->translate(Vector3::yAxis(translationY));
+
+    } else return;
 
     redraw();
 }

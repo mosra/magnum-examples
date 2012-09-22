@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ReflectionShader_h
-#define Magnum_Examples_ReflectionShader_h
+#ifndef Magnum_Examples_ReflectorShader_h
+#define Magnum_Examples_ReflectorShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -20,7 +20,7 @@
 
 namespace Magnum { namespace Examples {
 
-class ReflectionShader: public AbstractShaderProgram {
+class ReflectorShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Point3D> Position;
         typedef Attribute<1, Vector2> TextureCoords;
@@ -28,35 +28,41 @@ class ReflectionShader: public AbstractShaderProgram {
         static const GLint TextureLayer = 0;
         static const GLint TarnishTextureLayer = 1;
 
-        ReflectionShader();
+        ReflectorShader();
 
-        inline ReflectionShader* setModelViewMatrix(const Matrix4& matrix) {
-            setUniform(modelViewMatrixUniform, matrix);
+        inline ReflectorShader* setTransformationMatrix(const Matrix4& matrix) {
+            setUniform(transformationMatrixUniform, matrix);
             return this;
         }
 
-        inline ReflectionShader* setProjectionMatrix(const Matrix4& matrix) {
+        inline ReflectorShader* setNormalMatrix(const Matrix3& matrix) {
+            setUniform(normalMatrixUniform, matrix);
+            return this;
+        }
+
+        inline ReflectorShader* setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
             return this;
         }
 
-        inline ReflectionShader* setCameraMatrix(const Matrix4& matrix) {
+        inline ReflectorShader* setCameraMatrix(const Matrix3& matrix) {
             setUniform(cameraMatrixUniform, matrix);
             return this;
         }
 
-        inline ReflectionShader* setReflectivity(GLfloat reflectivity) {
+        inline ReflectorShader* setReflectivity(GLfloat reflectivity) {
             setUniform(reflectivityUniform, reflectivity);
             return this;
         }
 
-        inline ReflectionShader* setDiffuseColor(const Color3<GLfloat>& color) {
+        inline ReflectorShader* setDiffuseColor(const Color3<GLfloat>& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
 
     private:
-        GLint modelViewMatrixUniform,
+        GLint transformationMatrixUniform,
+            normalMatrixUniform,
             projectionMatrixUniform,
             cameraMatrixUniform,
             reflectivityUniform,

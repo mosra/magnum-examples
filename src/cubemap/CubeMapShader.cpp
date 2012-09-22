@@ -29,7 +29,7 @@ CubeMapShader::CubeMapShader() {
 
     link();
 
-    modelViewProjectionMatrixUniform = uniformLocation("modelViewProjectionMatrix");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
     use();
     setUniform(uniformLocation("textureData"), TextureLayer);

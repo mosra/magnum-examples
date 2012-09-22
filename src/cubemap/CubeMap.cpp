@@ -21,6 +21,7 @@
 #include <CubeMapTexture.h>
 #include <IndexedMesh.h>
 #include <MeshTools/FlipNormals.h>
+#include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
 #include <Primitives/Cube.h>
 #include <SceneGraph/Scene.h>
@@ -42,13 +43,13 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
     /* Cube mesh */
     if(!(cube = resourceManager->get<IndexedMesh>("cube"))) {
         IndexedMesh* mesh = new IndexedMesh;
+        Buffer* buffer = mesh->addBuffer(Mesh::BufferType::NonInterleaved);
+        mesh->bindAttribute<CubeMapShader::Position>(buffer);
+
         Primitives::Cube cubeData;
         MeshTools::flipFaceWinding(*cubeData.indices());
-        Buffer* buffer = mesh->addBuffer(Mesh::BufferType::NonInterleaved);
-        buffer->setData(*cubeData.positions(0), Buffer::Usage::StaticDraw);
-        mesh->setVertexCount(cubeData.positions(0)->size())
-            ->bindAttribute<CubeMapShader::Position>(buffer);
         MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *cubeData.indices());
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
 
         resourceManager->set("cube", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
@@ -60,19 +61,14 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         importer->open(prefix + "+x.tga");
         texture->setData(CubeMapTexture::PositiveX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
-
         importer->open(prefix + "-x.tga");
         texture->setData(CubeMapTexture::NegativeX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
-
         importer->open(prefix + "+y.tga");
         texture->setData(CubeMapTexture::PositiveY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
-
         importer->open(prefix + "-y.tga");
         texture->setData(CubeMapTexture::NegativeY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
-
         importer->open(prefix + "+z.tga");
         texture->setData(CubeMapTexture::PositiveZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
-
         importer->open(prefix + "-z.tga");
         texture->setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
 
@@ -87,14 +83,12 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
     /* Shader */
     if(!(shader = resourceManager->get<AbstractShaderProgram, CubeMapShader>("shader")))
         resourceManager->set<AbstractShaderProgram>("shader", new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    scale(Vector3(20.0f));
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
     shader->use();
 
-    shader->setModelViewProjectionMatrix(camera->projectionMatrix()*transformationMatrix);
+    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix);
     texture->bind(CubeMapShader::TextureLayer);
 
     cube->draw();

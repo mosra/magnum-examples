@@ -6,12 +6,11 @@ find_package(Magnum REQUIRED
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_resource(CubeMapData data
     CubeMapShader.vert CubeMapShader.frag
-    ReflectionShader.vert ReflectionShader.frag
+    ReflectorShader.vert ReflectorShader.frag
     tarnish.tga)
 
 add_executable(cubeMapExample
@@ -20,7 +19,7 @@ add_executable(cubeMapExample
     CubeMapResourceManager.cpp
     CubeMapShader.cpp
     Reflector.cpp
-    ReflectionShader.cpp
+    ReflectorShader.cpp
     ${CubeMapData})
 target_link_libraries(cubeMapExample
     ${MAGNUM_LIBRARIES}

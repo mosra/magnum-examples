@@ -28,7 +28,7 @@ class CubeMapExample: public Contexts::GlutWindowContext {
         void viewportEvent(const Math::Vector2<GLsizei>& size);
         void drawEvent();
 
-        void keyPressEvent(Key key, const Magnum::Math::Vector2<int>& position);
+        void keyPressEvent(Key key, const Math::Vector2<int>& position);
 
     private:
         CubeMapResourceManager resourceManager;

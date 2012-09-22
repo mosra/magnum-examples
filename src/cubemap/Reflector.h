@@ -28,7 +28,7 @@ typedef Texture<2> Texture2D;
 
 namespace Examples {
 
-class ReflectionShader;
+class ReflectorShader;
 
 class Reflector: public SceneGraph::Object3D {
     public:
@@ -38,7 +38,7 @@ class Reflector: public SceneGraph::Object3D {
 
     private:
         Resource<IndexedMesh> sphere;
-        Resource<AbstractShaderProgram, ReflectionShader> shader;
+        Resource<AbstractShaderProgram, ReflectorShader> shader;
         Resource<CubeMapTexture> texture;
         Resource<Texture2D> tarnishTexture;
 };

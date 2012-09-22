@@ -27,12 +27,12 @@ class CubeMapShader: public AbstractShaderProgram {
 
         CubeMapShader();
 
-        inline void setModelViewProjectionMatrix(const Matrix4& matrix) {
-            setUniform(modelViewProjectionMatrixUniform, matrix);
+        inline void setTransformationProjectionMatrix(const Matrix4& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
         }
 
     private:
-        GLint modelViewProjectionMatrixUniform;
+        GLint transformationProjectionMatrixUniform;
 };
 
 }}

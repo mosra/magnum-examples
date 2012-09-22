@@ -3,6 +3,7 @@ namespace Magnum {
 @brief Texturing, compiled-in resources, shader uniforms and mesh tools.
 
 - Previous example: @ref examples-triangle
+- Next example: @ref examples-cubemap
 
 @image html textured-triangle/textured-triangle.png
 @image latex textured-triangle/textured-triangle.png
@@ -143,6 +144,8 @@ Last step is linking, the same as previously.
 
  - @ref textured-triangle/configure.h.cmake
  - @ref textured-triangle/CMakeLists.txt
+
+- Next example: @ref examples-cubemap
 
 */
 }

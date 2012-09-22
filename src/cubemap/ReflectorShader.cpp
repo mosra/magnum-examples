@@ -13,7 +13,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "ReflectionShader.h"
+#include "ReflectorShader.h"
 
 #include <Utility/Resource.h>
 #include <Shader.h>
@@ -22,14 +22,15 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-ReflectionShader::ReflectionShader() {
+ReflectorShader::ReflectorShader() {
     Resource rs("data");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ReflectionShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ReflectionShader.frag")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ReflectorShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ReflectorShader.frag")));
 
     link();
 
-    modelViewMatrixUniform = uniformLocation("modelViewMatrix");
+    transformationMatrixUniform = uniformLocation("transformationMatrix");
+    normalMatrixUniform = uniformLocation("normalMatrix");
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     cameraMatrixUniform = uniformLocation("cameraMatrix");
     reflectivityUniform = uniformLocation("reflectivity");
