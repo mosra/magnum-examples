@@ -110,7 +110,7 @@ class ViewerExample: public FpsCounterExample {
                 case MouseButton::WheelUp:
                 case MouseButton::WheelDown: {
                     /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = camera->transformation()[3].z()-0-camera->near();
+                    GLfloat distance = camera->transformation().translation().z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
                     if(button == MouseButton::WheelUp)
