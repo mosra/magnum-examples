@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Math/Matrix4.h>
 #include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {

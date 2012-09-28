@@ -15,6 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Math/Matrix3.h>
+#include <Math/Matrix4.h>
 #include <AbstractShaderProgram.h>
 #include <Color.h>
 
