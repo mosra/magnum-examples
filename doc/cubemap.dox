@@ -161,7 +161,8 @@ index array in the smallest possible type.
 In this example we are looking at the cube from inside and we enabled
 back-face culling earlier, thus the cube faces would not be visible, unless we
 solve it by calling MeshTools::flipFaceWinding(). Last thing is to fill vertex
-array of the mesh with actual vertex positions.
+array of the mesh with actual vertex positions. We also must not forget to set
+mesh primitive and bind our attributes.
 @skip resourceManager->get<IndexedMesh>("cube")
 @until MeshTools::interleave
 @note You can conveniently use MeshTools::interleave() even if you have only

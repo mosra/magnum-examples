@@ -37,10 +37,11 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
     if(!(sphere = resourceManager->get<IndexedMesh>("sphere"))) {
         IndexedMesh* mesh = new IndexedMesh;
         Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
-        mesh->bindAttribute<ReflectorShader::Position>(buffer)
-            ->bindAttribute<ReflectorShader::TextureCoords>(buffer);
 
         Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
+        mesh->setPrimitive(sphereData.primitive())
+            ->bindAttribute<ReflectorShader::Position>(buffer)
+            ->bindAttribute<ReflectorShader::TextureCoords>(buffer);
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
         MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *sphereData.indices());
 
