@@ -45,7 +45,7 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
         MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *sphereData.indices());
 
-        resourceManager->set("sphere", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set(sphere.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Tarnish texture */
@@ -55,19 +55,19 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
         std::istringstream in(rs.get("tarnish.tga"));
         importer->open(in);
 
-        Texture2D* tarnishTexture = new Texture2D;
-        tarnishTexture->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
+        Texture2D* texture = new Texture2D;
+        texture->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
             ->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
             ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
             ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
             ->generateMipmap();
 
-        resourceManager->set<Texture2D>("tarnish-texture", tarnishTexture, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Reflector shader */
     if(!(shader = resourceManager->get<AbstractShaderProgram, ReflectorShader>("reflector-shader")))
-        resourceManager->set<AbstractShaderProgram>("reflector-shader", new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set<AbstractShaderProgram>(shader.key(), new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
 
     /* Texture (created in CubeMap class) */
     texture = resourceManager->get<CubeMapTexture>("texture");

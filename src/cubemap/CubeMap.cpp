@@ -52,38 +52,38 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
         MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *cubeData.indices());
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
 
-        resourceManager->set("cube", mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Cube map texture */
     if(!(texture = resourceManager->get<CubeMapTexture>("texture"))) {
-        CubeMapTexture* texture = new CubeMapTexture;
+        CubeMapTexture* cubeMap = new CubeMapTexture;
 
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         importer->open(prefix + "+x.tga");
-        texture->setData(CubeMapTexture::PositiveX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::PositiveX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
         importer->open(prefix + "-x.tga");
-        texture->setData(CubeMapTexture::NegativeX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::NegativeX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
         importer->open(prefix + "+y.tga");
-        texture->setData(CubeMapTexture::PositiveY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::PositiveY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
         importer->open(prefix + "-y.tga");
-        texture->setData(CubeMapTexture::NegativeY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::NegativeY, 0, AbstractTexture::Format::RGB, importer->image2D(0));
         importer->open(prefix + "+z.tga");
-        texture->setData(CubeMapTexture::PositiveZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::PositiveZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
         importer->open(prefix + "-z.tga");
-        texture->setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
+        cubeMap->setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
 
-        texture->setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
+        cubeMap->setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
             ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
             ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
             ->generateMipmap();
 
-        resourceManager->set("texture", texture, ResourceDataState::Final, ResourcePolicy::Manual);
+        resourceManager->set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Shader */
     if(!(shader = resourceManager->get<AbstractShaderProgram, CubeMapShader>("shader")))
-        resourceManager->set<AbstractShaderProgram>("shader", new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
+        resourceManager->set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {

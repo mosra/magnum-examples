@@ -23,7 +23,7 @@ namespace Magnum {
 class AbstractShaderProgram;
 class CubeMapTexture;
 class IndexedMesh;
-template<size_t> class Texture;
+template<std::uint8_t> class Texture;
 typedef Texture<2> Texture2D;
 
 namespace Examples {
