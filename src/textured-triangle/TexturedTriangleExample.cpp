@@ -44,8 +44,8 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutWi
     Magnum::MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw,
                                   positions, textureCoordinates);
 
-    mesh.bindAttribute<TexturedTriangleShader::Position>(buffer);
-    mesh.bindAttribute<TexturedTriangleShader::TextureCoordinates>(buffer);
+    mesh.bindAttribute<TexturedTriangleShader::Position>(buffer)
+        ->bindAttribute<TexturedTriangleShader::TextureCoordinates>(buffer);
 
     /* Load TGA importer plugin */
     Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -80,8 +80,8 @@ void TexturedTriangleExample::viewportEvent(const Math::Vector2<GLsizei>& size) 
 void TexturedTriangleExample::drawEvent() {
     Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
 
-    shader.use();
-    shader.setBaseColor({1.0f, 0.7f, 0.7f});
+    shader.setBaseColor({1.0f, 0.7f, 0.7f})
+        ->use();
     texture.bind(TexturedTriangleShader::TextureLayer);
     mesh.draw();
 

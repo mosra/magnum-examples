@@ -74,13 +74,13 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-    shader->use();
     shader->setTransformationMatrix(transformationMatrix)
         ->setNormalMatrix(transformationMatrix.rotation())
         ->setProjectionMatrix(camera->projectionMatrix())
         ->setReflectivity(2.0f)
         ->setDiffuseColor(Color3<GLfloat>(0.3f))
-        ->setCameraMatrix(camera->absoluteTransformation().rotation());
+        ->setCameraMatrix(camera->absoluteTransformation().rotation())
+        ->use();
 
     texture->bind(ReflectorShader::TextureLayer);
     tarnishTexture->bind(ReflectorShader::TarnishTextureLayer);

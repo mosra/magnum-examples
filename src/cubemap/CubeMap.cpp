@@ -87,9 +87,9 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-    shader->use();
+    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix)
+        ->use();
 
-    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix);
     texture->bind(CubeMapShader::TextureLayer);
 
     cube->draw();

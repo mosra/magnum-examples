@@ -28,8 +28,9 @@ class CubeMapShader: public AbstractShaderProgram {
 
         CubeMapShader();
 
-        inline void setTransformationProjectionMatrix(const Matrix4& matrix) {
+        inline CubeMapShader* setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
+            return this;
         }
 
     private:

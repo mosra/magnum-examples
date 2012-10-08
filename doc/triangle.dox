@@ -16,7 +16,6 @@ Contexts::GlutWindowContext class. We subclass it and next to the constructor we
 implement two required functions, one which is called after the window is
 resized and one for rendering into the window. We also need mesh with our
 triangle and shader (created below) which will take care of rendering.
-
 @dontinclude triangle/TriangleExample.h
 @skip class TriangleExample
 @until };
@@ -24,7 +23,6 @@ triangle and shader (created below) which will take care of rendering.
 In the constructor we pass necessary arguments to
 @ref Contexts::GlutWindowContext "GlutWindowContext" class and specify
 @ref Mesh::Primitive "mesh primitive" and vertex count of the triangle mesh.
-
 @dontinclude triangle/TriangleExample.cpp
 @skipline TriangleExample::TriangleExample
 
@@ -34,38 +32,32 @@ are in one continuous place in memory. We will cheat a bit here and use
 three-component vectors for both 2D positions and colors (homogeneous 2D
 coordinates and RGB values), so we can interleave them in place. In next
 tutorial we will learn how to interleave them programatically.
-
 @skip data
 @until };
 
 We then add interleaved buffer to the mesh and fill it with the data. The data
 won't be changed or read back into memory during application lifetime, so we
 mark them with appropriate @ref Buffer::Usage "buffer usage".
-
 @skip Buffer
 @until setData
 
 Last thing in preparation of the mesh is to bind attributes in the buffer to
 shader inputs. The binding is done in the same order as physical location of
-vertex attributes in the buffer - first position, then color. Shader inputs
+vertex attributes in the buffer - first position, then color. %Shader inputs
 are defined in `TriangleShader` class, which is explained later.
-
 @skip bindAttribute
 @until }
 
 Function `viewportEvent()` just passes current window size to the framebuffer,
 so the triangle is rendered at proper size and position.
-
 @skip TriangleExample::viewportEvent
 @until }
 @until }
 
-Function `drawEvent()` will take care about drawing the scene. We clear all
-active buffers (but because we didn't enable depth or stencil buffer, only
-color buffer is cleared), tell that the drawing is done using our shader and
-then we draw the mesh. The context is double buffered, so we need to swap the
-buffers after drawing.
-
+Function `drawEvent()` will take care about drawing the scene. We clear color
+buffer, tell that the drawing is done using our shader and then we draw the
+mesh. The context is double buffered, so we need to swap the buffers after
+drawing.
 @skip TriangleExample::drawEvent
 @until }
 
@@ -75,16 +67,15 @@ buffers after drawing.
 @section examples-triangle-shader Triangle shader
 
 Our shader is pretty simple - it takes only vertex position and color and
-doesn't need any uniform to operate. We define both attributes as @ref Vector4
-and assign vertex position to first slot and color to second:
-
+doesn't need any uniform to operate. We define both attributes as @ref Vector3
+(the same type we used for the mesh data earlier) and assign vertex position
+to first slot and color to second:
 @dontinclude triangle/TriangleShader.h
 @skip class TriangleShader
 @until };
 
 In the constructor we load GLSL sources for fragment and vertex shader, attach
 them to shader program and link the program together:
-
 @dontinclude triangle/TriangleShader.cpp
 @skip TriangleShader::TriangleShader
 @until }

@@ -29,8 +29,8 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutWindowContext(argc
     Magnum::Buffer* buffer = mesh.addBuffer(Magnum::Mesh::BufferType::Interleaved);
     buffer->setData(data, Magnum::Buffer::Usage::StaticDraw);
 
-    mesh.bindAttribute<TriangleShader::Position>(buffer);
-    mesh.bindAttribute<TriangleShader::Color>(buffer);
+    mesh.bindAttribute<TriangleShader::Position>(buffer)
+        ->bindAttribute<TriangleShader::Color>(buffer);
 }
 
 void TriangleExample::viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {

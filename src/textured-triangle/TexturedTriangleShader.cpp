@@ -29,7 +29,6 @@ TexturedTriangleShader::TexturedTriangleShader() {
 
     baseColorUniform = uniformLocation("baseColor");
 
-    use();
     setUniform(uniformLocation("textureData"), TextureLayer);
 }
 

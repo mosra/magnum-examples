@@ -29,8 +29,9 @@ class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
 
         TexturedTriangleShader();
 
-        inline void setBaseColor(const Color3<GLfloat>& color) {
+        inline TexturedTriangleShader* setBaseColor(const Color3<GLfloat>& color) {
             setUniform(baseColorUniform, color);
+            return this;
         }
 
     private:
