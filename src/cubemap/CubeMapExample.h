@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_CubeMapExample_h
+#define Magnum_Examples_CubeMapExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -37,3 +39,5 @@ class CubeMapExample: public Contexts::GlutWindowContext {
 };
 
 }}
+
+#endif
