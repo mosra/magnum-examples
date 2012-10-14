@@ -73,7 +73,6 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
 
     link();
 
-    use();
     stringstream ss;
     for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i) {
         ss.str("");

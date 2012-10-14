@@ -36,7 +36,6 @@ ReflectorShader::ReflectorShader() {
     reflectivityUniform = uniformLocation("reflectivity");
     diffuseColorUniform = uniformLocation("diffuseColor");
 
-    use();
     setUniform(uniformLocation("textureData"), TextureLayer);
     setUniform(uniformLocation("tarnishTextureData"), TarnishTextureLayer);
 }

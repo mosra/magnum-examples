@@ -31,7 +31,6 @@ CubeMapShader::CubeMapShader() {
 
     transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
-    use();
     setUniform(uniformLocation("textureData"), TextureLayer);
 }
 
