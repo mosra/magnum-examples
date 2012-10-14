@@ -28,10 +28,10 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, S
     buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
     mesh.bindAttribute<ColorCorrectionShader::Position>(buffer);
 
-    texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder});
-    texture.setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation);
-    texture.setMinificationFilter(AbstractTexture::Filter::LinearInterpolation);
-    texture.setData(0, AbstractTexture::Format::RGBA, image);
+    texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder})
+        ->setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation)
+        ->setMinificationFilter(AbstractTexture::Filter::LinearInterpolation)
+        ->setData(0, AbstractTexture::Format::RGBA, image);
 
     colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
 

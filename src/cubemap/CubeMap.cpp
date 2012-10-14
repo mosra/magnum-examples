@@ -59,6 +59,10 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
     if(!(texture = resourceManager->get<CubeMapTexture>("texture"))) {
         CubeMapTexture* cubeMap = new CubeMapTexture;
 
+        cubeMap->setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
+            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
+            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
+
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         importer->open(prefix + "+x.tga");
         cubeMap->setData(CubeMapTexture::PositiveX, 0, AbstractTexture::Format::RGB, importer->image2D(0));
@@ -73,10 +77,7 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
         importer->open(prefix + "-z.tga");
         cubeMap->setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, importer->image2D(0));
 
-        cubeMap->setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
-            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
-            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
-            ->generateMipmap();
+        cubeMap->generateMipmap();
 
         resourceManager->set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
     }

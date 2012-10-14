@@ -29,10 +29,10 @@ namespace Magnum { namespace Examples {
 
 MotionBlurCamera::MotionBlurCamera(SceneGraph::Object3D* parent): Camera3D(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(GLint i = 0; i != FrameCount; ++i) {
-        frames[i] = new Texture2D;
-        frames[i]->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge));
-        frames[i]->setMinificationFilter(AbstractTexture::Filter::NearestNeighbor);
-        frames[i]->setMagnificationFilter(AbstractTexture::Filter::NearestNeighbor);
+        (frames[i] = new Texture2D)
+            ->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge))
+            ->setMinificationFilter(AbstractTexture::Filter::NearestNeighbor)
+            ->setMagnificationFilter(AbstractTexture::Filter::NearestNeighbor);
     }
 }
 

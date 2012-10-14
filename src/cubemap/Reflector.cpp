@@ -56,10 +56,10 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
         importer->open(in);
 
         Texture2D* texture = new Texture2D;
-        texture->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
-            ->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
+        texture->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
             ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
             ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
+            ->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
             ->generateMipmap();
 
         resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
