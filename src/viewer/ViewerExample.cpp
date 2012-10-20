@@ -139,7 +139,7 @@ class ViewerExample: public FpsCounterExample {
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
             GLfloat angle = acos(Vector3::dot(previousPosition, currentPosition));
-            o->rotate(angle, axis);
+            o->rotate(angle, axis.normalized());
 
             previousPosition = currentPosition;
 
