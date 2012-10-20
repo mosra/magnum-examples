@@ -26,13 +26,13 @@ Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& co
 }
 
 void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-    shader->use();
-    shader->setDiffuseColorUniform(color);
-    shader->setSpecularColorUniform(Color3<GLfloat>(1.0f));
-    shader->setShininessUniform(20);
-    shader->setLightUniform({3.0f, -3.0f, 3.0f});
-    shader->setTransformationMatrixUniform(transformationMatrix);
-    shader->setProjectionMatrixUniform(camera->projectionMatrix());
+    shader->setDiffuseColor(color)
+        ->setSpecularColor(Color3<GLfloat>(1.0f))
+        ->setShininess(20)
+        ->setLightPosition({3.0f, -3.0f, 3.0f})
+        ->setTransformation(transformationMatrix)
+        ->setProjection(camera->projectionMatrix())
+        ->use();
 
     mesh->draw();
 }

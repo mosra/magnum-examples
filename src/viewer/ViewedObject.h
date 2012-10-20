@@ -28,16 +28,14 @@ class ViewedObject: public SceneGraph::Object3D {
         ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::PhongShader* shader, SceneGraph::Object3D* parent = nullptr): Object3D(parent), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
 
         virtual void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
-            shader->use();
-            shader->setAmbientColorUniform(ambientColor);
-            shader->setDiffuseColorUniform(diffuseColor);
-            shader->setSpecularColorUniform(specularColor);
-            shader->setShininessUniform(shininess);
-
-            shader->setLightUniform(Vector3(-3.0f, 10.0f, 10.0f));
-
-            shader->setTransformationMatrixUniform(transformationMatrix);
-            shader->setProjectionMatrixUniform(camera->projectionMatrix());
+            shader->setAmbientColor(ambientColor)
+                ->setDiffuseColor(diffuseColor)
+                ->setSpecularColor(specularColor)
+                ->setShininess(shininess)
+                ->setLightPosition({-3.0f, 10.0f, 10.0f})
+                ->setTransformation(transformationMatrix)
+                ->setProjection(camera->projectionMatrix())
+                ->use();
 
             mesh->draw();
         }
