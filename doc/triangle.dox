@@ -14,15 +14,15 @@ namespace Magnum {
 For this example we will use GLUT toolkit, which is implemented in
 Contexts::GlutWindowContext class. We subclass it and next to the constructor we
 implement two required functions, one which is called after the window is
-resized and one for rendering into the window. We also need mesh with our
-triangle and shader (created below) which will take care of rendering.
+resized and one for rendering into the window. We also need mesh encapsulating
+our triangle, buffer to store vertex data and shader (created below) which
+will take care of rendering.
 @dontinclude triangle/TriangleExample.h
 @skip class TriangleExample
 @until };
 
 In the constructor we pass necessary arguments to
-@ref Contexts::GlutWindowContext "GlutWindowContext" class and specify
-@ref Mesh::Primitive "mesh primitive" and vertex count of the triangle mesh.
+@ref Contexts::GlutWindowContext "GlutWindowContext" class.
 @dontinclude triangle/TriangleExample.cpp
 @skipline TriangleExample::TriangleExample
 
@@ -35,17 +35,19 @@ tutorial we will learn how to interleave them programatically.
 @skip data
 @until };
 
-We then add interleaved buffer to the mesh and fill it with the data. The data
-won't be changed or read back into memory during application lifetime, so we
-mark them with appropriate @ref Buffer::Usage "buffer usage".
+We then create vertex buffer and fill it with the data. The data won't be
+changed or read back into memory during application lifetime, so we mark them
+with appropriate @ref Buffer::Usage "buffer usage".
 @skip Buffer
 @until setData
 
-Last thing in preparation of the mesh is to bind attributes in the buffer to
-shader inputs. The binding is done in the same order as physical location of
-vertex attributes in the buffer - first position, then color. %Shader inputs
-are defined in `TriangleShader` class, which is explained later.
-@skip bindAttribute
+Now we configure the mesh - we specify @ref Mesh::Primitive "mesh primitive"
+and vertex count, add vertex buffer and specify attribute locations for use
+with our shader. We specify our attributes in the same order as physical
+location of vertex attributes in the buffer - zero offset from the beginning,
+first position, then color. Vertex attribute definitions are in
+`TriangleShader` class, which will be explained later.
+@skip mesh.
 @until }
 
 Function `viewportEvent()` just passes current window size to the framebuffer,
@@ -69,7 +71,7 @@ drawing.
 Our shader is pretty simple - it takes only vertex position and color and
 doesn't need any uniform to operate. We define both attributes as @ref Vector3
 (the same type we used for the mesh data earlier) and assign vertex position
-to first slot and color to second:
+to location zero and color to one:
 @dontinclude triangle/TriangleShader.h
 @skip class TriangleShader
 @until };

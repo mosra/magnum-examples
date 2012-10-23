@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Buffer.h>
 #include <Mesh.h>
 #include <Contexts/GlutWindowContext.h>
 
@@ -31,6 +32,7 @@ class TriangleExample: public Magnum::Contexts::GlutWindowContext {
         void drawEvent();
 
     private:
+        Buffer buffer;
         Magnum::Mesh mesh;
         TriangleShader shader;
 };
