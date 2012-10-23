@@ -16,7 +16,8 @@
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
 #  MeshTools     - MeshTools library
-#  Physics       - Physics library
+#  Physics       - Physics library (depends on Primitives and SceneGraph
+#                  components)
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
@@ -77,6 +78,13 @@ else()
     find_package(OpenGLES2 REQUIRED)
 endif()
 
+# On Windows, *WindowContext libraries need to have ${MAGNUM_LIBRARY} listed
+# in dependencies also after *WindowContext.lib static library name to avoid
+# linker errors
+if(WIN32)
+    set(_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY ${MAGNUM_LIBRARY})
+endif()
+
 # Additional components
 foreach(component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${component} _COMPONENT)
@@ -95,7 +103,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL GlutWindowContext)
             find_package(GLUT)
             if(GLUT_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -105,7 +113,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL Sdl2WindowContext)
             find_package(SDL2)
             if(SDL2_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
@@ -116,7 +124,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL GlxWindowContext)
             find_package(X11)
             if(X11_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -127,7 +135,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY} ${X11_LIBRARIES})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY} ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
