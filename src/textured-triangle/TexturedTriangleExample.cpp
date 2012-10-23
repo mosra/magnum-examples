@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Examples {
 
-TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Textured triangle example"), mesh(Magnum::Mesh::Primitive::Triangles, 3) {
+TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Textured triangle example") {
     constexpr static std::array<Point2D, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},
@@ -40,12 +40,11 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutWi
         {0.5f, 1.0f}
     }};
 
-    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
-    Magnum::MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw,
-                                  positions, textureCoordinates);
-
-    mesh.bindAttribute<TexturedTriangleShader::Position>(buffer)
-        ->bindAttribute<TexturedTriangleShader::TextureCoordinates>(buffer);
+    Magnum::MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw,
+        positions, textureCoordinates);
+    mesh.setPrimitive(Mesh::Primitive::Triangles)
+        ->setVertexCount(3)
+        ->addInterleavedVertexBuffer(&buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);

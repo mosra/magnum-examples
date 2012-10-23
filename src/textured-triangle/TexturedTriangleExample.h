@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Buffer.h>
 #include <Mesh.h>
 #include <Texture.h>
 #include <Contexts/GlutWindowContext.h>
@@ -32,6 +33,7 @@ class TexturedTriangleExample: public Magnum::Contexts::GlutWindowContext {
         void drawEvent();
 
     private:
+        Buffer buffer;
         Magnum::Mesh mesh;
         TexturedTriangleShader shader;
         Magnum::Texture2D texture;

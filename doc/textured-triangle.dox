@@ -39,10 +39,10 @@ when loading the data from a file).
 @skip TexturedTriangleExample::TexturedTriangleExample
 @until textureCoordinates);
 
-We then bind the position and texture coordinate attributes in the buffer to
-shader inputs.
-@skipline mesh.bindAttribute
-@skipline bindAttribute
+We then configure mesh primitive and vertex yount, add our vertex buffer and
+specify attribute locations for use with our shader:
+@skipline mesh
+@until addInterleavedVertexBuffer
 
 Now we will instantiate the plugin manager with plugin directory, which is
 provided by CMake in `MAGNUM_PLUGINS_IMPORTER_DIR` (explained later) and try
