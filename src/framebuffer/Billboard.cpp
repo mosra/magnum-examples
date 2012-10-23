@@ -21,12 +21,12 @@
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object2D* parent): Object2D(parent), mesh(Mesh::Primitive::TriangleStrip, 4) {
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object2D* parent): Object2D(parent) {
     Primitives::Square square;
-
-    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*square.positions(0), Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<ColorCorrectionShader::Position>(buffer);
+    buffer.setData(*square.positions(0), Buffer::Usage::StaticDraw);
+    mesh.setPrimitive(square.primitive())
+        ->setVertexCount(square.positions(0)->size())
+        ->addVertexBuffer(&buffer, ColorCorrectionShader::Position());
 
     texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder})
         ->setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation)

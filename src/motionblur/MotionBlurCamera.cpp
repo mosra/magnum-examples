@@ -81,7 +81,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     }
 }
 
-MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent): Object3D(parent), mesh(Mesh::Primitive::TriangleStrip, 4), frames(frames) {
+MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent): Object3D(parent), frames(frames) {
     const Point3D vertices[] = {
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
@@ -89,9 +89,10 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGr
         {0.0f, 1.0f, 0.0f}
     };
 
-    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(vertices, Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<MotionBlurShader::Position>(buffer);
+    buffer.setData(vertices, Buffer::Usage::StaticDraw);
+    mesh.setPrimitive(Mesh::Primitive::TriangleStrip)
+        ->setVertexCount(4)
+        ->addVertexBuffer(&buffer, MotionBlurShader::Position());
 }
 
 void MotionBlurCamera::MotionBlurCanvas::draw(size_t currentFrame) {

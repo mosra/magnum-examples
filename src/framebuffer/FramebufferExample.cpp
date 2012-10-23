@@ -30,7 +30,7 @@ namespace Magnum { namespace Examples {
 
 class FramebufferExample: public Contexts::GlutWindowContext {
     public:
-        FramebufferExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Framebuffer example"), colorCorrectionBuffer(Buffer::Target::Texture) {
+        FramebufferExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Framebuffer example") {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
                 exit(0);

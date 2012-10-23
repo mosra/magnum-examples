@@ -15,6 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include <Buffer.h>
 #include "BufferedTexture.h"
 #include "Mesh.h"
 #include "Texture.h"
@@ -32,6 +33,7 @@ class Billboard: public SceneGraph::Object2D {
         void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D* camera);
 
     private:
+        Buffer buffer;
         Mesh mesh;
         Texture2D texture;
         BufferedTexture colorCorrectionTexture;

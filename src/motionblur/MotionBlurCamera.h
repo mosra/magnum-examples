@@ -54,6 +54,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
 
             private:
                 MotionBlurShader shader;
+                Buffer buffer;
                 Mesh mesh;
                 Texture2D** frames;
         };

@@ -43,11 +43,9 @@ class MotionBlurExample: public Contexts::GlutWindowContext {
             Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
             Primitives::Icosphere<3> data;
-            MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());
-            Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
-            MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data.positions(0), *data.normals(0));
-            mesh.bindAttribute<PhongShader::Position>(buffer);
-            mesh.bindAttribute<PhongShader::Normal>(buffer);
+            MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
+            MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, *data.positions(0), *data.normals(0));
+            mesh.addInterleavedVertexBuffer(&buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Add spheres to the scene */
             Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene);
@@ -106,6 +104,8 @@ class MotionBlurExample: public Contexts::GlutWindowContext {
     private:
         SceneGraph::Scene3D scene;
         SceneGraph::Camera3D* camera;
+        Buffer buffer;
+        Buffer indexBuffer;
         IndexedMesh mesh;
         PhongShader shader;
         SceneGraph::Object3D* spheres[3];

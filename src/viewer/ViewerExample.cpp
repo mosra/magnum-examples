@@ -48,7 +48,11 @@ class ViewerExample: public FpsCounterExample {
         ViewerExample(int& argc, char** argv);
 
         ~ViewerExample() {
-            for(auto i: meshes) delete i.second;
+            for(auto i: meshes) {
+                delete get<0>(i.second);
+                delete get<1>(i.second);
+                delete get<2>(i.second);
+            }
         }
 
     protected:
@@ -164,7 +168,7 @@ class ViewerExample: public FpsCounterExample {
         SceneGraph::Camera3D* camera;
         PhongShader shader;
         SceneGraph::Object3D* o;
-        unordered_map<size_t, IndexedMesh*> meshes;
+        unordered_map<size_t, tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
         size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         bool wireframe;
         Vector3 previousPosition;
@@ -244,14 +248,16 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
         /* Use already processed mesh, if exists */
         IndexedMesh* mesh;
         auto found = meshes.find(object->instanceId());
-        if(found != meshes.end()) mesh = found->second;
+        if(found != meshes.end()) mesh = get<2>(found->second);
 
         /* Or create a new one */
         else {
             ++meshCount;
 
             mesh = new IndexedMesh;
-            meshes.insert(make_pair(object->instanceId(), mesh));
+            Buffer* buffer = new Buffer;
+            Buffer* indexBuffer = new Buffer;
+            meshes.insert(make_pair(object->instanceId(), make_tuple(buffer, indexBuffer, mesh)));
 
             MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
@@ -265,13 +271,11 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
             MeshTools::tipsify(*data->indices(), data->positions(0)->size(), 24);
 
             /* Interleave mesh data */
-            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
-            mesh->bindAttribute<PhongShader::Position>(buffer);
-            mesh->bindAttribute<PhongShader::Normal>(buffer);
             MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->positions(0), *data->normals(0));
+            mesh->addInterleavedVertexBuffer(buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Compress indices */
-            MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *data->indices());
+            MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data->indices());
         }
 
         /* Use already processed material, if exists */
