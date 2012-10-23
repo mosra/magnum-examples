@@ -65,9 +65,10 @@ either by manual freeing of unused data or automatic reference counting.
 
 @section examples-cubemap-setup Setting up resource manager and populating scene graph
 
-Our resource manager will store sphere and cube mesh (indexed, explained
-later), world and tarnish texture and shaders. We also need importer for
-loading the images. We will `typedef` the manager for easier usage later.
+Our resource manager will store vertex and index buffers (explained later),
+sphere and cube meshe, world and tarnish texture and shaders. We also need
+importer for loading the images. We will `typedef` the manager for easier
+usage later.
 @dontinclude cubemap/CubeMapResourceManager.h
 @skipline typedef ResourceManager
 
@@ -150,18 +151,20 @@ primitive is subclass of @ref Trade::MeshData3D "Trade::MeshData*D", which
 provides access to separate position, normal, texture and other arrays. Most
 of the primitives are indexed meshes to avoid unnecessary data repetition,
 which means that we need to use IndexedMesh class and next to vertex buffer
-fill also the index buffer. Index array consists of unsigned integers and if
+have also the index buffer. Index array consists of unsigned integers and if
 the vertex array isn't too large, we don't need the full 32-bit range for
-indexing it. MeshTools::compressIndices() will do that for us and store the
-index array in the smallest possible type.
+indexing it. MeshTools::compressIndices() will do the work for us - store the
+index array in the smallest possible type, fill index buffer and set proper
+index count and type.
 
 In this example we are looking at the cube from inside and we enabled
 back-face culling earlier, thus the cube faces would not be visible, unless we
 solve it by calling MeshTools::flipFaceWinding(). Last thing is to fill vertex
 array of the mesh with actual vertex positions. We also must not forget to set
-mesh primitive and bind our attributes.
+mesh primitive, add the vertex buffer and specify attribute locations to use
+with our shader.
 @skip resourceManager->get<IndexedMesh>("cube")
-@until MeshTools::interleave
+@until addVertexBuffer
 @note You can conveniently use MeshTools::interleave() even if you have only
     one attribute array. The function is specialized for this case and causes
     no performance loss in comparison to filling the buffer and setting vertex

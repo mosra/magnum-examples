@@ -36,15 +36,17 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
     /* Sphere mesh */
     if(!(sphere = resourceManager->get<IndexedMesh>("sphere"))) {
         IndexedMesh* mesh = new IndexedMesh;
-        Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
+        Buffer* buffer = new Buffer;
+        Buffer* indexBuffer = new Buffer;
 
         Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
-        mesh->setPrimitive(sphereData.primitive())
-            ->bindAttribute<ReflectorShader::Position>(buffer)
-            ->bindAttribute<ReflectorShader::TextureCoords>(buffer);
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
-        MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *sphereData.indices());
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *sphereData.indices());
+        mesh->setPrimitive(sphereData.primitive())
+            ->addInterleavedVertexBuffer(buffer, 0, ReflectorShader::Position(), ReflectorShader::TextureCoords());
 
+        resourceManager->set("sphere-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set("sphere-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident);
         resourceManager->set(sphere.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 

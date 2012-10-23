@@ -20,9 +20,10 @@
 
 namespace Magnum {
 
-class IndexedMesh;
 class AbstractShaderProgram;
+class Buffer;
 class CubeMapTexture;
+class IndexedMesh;
 
 namespace Trade {
     class AbstractImporter;
@@ -39,6 +40,7 @@ class CubeMap: public SceneGraph::Object3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
+        Resource<Buffer> buffer;
         Resource<IndexedMesh> cube;
         Resource<AbstractShaderProgram, CubeMapShader> shader;
         Resource<CubeMapTexture> texture;

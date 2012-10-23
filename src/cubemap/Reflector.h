@@ -21,6 +21,7 @@
 namespace Magnum {
 
 class AbstractShaderProgram;
+class Buffer;
 class CubeMapTexture;
 class IndexedMesh;
 template<std::uint8_t> class Texture;
@@ -37,6 +38,7 @@ class Reflector: public SceneGraph::Object3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
 
     private:
+        Resource<Buffer> buffer;
         Resource<IndexedMesh> sphere;
         Resource<AbstractShaderProgram, ReflectorShader> shader;
         Resource<CubeMapTexture> texture;

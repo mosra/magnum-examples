@@ -16,13 +16,14 @@
 #include "CubeMapResourceManager.h"
 
 #include <AbstractShaderProgram.h>
+#include <Buffer.h>
+#include <CubeMapTexture.h>
 #include <IndexedMesh.h>
 #include <Texture.h>
-#include <CubeMapTexture.h>
 #include <Trade/AbstractImporter.h>
 
 namespace Magnum {
 
-template class ResourceManager<IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
+template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 
 }

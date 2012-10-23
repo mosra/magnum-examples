@@ -43,15 +43,18 @@ CubeMap::CubeMap(const string& prefix, SceneGraph::Object3D* parent): Object3D(p
     /* Cube mesh */
     if(!(cube = resourceManager->get<IndexedMesh>("cube"))) {
         IndexedMesh* mesh = new IndexedMesh;
-        Buffer* buffer = mesh->addBuffer(Mesh::BufferType::NonInterleaved);
+        Buffer* buffer = new Buffer;
+        Buffer* indexBuffer = new Buffer;
 
         Primitives::Cube cubeData;
-        mesh->setPrimitive(cubeData.primitive())
-            ->bindAttribute<CubeMapShader::Position>(buffer);
         MeshTools::flipFaceWinding(*cubeData.indices());
-        MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *cubeData.indices());
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cubeData.indices());
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
+        mesh->setPrimitive(cubeData.primitive())
+            ->addVertexBuffer(buffer, CubeMapShader::Position());
 
+        resourceManager->set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident);
         resourceManager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
