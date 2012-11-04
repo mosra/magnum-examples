@@ -90,10 +90,12 @@ class ViewerExample: public FpsCounterExample {
                 case Key::PageDown:
                     camera->translate(Vector3::zAxis(0.5), SceneGraph::Object3D::Transformation::Local);
                     break;
+                #ifndef MAGNUM_TARGET_GLES
                 case Key::Home:
                     Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
                     wireframe = !wireframe;
                     break;
+                #endif
                 case Key::End:
                     if(fpsCounterEnabled()) printCounterStatistics();
                     else resetCounter();
@@ -177,23 +179,23 @@ class ViewerExample: public FpsCounterExample {
 ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "file.dae";
-        exit(0);
+        std::exit(0);
     }
 
     /* Instance ColladaImporter plugin */
     PluginManager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
-        exit(1);
+        std::exit(1);
     }
     unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
-        exit(2);
+        std::exit(2);
     }
     if(!(colladaImporter->features() & AbstractImporter::Feature::OpenFile)) {
         Error() << "ColladaImporter cannot open files";
-        exit(3);
+        std::exit(3);
     }
 
     /* Every scene needs a camera */
@@ -208,10 +210,10 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
 
     /* Load file */
     if(!colladaImporter->open(argv[1]))
-        exit(4);
+        std::exit(4);
 
     if(colladaImporter->sceneCount() == 0)
-        exit(5);
+        std::exit(5);
 
     /* Map with materials */
     unordered_map<size_t, PhongMaterialData*> materials;
@@ -261,7 +263,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
 
             MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
-                exit(6);
+                std::exit(6);
 
             vertexCount += data->positions(0)->size();
             triangleCount += data->indices()->size()/3;

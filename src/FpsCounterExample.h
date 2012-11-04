@@ -16,16 +16,26 @@
 */
 
 #include <chrono>
-#include <Contexts/GlutWindowContext.h>
+#include <Query.h>
 
-#include "Query.h"
+#ifndef MAGNUM_TARGET_GLES
+#include <Contexts/GlutWindowContext.h>
+#else
+#include <Contexts/XEglWindowContext.h>
+#endif
 
 namespace Magnum { namespace Examples {
 
+#ifndef MAGNUM_TARGET_GLES
+typedef Contexts::GlutWindowContext WindowContext;
+#else
+typedef Contexts::XEglWindowContext WindowContext;
+#endif
+
 /** @brief Base class for examples with FPS counter */
-class FpsCounterExample : public Contexts::GlutWindowContext {
+class FpsCounterExample : public WindowContext {
     public:
-        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): GlutWindowContext(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
+        FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 
         /**
          * @brief Minimal duration between printing FPS to console
@@ -54,6 +64,7 @@ class FpsCounterExample : public Contexts::GlutWindowContext {
          */
         void setFpsCounterEnabled(bool enabled);
 
+        #ifndef MAGNUM_TARGET_GLES
         /** @brief Whether primitive counter is enabled */
         inline bool primitiveCounterEnabled() const { return primitiveEnabled; }
 
@@ -76,6 +87,7 @@ class FpsCounterExample : public Contexts::GlutWindowContext {
          * primitive counter.
          */
         void setSampleCounterEnabled(bool enabled);
+        #endif
 
         /**
          * @brief Reset counter
@@ -117,11 +129,14 @@ class FpsCounterExample : public Contexts::GlutWindowContext {
 
     private:
         size_t frames, totalFrames;
-        GLuint primitives, totalPrimitives, samples, totalSamples;
         double minimalDuration, totalDuration;
-        bool fpsEnabled, primitiveEnabled, sampleEnabled;
+        bool fpsEnabled;
+        #ifndef MAGNUM_TARGET_GLES
+        GLuint primitives, totalPrimitives, samples, totalSamples;
+        bool primitiveEnabled, sampleEnabled;
         Query primitiveQuery;
         SampleQuery sampleQuery;
+        #endif
         std::chrono::high_resolution_clock::time_point before;
         Math::Vector2<GLsizei> viewport;
 };
