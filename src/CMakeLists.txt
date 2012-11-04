@@ -28,4 +28,5 @@ if(NOT MAGNUM_TARGET_GLES)
     add_subdirectory(textured-triangle)
 endif()
 
+add_subdirectory(physics)
 add_subdirectory(viewer)
