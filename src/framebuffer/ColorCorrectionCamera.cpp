@@ -19,16 +19,16 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::Object2D* parent): Camera2D(parent), initialized(false) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), initialized(false) {
     setAspectRatioPolicy(AspectRatioPolicy::Clip);
 }
 
-void ColorCorrectionCamera::draw() {
+void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
     /* Map shader output to color attachments */
     framebuffer.mapForDraw({Original, Grayscale, Corrected});
 
     /* Draw original scene */
-    Camera2D::draw();
+    Camera2D::draw(group);
 
     /* Draw to screen framebuffer */
     Framebuffer::mapDefaultForDraw({Framebuffer::DefaultDrawAttachment::BackLeft});

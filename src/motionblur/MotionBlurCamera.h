@@ -23,18 +23,20 @@
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
 
+#include "Types.h"
+
 namespace Magnum { namespace Examples {
 
-class MotionBlurCamera: public SceneGraph::Camera3D {
+class MotionBlurCamera: public SceneGraph::Camera3D<> {
     public:
         static const GLint FrameCount = 7;
 
-        MotionBlurCamera(Object3D* parent = nullptr);
+        MotionBlurCamera(SceneGraph::AbstractObject3D<>* object);
 
         ~MotionBlurCamera();
 
-        void setViewport(const Math::Vector2<GLsizei>& size);
-        void draw();
+        void setViewport(const Math::Vector2<GLsizei>& size) override;
+        void draw(SceneGraph::DrawableGroup3D<>& group) override;
 
     private:
         class MotionBlurShader: public AbstractShaderProgram {
@@ -46,9 +48,9 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
                 MotionBlurShader();
         };
 
-        class MotionBlurCanvas: public SceneGraph::Object3D {
+        class MotionBlurCanvas: public Object3D {
             public:
-                MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent = nullptr);
+                MotionBlurCanvas(Texture2D** frames, Object3D* parent = nullptr);
 
                 void draw(size_t currentFrame);
 

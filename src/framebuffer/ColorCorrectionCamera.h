@@ -21,12 +21,12 @@
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionCamera: public SceneGraph::Camera2D {
+class ColorCorrectionCamera: public SceneGraph::Camera2D<> {
     public:
-        ColorCorrectionCamera(SceneGraph::Object2D* parent = nullptr);
+        ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object);
 
-        void draw();
-        void setViewport(const Math::Vector2<GLsizei>& size);
+        void draw(SceneGraph::DrawableGroup2D<>& group) override;
+        void setViewport(const Math::Vector2<GLsizei>& size) override;
 
     private:
         enum { /* Color attachments */

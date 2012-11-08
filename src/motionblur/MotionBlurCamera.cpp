@@ -27,7 +27,7 @@ using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(SceneGraph::Object3D* parent): Camera3D(parent), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(GLint i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge))
@@ -55,8 +55,8 @@ void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
         frames[i]->setData(0, AbstractTexture::Format::RGB, &framebuffer);
 }
 
-void MotionBlurCamera::draw() {
-    Camera3D::draw();
+void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
+    Camera3D::draw(group);
 
     Framebuffer::read({0, 0}, viewport(), framebuffer.components(), framebuffer.type(), &framebuffer, Buffer::Usage::DynamicDraw);
 
@@ -81,7 +81,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     }
 }
 
-MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, SceneGraph::Object3D* parent): Object3D(parent), frames(frames) {
+MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3D* parent): Object3D(parent), frames(frames) {
     const Point3D vertices[] = {
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},

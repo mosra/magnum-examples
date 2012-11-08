@@ -21,7 +21,7 @@
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, SceneGraph::Object2D* parent): Object2D(parent) {
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D<>* group): Object2D(parent), SceneGraph::Drawable2D<>(this, group) {
     Primitives::Square square;
     buffer.setData(*square.positions(0), Buffer::Usage::StaticDraw);
     mesh.setPrimitive(square.primitive())
@@ -38,7 +38,7 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, S
     scale(Vector2::yScale(GLfloat(image->size()[1])/image->size()[0]));
 }
 
-void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D* camera) {
+void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D<>* camera) {
     shader.use();
     shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
     texture.bind(ColorCorrectionShader::TextureLayer);

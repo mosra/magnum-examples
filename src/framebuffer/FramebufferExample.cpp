@@ -61,23 +61,23 @@ class FramebufferExample: public Contexts::GlutWindowContext {
             colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
             /* Add billboard to the scene */
-            billboard = new Billboard(importer->image2D(0), &colorCorrectionBuffer, &scene);
+            billboard = new Billboard(importer->image2D(0), &colorCorrectionBuffer, &scene, &drawables);
             delete importer;
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        inline void viewportEvent(const Math::Vector2<GLsizei>& size) override {
             Framebuffer::setViewport({0, 0}, size);
             camera->setViewport(size);
         }
 
-        inline void drawEvent() {
+        inline void drawEvent() override {
             Framebuffer::clear(Framebuffer::Clear::Color);
-            camera->draw();
+            camera->draw(drawables);
             swapBuffers();
         }
 
-        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) {
+        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) override {
             if(button == MouseButton::WheelUp)
                 billboard->scale(Vector2(5.0f/4));
             else if(button == MouseButton::WheelDown)
@@ -87,7 +87,7 @@ class FramebufferExample: public Contexts::GlutWindowContext {
             redraw();
         }
 
-        void mouseMotionEvent(const Math::Vector2<int>& position) {
+        void mouseMotionEvent(const Math::Vector2<int>& position) override {
             billboard->translate(camera->projectionSize()*Vector2::from(position-previous)/Vector2::from(camera->viewport())*Vector2(2.0f, -2.0f));
             previous = position;
             redraw();
@@ -95,8 +95,9 @@ class FramebufferExample: public Contexts::GlutWindowContext {
 
     private:
         Math::Vector2<int> previous;
-        SceneGraph::Scene2D scene;
-        SceneGraph::Camera2D* camera;
+        Scene2D scene;
+        SceneGraph::DrawableGroup2D<> drawables;
+        SceneGraph::Camera2D<>* camera;
         Billboard* billboard;
         Buffer colorCorrectionBuffer;
 };

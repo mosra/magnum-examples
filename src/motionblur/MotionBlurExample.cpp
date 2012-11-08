@@ -34,10 +34,11 @@ namespace Magnum { namespace Examples {
 class MotionBlurExample: public Contexts::GlutWindowContext {
     public:
         MotionBlurExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Motion blur example") {
-            camera = new MotionBlurCamera(&scene);
-            camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
-            camera->setPerspective(deg(35.0f), 0.001f, 100);
-            camera->translate(Vector3::zAxis(3.0f));
+            (cameraObject = new Object3D(&scene))
+                ->translate(Vector3::zAxis(3.0f));
+            (camera = new MotionBlurCamera(cameraObject))
+                ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+                ->setPerspective(deg(35.0f), 0.001f, 100);
             Framebuffer::setClearColor({0.1f, 0.1f, 0.1f});
             Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
             Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
@@ -48,35 +49,35 @@ class MotionBlurExample: public Contexts::GlutWindowContext {
             mesh.addInterleavedVertexBuffer(&buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Add spheres to the scene */
-            Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene);
+            Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
 
-            spheres[0] = new SceneGraph::Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            spheres[0] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[1] = new SceneGraph::Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            spheres[1] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[2] = new SceneGraph::Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            spheres[2] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
             i->rotate(deg(240.0f), Vector3::zAxis());
         }
@@ -90,10 +91,10 @@ class MotionBlurExample: public Contexts::GlutWindowContext {
 
         void drawEvent() {
             Framebuffer::clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth);
-            camera->draw();
+            camera->draw(drawables);
             swapBuffers();
 
-            camera->rotate(deg(1.0f), Vector3::yAxis());
+            cameraObject->rotate(deg(1.0f), Vector3::yAxis());
             spheres[0]->rotate(deg(-2.0f), Vector3::zAxis());
             spheres[1]->rotate(deg(1.0f), Vector3::zAxis());
             spheres[2]->rotate(deg(-0.5f), Vector3::zAxis());
@@ -102,13 +103,15 @@ class MotionBlurExample: public Contexts::GlutWindowContext {
         }
 
     private:
-        SceneGraph::Scene3D scene;
-        SceneGraph::Camera3D* camera;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
         Buffer buffer;
         Buffer indexBuffer;
         IndexedMesh mesh;
         PhongShader shader;
-        SceneGraph::Object3D* spheres[3];
+        Object3D* spheres[3];
 };
 
 }}

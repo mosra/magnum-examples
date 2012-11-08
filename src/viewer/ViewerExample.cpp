@@ -56,21 +56,21 @@ class ViewerExample: public FpsCounterExample {
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        inline void viewportEvent(const Math::Vector2<GLsizei>& size) override {
             Framebuffer::setViewport({0, 0}, size);
             camera->setViewport(size);
             FpsCounterExample::viewportEvent(size);
         }
 
-        void drawEvent() {
+        void drawEvent() override {
             Framebuffer::clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth);
-            camera->draw();
+            camera->draw(drawables);
             swapBuffers();
 
             if(fpsCounterEnabled()) redraw();
         }
 
-        void keyPressEvent(Key key, const Math::Vector2<int>&) {
+        void keyPressEvent(Key key, const Math::Vector2<int>&) override {
             switch(key) {
                 case Key::Up:
                     o->rotate(deg(10.0f), Vector3::xAxis(-1));
@@ -79,16 +79,16 @@ class ViewerExample: public FpsCounterExample {
                     o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
                 case Key::Left:
-                    o->rotate(deg(10.0f), Vector3::yAxis(-1), SceneGraph::Object3D::Transformation::Local);
+                    o->rotate(deg(10.0f), Vector3::yAxis(-1), SceneGraph::TransformationType::Local);
                     break;
                 case Key::Right:
-                    o->rotate(deg(10.0f), Vector3::yAxis(1), SceneGraph::Object3D::Transformation::Local);
+                    o->rotate(deg(10.0f), Vector3::yAxis(1), SceneGraph::TransformationType::Local);
                     break;
                 case Key::PageUp:
-                    camera->translate(Vector3::zAxis(-0.5), SceneGraph::Object3D::Transformation::Local);
+                    cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
                     break;
                 case Key::PageDown:
-                    camera->translate(Vector3::zAxis(0.5), SceneGraph::Object3D::Transformation::Local);
+                    cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
                     break;
                 #ifndef MAGNUM_TARGET_GLES
                 case Key::Home:
@@ -108,7 +108,7 @@ class ViewerExample: public FpsCounterExample {
             redraw();
         }
 
-        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) {
+        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) override {
             switch(button) {
                 case MouseButton::Left:
                     previousPosition = positionOnSphere(position);
@@ -116,14 +116,14 @@ class ViewerExample: public FpsCounterExample {
                 case MouseButton::WheelUp:
                 case MouseButton::WheelDown: {
                     /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = camera->transformation().translation().z()-0-camera->near();
+                    GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
                     if(button == MouseButton::WheelUp)
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(Vector3::zAxis(distance), SceneGraph::Object3D::Transformation::Local);
+                    cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Local);
 
                     redraw();
                     break;
@@ -132,12 +132,12 @@ class ViewerExample: public FpsCounterExample {
             }
         }
 
-        void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>&) {
+        void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>&) override {
             if(button == MouseButton::Left)
                 previousPosition = Vector3();
         }
 
-        void mouseMotionEvent(const Math::Vector2<int>& position) {
+        void mouseMotionEvent(const Math::Vector2<int>& position) override {
             Vector3 currentPosition = positionOnSphere(position);
 
             Vector3 axis = Vector3::cross(previousPosition, currentPosition);
@@ -164,12 +164,14 @@ class ViewerExample: public FpsCounterExample {
             return result.normalized();
         }
 
-        void addObject(AbstractImporter* colladaImporter, SceneGraph::Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId);
+        void addObject(AbstractImporter* colladaImporter, Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId);
 
-        SceneGraph::Scene3D scene;
-        SceneGraph::Camera3D* camera;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
         PhongShader shader;
-        SceneGraph::Object3D* o;
+        Object3D* o;
         unordered_map<size_t, tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
         size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         bool wireframe;
@@ -199,10 +201,11 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     }
 
     /* Every scene needs a camera */
-    camera = new SceneGraph::Camera3D(&scene);
-    camera->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend);
-    camera->setPerspective(deg(35.0f), 0.001f, 100);
-    camera->translate(Vector3::zAxis(5));
+    (cameraObject = new Object3D(&scene))
+        ->translate(Vector3::zAxis(5));
+    (camera = new SceneGraph::Camera3D<>(cameraObject))
+        ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+        ->setPerspective(deg(35.0f), 0.001f, 100);
     Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
     Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
@@ -219,7 +222,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     unordered_map<size_t, PhongMaterialData*> materials;
 
     /* Default object, parent of all (for manipulation) */
-    o = new SceneGraph::Object3D(&scene);
+    o = new Object3D(&scene);
 
     Debug() << "Adding default scene...";
 
@@ -240,7 +243,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     delete colladaImporter.release();
 }
 
-void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
+void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
     ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
@@ -294,7 +297,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, SceneGraph::Obj
         }
 
         /* Add object */
-        SceneGraph::Object3D* o = new ViewedObject(mesh, material, &shader, parent);
+        Object3D* o = new ViewedObject(mesh, material, &shader, parent, &drawables);
         o->setTransformation(object->transformation());
     }
 
