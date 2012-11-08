@@ -29,8 +29,8 @@ class TexturedTriangleExample: public Magnum::Contexts::GlutWindowContext {
         TexturedTriangleExample(int& argc, char** argv);
 
     protected:
-        void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size);
-        void drawEvent();
+        void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) override;
+        void drawEvent() override;
 
     private:
         Buffer buffer;
