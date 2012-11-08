@@ -15,8 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <SceneGraph/Object.h>
 #include <ResourceManager.h>
+#include <SceneGraph/Drawable.h>
+
+#include "Types.h"
 
 namespace Magnum {
 
@@ -31,11 +33,11 @@ namespace Examples {
 
 class ReflectorShader;
 
-class Reflector: public SceneGraph::Object3D {
+class Reflector: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        Reflector(SceneGraph::Object3D* parent = nullptr);
+        Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
 
     private:
         Resource<Buffer> buffer;

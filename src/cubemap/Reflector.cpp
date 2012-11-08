@@ -25,12 +25,11 @@
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
 
-#include "CubeMapResourceManager.h"
 #include "ReflectorShader.h"
 
 namespace Magnum { namespace Examples {
 
-Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
+Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
     CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
 
     /* Sphere mesh */
@@ -75,13 +74,13 @@ Reflector::Reflector(SceneGraph::Object3D* parent): Object3D(parent) {
     texture = resourceManager->get<CubeMapTexture>("texture");
 }
 
-void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera) {
+void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) {
     shader->setTransformationMatrix(transformationMatrix)
         ->setNormalMatrix(transformationMatrix.rotation())
         ->setProjectionMatrix(camera->projectionMatrix())
         ->setReflectivity(2.0f)
         ->setDiffuseColor(Color3<GLfloat>(0.3f))
-        ->setCameraMatrix(camera->absoluteTransformation().rotation())
+        ->setCameraMatrix(static_cast<Object3D*>(camera->object())->absoluteTransformation().rotation())
         ->use();
 
     texture->bind(ReflectorShader::TextureLayer);

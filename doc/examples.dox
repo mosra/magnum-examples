@@ -34,8 +34,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @example textured-triangle/TexturedTriangleShader.vert
 @example textured-triangle/TexturedTriangleShader.frag
 
-@example cubemap/CubeMapResourceManager.h
-@example cubemap/CubeMapResourceManager.cpp
 @example cubemap/CubeMapExample.h
 @example cubemap/CubeMapExample.cpp
 @example cubemap/CubeMap.h
@@ -50,6 +48,8 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @example cubemap/ReflectorShader.cpp
 @example cubemap/ReflectorShader.vert
 @example cubemap/ReflectorShader.frag
+@example cubemap/Types.h
+@example cubemap/Types.cpp
 @example cubemap/configure.h.cmake
 @example cubemap/CMakeLists.txt
 

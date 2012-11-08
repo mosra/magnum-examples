@@ -15,8 +15,9 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <ResourceManager.h>
-#include <SceneGraph/Object.h>
+#include <SceneGraph/Drawable.h>
+
+#include "Types.h"
 
 namespace Magnum {
 
@@ -33,11 +34,11 @@ namespace Examples {
 
 class CubeMapShader;
 
-class CubeMap: public SceneGraph::Object3D {
+class CubeMap: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        CubeMap(const std::string& prefix, SceneGraph::Object3D* parent);
+        CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
 
     private:
         Resource<Buffer> buffer;

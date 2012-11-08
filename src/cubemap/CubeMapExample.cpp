@@ -37,10 +37,11 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, 
     Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
     /* Set up perspective camera */
-    (camera = new SceneGraph::Camera3D(&scene))
-        ->setAspectRatioPolicy(SceneGraph::Camera3D::AspectRatioPolicy::Extend)
-        ->setPerspective(deg(55.0f), 0.001f, 100.0f)
+    (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
+    (camera = new SceneGraph::Camera3D<>(cameraObject))
+        ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+        ->setPerspective(deg(55.0f), 0.001f, 100.0f);
 
     /* Load TGA importer plugin */
     PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -52,14 +53,14 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, 
     resourceManager.set<Trade::AbstractImporter>("tga-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(argc == 2 ? argv[1] : "", &scene))
+    (new CubeMap(argc == 2 ? argv[1] : "", &scene, &drawables))
         ->scale(Vector3(20.0f));
 
-    (new Reflector(&scene))
+    (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.5f))
         ->translate(Vector3::xAxis(-0.5f));
 
-    (new Reflector(&scene))
+    (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.3f))
         ->rotate(deg(37.0f), Vector3::xAxis())
         ->translate(Vector3::xAxis(0.3f));
@@ -75,20 +76,20 @@ void CubeMapExample::viewportEvent(const Math::Vector2<GLsizei>& size) {
 
 void CubeMapExample::drawEvent() {
     Framebuffer::clear(Framebuffer::Clear::Depth);
-    camera->draw();
+    camera->draw(drawables);
     swapBuffers();
 }
 
 void CubeMapExample::keyPressEvent(Key key, const Magnum::Math::Vector2<int>&) {
     if(key == Key::Up)
-        camera->rotate(deg(-10.0f), camera->transformation()[0].xyz().normalized());
+        cameraObject->rotate(deg(-10.0f), cameraObject->transformation()[0].xyz().normalized());
 
     else if(key == Key::Down)
-        camera->rotate(deg(10.0f), camera->transformation()[0].xyz().normalized());
+        cameraObject->rotate(deg(10.0f), cameraObject->transformation()[0].xyz().normalized());
 
     else if(key == Key::Left || key == Key::Right) {
-        GLfloat translationY = camera->transformation().translation().y();
-        camera->translate(Vector3::yAxis(-translationY))
+        GLfloat translationY = cameraObject->transformation().translation().y();
+        cameraObject->translate(Vector3::yAxis(-translationY))
             ->rotate(key == Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
             ->translate(Vector3::yAxis(translationY));
 

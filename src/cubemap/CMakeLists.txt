@@ -16,10 +16,10 @@ corrade_add_resource(CubeMapData data
 add_executable(cubeMapExample
     CubeMapExample.cpp
     CubeMap.cpp
-    CubeMapResourceManager.cpp
     CubeMapShader.cpp
     Reflector.cpp
     ReflectorShader.cpp
+    Types.cpp
     ${CubeMapData})
 target_link_libraries(cubeMapExample
     ${MAGNUM_LIBRARIES}

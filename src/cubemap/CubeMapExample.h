@@ -16,9 +16,11 @@
 */
 
 #include <Contexts/GlutWindowContext.h>
+#include <SceneGraph/Drawable.h>
 #include <SceneGraph/Scene.h>
+#include <SceneGraph/Camera.h>
 
-#include "CubeMapResourceManager.h"
+#include "Types.h"
 
 namespace Magnum { namespace Examples {
 
@@ -27,15 +29,17 @@ class CubeMapExample: public Contexts::GlutWindowContext {
         CubeMapExample(int& argc, char** argv);
 
     protected:
-        void viewportEvent(const Math::Vector2<GLsizei>& size);
-        void drawEvent();
+        void viewportEvent(const Math::Vector2<GLsizei>& size) override;
+        void drawEvent() override;
 
-        void keyPressEvent(Key key, const Math::Vector2<int>& position);
+        void keyPressEvent(Key key, const Math::Vector2<int>& position) override;
 
     private:
         CubeMapResourceManager resourceManager;
-        SceneGraph::Scene3D scene;
-        SceneGraph::Camera3D* camera;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
 };
 
 }}

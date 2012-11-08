@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_CubeMapResourceManager_h
-#define Magnum_Examples_CubeMapResourceManager_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,6 +16,7 @@
 */
 
 #include <ResourceManager.h>
+#include <SceneGraph/MatrixTransformation3D.h>
 
 namespace Magnum {
 
@@ -26,6 +27,10 @@ class IndexedMesh;
 template<std::uint8_t> class Texture;
 typedef Texture<2> Texture2D;
 
+namespace SceneGraph {
+    template<class> class Scene;
+}
+
 namespace Trade {
     class AbstractImporter;
 }
@@ -35,6 +40,8 @@ extern template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImport
 namespace Examples {
 
 typedef ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 }}
 

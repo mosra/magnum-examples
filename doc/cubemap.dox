@@ -23,18 +23,31 @@ includes these new features:
 
 In previous two examples we managed our scene manually, because there was only
 one object - the triangle. However, as object count increases, it's better to
-have them in scene graph. Scene graph is hierarchical, consists of one root
-@ref SceneGraph::Scene "Scene" object, at least one
-@ref SceneGraph::Camera3D "Camera" object and various other objects. Each
-object have its parent and list of its children. The hierarchy is also for
-memory management - when destroying any object, all its children are
-recursively destroyed too. Each object has its transformation (relative to
-parent) and provides convenience functions for most used transformations, like
-translation, rotation and scaling.
+have them in scene graph. Scene graph consists of three parts:
 
-Drawing is done by calling @ref SceneGraph::Camera3D::draw() "draw()" on
-camera object, which draws all objects attached to the same scene. Camera have
-also functions for setting up
+ - objects, providing parent/children hierarchy
+ - transformations, implementing particular transformation type
+ - features, providing rendering capabilities, collision detection, physics
+   etc.
+
+Basically there is one root @ref SceneGraph::Scene "Scene" object and one
+or more @ref SceneGraph::Object "Object" instances. Each object have its
+parent and list of its children. The hierarchy is also for memory management -
+when destroying any object, all its children are recursively destroyed too.
+
+Each particular scene graph uses some transformation implementation, which
+maintains relative transformation of each object and provides convenience
+functions for most used transformations, like translation, rotation and
+scaling.
+
+Features are added to objects to make them do something useful. The most
+common feature is @ref SceneGraph::Drawable "Drawable", which when
+implemented, allows the object to be drawn on screen. Each Drawable is part of
+some @ref SceneGraph::DrawableGroup "DrawableGroup" and the rendering itself
+is done using @ref SceneGraph::Camera3D "Camera". Camera is a feature attached
+to some object in the scene and by calling
+@ref SceneGraph::AbstractCamera::draw() "draw()" you can draw particular
+DrawableGroup on the screen. Cameras have also functions for setting up
 @ref SceneGraph::Camera3D::setPerspective() "projection" and
 @ref SceneGraph::Camera3D::setAspectRatioPolicy() "aspect ratio correction".
 
@@ -42,11 +55,7 @@ also functions for setting up
 the same and differs only in obvious ways (e.g. perspective projection is
 not available in 2D, object stacking order is not available in 3D).
 
-Common usage is via subclassing of @ref SceneGraph::Object3D "Object*D" class
-(or Camera, if you want to have special camera) and implementing
-@ref SceneGraph::Object3D::draw() "draw()" function. Instances of Object
-itself can act as transparent object groups, default implementation of `draw()`
-does nothing.
+See @ref scenegraph for more information.
 
 @section examples-cubemap-resourcemanager Resource manager
 
@@ -69,11 +78,17 @@ Our resource manager will store vertex and index buffers (explained later),
 sphere and cube meshe, world and tarnish texture and shaders. We also need
 importer for loading the images. We will `typedef` the manager for easier
 usage later.
-@dontinclude cubemap/CubeMapResourceManager.h
+@dontinclude cubemap/Types.h
 @skipline typedef ResourceManager
 
-Our main class contains instance of our resource manager, scene and camera
-object. We will also handle keyboard input for moving around the scene.
+For this example we will use scene graph with @ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D"
+transformation implementation. We typedef the classes to save us some typing:
+@skip typedef SceneGraph::Object
+@until typedef SceneGraph::Scene
+
+Our main class contains instance of our resource manager, scene, group of all
+drawable objects, object holding the camera and camera feature. We will also
+handle keyboard input for moving around the scene.
 @dontinclude cubemap/CubeMapExample.h
 @skip class CubeMapExample
 @until };
@@ -82,11 +97,11 @@ In constructor we enable depth testing for proper rendering and for
 performance reasons enable also back face culling. It means that all
 back-facing polygons (with clockwise vertex order) are excluded from rendering
 directly instead of waiting for depth test to discard them. We also configure
-our camera - we parent it to the scene, setup perspective projection and move
-it to desired place in the scene.
+our camera - we parent the object to the scene and move it to desired place,
+add camera feature to it and setup perspective projection.
 @dontinclude cubemap/CubeMapExample.cpp
 @skip CubeMapExample::CubeMapExample
-@until translate(Vector3::zAxis(3.0f))
+@until ->setPerspective
 
 Next we will load plugin for importing TGA images, like in previous example.
 @skip PluginManager
@@ -97,9 +112,9 @@ elsewhere when creating the textures. We don't need it for the whole lifetime
 of the application, so we set the policy to `Manual` and delete it later.
 @skipline resourceManager
 
-We will now add the cube map and two reflective spheres to the scene and move
-them to desired locations. Their constructors will do the remaining work,
-which will be discussed later.
+We will now add the cube map and two reflective spheres to the scene (and add
+them also to our group of drawables) and move them to desired locations. Their
+constructors will do the remaining work, which will be discussed later.
 @skip new CubeMap
 @until translate(Vector3::xAxis(0.3f))
 
@@ -107,38 +122,43 @@ Lastly we free the importer plugin, as it won't be needed anymore.
 @skip resourceManager.free
 @until }
 
-Function `viewportEvent()` now passes viewport size to camera class, so it can
+Function `viewportEvent()` now passes viewport size to camera, so it can
 adjust aspect ratio correction to new window size, `drawEvent()` delegates all
-drawing to our camera.
+drawing to our camera, which renders everything what we added to the drawable
+group previously.
 @skip CubeMapExample::viewportEvent
 @until }
 @until }
 @until }
 
-Our keyboard handling function will rotate the camera around the spheres on
-arrow key press. We then call
+Our keyboard handling function will rotate the camera object around the
+spheres on arrow key press. We then call
 @ref Contexts::GlutWindowContext::redraw() "redraw()" to present the changes
 in the scene to the user.
 @skip CubeMapExample::keyPressEvent
 @until }
 @until }
 
-- @ref cubemap/CubeMapResourceManager.h
-- @ref cubemap/CubeMapResourceManager.cpp
+- @ref cubemap/Types.h
+- @ref cubemap/Types.cpp
 - @ref cubemap/CubeMapExample.h
 - @ref cubemap/CubeMapExample.cpp
 
 @section examples-cubemap-cubemap Cube map object
 
-Cube map object will surround our scene with environment texture. We need
-mesh, shader and texture resources and implemented drawing function.
+Cube map object will surround our scene with environment texture. It will be
+drawn on the screen, so we need to add Drawable feature and implement its
+@ref SceneGraph::Drawable::draw() "draw()" function. We also need mesh, shader
+and texture resources.
 @dontinclude cubemap/CubeMap.h
 @skip class CubeMap:
 @until };
 
-The constructor takes two arguments - the first is path prefix for cube map
+The constructor takes three arguments - the first is path prefix for cube map
 files, so the users can supply their own images, the second is pointer to
-parent object, which we pass to @ref SceneGraph::Object3D "Object3D"
+parent object, which we pass to @ref SceneGraph::Object "Object" constructor,
+the third is drawable group the drawable will be part of. We pass it along
+with pointer to containing object to @ref SceneGraph::Drawable "Drawable"
 constructor.
 @dontinclude cubemap/CubeMap.cpp
 @skip CubeMap::CubeMap
