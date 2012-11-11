@@ -16,7 +16,7 @@
 */
 
 #include "Mesh.h"
-#include "SceneGraph/Camera.h"
+#include <SceneGraph/AbstractCamera.h>
 #include <SceneGraph/Drawable.h>
 #include "SceneGraph/Object.h"
 #include "Shaders/PhongShader.h"

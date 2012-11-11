@@ -1,5 +1,5 @@
 find_package(Magnum REQUIRED
-    GlutWindowContext
+    GlutApplication
     Primitives
     SceneGraph)
 
@@ -20,6 +20,6 @@ add_executable(framebufferExample
     ${ColorCorrectionShader})
 target_link_libraries(framebufferExample
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES})

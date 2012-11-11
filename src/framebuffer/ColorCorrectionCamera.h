@@ -17,7 +17,7 @@
 
 #include "Framebuffer.h"
 #include "Renderbuffer.h"
-#include "SceneGraph/Camera.h"
+#include <SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
 

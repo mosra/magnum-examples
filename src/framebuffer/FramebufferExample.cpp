@@ -15,7 +15,7 @@
 
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
-#include <Contexts/GlutWindowContext.h>
+#include <Platform/GlutApplication.h>
 #include "SceneGraph/Scene.h"
 #include "Trade/AbstractImporter.h"
 
@@ -28,9 +28,9 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-class FramebufferExample: public Contexts::GlutWindowContext {
+class FramebufferExample: public Platform::GlutApplication {
     public:
-        FramebufferExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Framebuffer example") {
+        FramebufferExample(int& argc, char** argv): GlutApplication(argc, argv, "Framebuffer example") {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
                 exit(0);

@@ -18,13 +18,13 @@
 #include <Buffer.h>
 #include <Mesh.h>
 #include <Texture.h>
-#include <Contexts/GlutWindowContext.h>
+#include <Platform/GlutApplication.h>
 
 #include "TexturedTriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public Magnum::Contexts::GlutWindowContext {
+class TexturedTriangleExample: public Platform::GlutApplication {
     public:
         TexturedTriangleExample(int& argc, char** argv);
 

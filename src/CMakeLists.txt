@@ -6,11 +6,11 @@ endif()
 
 find_package(Magnum REQUIRED)
 if(NOT MAGNUM_TARGET_GLES)
-    find_package(Magnum REQUIRED GlutWindowContext)
-    set(WINDOWCONTEXT_LIBRARIES ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})
+    find_package(Magnum REQUIRED GlutApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
 else()
-    find_package(Magnum REQUIRED XEglWindowContext)
-    set(WINDOWCONTEXT_LIBRARIES ${MAGNUM_XEGLWINDOWCONTEXT_LIBRARIES})
+    find_package(Magnum REQUIRED XEglApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_XEGLAPPLICATION_LIBRARIES})
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MAGNUM_INCLUDE_DIRS})
@@ -18,7 +18,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MAGNUM_INCLUDE_DIRS})
 add_library(MagnumExample STATIC
     FpsCounterExample.cpp
 )
-set(MAGNUM_EXAMPLE_LIBRARIES MagnumExample ${WINDOWCONTEXT_LIBRARIES})
+set(MAGNUM_EXAMPLE_LIBRARIES MagnumExample ${APPLICATION_LIBRARIES})
 
 if(NOT MAGNUM_TARGET_GLES)
     add_subdirectory(cubemap)

@@ -21,7 +21,7 @@
 #include <MeshTools/CompressIndices.h>
 #include <MeshTools/Interleave.h>
 #include <Primitives/UVSphere.h>
-#include <SceneGraph/Camera.h>
+#include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
 

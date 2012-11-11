@@ -133,8 +133,8 @@ group previously.
 
 Our keyboard handling function will rotate the camera object around the
 spheres on arrow key press. We then call
-@ref Contexts::GlutWindowContext::redraw() "redraw()" to present the changes
-in the scene to the user.
+@ref Platform::GlutApplication::redraw() "redraw()" to present the changes in
+the scene to the user.
 @skip CubeMapExample::keyPressEvent
 @until }
 @until }

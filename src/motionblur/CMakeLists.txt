@@ -1,5 +1,5 @@
 find_package(Magnum REQUIRED
-    GlutWindowContext
+    GlutApplication
     MeshTools
     Primitives
     SceneGraph
@@ -17,7 +17,7 @@ add_executable(motionblurExample
     ${MotionBlurShaders})
 target_link_libraries(motionblurExample
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}

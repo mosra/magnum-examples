@@ -16,9 +16,9 @@
 #include <Math/Constants.h>
 #include "Framebuffer.h"
 #include "SceneGraph/Scene.h"
-#include <Contexts/GlutWindowContext.h>
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
+#include <Platform/GlutApplication.h>
 #include "Primitives/Icosphere.h"
 #include "Shaders/PhongShader.h"
 
@@ -31,13 +31,13 @@ using namespace Magnum::Shaders;
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurExample: public Contexts::GlutWindowContext {
+class MotionBlurExample: public Platform::GlutApplication {
     public:
-        MotionBlurExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Motion blur example") {
+        MotionBlurExample(int& argc, char** argv): GlutApplication(argc, argv, "Motion blur example") {
             (cameraObject = new Object3D(&scene))
                 ->translate(Vector3::zAxis(3.0f));
             (camera = new MotionBlurCamera(cameraObject))
-                ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+                ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
                 ->setPerspective(deg(35.0f), 0.001f, 100);
             Framebuffer::setClearColor({0.1f, 0.1f, 0.1f});
             Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);

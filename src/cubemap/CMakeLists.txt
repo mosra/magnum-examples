@@ -1,5 +1,5 @@
 find_package(Magnum REQUIRED
-    GlutWindowContext
+    GlutApplication
     MeshTools
     Primitives
     SceneGraph)
@@ -23,7 +23,7 @@ add_executable(cubeMapExample
     ${CubeMapData})
 target_link_libraries(cubeMapExample
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES})

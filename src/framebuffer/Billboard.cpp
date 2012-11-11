@@ -17,7 +17,7 @@
 
 #include "Buffer.h"
 #include <Primitives/Square.h>
-#include "SceneGraph/Camera.h"
+#include <SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
 

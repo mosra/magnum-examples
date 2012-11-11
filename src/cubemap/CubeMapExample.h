@@ -15,16 +15,16 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Contexts/GlutWindowContext.h>
+#include <Platform/GlutApplication.h>
 #include <SceneGraph/Drawable.h>
 #include <SceneGraph/Scene.h>
-#include <SceneGraph/Camera.h>
+#include <SceneGraph/Camera3D.h>
 
 #include "Types.h"
 
 namespace Magnum { namespace Examples {
 
-class CubeMapExample: public Contexts::GlutWindowContext {
+class CubeMapExample: public Platform::GlutApplication {
     public:
         CubeMapExample(int& argc, char** argv);
 

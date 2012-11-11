@@ -28,7 +28,7 @@
 #include "MeshTools/Interleave.h"
 #include "MeshTools/CompressIndices.h"
 #include "SceneGraph/Scene.h"
-#include "SceneGraph/Camera.h"
+#include <SceneGraph/Camera3D.h>
 #include "Shaders/PhongShader.h"
 
 #include "FpsCounterExample.h"
@@ -123,7 +123,7 @@ class ViewerExample: public FpsCounterExample {
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Local);
+                    cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
 
                     redraw();
                     break;
@@ -204,7 +204,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(5));
     (camera = new SceneGraph::Camera3D<>(cameraObject))
-        ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+        ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(deg(35.0f), 0.001f, 100);
     Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
     Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);

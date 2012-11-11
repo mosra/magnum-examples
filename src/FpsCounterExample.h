@@ -19,21 +19,21 @@
 #include <Query.h>
 
 #ifndef MAGNUM_TARGET_GLES
-#include <Contexts/GlutWindowContext.h>
+#include <Platform/GlutApplication.h>
 #else
-#include <Contexts/XEglWindowContext.h>
+#include <Platform/XEglApplication.h>
 #endif
 
 namespace Magnum { namespace Examples {
 
 #ifndef MAGNUM_TARGET_GLES
-typedef Contexts::GlutWindowContext WindowContext;
+typedef Platform::GlutApplication Application;
 #else
-typedef Contexts::XEglWindowContext WindowContext;
+typedef Platform::XEglApplication Application;
 #endif
 
 /** @brief Base class for examples with FPS counter */
-class FpsCounterExample : public WindowContext {
+class FpsCounterExample: public Application {
     public:
         FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
 

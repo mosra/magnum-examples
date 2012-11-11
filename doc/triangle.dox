@@ -12,7 +12,7 @@ namespace Magnum {
 @section examples-triangle-context Setting up, preparing the mesh and shader
 
 For this example we will use GLUT toolkit, which is implemented in
-Contexts::GlutWindowContext class. We subclass it and next to the constructor we
+Platform::GlutApplication class. We subclass it and next to the constructor we
 implement two required functions, one which is called after the window is
 resized and one for rendering into the window. We also need mesh encapsulating
 our triangle, buffer to store vertex data and shader (created below) which
@@ -22,7 +22,7 @@ will take care of rendering.
 @until };
 
 In the constructor we pass necessary arguments to
-@ref Contexts::GlutWindowContext "GlutWindowContext" class.
+@ref Platform::GlutApplication "GlutApplication" class.
 @dontinclude triangle/TriangleExample.cpp
 @skipline TriangleExample::TriangleExample
 
@@ -90,7 +90,7 @@ them to shader program and link the program together:
 @section examples-triangle-compilation Compilation
 
 Now we can compile the whole example using CMake. First we find required
-%Magnum package with GlutWindowContext library and add its include dir.
+%Magnum package with GlutApplication library and add its include dir.
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
@@ -100,7 +100,7 @@ Then we collect our source files, create our executable and link to %Magnum
 libraries.
 
 @skip add_executable
-@until MAGNUM_GLUTWINDOWCONTEXT_LIBRARIES})
+@until MAGNUM_GLUTAPPLICATION_LIBRARIES})
 
 - @ref triangle/CMakeLists.txt
 

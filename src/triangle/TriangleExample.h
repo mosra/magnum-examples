@@ -17,13 +17,13 @@
 
 #include <Buffer.h>
 #include <Mesh.h>
-#include <Contexts/GlutWindowContext.h>
+#include <Platform/GlutApplication.h>
 
 #include "TriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Magnum::Contexts::GlutWindowContext {
+class TriangleExample: public Platform::GlutApplication {
     public:
         TriangleExample(int& argc, char** argv);
 

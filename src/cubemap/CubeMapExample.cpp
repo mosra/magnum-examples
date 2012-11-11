@@ -20,7 +20,7 @@
 #include <AbstractShaderProgram.h>
 #include <Framebuffer.h>
 #include <IndexedMesh.h>
-#include <SceneGraph/Camera.h>
+#include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
@@ -32,7 +32,7 @@ using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
-CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Cube map example") {
+CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, "Cube map example") {
     Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
     Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
 
@@ -40,7 +40,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutWindowContext(argc, 
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
     (camera = new SceneGraph::Camera3D<>(cameraObject))
-        ->setAspectRatioPolicy(SceneGraph::Camera3D<>::AspectRatioPolicy::Extend)
+        ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(deg(55.0f), 0.001f, 100.0f);
 
     /* Load TGA importer plugin */

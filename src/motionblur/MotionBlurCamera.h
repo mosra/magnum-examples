@@ -15,13 +15,12 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "SceneGraph/Camera.h"
-
 #include "Buffer.h"
 #include "BufferedImage.h"
 #include "Texture.h"
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
+#include <SceneGraph/Camera3D.h>
 
 #include "Types.h"
 

@@ -20,7 +20,7 @@
 namespace Magnum { namespace Examples {
 
 ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), initialized(false) {
-    setAspectRatioPolicy(AspectRatioPolicy::Clip);
+    setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
 }
 
 void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {

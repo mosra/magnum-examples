@@ -28,7 +28,7 @@
 
 namespace Magnum { namespace Examples {
 
-TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutWindowContext(argc, argv, "Textured triangle example") {
+TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Textured triangle example") {
     constexpr static std::array<Point2D, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},
