@@ -18,12 +18,10 @@
 #include <Utility/Resource.h>
 #include <Shader.h>
 
-using namespace Corrade::Utility;
-
 namespace Magnum { namespace Examples {
 
 ReflectorShader::ReflectorShader() {
-    Resource rs("data");
+    Corrade::Utility::Resource rs("data");
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ReflectorShader.vert")));
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ReflectorShader.frag")));
 

@@ -23,7 +23,6 @@
 #include <Shader.h>
 
 using namespace std;
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
@@ -67,7 +66,7 @@ void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
 }
 
 MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
-    Resource rs("shaders");
+    Corrade::Utility::Resource rs("shaders");
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("MotionBlurShader.vert")));
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("MotionBlurShader.frag")));
 

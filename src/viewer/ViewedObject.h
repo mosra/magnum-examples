@@ -36,8 +36,8 @@ class ViewedObject: public Object3D, SceneGraph::Drawable3D<> {
                 ->setSpecularColor(specularColor)
                 ->setShininess(shininess)
                 ->setLightPosition({-3.0f, 10.0f, 10.0f})
-                ->setTransformation(transformationMatrix)
-                ->setProjection(camera->projectionMatrix())
+                ->setTransformationMatrix(transformationMatrix)
+                ->setProjectionMatrix(camera->projectionMatrix())
                 ->use();
 
             mesh->draw();

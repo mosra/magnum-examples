@@ -15,15 +15,13 @@
 
 #include "ColorCorrectionShader.h"
 
-#include "Utility/Resource.h"
+#include <Utility/Resource.h>
 #include <Shader.h>
-
-using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
 ColorCorrectionShader::ColorCorrectionShader() {
-    Resource rs("shader");
+    Corrade::Utility::Resource rs("shader");
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ColorCorrectionShader.vert")));
     attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ColorCorrectionShader.frag")));
 

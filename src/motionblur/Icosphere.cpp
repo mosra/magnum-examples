@@ -30,8 +30,8 @@ void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCa
         ->setSpecularColor(Color3<GLfloat>(1.0f))
         ->setShininess(20)
         ->setLightPosition({3.0f, -3.0f, 3.0f})
-        ->setTransformation(transformationMatrix)
-        ->setProjection(camera->projectionMatrix())
+        ->setTransformationMatrix(transformationMatrix)
+        ->setProjectionMatrix(camera->projectionMatrix())
         ->use();
 
     mesh->draw();
