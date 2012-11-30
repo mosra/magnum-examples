@@ -29,7 +29,7 @@ class TexturedTriangleExample: public Platform::GlutApplication {
         TexturedTriangleExample(int& argc, char** argv);
 
     protected:
-        void viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) override;
+        void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
 
     private:

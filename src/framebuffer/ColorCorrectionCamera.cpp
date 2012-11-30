@@ -51,7 +51,7 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
                       Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
 }
 
-void ColorCorrectionCamera::setViewport(const Math::Vector2<GLsizei>& size) {
+void ColorCorrectionCamera::setViewport(const Vector2i& size) {
     Camera2D::setViewport(size);
 
     /* Reet storage for renderbuffer */

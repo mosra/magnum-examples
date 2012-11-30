@@ -57,7 +57,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
         importer->open(in);
 
         Texture2D* texture = new Texture2D;
-        texture->setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge})
+        texture->setWrapping(CubeMapTexture::Wrapping::ClampToEdge)
             ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
             ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
             ->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))

@@ -66,7 +66,7 @@ class FramebufferExample: public Platform::GlutApplication {
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) override {
+        inline void viewportEvent(const Vector2i& size) override {
             Framebuffer::setViewport({0, 0}, size);
             camera->setViewport(size);
         }
@@ -77,7 +77,7 @@ class FramebufferExample: public Platform::GlutApplication {
             swapBuffers();
         }
 
-        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) override {
+        void mousePressEvent(MouseButton button, const Vector2i& position) override {
             if(button == MouseButton::WheelUp)
                 billboard->scale(Vector2(5.0f/4));
             else if(button == MouseButton::WheelDown)
@@ -87,14 +87,14 @@ class FramebufferExample: public Platform::GlutApplication {
             redraw();
         }
 
-        void mouseMotionEvent(const Math::Vector2<int>& position) override {
+        void mouseMotionEvent(const Vector2i& position) override {
             billboard->translate(camera->projectionSize()*Vector2::from(position-previous)/Vector2::from(camera->viewport())*Vector2(2.0f, -2.0f));
             previous = position;
             redraw();
         }
 
     private:
-        Math::Vector2<int> previous;
+        Vector2i previous;
         Scene2D scene;
         SceneGraph::DrawableGroup2D<> drawables;
         SceneGraph::Camera2D<>* camera;

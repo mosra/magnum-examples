@@ -35,7 +35,7 @@ typedef Platform::XEglApplication Application;
 /** @brief Base class for examples with FPS counter */
 class FpsCounterExample: public Application {
     public:
-        FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600));
+        FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Minimal duration between printing FPS to console
@@ -114,7 +114,7 @@ class FpsCounterExample: public Application {
          * @attention You have to call this function from your viewportEvent()
          * reimplementation!
          */
-        void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        void viewportEvent(const Vector2i& size) override {
             resetCounter();
             viewport = size;
         }
@@ -125,7 +125,7 @@ class FpsCounterExample: public Application {
          * Measures FPS in given duration and prints statistics to
          * console.
          */
-        void redraw();
+        void redraw() override;
 
     private:
         size_t frames, totalFrames;
@@ -138,7 +138,7 @@ class FpsCounterExample: public Application {
         SampleQuery sampleQuery;
         #endif
         std::chrono::high_resolution_clock::time_point before;
-        Math::Vector2<GLsizei> viewport;
+        Vector2i viewport;
 };
 
 }}

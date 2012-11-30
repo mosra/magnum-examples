@@ -32,7 +32,7 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, 
         ->addInterleavedVertexBuffer(&buffer, 0, TriangleShader::Position(), TriangleShader::Color());
 }
 
-void TriangleExample::viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {
+void TriangleExample::viewportEvent(const Vector2i& size) {
     Magnum::Framebuffer::setViewport({0, 0}, size);
 }
 

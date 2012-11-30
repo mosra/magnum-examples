@@ -29,7 +29,7 @@ namespace Magnum { namespace Examples {
 MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(GLint i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
-            ->setWrapping(Magnum::Math::Vector2<AbstractTexture::Wrapping>(AbstractTexture::Wrapping::ClampToEdge, AbstractTexture::Wrapping::ClampToEdge))
+            ->setWrapping(AbstractTexture::Wrapping::ClampToEdge)
             ->setMinificationFilter(AbstractTexture::Filter::NearestNeighbor)
             ->setMagnificationFilter(AbstractTexture::Filter::NearestNeighbor);
     }
@@ -40,7 +40,7 @@ MotionBlurCamera::~MotionBlurCamera() {
         delete frames[i];
 }
 
-void MotionBlurCamera::setViewport(const Math::Vector2<GLsizei>& size) {
+void MotionBlurCamera::setViewport(const Vector2i& size) {
     Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */

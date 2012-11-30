@@ -29,10 +29,10 @@ class CubeMapExample: public Platform::GlutApplication {
         CubeMapExample(int& argc, char** argv);
 
     protected:
-        void viewportEvent(const Math::Vector2<GLsizei>& size) override;
+        void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
 
-        void keyPressEvent(Key key, const Math::Vector2<int>& position) override;
+        void keyPressEvent(Key key, const Vector2i& position) override;
 
     private:
         CubeMapResourceManager resourceManager;

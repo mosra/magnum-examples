@@ -63,7 +63,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     }
 
     /* Set texture data and parameters */
-    texture.setWrapping(Magnum::Math::Vector2<Magnum::Texture2D::Wrapping>(Magnum::Texture2D::Wrapping::ClampToEdge))
+    texture.setWrapping(Magnum::Texture2D::Wrapping::ClampToEdge)
         ->setMagnificationFilter(Magnum::Texture2D::Filter::LinearInterpolation)
         ->setMinificationFilter(Magnum::Texture2D::Filter::LinearInterpolation)
         ->setData(0, Magnum::Texture2D::Format::RGB, importer->image2D(0));
@@ -72,7 +72,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     delete importer;
 }
 
-void TexturedTriangleExample::viewportEvent(const Math::Vector2<GLsizei>& size) {
+void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
     Magnum::Framebuffer::setViewport({0, 0}, size);
 }
 

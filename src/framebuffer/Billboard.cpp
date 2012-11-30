@@ -28,7 +28,7 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
         ->setVertexCount(square.positions(0)->size())
         ->addVertexBuffer(&buffer, ColorCorrectionShader::Position());
 
-    texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder})
+    texture.setWrapping(AbstractTexture::Wrapping::ClampToBorder)
         ->setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation)
         ->setMinificationFilter(AbstractTexture::Filter::LinearInterpolation)
         ->setData(0, AbstractTexture::Format::RGBA, image);

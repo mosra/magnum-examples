@@ -69,7 +69,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
     resourceManager.free<Trade::AbstractImporter>();
 }
 
-void CubeMapExample::viewportEvent(const Math::Vector2<GLsizei>& size) {
+void CubeMapExample::viewportEvent(const Vector2i& size) {
     Framebuffer::setViewport({0, 0}, size);
     camera->setViewport(size);
 }
@@ -80,7 +80,7 @@ void CubeMapExample::drawEvent() {
     swapBuffers();
 }
 
-void CubeMapExample::keyPressEvent(Key key, const Magnum::Math::Vector2<int>&) {
+void CubeMapExample::keyPressEvent(Key key, const Vector2i&) {
     if(key == Key::Up)
         cameraObject->rotate(deg(-10.0f), cameraObject->transformation()[0].xyz().normalized());
 

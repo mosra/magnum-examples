@@ -61,7 +61,7 @@ CubeMap::CubeMap(const string& prefix, Object3D* parent, SceneGraph::DrawableGro
     if(!(texture = resourceManager->get<CubeMapTexture>("texture"))) {
         CubeMapTexture* cubeMap = new CubeMapTexture;
 
-        cubeMap->setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge))
+        cubeMap->setWrapping(CubeMapTexture::Wrapping::ClampToEdge)
             ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
             ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
 

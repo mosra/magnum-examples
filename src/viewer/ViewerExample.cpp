@@ -56,7 +56,7 @@ class ViewerExample: public FpsCounterExample {
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) override {
+        inline void viewportEvent(const Vector2i& size) override {
             Framebuffer::setViewport({0, 0}, size);
             camera->setViewport(size);
             FpsCounterExample::viewportEvent(size);
@@ -70,7 +70,7 @@ class ViewerExample: public FpsCounterExample {
             if(fpsCounterEnabled()) redraw();
         }
 
-        void keyPressEvent(Key key, const Math::Vector2<int>&) override {
+        void keyPressEvent(Key key, const Vector2i&) override {
             switch(key) {
                 case Key::Up:
                     o->rotate(deg(10.0f), Vector3::xAxis(-1));
@@ -108,7 +108,7 @@ class ViewerExample: public FpsCounterExample {
             redraw();
         }
 
-        void mousePressEvent(MouseButton button, const Math::Vector2<int>& position) override {
+        void mousePressEvent(MouseButton button, const Vector2i& position) override {
             switch(button) {
                 case MouseButton::Left:
                     previousPosition = positionOnSphere(position);
@@ -132,12 +132,12 @@ class ViewerExample: public FpsCounterExample {
             }
         }
 
-        void mouseReleaseEvent(MouseButton button, const Math::Vector2<int>&) override {
+        void mouseReleaseEvent(MouseButton button, const Vector2i&) override {
             if(button == MouseButton::Left)
                 previousPosition = Vector3();
         }
 
-        void mouseMotionEvent(const Math::Vector2<int>& position) override {
+        void mouseMotionEvent(const Vector2i& position) override {
             Vector3 currentPosition = positionOnSphere(position);
 
             Vector3 axis = Vector3::cross(previousPosition, currentPosition);
@@ -153,8 +153,8 @@ class ViewerExample: public FpsCounterExample {
         }
 
     private:
-        Vector3 positionOnSphere(const Math::Vector2<int>& _position) const {
-            Math::Vector2<GLsizei> viewport = camera->viewport();
+        Vector3 positionOnSphere(const Vector2i& _position) const {
+            Vector2i viewport = camera->viewport();
             Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
                              _position.y()*2.0f/viewport.y() - 1.0f);
 
