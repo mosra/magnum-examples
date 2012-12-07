@@ -51,7 +51,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D<> {
             public:
                 MotionBlurCanvas(Texture2D** frames, Object3D* parent = nullptr);
 
-                void draw(size_t currentFrame);
+                void draw(std::size_t currentFrame);
 
             private:
                 MotionBlurShader shader;
@@ -62,7 +62,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D<> {
 
         BufferedImage2D framebuffer;
         Texture2D* frames[FrameCount];
-        size_t currentFrame;
+        std::size_t currentFrame;
         MotionBlurCanvas canvas;
 };
 

@@ -51,7 +51,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     Magnum::Trade::AbstractImporter* importer;
     if(manager.load("TgaImporter") != Corrade::PluginManager::AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
         Corrade::Utility::Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
-        exit(1);
+        std::exit(1);
     }
 
     /* Load the texture */
@@ -59,7 +59,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     std::istringstream in(rs.get("stone.tga"));
     if(!importer->open(in) || !importer->image2DCount()) {
         Corrade::Utility::Error() << "Cannot load texture";
-        exit(2);
+        std::exit(2);
     }
 
     /* Set texture data and parameters */

@@ -33,7 +33,7 @@ class FramebufferExample: public Platform::GlutApplication {
         FramebufferExample(int& argc, char** argv): GlutApplication(argc, argv, "Framebuffer example") {
             if(argc != 2) {
                 Debug() << "Usage:" << argv[0] << "image.tga";
-                exit(0);
+                std::exit(0);
             }
 
             camera = new ColorCorrectionCamera(&scene);
@@ -43,20 +43,20 @@ class FramebufferExample: public Platform::GlutApplication {
             Trade::AbstractImporter* importer;
             if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
                 Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
-                exit(1);
+                std::exit(1);
             }
 
             /* Load the image */
             if(!importer->open(argv[1]) || !importer->image2DCount()) {
                 Error() << "Cannot open image" << argv[1];
-                exit(2);
+                std::exit(2);
             }
 
             /* Create color correction texture */
             GLfloat texture[1024];
-            for(size_t i = 0; i != 1024; ++i) {
+            for(std::size_t i = 0; i != 1024; ++i) {
                 GLfloat x = i*2/1023.0-1;
-                texture[i] = (float(sin(x*Math::Constants<float>::pi()))/3.7f+x+1)/2;
+                texture[i] = (std::sin(x*Constants::pi())/3.7f+x+1)/2;
             }
             colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 

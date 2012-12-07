@@ -35,7 +35,6 @@
 #include "ViewedObject.h"
 #include "configure.h"
 
-using namespace std;
 using namespace Corrade::PluginManager;
 using namespace Magnum::Shaders;
 using namespace Magnum::Trade;
@@ -49,9 +48,9 @@ class ViewerExample: public FpsCounterExample {
 
         ~ViewerExample() {
             for(auto i: meshes) {
-                delete get<0>(i.second);
-                delete get<1>(i.second);
-                delete get<2>(i.second);
+                delete std::get<0>(i.second);
+                delete std::get<1>(i.second);
+                delete std::get<2>(i.second);
             }
         }
 
@@ -144,7 +143,7 @@ class ViewerExample: public FpsCounterExample {
 
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-            GLfloat angle = acos(Vector3::dot(previousPosition, currentPosition));
+            GLfloat angle = std::acos(Vector3::dot(previousPosition, currentPosition));
             o->rotate(angle, axis.normalized());
 
             previousPosition = currentPosition;
@@ -164,7 +163,7 @@ class ViewerExample: public FpsCounterExample {
             return result.normalized();
         }
 
-        void addObject(AbstractImporter* colladaImporter, Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId);
+        void addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId);
 
         Scene3D scene;
         SceneGraph::DrawableGroup3D<> drawables;
@@ -172,8 +171,8 @@ class ViewerExample: public FpsCounterExample {
         SceneGraph::Camera3D<>* camera;
         PhongShader shader;
         Object3D* o;
-        unordered_map<size_t, tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
-        size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
+        std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
+        std::size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         bool wireframe;
         Vector3 previousPosition;
 };
@@ -190,7 +189,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    std::unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
@@ -219,7 +218,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         std::exit(5);
 
     /* Map with materials */
-    unordered_map<size_t, PhongMaterialData*> materials;
+    std::unordered_map<std::size_t, PhongMaterialData*> materials;
 
     /* Default object, parent of all (for manipulation) */
     o = new Object3D(&scene);
@@ -230,7 +229,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
-    for(size_t objectId: scene->children3D())
+    for(std::size_t objectId: scene->children3D())
         addObject(colladaImporter.get(), o, materials, objectId);
 
     Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
@@ -243,7 +242,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     delete colladaImporter.release();
 }
 
-void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
+void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId) {
     ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
@@ -253,7 +252,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
         /* Use already processed mesh, if exists */
         IndexedMesh* mesh;
         auto found = meshes.find(object->instanceId());
-        if(found != meshes.end()) mesh = get<2>(found->second);
+        if(found != meshes.end()) mesh = std::get<2>(found->second);
 
         /* Or create a new one */
         else {
@@ -262,7 +261,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
             mesh = new IndexedMesh;
             Buffer* buffer = new Buffer;
             Buffer* indexBuffer = new Buffer;
-            meshes.insert(make_pair(object->instanceId(), make_tuple(buffer, indexBuffer, mesh)));
+            meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
 
             MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
@@ -302,7 +301,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
     }
 
     /* Recursively add children */
-    for(size_t id: object->children())
+    for(std::size_t id: object->children())
         addObject(colladaImporter, o, materials, id);
 }
 

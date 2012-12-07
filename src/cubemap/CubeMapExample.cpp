@@ -27,7 +27,6 @@
 #include "Reflector.h"
 #include "configure.h"
 
-using namespace std;
 using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
@@ -48,7 +47,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
     Trade::AbstractImporter* importer;
     if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TGAImporter plugin from" << manager.pluginDirectory();
-        exit(1);
+        std::exit(1);
     }
     resourceManager.set<Trade::AbstractImporter>("tga-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
 

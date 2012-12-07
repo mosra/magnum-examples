@@ -128,7 +128,7 @@ class FpsCounterExample: public Application {
         void redraw() override;
 
     private:
-        size_t frames, totalFrames;
+        std::size_t frames, totalFrames;
         double minimalDuration, totalDuration;
         bool fpsEnabled;
         #ifndef MAGNUM_TARGET_GLES

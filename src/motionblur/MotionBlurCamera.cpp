@@ -22,8 +22,6 @@
 #include "Framebuffer.h"
 #include <Shader.h>
 
-using namespace std;
-
 namespace Magnum { namespace Examples {
 
 MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(AbstractImage::Components::RGB, AbstractImage::ComponentType::UnsignedByte), currentFrame(0), canvas(frames) {
@@ -44,7 +42,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
-    size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(framebuffer.components(), framebuffer.type());
+    std::size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(framebuffer.components(), framebuffer.type());
     GLubyte* texture = new GLubyte[textureSize]();
     framebuffer.setData(size, framebuffer.components(), texture, Buffer::Usage::DynamicDraw);
     delete texture;
@@ -72,7 +70,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
 
     link();
 
-    stringstream ss;
+    std::stringstream ss;
     for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i) {
         ss.str("");
         ss << "frame[" << i << ']';
@@ -94,7 +92,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3
         ->addVertexBuffer(&buffer, MotionBlurShader::Position());
 }
 
-void MotionBlurCamera::MotionBlurCanvas::draw(size_t currentFrame) {
+void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {
     shader.use();
     for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i)
         frames[i]->bind((i+currentFrame)%MotionBlurCamera::FrameCount);
