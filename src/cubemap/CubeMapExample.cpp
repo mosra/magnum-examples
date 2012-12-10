@@ -20,6 +20,7 @@
 #include <AbstractShaderProgram.h>
 #include <Framebuffer.h>
 #include <IndexedMesh.h>
+#include <Renderer.h>
 #include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 
@@ -32,8 +33,8 @@ using namespace Corrade::PluginManager;
 namespace Magnum { namespace Examples {
 
 CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, "Cube map example") {
-    Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
-    Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
+    Renderer::setFeature(Renderer::Feature::DepthTest, true);
+    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     /* Set up perspective camera */
     (cameraObject = new Object3D(&scene))

@@ -15,6 +15,8 @@
 
 #include <Math/Constants.h>
 #include "Framebuffer.h"
+#include <IndexedMesh.h>
+#include <Renderer.h>
 #include "SceneGraph/Scene.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
@@ -23,7 +25,6 @@
 #include "Shaders/PhongShader.h"
 
 #include "MotionBlurCamera.h"
-#include "IndexedMesh.h"
 #include "Icosphere.h"
 
 using namespace Corrade;
@@ -39,9 +40,9 @@ class MotionBlurExample: public Platform::GlutApplication {
             (camera = new MotionBlurCamera(cameraObject))
                 ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
                 ->setPerspective(deg(35.0f), 0.001f, 100);
-            Framebuffer::setClearColor({0.1f, 0.1f, 0.1f});
-            Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
-            Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
+            Renderer::setClearColor({0.1f, 0.1f, 0.1f});
+            Renderer::setFeature(Renderer::Feature::DepthTest, true);
+            Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
             Primitives::Icosphere<3> data;
             MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, *data.indices());

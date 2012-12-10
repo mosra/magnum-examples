@@ -20,6 +20,7 @@
 #include <Math/Constants.h>
 #include <IndexedMesh.h>
 #include "Framebuffer.h"
+#include <Renderer.h>
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData3D.h"
 #include "Trade/MeshObjectData3D.h"
@@ -205,8 +206,8 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     (camera = new SceneGraph::Camera3D<>(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(deg(35.0f), 0.001f, 100);
-    Framebuffer::setFeature(Framebuffer::Feature::DepthTest, true);
-    Framebuffer::setFeature(Framebuffer::Feature::FaceCulling, true);
+    Renderer::setFeature(Renderer::Feature::DepthTest, true);
+    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     Debug() << "Opening file" << argv[1];
 
