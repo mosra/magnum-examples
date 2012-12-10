@@ -242,7 +242,6 @@ Next we will load our tarnish texture from compiled-in resource, reusing
 TGA importer again, and our special reflector shader.
 @skip resourceManager->get<Texture2D>("tarnish-texture")
 @until }
-@until }
 
 Lastly we acquire environment texture resource, which was created in `CubeMap`
 object earlier.
