@@ -15,8 +15,7 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Buffer.h"
-#include "BufferedImage.h"
+#include <BufferImage.h>
 #include "Texture.h"
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
@@ -60,7 +59,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D<> {
                 Texture2D** frames;
         };
 
-        BufferedImage2D framebuffer;
+        BufferImage2D framebuffer;
         Texture2D* frames[FrameCount];
         std::size_t currentFrame;
         MotionBlurCanvas canvas;

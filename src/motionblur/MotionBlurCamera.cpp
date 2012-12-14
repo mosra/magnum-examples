@@ -42,9 +42,9 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
-    std::size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(framebuffer.format(), framebuffer.type());
+    std::size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte);
     GLubyte* texture = new GLubyte[textureSize]();
-    framebuffer.setData(size, framebuffer.format(), texture, Buffer::Usage::DynamicDraw);
+    framebuffer.setData(size, AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, texture, Buffer::Usage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
@@ -55,7 +55,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
     Camera3D::draw(group);
 
-    Framebuffer::read({0, 0}, viewport(), framebuffer.format(), framebuffer.type(), &framebuffer, Buffer::Usage::DynamicDraw);
+    Framebuffer::read({0, 0}, viewport(), AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, &framebuffer, Buffer::Usage::DynamicDraw);
 
     frames[currentFrame]->setData(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 

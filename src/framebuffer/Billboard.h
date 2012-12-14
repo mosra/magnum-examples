@@ -16,7 +16,7 @@
 */
 
 #include <Buffer.h>
-#include "BufferedTexture.h"
+#include <BufferTexture.h>
 #include "Mesh.h"
 #include "Texture.h"
 #include "SceneGraph/Object.h"
@@ -38,7 +38,7 @@ class Billboard: public Object2D, SceneGraph::Drawable2D<> {
         Buffer buffer;
         Mesh mesh;
         Texture2D texture;
-        BufferedTexture colorCorrectionTexture;
+        BufferTexture colorCorrectionTexture;
         ColorCorrectionShader shader;
 };
 
