@@ -104,7 +104,4 @@ class FramebufferExample: public Platform::GlutApplication {
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::FramebufferExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::FramebufferExample)

@@ -55,9 +55,9 @@ void ColorCorrectionCamera::setViewport(const Vector2i& size) {
     Camera2D::setViewport(size);
 
     /* Reet storage for renderbuffer */
-    original.setStorage(Renderbuffer::Format::RGB5Alpha1, size);
-    grayscale.setStorage(Renderbuffer::Format::RGB5Alpha1, size);
-    corrected.setStorage(Renderbuffer::Components::RGBA|Renderbuffer::ComponentType::NormalizedUnsignedByte, size);
+    original.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
+    grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
+    corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
 
     /* If not yet, attach renderbuffers to framebuffer */
     if(!initialized) {

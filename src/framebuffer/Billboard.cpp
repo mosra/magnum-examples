@@ -28,12 +28,12 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
         ->setVertexCount(square.positions(0)->size())
         ->addVertexBuffer(&buffer, ColorCorrectionShader::Position());
 
-    texture.setWrapping(AbstractTexture::Wrapping::ClampToBorder)
-        ->setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation)
-        ->setMinificationFilter(AbstractTexture::Filter::LinearInterpolation)
-        ->setData(0, AbstractTexture::Format::RGBA, image);
+    texture.setWrapping(Texture2D::Wrapping::ClampToBorder)
+        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setData(0, Texture2D::InternalFormat::RGBA8, image);
 
-    colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
+    colorCorrectionTexture.setBuffer(BufferedTexture::InternalFormat::R32F, colorCorrectionBuffer);
 
     scale(Vector2::yScale(GLfloat(image->size()[1])/image->size()[0]));
 }

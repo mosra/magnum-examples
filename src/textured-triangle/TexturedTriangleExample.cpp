@@ -16,6 +16,7 @@
 #include "TexturedTriangleExample.h"
 
 #include <array>
+#include <sstream>
 #include <PluginManager/PluginManager.h>
 #include <Math/Point2D.h>
 #include <Buffer.h>
@@ -63,10 +64,10 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     }
 
     /* Set texture data and parameters */
-    texture.setWrapping(Magnum::Texture2D::Wrapping::ClampToEdge)
-        ->setMagnificationFilter(Magnum::Texture2D::Filter::LinearInterpolation)
-        ->setMinificationFilter(Magnum::Texture2D::Filter::LinearInterpolation)
-        ->setData(0, Magnum::Texture2D::Format::RGB, importer->image2D(0));
+    texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
+        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setData(0, Texture2D::InternalFormat::RGB8, importer->image2D(0));
 
     /* We don't need the importer plugin anymore */
     delete importer;
@@ -89,8 +90,4 @@ void TexturedTriangleExample::drawEvent() {
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::TexturedTriangleExample e(argc, argv);
-    return e.exec();
-}
-
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::TexturedTriangleExample)

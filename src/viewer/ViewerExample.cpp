@@ -308,7 +308,4 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::ViewerExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::ViewerExample)

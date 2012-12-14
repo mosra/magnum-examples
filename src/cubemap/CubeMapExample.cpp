@@ -100,7 +100,4 @@ void CubeMapExample::keyPressEvent(Key key, const Vector2i&) {
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::CubeMapExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::CubeMapExample)

@@ -15,6 +15,7 @@
 
 #include "Reflector.h"
 
+#include <sstream>
 #include <Utility/Resource.h>
 #include <CubeMapTexture.h>
 #include <IndexedMesh.h>
@@ -57,10 +58,10 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
         importer->open(in);
 
         Texture2D* texture = new Texture2D;
-        texture->setWrapping(CubeMapTexture::Wrapping::ClampToEdge)
-            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
-            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation)
-            ->setData(0, AbstractTexture::Format::RGB, importer->image2D(0))
+        texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
+            ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
+            ->setMinificationFilter(Texture2D::Filter::LinearInterpolation, Texture2D::Mipmap::LinearInterpolation)
+            ->setData(0, Texture2D::InternalFormat::RGB8, importer->image2D(0))
             ->generateMipmap();
 
         resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
