@@ -15,7 +15,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 @todo MotionBlur: handle resizing for the second framebuffer
 @todo MotionBlur: make the canvas non-object (or 2D object)?
-@todo Framebuffer: clearing also colorcorrectioncamera framebuffer
 
 @example triangle/TriangleExample.h
 @example triangle/TriangleExample.cpp

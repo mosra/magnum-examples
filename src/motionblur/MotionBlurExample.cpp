@@ -14,7 +14,7 @@
 */
 
 #include <Math/Constants.h>
-#include "Framebuffer.h"
+#include <DefaultFramebuffer.h>
 #include <IndexedMesh.h>
 #include <Renderer.h>
 #include "SceneGraph/Scene.h"
@@ -85,20 +85,19 @@ class MotionBlurExample: public Platform::GlutApplication {
 
     protected:
         inline void viewportEvent(const Vector2i& size) {
-            Framebuffer::setViewport({0, 0}, size);
-
+            defaultFramebuffer.setViewport({0, 0}, size);
             camera->setViewport(size);
         }
 
         void drawEvent() {
-            Framebuffer::clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth);
+            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
             camera->draw(drawables);
             swapBuffers();
 
-            cameraObject->rotate(deg(1.0f), Vector3::yAxis());
-            spheres[0]->rotate(deg(-2.0f), Vector3::zAxis());
-            spheres[1]->rotate(deg(1.0f), Vector3::zAxis());
-            spheres[2]->rotate(deg(-0.5f), Vector3::zAxis());
+            cameraObject->rotateX(deg(1.0f));
+            spheres[0]->rotateZ(deg(-2.0f));
+            spheres[1]->rotateZ(deg(1.0f));
+            spheres[2]->rotateZ(deg(-0.5f));
             Utility::sleep(40);
             redraw();
         }

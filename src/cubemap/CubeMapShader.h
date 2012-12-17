@@ -24,7 +24,9 @@ class CubeMapShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Point3D> Position;
 
-        static const GLint TextureLayer = 0;
+        enum: GLint {
+            TextureLayer = 0
+        };
 
         CubeMapShader();
 

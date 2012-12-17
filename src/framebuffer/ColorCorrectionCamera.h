@@ -15,8 +15,8 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Framebuffer.h"
-#include "Renderbuffer.h"
+#include <Framebuffer.h>
+#include <Renderbuffer.h>
 #include <SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
@@ -35,7 +35,6 @@ class ColorCorrectionCamera: public SceneGraph::Camera2D<> {
             Corrected = 2
         };
 
-        bool initialized;
         Framebuffer framebuffer;
         Renderbuffer original,
             grayscale,

@@ -15,7 +15,8 @@
 
 #include "TriangleExample.h"
 
-#include <Framebuffer.h>
+#include <Math/Vector3.h>
+#include <DefaultFramebuffer.h>
 
 namespace Magnum { namespace Examples {
 
@@ -33,11 +34,11 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, 
 }
 
 void TriangleExample::viewportEvent(const Vector2i& size) {
-    Magnum::Framebuffer::setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({0, 0}, size);
 }
 
 void TriangleExample::drawEvent() {
-    Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
 
     shader.use();
     mesh.draw();

@@ -19,7 +19,7 @@
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
 #include <IndexedMesh.h>
-#include "Framebuffer.h"
+#include <DefaultFramebuffer.h>
 #include <Renderer.h>
 #include "Trade/AbstractImporter.h"
 #include "Trade/MeshData3D.h"
@@ -57,13 +57,13 @@ class ViewerExample: public FpsCounterExample {
 
     protected:
         inline void viewportEvent(const Vector2i& size) override {
-            Framebuffer::setViewport({0, 0}, size);
+            defaultFramebuffer.setViewport({0, 0}, size);
             camera->setViewport(size);
             FpsCounterExample::viewportEvent(size);
         }
 
         void drawEvent() override {
-            Framebuffer::clear(Framebuffer::Clear::Color|Framebuffer::Clear::Depth);
+            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
             camera->draw(drawables);
             swapBuffers();
 

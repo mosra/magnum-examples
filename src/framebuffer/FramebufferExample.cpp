@@ -15,6 +15,7 @@
 
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
+#include <DefaultFramebuffer.h>
 #include <Platform/GlutApplication.h>
 #include "SceneGraph/Scene.h"
 #include "Trade/AbstractImporter.h"
@@ -67,12 +68,12 @@ class FramebufferExample: public Platform::GlutApplication {
 
     protected:
         inline void viewportEvent(const Vector2i& size) override {
-            Framebuffer::setViewport({0, 0}, size);
+            defaultFramebuffer.setViewport({0, 0}, size);
             camera->setViewport(size);
         }
 
         inline void drawEvent() override {
-            Framebuffer::clear(Framebuffer::Clear::Color);
+            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
             camera->draw(drawables);
             swapBuffers();
         }

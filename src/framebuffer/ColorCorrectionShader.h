@@ -20,18 +20,20 @@
 
 namespace Magnum { namespace Examples {
 
-/*
-Fragment data:
-0 - Original color
-1 - Grayscale
-2 - Color corrected
-*/
 class ColorCorrectionShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Point2D> Position;
 
-        static const GLint TextureLayer = 0;
-        static const GLint ColorCorrectionTextureLayer = 1;
+        enum: GLuint {
+            OriginalColorOutput = 0,
+            GrayscaleOutput = 1,
+            ColorCorrectedOutput = 2
+        };
+
+        enum: GLint {
+            TextureLayer = 0,
+            ColorCorrectionTextureLayer = 1
+        };
 
         ColorCorrectionShader();
 

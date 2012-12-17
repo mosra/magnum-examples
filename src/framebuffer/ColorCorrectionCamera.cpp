@@ -14,57 +14,68 @@
 */
 
 #include "ColorCorrectionCamera.h"
+#include "ColorCorrectionShader.h"
 
-#include "Framebuffer.h"
+#include <DefaultFramebuffer.h>
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), initialized(false) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), framebuffer(defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize()/2) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
+
+    original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+    grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+    corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+
+    framebuffer.attachRenderbuffer(Original, &original);
+    framebuffer.attachRenderbuffer(Grayscale, &grayscale);
+    framebuffer.attachRenderbuffer(Corrected, &corrected);
+
+    framebuffer.mapForDraw({{ColorCorrectionShader::OriginalColorOutput, Original},
+                            {ColorCorrectionShader::GrayscaleOutput, Grayscale},
+                            {ColorCorrectionShader::ColorCorrectedOutput, Corrected}});
 }
 
 void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
-    /* Map shader output to color attachments */
-    framebuffer.mapForDraw({Original, Grayscale, Corrected});
-
     /* Draw original scene */
+    framebuffer.clear(AbstractFramebuffer::Clear::Color);
+    framebuffer.bind(AbstractFramebuffer::Target::Draw);
     Camera2D::draw(group);
-
-    /* Draw to screen framebuffer */
-    Framebuffer::mapDefaultForDraw({Framebuffer::DefaultDrawAttachment::BackLeft});
 
     /* Original image at top left */
     framebuffer.mapForRead(Original);
-    Framebuffer::blit({0, 0}, viewport(),
-                      {0, viewport().y()/2}, {viewport().x()/2, viewport().y()},
-                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
+    AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
+        {0, 0}, framebuffer.viewportSize(),
+        {0, defaultFramebuffer.viewportSize().y()/2},
+        {defaultFramebuffer.viewportSize().x()/2, defaultFramebuffer.viewportSize().y()},
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Grayscale at top right */
     framebuffer.mapForRead(Grayscale);
-    Framebuffer::blit({0, 0}, viewport(), viewport()/2, viewport(),
-                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
+    AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
+        {0, 0}, framebuffer.viewportSize(),
+        defaultFramebuffer.viewportSize()/2,
+        defaultFramebuffer.viewportSize(),
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Color corrected at bottom */
     framebuffer.mapForRead(Corrected);
-    Framebuffer::blit({0, 0}, viewport(),
-                      {viewport().x()/4, 0}, {viewport().x()*3/4, viewport().y()/2},
-                      Framebuffer::Blit::Color, AbstractTexture::Filter::LinearInterpolation);
+    AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
+        {0, 0}, framebuffer.viewportSize(),
+        {defaultFramebuffer.viewportSize().x()/4, 0},
+        {defaultFramebuffer.viewportSize().x()*3/4, defaultFramebuffer.viewportSize().y()/2},
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 }
 
 void ColorCorrectionCamera::setViewport(const Vector2i& size) {
-    Camera2D::setViewport(size);
+    Camera2D::setViewport(size/2);
 
-    /* Reet storage for renderbuffer */
-    original.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
-    grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
-    corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, size);
-
-    /* If not yet, attach renderbuffers to framebuffer */
-    if(!initialized) {
-        framebuffer.attachRenderbuffer(Framebuffer::Target::ReadDraw, Original, &original);
-        framebuffer.attachRenderbuffer(Framebuffer::Target::ReadDraw, Grayscale, &grayscale);
-        framebuffer.attachRenderbuffer(Framebuffer::Target::ReadDraw, Corrected, &corrected);
-        initialized = true;
+    /* Reset storage for renderbuffer */
+    if(framebuffer.viewportSize() != size/2) {
+        framebuffer.setViewport({}, size/2);
+        original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+        grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+        corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
     }
 }
 

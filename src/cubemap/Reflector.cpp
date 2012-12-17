@@ -19,6 +19,7 @@
 #include <Utility/Resource.h>
 #include <CubeMapTexture.h>
 #include <IndexedMesh.h>
+#include <Texture.h>
 #include <MeshTools/CompressIndices.h>
 #include <MeshTools/Interleave.h>
 #include <Primitives/UVSphere.h>

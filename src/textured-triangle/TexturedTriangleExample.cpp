@@ -20,7 +20,7 @@
 #include <PluginManager/PluginManager.h>
 #include <Math/Point2D.h>
 #include <Buffer.h>
-#include <Framebuffer.h>
+#include <DefaultFramebuffer.h>
 #include <MeshTools/Interleave.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
@@ -74,11 +74,11 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
 }
 
 void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
-    Magnum::Framebuffer::setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({0, 0}, size);
 }
 
 void TexturedTriangleExample::drawEvent() {
-    Magnum::Framebuffer::clear(Framebuffer::Clear::Color);
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
 
     shader.setBaseColor({1.0f, 0.7f, 0.7f})
         ->use();

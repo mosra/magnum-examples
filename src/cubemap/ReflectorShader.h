@@ -27,8 +27,10 @@ class ReflectorShader: public AbstractShaderProgram {
         typedef Attribute<0, Point3D> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
-        static const GLint TextureLayer = 0;
-        static const GLint TarnishTextureLayer = 1;
+        enum: GLint {
+            TextureLayer = 0,
+            TarnishTextureLayer = 1
+        };
 
         ReflectorShader();
 

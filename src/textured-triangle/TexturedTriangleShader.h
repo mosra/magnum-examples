@@ -25,7 +25,9 @@ class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
         typedef Magnum::AbstractShaderProgram::Attribute<0, Magnum::Point2D> Position;
         typedef Magnum::AbstractShaderProgram::Attribute<1, Magnum::Vector2> TextureCoordinates;
 
-        static const GLint TextureLayer = 0;
+        enum: GLint {
+            TextureLayer = 0
+        };
 
         TexturedTriangleShader();
 

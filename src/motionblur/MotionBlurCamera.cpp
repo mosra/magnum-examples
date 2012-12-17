@@ -19,7 +19,7 @@
 
 #include "Utility/Resource.h"
 #include <Math/Point3D.h>
-#include "Framebuffer.h"
+#include <DefaultFramebuffer.h>
 #include <Shader.h>
 
 namespace Magnum { namespace Examples {
@@ -55,7 +55,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
     Camera3D::draw(group);
 
-    Framebuffer::read({0, 0}, viewport(), AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, &framebuffer, Buffer::Usage::DynamicDraw);
+    defaultFramebuffer.read({0, 0}, viewport(), AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, &framebuffer, Buffer::Usage::DynamicDraw);
 
     frames[currentFrame]->setData(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 

@@ -18,9 +18,10 @@
 #include <PluginManager/PluginManager.h>
 #include <Math/Constants.h>
 #include <AbstractShaderProgram.h>
-#include <Framebuffer.h>
+#include <DefaultFramebuffer.h>
 #include <IndexedMesh.h>
 #include <Renderer.h>
+#include <Texture.h>
 #include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 
@@ -70,12 +71,12 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
 }
 
 void CubeMapExample::viewportEvent(const Vector2i& size) {
-    Framebuffer::setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({0, 0}, size);
     camera->setViewport(size);
 }
 
 void CubeMapExample::drawEvent() {
-    Framebuffer::clear(Framebuffer::Clear::Depth);
+    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Depth);
     camera->draw(drawables);
     swapBuffers();
 }
