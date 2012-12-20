@@ -81,17 +81,17 @@ void CubeMapExample::drawEvent() {
     swapBuffers();
 }
 
-void CubeMapExample::keyPressEvent(Key key, const Vector2i&) {
-    if(key == Key::Up)
+void CubeMapExample::keyPressEvent(KeyEvent& event) {
+    if(event.key() == KeyEvent::Key::Up)
         cameraObject->rotate(deg(-10.0f), cameraObject->transformation()[0].xyz().normalized());
 
-    else if(key == Key::Down)
+    else if(event.key() == KeyEvent::Key::Down)
         cameraObject->rotate(deg(10.0f), cameraObject->transformation()[0].xyz().normalized());
 
-    else if(key == Key::Left || key == Key::Right) {
+    else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         GLfloat translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
-            ->rotate(key == Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
+            ->rotate(event.key() == KeyEvent::Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
             ->translate(Vector3::yAxis(translationY));
 
     } else return;

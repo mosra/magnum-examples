@@ -78,19 +78,19 @@ class FramebufferExample: public Platform::GlutApplication {
             swapBuffers();
         }
 
-        void mousePressEvent(MouseButton button, const Vector2i& position) override {
-            if(button == MouseButton::WheelUp)
+        void mousePressEvent(MouseEvent& event) override {
+            if(event.button() == MouseEvent::Button::WheelUp)
                 billboard->scale(Vector2(5.0f/4));
-            else if(button == MouseButton::WheelDown)
+            else if(event.button() == MouseEvent::Button::WheelDown)
                 billboard->scale(Vector2(4.0f/5));
 
-            previous = position;
+            previous = event.position();
             redraw();
         }
 
-        void mouseMotionEvent(const Vector2i& position) override {
-            billboard->translate(camera->projectionSize()*Vector2::from(position-previous)/Vector2::from(camera->viewport())*Vector2(2.0f, -2.0f));
-            previous = position;
+        void mouseMoveEvent(MouseMoveEvent& event) override {
+            billboard->translate(camera->projectionSize()*Vector2::from(event.position()-previous)/Vector2::from(camera->viewport())*Vector2(2.0f, -2.0f));
+            previous = event.position();
             redraw();
         }
 

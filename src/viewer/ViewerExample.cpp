@@ -70,33 +70,33 @@ class ViewerExample: public FpsCounterExample {
             if(fpsCounterEnabled()) redraw();
         }
 
-        void keyPressEvent(Key key, const Vector2i&) override {
-            switch(key) {
-                case Key::Up:
+        void keyPressEvent(KeyEvent& event) override {
+            switch(event.key()) {
+                case KeyEvent::Key::Up:
                     o->rotate(deg(10.0f), Vector3::xAxis(-1));
                     break;
-                case Key::Down:
+                case KeyEvent::Key::Down:
                     o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
-                case Key::Left:
+                case KeyEvent::Key::Left:
                     o->rotate(deg(10.0f), Vector3::yAxis(-1), SceneGraph::TransformationType::Local);
                     break;
-                case Key::Right:
+                case KeyEvent::Key::Right:
                     o->rotate(deg(10.0f), Vector3::yAxis(1), SceneGraph::TransformationType::Local);
                     break;
-                case Key::PageUp:
+                case KeyEvent::Key::PageUp:
                     cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
                     break;
-                case Key::PageDown:
+                case KeyEvent::Key::PageDown:
                     cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
                     break;
                 #ifndef MAGNUM_TARGET_GLES
-                case Key::Home:
+                case KeyEvent::Key::Home:
                     Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
                     wireframe = !wireframe;
                     break;
                 #endif
-                case Key::End:
+                case KeyEvent::Key::End:
                     if(fpsCounterEnabled()) printCounterStatistics();
                     else resetCounter();
 
@@ -108,18 +108,18 @@ class ViewerExample: public FpsCounterExample {
             redraw();
         }
 
-        void mousePressEvent(MouseButton button, const Vector2i& position) override {
-            switch(button) {
-                case MouseButton::Left:
-                    previousPosition = positionOnSphere(position);
+        void mousePressEvent(MouseEvent& event) override {
+            switch(event.button()) {
+                case MouseEvent::Button::Left:
+                    previousPosition = positionOnSphere(event.position());
                     break;
-                case MouseButton::WheelUp:
-                case MouseButton::WheelDown: {
+                case MouseEvent::Button::WheelUp:
+                case MouseEvent::Button::WheelDown: {
                     /* Distance between origin and near camera clipping plane */
                     GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
-                    if(button == MouseButton::WheelUp)
+                    if(event.button() == MouseEvent::Button::WheelUp)
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
@@ -132,13 +132,13 @@ class ViewerExample: public FpsCounterExample {
             }
         }
 
-        void mouseReleaseEvent(MouseButton button, const Vector2i&) override {
-            if(button == MouseButton::Left)
+        void mouseReleaseEvent(MouseEvent& event) override {
+            if(event.button() == MouseEvent::Button::Left)
                 previousPosition = Vector3();
         }
 
-        void mouseMotionEvent(const Vector2i& position) override {
-            Vector3 currentPosition = positionOnSphere(position);
+        void mouseMoveEvent(MouseMoveEvent& event) override {
+            Vector3 currentPosition = positionOnSphere(event.position());
 
             Vector3 axis = Vector3::cross(previousPosition, currentPosition);
 

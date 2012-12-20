@@ -31,8 +31,7 @@ class CubeMapExample: public Platform::GlutApplication {
     protected:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
-
-        void keyPressEvent(Key key, const Vector2i& position) override;
+        void keyPressEvent(KeyEvent& event) override;
 
     private:
         CubeMapResourceManager resourceManager;
