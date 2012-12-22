@@ -15,14 +15,17 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
+#  DebugTools    - DebugTools library (depends on MeshTools, Physics,
+#                  Primitives, SceneGraph and Shaders components)
 #  MeshTools     - MeshTools library
-#  Physics       - Physics library (depends on Primitives, SceneGraph and
-#                  Shaders components)
+#  Physics       - Physics library
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
+#  WindowlessGlxApplication - Windowless GLX application (depends on X11
+#   libraries)
 #  GlutApplication - GLUT application (depends on GLUT library)
 #  Sdl2Application - SDL2 application (depends on SDL2 library)
 #  NaClApplication - NaCl application (only if targetting Google Chrome
@@ -152,6 +155,21 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
+
+        # Windowless GLX application dependencies
+        if(${component} STREQUAL WindowlessGlxApplication)
+            find_package(X11)
+            if(X11_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+    endif()
+
+    # DebugTools library
+    if(${component} STREQUAL DebugTools)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Profiler.h)
     endif()
 
     # Mesh tools library
