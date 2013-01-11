@@ -57,7 +57,7 @@ class ViewerExample: public FpsCounterExample {
 
     protected:
         inline void viewportEvent(const Vector2i& size) override {
-            defaultFramebuffer.setViewport({0, 0}, size);
+            defaultFramebuffer.setViewport({{}, size});
             camera->setViewport(size);
             FpsCounterExample::viewportEvent(size);
         }

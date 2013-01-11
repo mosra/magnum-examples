@@ -68,7 +68,7 @@ class FramebufferExample: public Platform::GlutApplication {
 
     protected:
         inline void viewportEvent(const Vector2i& size) override {
-            defaultFramebuffer.setViewport({0, 0}, size);
+            defaultFramebuffer.setViewport({{}, size});
             camera->setViewport(size);
         }
 

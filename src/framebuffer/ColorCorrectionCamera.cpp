@@ -20,12 +20,12 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), framebuffer(defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize()/2) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
 
-    original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
-    grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
-    corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+    original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
+    grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
+    corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
 
     framebuffer.attachRenderbuffer(Original, &original);
     framebuffer.attachRenderbuffer(Grayscale, &grayscale);
@@ -45,25 +45,22 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
     /* Original image at top left */
     framebuffer.mapForRead(Original);
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
-        {0, 0}, framebuffer.viewportSize(),
-        {0, defaultFramebuffer.viewportSize().y()/2},
-        {defaultFramebuffer.viewportSize().x()/2, defaultFramebuffer.viewportSize().y()},
+        framebuffer.viewport(),
+        {{0, defaultFramebuffer.viewport().height()/2}, {defaultFramebuffer.viewport().width()/2, defaultFramebuffer.viewport().height()}},
         AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Grayscale at top right */
     framebuffer.mapForRead(Grayscale);
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
-        {0, 0}, framebuffer.viewportSize(),
-        defaultFramebuffer.viewportSize()/2,
-        defaultFramebuffer.viewportSize(),
+        framebuffer.viewport(),
+        {defaultFramebuffer.viewport().size()/2, defaultFramebuffer.viewport().size()},
         AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Color corrected at bottom */
     framebuffer.mapForRead(Corrected);
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
-        {0, 0}, framebuffer.viewportSize(),
-        {defaultFramebuffer.viewportSize().x()/4, 0},
-        {defaultFramebuffer.viewportSize().x()*3/4, defaultFramebuffer.viewportSize().y()/2},
+        framebuffer.viewport(),
+        {{defaultFramebuffer.viewport().width()/4, 0}, {defaultFramebuffer.viewport().width()*3/4, defaultFramebuffer.viewport().height()/2}},
         AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 }
 
@@ -71,11 +68,11 @@ void ColorCorrectionCamera::setViewport(const Vector2i& size) {
     Camera2D::setViewport(size/2);
 
     /* Reset storage for renderbuffer */
-    if(framebuffer.viewportSize() != size/2) {
-        framebuffer.setViewport({}, size/2);
-        original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
-        grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
-        corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewportSize());
+    if(framebuffer.viewport().size() != size/2) {
+        framebuffer.setViewport({{}, size/2});
+        original.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
+        grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
+        corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
     }
 }
 

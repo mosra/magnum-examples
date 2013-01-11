@@ -66,17 +66,17 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         importer->open(prefix + "+x.tga");
-        cubeMap->setData(CubeMapTexture::PositiveX, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::PositiveX, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
         importer->open(prefix + "-x.tga");
-        cubeMap->setData(CubeMapTexture::NegativeX, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::NegativeX, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
         importer->open(prefix + "+y.tga");
-        cubeMap->setData(CubeMapTexture::PositiveY, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::PositiveY, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
         importer->open(prefix + "-y.tga");
-        cubeMap->setData(CubeMapTexture::NegativeY, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::NegativeY, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
         importer->open(prefix + "+z.tga");
-        cubeMap->setData(CubeMapTexture::PositiveZ, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::PositiveZ, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
         importer->open(prefix + "-z.tga");
-        cubeMap->setData(CubeMapTexture::NegativeZ, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
+        cubeMap->setImage(CubeMapTexture::NegativeZ, 0, CubeMapTexture::InternalFormat::RGB8, importer->image2D(0));
 
         cubeMap->generateMipmap();
 

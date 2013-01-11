@@ -62,7 +62,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
         texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
             ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
             ->setMinificationFilter(Texture2D::Filter::LinearInterpolation, Texture2D::Mipmap::LinearInterpolation)
-            ->setData(0, Texture2D::InternalFormat::RGB8, importer->image2D(0))
+            ->setImage(0, Texture2D::InternalFormat::RGB8, importer->image2D(0))
             ->generateMipmap();
 
         resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);

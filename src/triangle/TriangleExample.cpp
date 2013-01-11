@@ -34,7 +34,7 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, 
 }
 
 void TriangleExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TriangleExample::drawEvent() {

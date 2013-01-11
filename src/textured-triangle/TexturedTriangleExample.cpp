@@ -67,14 +67,14 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
         ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
         ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
-        ->setData(0, Texture2D::InternalFormat::RGB8, importer->image2D(0));
+        ->setImage(0, Texture2D::InternalFormat::RGB8, importer->image2D(0));
 
     /* We don't need the importer plugin anymore */
     delete importer;
 }
 
 void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TexturedTriangleExample::drawEvent() {

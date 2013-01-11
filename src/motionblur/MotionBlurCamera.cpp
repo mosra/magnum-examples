@@ -49,7 +49,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 
     Buffer::unbind(Buffer::Target::PixelPack);
     for(GLint i = 0; i != FrameCount; ++i)
-        frames[i]->setData(0, Texture2D::InternalFormat::RGB8, &framebuffer);
+        frames[i]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 }
 
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
@@ -57,7 +57,7 @@ void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
 
     defaultFramebuffer.read({0, 0}, viewport(), AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, &framebuffer, Buffer::Usage::DynamicDraw);
 
-    frames[currentFrame]->setData(0, Texture2D::InternalFormat::RGB8, &framebuffer);
+    frames[currentFrame]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 
     canvas.draw(currentFrame);
     currentFrame = (currentFrame+1)%FrameCount;

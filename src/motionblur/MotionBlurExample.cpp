@@ -85,7 +85,7 @@ class MotionBlurExample: public Platform::GlutApplication {
 
     protected:
         inline void viewportEvent(const Vector2i& size) {
-            defaultFramebuffer.setViewport({0, 0}, size);
+            defaultFramebuffer.setViewport({{}, size});
             camera->setViewport(size);
         }
 

@@ -71,7 +71,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
 }
 
 void CubeMapExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({0, 0}, size);
+    defaultFramebuffer.setViewport({{}, size});
     camera->setViewport(size);
 }
 
