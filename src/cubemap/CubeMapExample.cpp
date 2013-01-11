@@ -83,15 +83,15 @@ void CubeMapExample::drawEvent() {
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        cameraObject->rotate(deg(-10.0f), cameraObject->transformation()[0].xyz().normalized());
+        cameraObject->rotate(deg(-10.0f), cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        cameraObject->rotate(deg(10.0f), cameraObject->transformation()[0].xyz().normalized());
+        cameraObject->rotate(deg(10.0f), cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         GLfloat translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
-            ->rotate(event.key() == KeyEvent::Key::Left ? deg(10.0f) : deg(-10.0f), Vector3::yAxis())
+            ->rotateY(event.key() == KeyEvent::Key::Left ? deg(10.0f) : deg(-10.0f))
             ->translate(Vector3::yAxis(translationY));
 
     } else return;
