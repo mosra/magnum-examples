@@ -27,13 +27,13 @@ ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* obj
     grayscale.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
     corrected.setStorage(Renderbuffer::InternalFormat::RGBA8, framebuffer.viewport().size());
 
-    framebuffer.attachRenderbuffer(Original, &original);
-    framebuffer.attachRenderbuffer(Grayscale, &grayscale);
-    framebuffer.attachRenderbuffer(Corrected, &corrected);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Original), &original);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Grayscale), &grayscale);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Corrected), &corrected);
 
-    framebuffer.mapForDraw({{ColorCorrectionShader::OriginalColorOutput, Original},
-                            {ColorCorrectionShader::GrayscaleOutput, Grayscale},
-                            {ColorCorrectionShader::ColorCorrectedOutput, Corrected}});
+    framebuffer.mapForDraw({{ColorCorrectionShader::OriginalColorOutput, Framebuffer::ColorAttachment(Original)},
+                            {ColorCorrectionShader::GrayscaleOutput, Framebuffer::ColorAttachment(Grayscale)},
+                            {ColorCorrectionShader::ColorCorrectedOutput, Framebuffer::ColorAttachment(Corrected)}});
 }
 
 void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
@@ -43,21 +43,21 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
     Camera2D::draw(group);
 
     /* Original image at top left */
-    framebuffer.mapForRead(Original);
+    framebuffer.mapForRead(Framebuffer::ColorAttachment(Original));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{0, defaultFramebuffer.viewport().height()/2}, {defaultFramebuffer.viewport().width()/2, defaultFramebuffer.viewport().height()}},
         AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Grayscale at top right */
-    framebuffer.mapForRead(Grayscale);
+    framebuffer.mapForRead(Framebuffer::ColorAttachment(Grayscale));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {defaultFramebuffer.viewport().size()/2, defaultFramebuffer.viewport().size()},
         AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
 
     /* Color corrected at bottom */
-    framebuffer.mapForRead(Corrected);
+    framebuffer.mapForRead(Framebuffer::ColorAttachment(Corrected));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{defaultFramebuffer.viewport().width()/4, 0}, {defaultFramebuffer.viewport().width()*3/4, defaultFramebuffer.viewport().height()/2}},

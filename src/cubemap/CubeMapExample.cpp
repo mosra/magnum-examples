@@ -76,7 +76,9 @@ void CubeMapExample::viewportEvent(const Vector2i& size) {
 }
 
 void CubeMapExample::drawEvent() {
-    defaultFramebuffer.clear(AbstractFramebuffer::Clear::Depth);
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Depth);
+    defaultFramebuffer.invalidate({DefaultFramebuffer::InvalidationAttachment::Color});
+
     camera->draw(drawables);
     swapBuffers();
 }
