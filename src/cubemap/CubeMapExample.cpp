@@ -19,6 +19,7 @@
 #include <Math/Constants.h>
 #include <AbstractShaderProgram.h>
 #include <DefaultFramebuffer.h>
+#include <Extensions.h>
 #include <IndexedMesh.h>
 #include <Renderer.h>
 #include <Texture.h>
@@ -34,6 +35,8 @@ using namespace Corrade::PluginManager;
 namespace Magnum { namespace Examples {
 
 CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, "Cube map example") {
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
+
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
