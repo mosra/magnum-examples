@@ -58,11 +58,15 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
         std::istringstream in(rs.get("tarnish.tga"));
         importer->open(in);
 
+        /* Image size */
+        Vector2i size = importer->image2D(0)->size();
+
         Texture2D* texture = new Texture2D;
         texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
             ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
             ->setMinificationFilter(Texture2D::Filter::LinearInterpolation, Texture2D::Mipmap::LinearInterpolation)
-            ->setImage(0, Texture2D::InternalFormat::RGB8, importer->image2D(0))
+            ->setStorage(Math::log2(size.min())+1, Texture2D::InternalFormat::RGB8, size)
+            ->setSubImage(0, {}, importer->image2D(0))
             ->generateMipmap();
 
         resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);

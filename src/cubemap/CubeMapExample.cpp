@@ -35,6 +35,7 @@ using namespace Corrade::PluginManager;
 namespace Magnum { namespace Examples {
 
 CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, "Cube map example") {
+    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
