@@ -73,7 +73,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     std::stringstream ss;
     for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i) {
         ss.str("");
-        ss << "frame[" << i << ']';
+        ss << "frame[" << i << "]";
         setUniform(uniformLocation(ss.str()), i);
     }
 }

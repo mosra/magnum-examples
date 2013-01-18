@@ -143,7 +143,7 @@ void FpsCounterExample::printCounterStatistics() {
         std::cout.precision(1);
         std::cout.setf(std::ostream::floatfield, std::ostream::fixed);
         std::cout << "Average values on " << viewport.x()
-             << 'x' << viewport.y() << " during " << totalDuration
+             << "x" << viewport.y() << " during " << totalDuration
              << " seconds:                                 \n";
         if(fpsEnabled)
             std::cout << std::setw(10) << totalFrames/totalDuration << " FPS ";

@@ -39,7 +39,7 @@ class MotionBlurExample: public Platform::GlutApplication {
                 ->translate(Vector3::zAxis(3.0f));
             (camera = new MotionBlurCamera(cameraObject))
                 ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-                ->setPerspective(deg(35.0f), 0.001f, 100);
+                ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
             Renderer::setClearColor({0.1f, 0.1f, 0.1f});
             Renderer::setFeature(Renderer::Feature::DepthTest, true);
             Renderer::setFeature(Renderer::Feature::FaceCulling, true);

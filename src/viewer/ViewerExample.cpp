@@ -205,7 +205,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         ->translate(Vector3::zAxis(5));
     (camera = new SceneGraph::Camera3D<>(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(deg(35.0f), 0.001f, 100);
+        ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
