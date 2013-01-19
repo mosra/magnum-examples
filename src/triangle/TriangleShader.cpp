@@ -15,14 +15,13 @@
 
 #include "TriangleShader.h"
 
+#include <Shader.h>
+
 namespace Magnum { namespace Examples {
 
 TriangleShader::TriangleShader() {
-    attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Vertex, "TriangleShader.vert"));
-    attachShader(Magnum::Shader::fromFile(Magnum::Shader::Type::Fragment, "TriangleShader.frag"));
-
-    bindAttribute(Vertex::Location, "vertex");
-    bindAttribute(Color::Location, "color");
+    attachShader(Magnum::Shader::fromFile(Version::GL330, Magnum::Shader::Type::Vertex, "TriangleShader.vert"));
+    attachShader(Magnum::Shader::fromFile(Version::GL330, Magnum::Shader::Type::Fragment, "TriangleShader.frag"));
 
     link();
 }

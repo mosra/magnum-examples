@@ -1,7 +1,20 @@
 namespace Magnum {
-/** @page Examples Examples
+/** @page example-index Examples
+@brief Learn by examples to get started as soon as possible.
 
- - @subpage ExamplesTriangle - @copybrief ExamplesTriangle
+The examples assume that you have at least basic knowledge about graphics
+(what are homogeneous coordinates, what is mesh, vertex, texture...), how
+OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
+(attributes, uniforms, vertex/fragment shaders...). Knowledge of OpenGL API
+itself is not required, as %Magnum wraps the functionality in its own classes.
+
+ - @subpage examples-triangle - @copybrief examples-triangle
+ - @subpage examples-textured-triangle - @copybrief examples-textured-triangle
+ - @subpage examples-cubemap - @copybrief examples-cubemap
+
+@todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
+@todo MotionBlur: handle resizing for the second framebuffer
+@todo MotionBlur: make the canvas non-object (or 2D object)?
 
 @example triangle/TriangleExample.h
 @example triangle/TriangleExample.cpp
@@ -10,8 +23,34 @@ namespace Magnum {
 @example triangle/TriangleShader.cpp
 @example triangle/TriangleShader.vert
 @example triangle/TriangleShader.frag
-@example triangle/Triangle.h
-@example triangle/Triangle.cpp
+
+@example textured-triangle/TexturedTriangleExample.h
+@example textured-triangle/TexturedTriangleExample.cpp
+@example textured-triangle/configure.h.cmake
+@example textured-triangle/CMakeLists.txt
+@example textured-triangle/TexturedTriangleShader.h
+@example textured-triangle/TexturedTriangleShader.cpp
+@example textured-triangle/TexturedTriangleShader.vert
+@example textured-triangle/TexturedTriangleShader.frag
+
+@example cubemap/CubeMapExample.h
+@example cubemap/CubeMapExample.cpp
+@example cubemap/CubeMap.h
+@example cubemap/CubeMap.cpp
+@example cubemap/CubeMapShader.h
+@example cubemap/CubeMapShader.cpp
+@example cubemap/CubeMapShader.vert
+@example cubemap/CubeMapShader.frag
+@example cubemap/Reflector.h
+@example cubemap/Reflector.cpp
+@example cubemap/ReflectorShader.h
+@example cubemap/ReflectorShader.cpp
+@example cubemap/ReflectorShader.vert
+@example cubemap/ReflectorShader.frag
+@example cubemap/Types.h
+@example cubemap/Types.cpp
+@example cubemap/configure.h.cmake
+@example cubemap/CMakeLists.txt
 
 */
 }

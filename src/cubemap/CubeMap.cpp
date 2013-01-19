@@ -16,92 +16,90 @@
 #include "CubeMap.h"
 
 #include <fstream>
+#include <Utility/Resource.h>
+#include <Math/Constants.h>
+#include <CubeMapTexture.h>
+#include <IndexedMesh.h>
+#include <MeshTools/FlipNormals.h>
+#include <MeshTools/Interleave.h>
+#include <MeshTools/CompressIndices.h>
+#include <Primitives/Cube.h>
+#include <SceneGraph/Scene.h>
+#include <SceneGraph/Camera3D.h>
+#include <Trade/AbstractImporter.h>
+#include <Trade/ImageData.h>
 
-#include "Utility/Resource.h"
+#include "CubeMapShader.h"
 
-#include "CubeMapTexture.h"
-#include "Scene.h"
-#include "Camera.h"
-#include "Trade/AbstractImporter.h"
-#include "Primitives/Cube.h"
-#include "MeshTools/FlipNormals.h"
-#include "MeshTools/CompressIndices.h"
-
-#include "Reflector.h"
-
-using namespace std;
 using namespace Corrade::Utility;
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(Trade::AbstractImporter* importer, const string& prefix, Object* parent): Object(parent), texture(0), tarnishTexture(1) {
-    Primitives::Cube cubeData;
-    MeshTools::flipFaceWinding(*cubeData.indices());
-    Buffer* buffer = cube.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*cubeData.vertices(0), Buffer::Usage::StaticDraw);
-    cube.setVertexCount(cubeData.vertices(0)->size());
-    cube.bindAttribute<CubeMapShader::Vertex>(buffer);
-    MeshTools::compressIndices(&cube, Buffer::Usage::StaticDraw, *cubeData.indices());
+CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
+    CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
 
-    scale(Vector3(20.0f));
+    /* Cube mesh */
+    if(!(cube = resourceManager->get<IndexedMesh>("cube"))) {
+        IndexedMesh* mesh = new IndexedMesh;
+        Buffer* buffer = new Buffer;
+        Buffer* indexBuffer = new Buffer;
 
-    /* Textures */
-    Trade::ImageData2D* image;
-    importer->open(prefix + "+x.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::PositiveX, 0, AbstractTexture::Format::RGB, image);
+        Primitives::Cube cubeData;
+        MeshTools::flipFaceWinding(*cubeData.indices());
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cubeData.indices());
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
+        mesh->setPrimitive(cubeData.primitive())
+            ->addVertexBuffer(buffer, CubeMapShader::Position());
 
-    importer->open(prefix + "-x.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::NegativeX, 0, AbstractTexture::Format::RGB, image);
+        resourceManager->set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+    }
 
-    importer->open(prefix + "+y.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::PositiveY, 0, AbstractTexture::Format::RGB, image);
+    /* Cube map texture */
+    if(!(texture = resourceManager->get<CubeMapTexture>("texture"))) {
+        CubeMapTexture* cubeMap = new CubeMapTexture;
 
-    importer->open(prefix + "-y.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::NegativeY, 0, AbstractTexture::Format::RGB, image);
+        cubeMap->setWrapping(CubeMapTexture::Wrapping::ClampToEdge)
+            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
+            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
 
-    importer->open(prefix + "+z.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::PositiveZ, 0, AbstractTexture::Format::RGB, image);
+        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
+        importer->open(prefix + "+x.tga");
 
-    importer->open(prefix + "-z.tga");
-    image = importer->image2D(0);
-    texture.setData(CubeMapTexture::NegativeZ, 0, AbstractTexture::Format::RGB, image);
+        /* Configure texture storage using size of first image */
+        Vector2i size = importer->image2D(0)->size();
+        cubeMap->setStorage(Math::log2(size.min())+1, CubeMapTexture::InternalFormat::RGB8, size);
 
-    texture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
-    texture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
-    texture.setWrapping(Math::Vector3<CubeMapTexture::Wrapping>(CubeMapTexture::Wrapping::ClampToEdge));
-    texture.generateMipmap();
+        cubeMap->setSubImage(CubeMapTexture::PositiveX, 0, {}, importer->image2D(0));
+        importer->open(prefix + "-x.tga");
+        cubeMap->setSubImage(CubeMapTexture::NegativeX, 0, {}, importer->image2D(0));
+        importer->open(prefix + "+y.tga");
+        cubeMap->setSubImage(CubeMapTexture::PositiveY, 0, {}, importer->image2D(0));
+        importer->open(prefix + "-y.tga");
+        cubeMap->setSubImage(CubeMapTexture::NegativeY, 0, {}, importer->image2D(0));
+        importer->open(prefix + "+z.tga");
+        cubeMap->setSubImage(CubeMapTexture::PositiveZ, 0, {}, importer->image2D(0));
+        importer->open(prefix + "-z.tga");
+        cubeMap->setSubImage(CubeMapTexture::NegativeZ, 0, {}, importer->image2D(0));
 
-    /* Tarnish texture */
-    Resource rs("data");
-    std::istringstream in(rs.get("tarnish.tga"));
-    importer->open(in);
-    tarnishTexture.setData(0, AbstractTexture::Format::RGB, importer->image2D(0));
-    tarnishTexture.setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation);
-    tarnishTexture.setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
-    tarnishTexture.setWrapping({CubeMapTexture::Wrapping::ClampToEdge, CubeMapTexture::Wrapping::ClampToEdge});
-    tarnishTexture.generateMipmap();
+        cubeMap->generateMipmap();
 
-    reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(Vector3(0.5f));
-    reflector->translate(Vector3::xAxis(-0.5f));
+        resourceManager->set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
+    }
 
-    reflector = new Reflector(&texture, &tarnishTexture, scene());
-    reflector->scale(Vector3(0.3f));
-    reflector->rotate(deg(37.0f), Vector3::xAxis());
-    reflector->translate(Vector3::xAxis(0.3f));
+    /* Shader */
+    if(!(shader = resourceManager->get<AbstractShaderProgram, CubeMapShader>("shader")))
+        resourceManager->set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, Camera* camera) {
-    texture.bind();
-    shader.use();
-    shader.setModelViewProjectionMatrixUniform(camera->projectionMatrix()*transformationMatrix);
-    shader.setTextureUniform(&texture);
-    cube.draw();
+void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) {
+    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix)
+        ->use();
+
+    texture->bind(CubeMapShader::TextureLayer);
+
+    cube->draw();
 }
 
 }}

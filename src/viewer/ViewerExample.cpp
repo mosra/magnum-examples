@@ -17,22 +17,25 @@
 #include <unordered_map>
 
 #include "PluginManager/PluginManager.h"
-#include "Scene.h"
-#include "Camera.h"
+#include <Math/Constants.h>
+#include <IndexedMesh.h>
+#include <DefaultFramebuffer.h>
+#include <Renderer.h>
 #include "Trade/AbstractImporter.h"
-#include "Trade/MeshData.h"
-#include "Trade/MeshObjectData.h"
+#include "Trade/MeshData3D.h"
+#include "Trade/MeshObjectData3D.h"
 #include "Trade/SceneData.h"
 #include "MeshTools/Tipsify.h"
 #include "MeshTools/Interleave.h"
 #include "MeshTools/CompressIndices.h"
+#include "SceneGraph/Scene.h"
+#include <SceneGraph/Camera3D.h>
 #include "Shaders/PhongShader.h"
 
 #include "FpsCounterExample.h"
 #include "ViewedObject.h"
 #include "configure.h"
 
-using namespace std;
 using namespace Corrade::PluginManager;
 using namespace Magnum::Shaders;
 using namespace Magnum::Trade;
@@ -45,47 +48,55 @@ class ViewerExample: public FpsCounterExample {
         ViewerExample(int& argc, char** argv);
 
         ~ViewerExample() {
-            for(auto i: meshes) delete i.second;
+            for(auto i: meshes) {
+                delete std::get<0>(i.second);
+                delete std::get<1>(i.second);
+                delete std::get<2>(i.second);
+            }
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        inline void viewportEvent(const Vector2i& size) override {
+            defaultFramebuffer.setViewport({{}, size});
             camera->setViewport(size);
             FpsCounterExample::viewportEvent(size);
         }
 
-        void drawEvent() {
-            camera->draw();
+        void drawEvent() override {
+            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+            camera->draw(drawables);
             swapBuffers();
 
             if(fpsCounterEnabled()) redraw();
         }
 
-        void keyEvent(Key key, const Math::Vector2<int>& position) {
-            switch(key) {
-                case Key::Up:
+        void keyPressEvent(KeyEvent& event) override {
+            switch(event.key()) {
+                case KeyEvent::Key::Up:
                     o->rotate(deg(10.0f), Vector3::xAxis(-1));
                     break;
-                case Key::Down:
+                case KeyEvent::Key::Down:
                     o->rotate(deg(10.0f), Vector3::xAxis(1));
                     break;
-                case Key::Left:
-                    o->rotate(deg(10.0f), Vector3::yAxis(-1), Object::Transformation::Local);
+                case KeyEvent::Key::Left:
+                    o->rotate(deg(10.0f), Vector3::yAxis(-1), SceneGraph::TransformationType::Local);
                     break;
-                case Key::Right:
-                    o->rotate(deg(10.0f), Vector3::yAxis(1), Object::Transformation::Local);
+                case KeyEvent::Key::Right:
+                    o->rotate(deg(10.0f), Vector3::yAxis(1), SceneGraph::TransformationType::Local);
                     break;
-                case Key::PageUp:
-                    camera->translate(Vector3::zAxis(-0.5), Object::Transformation::Local);
+                case KeyEvent::Key::PageUp:
+                    cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
                     break;
-                case Key::PageDown:
-                    camera->translate(Vector3::zAxis(0.5), Object::Transformation::Local);
+                case KeyEvent::Key::PageDown:
+                    cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
                     break;
-                case Key::Home:
+                #ifndef MAGNUM_TARGET_GLES
+                case KeyEvent::Key::Home:
                     Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
                     wireframe = !wireframe;
                     break;
-                case Key::End:
+                #endif
+                case KeyEvent::Key::End:
                     if(fpsCounterEnabled()) printCounterStatistics();
                     else resetCounter();
 
@@ -97,25 +108,22 @@ class ViewerExample: public FpsCounterExample {
             redraw();
         }
 
-        void mouseEvent(MouseButton button, MouseState state, const Math::Vector2<int>& position) {
-            switch(button) {
-                case MouseButton::Left:
-                    if(state == MouseState::Down) previousPosition = positionOnSphere(position);
-                    else previousPosition = Vector3();
+        void mousePressEvent(MouseEvent& event) override {
+            switch(event.button()) {
+                case MouseEvent::Button::Left:
+                    previousPosition = positionOnSphere(event.position());
                     break;
-                case MouseButton::WheelUp:
-                case MouseButton::WheelDown: {
-                    if(state == MouseState::Up) return;
-
+                case MouseEvent::Button::WheelUp:
+                case MouseEvent::Button::WheelDown: {
                     /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = camera->transformation()[3].z()-0-camera->near();
+                    GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
 
                     /* Move 15% of the distance back or forward */
-                    if(button == MouseButton::WheelUp)
+                    if(event.button() == MouseEvent::Button::WheelUp)
                         distance *= 1 - 1/0.85f;
                     else
                         distance *= 1 - 0.85f;
-                    camera->translate(Vector3::zAxis(distance), Object::Transformation::Local);
+                    cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
 
                     redraw();
                     break;
@@ -124,15 +132,20 @@ class ViewerExample: public FpsCounterExample {
             }
         }
 
-        void mouseMoveEvent(const Math::Vector2<int>& position) {
-            Vector3 currentPosition = positionOnSphere(position);
+        void mouseReleaseEvent(MouseEvent& event) override {
+            if(event.button() == MouseEvent::Button::Left)
+                previousPosition = Vector3();
+        }
+
+        void mouseMoveEvent(MouseMoveEvent& event) override {
+            Vector3 currentPosition = positionOnSphere(event.position());
 
             Vector3 axis = Vector3::cross(previousPosition, currentPosition);
 
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-            GLfloat angle = acos(Vector3::dot(previousPosition, currentPosition));
-            o->rotate(angle, axis);
+            GLfloat angle = std::acos(Vector3::dot(previousPosition, currentPosition));
+            o->rotate(angle, axis.normalized());
 
             previousPosition = currentPosition;
 
@@ -140,25 +153,27 @@ class ViewerExample: public FpsCounterExample {
         }
 
     private:
-        Vector3 positionOnSphere(const Math::Vector2<int>& _position) const {
-            Math::Vector2<GLsizei> viewport = camera->viewport();
+        Vector3 positionOnSphere(const Vector2i& _position) const {
+            Vector2i viewport = camera->viewport();
             Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
                              _position.y()*2.0f/viewport.y() - 1.0f);
 
             GLfloat length = position.length();
             Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
-            result.setY(-result.y());
+            result.y() *= -1.0f;
             return result.normalized();
         }
 
-        void addObject(AbstractImporter* colladaImporter, Object* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId);
+        void addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId);
 
-        Scene scene;
-        Camera* camera;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
         PhongShader shader;
-        Object* o;
-        unordered_map<size_t, IndexedMesh*> meshes;
-        size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
+        Object3D* o;
+        std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
+        std::size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         bool wireframe;
         Vector3 previousPosition;
 };
@@ -166,46 +181,48 @@ class ViewerExample: public FpsCounterExample {
 ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "file.dae";
-        exit(0);
+        std::exit(0);
     }
 
     /* Instance ColladaImporter plugin */
     PluginManager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != AbstractPluginManager::LoadOk) {
         Error() << "Could not load ColladaImporter plugin";
-        exit(1);
+        std::exit(1);
     }
-    unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    std::unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
-        exit(2);
+        std::exit(2);
     }
-    if(!(colladaImporter->features() & AbstractImporter::OpenFile)) {
+    if(!(colladaImporter->features() & AbstractImporter::Feature::OpenFile)) {
         Error() << "ColladaImporter cannot open files";
-        exit(3);
+        std::exit(3);
     }
 
     /* Every scene needs a camera */
-    camera = new Camera(&scene);
-    camera->setPerspective(deg(35.0f), 0.001f, 100);
-    camera->translate(Vector3::zAxis(5));
-    Camera::setFeature(Camera::Feature::DepthTest, true);
-    Camera::setFeature(Camera::Feature::FaceCulling, true);
+    (cameraObject = new Object3D(&scene))
+        ->translate(Vector3::zAxis(5));
+    (camera = new SceneGraph::Camera3D<>(cameraObject))
+        ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
+    Renderer::setFeature(Renderer::Feature::DepthTest, true);
+    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     Debug() << "Opening file" << argv[1];
 
     /* Load file */
     if(!colladaImporter->open(argv[1]))
-        exit(4);
+        std::exit(4);
 
     if(colladaImporter->sceneCount() == 0)
-        exit(5);
+        std::exit(5);
 
     /* Map with materials */
-    unordered_map<size_t, PhongMaterialData*> materials;
+    std::unordered_map<std::size_t, PhongMaterialData*> materials;
 
     /* Default object, parent of all (for manipulation) */
-    o = new Object(&scene);
+    o = new Object3D(&scene);
 
     Debug() << "Adding default scene...";
 
@@ -213,7 +230,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
-    for(size_t objectId: scene->children())
+    for(std::size_t objectId: scene->children3D())
         addObject(colladaImporter.get(), o, materials, objectId);
 
     Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
@@ -226,72 +243,69 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     delete colladaImporter.release();
 }
 
-void ViewerExample::addObject(AbstractImporter* colladaImporter, Object* parent, unordered_map<size_t, PhongMaterialData*>& materials, size_t objectId) {
-    ObjectData* object = colladaImporter->object(objectId);
+void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId) {
+    ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
-    if(object->instanceType() == ObjectData::InstanceType::Mesh) {
+    if(object->instanceType() == ObjectData3D::InstanceType::Mesh) {
         ++objectCount;
 
         /* Use already processed mesh, if exists */
         IndexedMesh* mesh;
         auto found = meshes.find(object->instanceId());
-        if(found != meshes.end()) mesh = found->second;
+        if(found != meshes.end()) mesh = std::get<2>(found->second);
 
         /* Or create a new one */
         else {
             ++meshCount;
 
             mesh = new IndexedMesh;
-            meshes.insert(make_pair(object->instanceId(), mesh));
+            Buffer* buffer = new Buffer;
+            Buffer* indexBuffer = new Buffer;
+            meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
 
-            MeshData* data = colladaImporter->mesh(object->instanceId());
-            if(!data || !data->indices() || !data->vertexArrayCount() || !data->normalArrayCount())
-                exit(6);
+            MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
+            if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
+                std::exit(6);
 
-            vertexCount += data->vertices(0)->size();
+            vertexCount += data->positions(0)->size();
             triangleCount += data->indices()->size()/3;
 
             /* Optimize vertices */
             Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
-            MeshTools::tipsify(*data->indices(), data->vertices(0)->size(), 24);
+            MeshTools::tipsify(*data->indices(), data->positions(0)->size(), 24);
 
             /* Interleave mesh data */
-            Buffer* buffer = mesh->addBuffer(Mesh::BufferType::Interleaved);
-            mesh->bindAttribute<PhongShader::Vertex>(buffer);
-            mesh->bindAttribute<PhongShader::Normal>(buffer);
-            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->vertices(0), *data->normals(0));
+            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->positions(0), *data->normals(0));
+            mesh->addInterleavedVertexBuffer(buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Compress indices */
-            MeshTools::compressIndices(mesh, Buffer::Usage::StaticDraw, *data->indices());
+            MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data->indices());
         }
 
         /* Use already processed material, if exists */
         PhongMaterialData* material;
-        auto materialFound = materials.find(static_cast<MeshObjectData*>(object)->material());
+        auto materialFound = materials.find(static_cast<MeshObjectData3D*>(object)->material());
         if(materialFound != materials.end()) material = materialFound->second;
 
         /* Else get material or create default one */
         else {
             ++materialCount;
 
-            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData*>(object)->material()));
-            if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData3D*>(object)->material()));
+            if(!material) material = new PhongMaterialData("", {0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
         }
 
         /* Add object */
-        Object* o = new ViewedObject(mesh, material, &shader, parent);
+        Object3D* o = new ViewedObject(mesh, material, &shader, parent, &drawables);
         o->setTransformation(object->transformation());
     }
 
     /* Recursively add children */
-    for(size_t id: object->children())
+    for(std::size_t id: object->children())
         addObject(colladaImporter, o, materials, id);
 }
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::ViewerExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::ViewerExample)

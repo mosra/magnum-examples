@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_TriangleExample_h
-#define Magnum_Examples_TriangleExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,28 +13,17 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
+#include "Types.h"
+
+#include <AbstractShaderProgram.h>
 #include <Buffer.h>
-#include <Mesh.h>
-#include <Platform/GlutApplication.h>
+#include <CubeMapTexture.h>
+#include <IndexedMesh.h>
+#include <Texture.h>
+#include <Trade/AbstractImporter.h>
 
-#include "TriangleShader.h"
+namespace Magnum {
 
-namespace Magnum { namespace Examples {
+template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 
-class TriangleExample: public Platform::GlutApplication {
-    public:
-        TriangleExample(int& argc, char** argv);
-
-    protected:
-        void viewportEvent(const Vector2i& size) override;
-        void drawEvent() override;
-
-    private:
-        Buffer buffer;
-        Magnum::Mesh mesh;
-        TriangleShader shader;
-};
-
-}}
-
-#endif
+}

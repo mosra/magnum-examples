@@ -13,15 +13,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Scene.h"
-#include "Contexts/GlutContext.h"
+#include <Math/Constants.h>
+#include <DefaultFramebuffer.h>
+#include <IndexedMesh.h>
+#include <Renderer.h>
+#include "SceneGraph/Scene.h"
 #include "MeshTools/CompressIndices.h"
 #include "MeshTools/Interleave.h"
+#include <Platform/GlutApplication.h>
 #include "Primitives/Icosphere.h"
 #include "Shaders/PhongShader.h"
 
 #include "MotionBlurCamera.h"
-#include "IndexedMesh.h"
 #include "Icosphere.h"
 
 using namespace Corrade;
@@ -29,85 +32,88 @@ using namespace Magnum::Shaders;
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurExample: public Contexts::GlutContext {
+class MotionBlurExample: public Platform::GlutApplication {
     public:
-        MotionBlurExample(int& argc, char** argv): GlutContext(argc, argv, "Motion blur example") {
-            camera = new MotionBlurCamera(&scene);
-            camera->setClearColor({0.1f, 0.1f, 0.1f});
-            camera->setPerspective(deg(35.0f), 0.001f, 100);
-            camera->translate(Vector3::zAxis(3.0f));
-            Camera::setFeature(Camera::Feature::DepthTest, true);
-            Camera::setFeature(Camera::Feature::FaceCulling, true);
+        MotionBlurExample(int& argc, char** argv): GlutApplication(argc, argv, "Motion blur example") {
+            (cameraObject = new Object3D(&scene))
+                ->translate(Vector3::zAxis(3.0f));
+            (camera = new MotionBlurCamera(cameraObject))
+                ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+                ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
+            Renderer::setClearColor({0.1f, 0.1f, 0.1f});
+            Renderer::setFeature(Renderer::Feature::DepthTest, true);
+            Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
             Primitives::Icosphere<3> data;
-            MeshTools::compressIndices(&mesh, Buffer::Usage::StaticDraw, *data.indices());
-            Buffer* buffer = mesh.addBuffer(Mesh::BufferType::Interleaved);
-            MeshTools::interleave(&mesh, buffer, Buffer::Usage::StaticDraw, *data.vertices(0), *data.normals(0));
-            mesh.bindAttribute<PhongShader::Vertex>(buffer);
-            mesh.bindAttribute<PhongShader::Normal>(buffer);
+            MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
+            MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, *data.positions(0), *data.normals(0));
+            mesh.addInterleavedVertexBuffer(&buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Add spheres to the scene */
-            Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene);
+            Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
 
-            spheres[0] = new Object(&scene);
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            spheres[0] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0]);
+            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
             i->translate(Vector3::yAxis(0.25f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[1] = new Object(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            spheres[1] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
             i->translate(Vector3::yAxis(0.50f));
             i->rotate(deg(240.0f), Vector3::zAxis());
 
-            spheres[2] = new Object(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            spheres[2] = new Object3D(&scene);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
             i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2]);
+            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
             i->translate(Vector3::yAxis(0.75f));
             i->rotate(deg(240.0f), Vector3::zAxis());
         }
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        inline void viewportEvent(const Vector2i& size) {
+            defaultFramebuffer.setViewport({{}, size});
             camera->setViewport(size);
         }
 
         void drawEvent() {
-            camera->draw();
+            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+            camera->draw(drawables);
             swapBuffers();
 
-            camera->rotate(deg(1.0f), Vector3::yAxis());
-            spheres[0]->rotate(deg(-2.0f), Vector3::zAxis());
-            spheres[1]->rotate(deg(1.0f), Vector3::zAxis());
-            spheres[2]->rotate(deg(-0.5f), Vector3::zAxis());
+            cameraObject->rotateX(deg(1.0f));
+            spheres[0]->rotateZ(deg(-2.0f));
+            spheres[1]->rotateZ(deg(1.0f));
+            spheres[2]->rotateZ(deg(-0.5f));
             Utility::sleep(40);
             redraw();
         }
 
     private:
-        Scene scene;
-        Camera* camera;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
+        Buffer buffer;
+        Buffer indexBuffer;
         IndexedMesh mesh;
         PhongShader shader;
-        Object* spheres[3];
+        Object3D* spheres[3];
 };
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::MotionBlurExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::MotionBlurExample)

@@ -15,7 +15,10 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
+#include <Color.h>
+#include <SceneGraph/Drawable.h>
+
+#include "Types.h"
 
 namespace Magnum {
 
@@ -27,18 +30,18 @@ namespace Shaders {
 
 namespace Examples {
 
-class Icosphere: public Object {
+class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object* parent = nullptr);
+        Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
 
         inline void advance(GLfloat angle) { rotate(angle, Vector3::zAxis()); }
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
 
     private:
         Mesh* mesh;
         Shaders::PhongShader* shader;
-        Vector3 color;
+        Color3<GLfloat> color;
 };
 
 }}

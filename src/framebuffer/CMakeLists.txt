@@ -1,11 +1,25 @@
-find_package(Magnum REQUIRED GlutContext Primitives)
+find_package(Magnum REQUIRED
+    GlutApplication
+    Primitives
+    SceneGraph)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-corrade_add_resource(ColorCorrectionShader shader ColorCorrectionShader.frag ColorCorrectionShader.vert)
+corrade_add_resource(ColorCorrectionShader shader
+    ColorCorrectionShader.frag
+    ColorCorrectionShader.vert)
 
-add_executable(framebufferExample FramebufferExample.cpp Billboard.cpp ColorCorrectionCamera.cpp ColorCorrectionShader.cpp ${ColorCorrectionShader})
-target_link_libraries(framebufferExample ${CORRADE_UTILITY_LIBRARY} ${CORRADE_PLUGINMANAGER_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_GLUTCONTEXT_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARY})
+add_executable(framebufferExample
+    FramebufferExample.cpp
+    ColorCorrectionCamera.cpp
+    ColorCorrectionShader.cpp
+    Billboard.cpp
+    ${ColorCorrectionShader})
+target_link_libraries(framebufferExample
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES})

@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TriangleExample_h
-#define Magnum_Examples_TriangleExample_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,27 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Buffer.h>
-#include <Mesh.h>
-#include <Platform/GlutApplication.h>
+#include <SceneGraph/MatrixTransformation2D.h>
 
-#include "TriangleShader.h"
+namespace Magnum {
 
-namespace Magnum { namespace Examples {
+namespace SceneGraph {
+    template<class> class Scene;
+}
 
-class TriangleExample: public Platform::GlutApplication {
-    public:
-        TriangleExample(int& argc, char** argv);
+namespace Examples {
 
-    protected:
-        void viewportEvent(const Vector2i& size) override;
-        void drawEvent() override;
-
-    private:
-        Buffer buffer;
-        Magnum::Mesh mesh;
-        TriangleShader shader;
-};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D<>> Scene2D;
 
 }}
 

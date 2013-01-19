@@ -15,26 +15,21 @@
 
 #include "CubeMapShader.h"
 
-#include "Utility/Resource.h"
-
-using namespace Corrade::Utility;
+#include <Utility/Resource.h>
+#include <Shader.h>
 
 namespace Magnum { namespace Examples {
 
 CubeMapShader::CubeMapShader() {
-    Resource rs("data");
-    Shader vertexShader(Shader::fromData(Shader::Type::Vertex, rs.get("CubeMapShader.vert")));
-    Shader fragmentShader(Shader::fromData(Shader::Type::Fragment, rs.get("CubeMapShader.frag")));
-
-    attachShader(vertexShader);
-    attachShader(fragmentShader);
-
-    bindAttribute(Vertex::Location, "vertex");
+    Corrade::Utility::Resource rs("data");
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("CubeMapShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("CubeMapShader.frag")));
 
     link();
 
-    modelViewProjectionMatrixUniform = uniformLocation("modelViewProjectionMatrix");
-    textureUniform = uniformLocation("textureData");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+
+    setUniform(uniformLocation("textureData"), TextureLayer);
 }
 
 }}

@@ -15,26 +15,37 @@
 
 #include "TriangleExample.h"
 
-#include "Triangle.h"
+#include <Math/Vector3.h>
+#include <DefaultFramebuffer.h>
 
 namespace Magnum { namespace Examples {
 
-TriangleExample::TriangleExample(int& argc, char** argv): GlutContext(argc, argv, "Triangle example"), camera(&scene) {
-    new Triangle(&scene);
+TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Triangle example") {
+    constexpr static Magnum::Vector3 data[] = {
+        {-0.5f, -0.5f, 1.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
+        { 0.5f, -0.5f, 1.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
+        { 0.0f,  0.5f, 1.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
+    };
+
+    buffer.setData(data, Magnum::Buffer::Usage::StaticDraw);
+    mesh.setPrimitive(Mesh::Primitive::Triangles)
+        ->setVertexCount(3)
+        ->addInterleavedVertexBuffer(&buffer, 0, TriangleShader::Position(), TriangleShader::Color());
 }
 
-void TriangleExample::viewportEvent(const Magnum::Math::Vector2<GLsizei>& size) {
-    camera.setViewport(size);
+void TriangleExample::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TriangleExample::drawEvent() {
-    camera.draw();
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+
+    shader.use();
+    mesh.draw();
+
     swapBuffers();
 }
 
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::TriangleExample e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::TriangleExample)

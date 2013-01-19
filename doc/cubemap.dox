@@ -1,0 +1,297 @@
+namespace Magnum {
+/** @page examples-cubemap Cube map
+@brief Scene graph, resource manager and pre-made primitives.
+
+- Previous example: @ref examples-textured-triangle
+
+@image html cubemap/cubemap.png
+@image latex cubemap/cubemap.png
+
+@tableofcontents
+
+In this example we will build our first 3D scene from two reflective spheres
+and one textured cube, simulating real world environment. This example
+includes these new features:
+- Using SceneGraph for managing objects, their relations and transformations.
+- Employing ResourceManager for convenient resource management instead of
+  passing them around manually.
+- Using @ref IndexedMesh "indexed meshes" and building them from pre-made
+  @ref Primitives "primitives".
+- Handling keyboard input for scene interactivity.
+
+@section examples-cubemap-scenegraph Scene graph
+
+In previous two examples we managed our scene manually, because there was only
+one object - the triangle. However, as object count increases, it's better to
+have them in scene graph. Scene graph consists of three parts:
+
+ - objects, providing parent/children hierarchy
+ - transformations, implementing particular transformation type
+ - features, providing rendering capabilities, collision detection, physics
+   etc.
+
+Basically there is one root @ref SceneGraph::Scene "Scene" object and one
+or more @ref SceneGraph::Object "Object" instances. Each object have its
+parent and list of its children. The hierarchy is also for memory management -
+when destroying any object, all its children are recursively destroyed too.
+
+Each particular scene graph uses some transformation implementation, which
+maintains relative transformation of each object and provides convenience
+functions for most used transformations, like translation, rotation and
+scaling.
+
+Features are added to objects to make them do something useful. The most
+common feature is @ref SceneGraph::Drawable "Drawable", which when
+implemented, allows the object to be drawn on screen. Each Drawable is part of
+some @ref SceneGraph::DrawableGroup "DrawableGroup" and the rendering itself
+is done using @ref SceneGraph::Camera3D "Camera". Camera is a feature attached
+to some object in the scene and by calling
+@ref SceneGraph::AbstractCamera::draw() "draw()" you can draw particular
+DrawableGroup on the screen. Cameras have also functions for setting up
+@ref SceneGraph::Camera3D::setPerspective() "projection" and
+@ref SceneGraph::Camera3D::setAspectRatioPolicy() "aspect ratio correction".
+
+%Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
+the same and differs only in obvious ways (e.g. perspective projection is
+not available in 2D, object stacking order is not available in 3D).
+
+See @ref scenegraph for more information.
+
+@section examples-cubemap-resourcemanager Resource manager
+
+In most scenes it is common that one resource (e.g. shader or texture) is
+shared by more than one object. One possible approach would be to create and
+store the resources elsewhere (possibly in main application class) and then
+pass references to them to relevant objects. But this would decouple the
+objects from (part of) their data and cause resource loading class to be
+unnecessarily large. Managing temporary resources, which are used only part of
+the time, would be also rather difficult.
+
+@ref ResourceManager "Resource manager" allows storing of data of defined
+types under specified keys and retrieving them later. The data can be either
+persistent during whole lifetime of resource manager or have limited lifetime,
+either by manual freeing of unused data or automatic reference counting.
+
+@section examples-cubemap-setup Setting up resource manager and populating scene graph
+
+Our resource manager will store vertex and index buffers (explained later),
+sphere and cube meshe, world and tarnish texture and shaders. We also need
+importer for loading the images. We will `typedef` the manager for easier
+usage later.
+@dontinclude cubemap/Types.h
+@skipline typedef ResourceManager
+
+For this example we will use scene graph with @ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D"
+transformation implementation. We typedef the classes to save us some typing:
+@skip typedef SceneGraph::Object
+@until typedef SceneGraph::Scene
+
+Our main class contains instance of our resource manager, scene, group of all
+drawable objects, object holding the camera and camera feature. We will also
+handle keyboard input for moving around the scene.
+@dontinclude cubemap/CubeMapExample.h
+@skip class CubeMapExample
+@until };
+
+In constructor we enable depth testing for proper rendering and for
+performance reasons enable also back face culling. It means that all
+back-facing polygons (with clockwise vertex order) are excluded from rendering
+directly instead of waiting for depth test to discard them. We also configure
+our camera - we parent the object to the scene and move it to desired place,
+add camera feature to it and setup perspective projection.
+@dontinclude cubemap/CubeMapExample.cpp
+@skip CubeMapExample::CubeMapExample
+@until ->setPerspective
+
+Next we will load plugin for importing TGA images, like in previous example.
+@skip PluginManager
+@until }
+
+We will put the instance into resource manager, so it will be available
+elsewhere when creating the textures. We don't need it for the whole lifetime
+of the application, so we set the policy to `Manual` and delete it later.
+@skipline resourceManager
+
+We will now add the cube map and two reflective spheres to the scene (and add
+them also to our group of drawables) and move them to desired locations. Their
+constructors will do the remaining work, which will be discussed later.
+@skip new CubeMap
+@until translate(Vector3::xAxis(0.3f))
+
+Lastly we free the importer plugin, as it won't be needed anymore.
+@skip resourceManager.free
+@until }
+
+Function `viewportEvent()` now passes viewport size to camera, so it can
+adjust aspect ratio correction to new window size, `drawEvent()` delegates all
+drawing to our camera, which renders everything what we added to the drawable
+group previously.
+@skip CubeMapExample::viewportEvent
+@until }
+@until }
+@until }
+
+Our keyboard handling function will rotate the camera object around the
+spheres on arrow key press. We then call
+@ref Platform::GlutApplication::redraw() "redraw()" to present the changes in
+the scene to the user.
+@skip CubeMapExample::keyPressEvent
+@until }
+@until }
+
+- @ref cubemap/Types.h
+- @ref cubemap/Types.cpp
+- @ref cubemap/CubeMapExample.h
+- @ref cubemap/CubeMapExample.cpp
+
+@section examples-cubemap-cubemap Cube map object
+
+Cube map object will surround our scene with environment texture. It will be
+drawn on the screen, so we need to add Drawable feature and implement its
+@ref SceneGraph::Drawable::draw() "draw()" function. We also need mesh, shader
+and texture resources.
+@dontinclude cubemap/CubeMap.h
+@skip class CubeMap:
+@until };
+
+The constructor takes three arguments - the first is path prefix for cube map
+files, so the users can supply their own images, the second is pointer to
+parent object, which we pass to @ref SceneGraph::Object "Object" constructor,
+the third is drawable group the drawable will be part of. We pass it along
+with pointer to containing object to @ref SceneGraph::Drawable "Drawable"
+constructor.
+@dontinclude cubemap/CubeMap.cpp
+@skip CubeMap::CubeMap
+@until resourceManager
+
+Next we ask for each resource and load it if it isn't already present. The
+first is cube mesh. %Magnum has collection of basic primitives, so we don't
+have to create it from scratch, but use pre-made Primitives::Cube class. Each
+primitive is subclass of @ref Trade::MeshData3D "Trade::MeshData*D", which
+provides access to separate position, normal, texture and other arrays. Most
+of the primitives are indexed meshes to avoid unnecessary data repetition,
+which means that we need to use IndexedMesh class and next to vertex buffer
+have also the index buffer. Index array consists of unsigned integers and if
+the vertex array isn't too large, we don't need the full 32-bit range for
+indexing it. MeshTools::compressIndices() will do the work for us - store the
+index array in the smallest possible type, fill index buffer and set proper
+index count and type.
+
+In this example we are looking at the cube from inside and we enabled
+back-face culling earlier, thus the cube faces would not be visible, unless we
+solve it by calling MeshTools::flipFaceWinding(). Last thing is to fill vertex
+array of the mesh with actual vertex positions. We also must not forget to set
+mesh primitive, add the vertex buffer and specify attribute locations to use
+with our shader.
+@skip resourceManager->get<IndexedMesh>("cube")
+@until addVertexBuffer
+@note You can conveniently use MeshTools::interleave() even if you have only
+    one attribute array. The function is specialized for this case and causes
+    no performance loss in comparison to filling the buffer and setting vertex
+    count directly.
+
+We then save the completed mesh to resource manager so it can be used
+elsewhere.
+@skip resourceManager->set
+@until }
+
+Next is the cube map texture. If it isn't already available, we load it from
+six different TGA files using the importer which was instanced in
+CubeMapExample class earlier and save the complete texture to resource
+manager.
+@skip resourceManager->get<CubeMapTexture>("texture")
+@until }
+
+Last resource is the shader. The shader class doesn't contain anything new to
+explain, so we don't discuss it here.
+@skip resourceManager->get<AbstractShaderProgram, CubeMapShader>("shader")
+@until }
+
+The drawing function gives us absolute object transformation and pointer to
+the camera for retrieving projection matrix (which handles perspective and
+aspect ratio correction). We mark the shader for use, set transformation and
+projection uniform, bind the texture to specified layer and draw the mesh.
+@skip CubeMap::draw
+@until }
+
+- @ref cubemap/CubeMap.h
+- @ref cubemap/CubeMap.cpp
+- @ref cubemap/CubeMapShader.h
+- @ref cubemap/CubeMapShader.cpp
+- @ref cubemap/CubeMapShader.vert
+- @ref cubemap/CubeMapShader.frag
+
+@section examples-cubemap-reflector Reflector object
+
+The spheres will reflect the environment, so next to the mesh they need the
+environment texture and their own special shader. They will have also another
+"tarnish" texturing layer to make them look less artificial.
+@dontinclude cubemap/Reflector.h
+@skip class Reflector
+@until };
+
+In the constructor we will create the mesh from @ref Primitives::UVSphere
+"UVSphere" primitive, which provides also simple latitude/longitude texture
+mapping for our tarnish texture. Vertex positions will act also as normals, so
+we don't need to have them as separate attribute, saving some memory.
+@dontinclude cubemap/Reflector.cpp
+@skip Reflector::Reflector
+@until }
+
+Next we will load our tarnish texture from compiled-in resource, reusing
+TGA importer again, and our special reflector shader.
+@skip resourceManager->get<Texture2D>("tarnish-texture")
+@until }
+
+Lastly we acquire environment texture resource, which was created in `CubeMap`
+object earlier.
+@skipline resourceManager->get<CubeMapTexture>("texture")
+@skipline }
+@note Actually it doesn't matter if the resource is created earlier or later
+    as long as the data aren't accessed before the resource contains them. We
+    access them only in `draw()` function and by that time all resources are
+    already loaded.
+
+THe drawing function is a bit more involved, but except for more shader
+uniforms and some shader math there isn't anything particularly new, so we
+won't discuss `ReflectorShader` class either. You can however try to change
+some uniform parameters to see what has changed.
+@skip Reflector::draw
+@until }
+
+- @ref cubemap/Reflector.h
+- @ref cubemap/Reflector.cpp
+- @ref cubemap/ReflectorShader.h
+- @ref cubemap/ReflectorShader.cpp
+- @ref cubemap/ReflectorShader.vert
+- @ref cubemap/ReflectorShader.frag
+
+@section examples-cubemap-compilation Compilation and running
+
+The compilation is similar to previous examples. We find %Magnum package,
+and now require also Primitives and SceneGraph libraries:
+@dontinclude cubemap/CMakeLists.txt
+@skip find_package
+@until )
+
+Then we create and include configuration file for plugin manager, like in
+previous example:
+@skip configure_file
+@until include_directories
+
+Then we compile our resources - both shaders and tarnish texture:
+@skip corrade_add_resource
+@until )
+
+Lastly we compile the executable and link it to all needed %Magnum libraries:
+@skip add_executable
+@until )
+@until )
+
+Running the example in source directory will use attached TGA files for
+environment map. You can pass path to your own images as argument.
+
+- @ref cubemap/configure.h.cmake
+- @ref cubemap/CMakeLists.txt
+*/
+}

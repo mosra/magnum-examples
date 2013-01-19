@@ -15,18 +15,27 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Contexts/GlutContext.h"
-
 #include <chrono>
+#include <Query.h>
 
-#include "Query.h"
+#ifndef MAGNUM_TARGET_GLES
+#include <Platform/GlutApplication.h>
+#else
+#include <Platform/XEglApplication.h>
+#endif
 
 namespace Magnum { namespace Examples {
 
+#ifndef MAGNUM_TARGET_GLES
+typedef Platform::GlutApplication Application;
+#else
+typedef Platform::XEglApplication Application;
+#endif
+
 /** @brief Base class for examples with FPS counter */
-class FpsCounterExample : public Contexts::GlutContext {
+class FpsCounterExample: public Application {
     public:
-        inline FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Math::Vector2<GLsizei>& size = Math::Vector2<GLsizei>(800, 600)): GlutContext(argc, argv, name, size), frames(0), totalFrames(0), primitives(0), totalPrimitives(0), samples(0), totalSamples(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false), primitiveEnabled(false), sampleEnabled(false) {}
+        FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Vector2i& size = Vector2i(800, 600));
 
         /**
          * @brief Minimal duration between printing FPS to console
@@ -55,6 +64,7 @@ class FpsCounterExample : public Contexts::GlutContext {
          */
         void setFpsCounterEnabled(bool enabled);
 
+        #ifndef MAGNUM_TARGET_GLES
         /** @brief Whether primitive counter is enabled */
         inline bool primitiveCounterEnabled() const { return primitiveEnabled; }
 
@@ -77,6 +87,7 @@ class FpsCounterExample : public Contexts::GlutContext {
          * primitive counter.
          */
         void setSampleCounterEnabled(bool enabled);
+        #endif
 
         /**
          * @brief Reset counter
@@ -103,7 +114,7 @@ class FpsCounterExample : public Contexts::GlutContext {
          * @attention You have to call this function from your viewportEvent()
          * reimplementation!
          */
-        void viewportEvent(const Math::Vector2<GLsizei>& size) {
+        void viewportEvent(const Vector2i& size) override {
             resetCounter();
             viewport = size;
         }
@@ -114,17 +125,20 @@ class FpsCounterExample : public Contexts::GlutContext {
          * Measures FPS in given duration and prints statistics to
          * console.
          */
-        void redraw();
+        void redraw() override;
 
     private:
-        size_t frames, totalFrames;
-        GLuint primitives, totalPrimitives, samples, totalSamples;
+        std::size_t frames, totalFrames;
         double minimalDuration, totalDuration;
-        bool fpsEnabled, primitiveEnabled, sampleEnabled;
+        bool fpsEnabled;
+        #ifndef MAGNUM_TARGET_GLES
+        GLuint primitives, totalPrimitives, samples, totalSamples;
+        bool primitiveEnabled, sampleEnabled;
         Query primitiveQuery;
         SampleQuery sampleQuery;
+        #endif
         std::chrono::high_resolution_clock::time_point before;
-        Math::Vector2<GLsizei> viewport;
+        Vector2i viewport;
 };
 
 }}

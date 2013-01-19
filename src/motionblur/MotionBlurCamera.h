@@ -15,57 +15,53 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Camera.h"
-
-#include "Buffer.h"
-#include "BufferedImage.h"
+#include <BufferImage.h>
 #include "Texture.h"
 #include "AbstractShaderProgram.h"
 #include "Mesh.h"
+#include <SceneGraph/Camera3D.h>
+
+#include "Types.h"
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurCamera: public Camera {
+class MotionBlurCamera: public SceneGraph::Camera3D<> {
     public:
-        static const size_t FrameCount = 7;
+        static const GLint FrameCount = 7;
 
-        MotionBlurCamera(Object* parent = nullptr);
+        MotionBlurCamera(SceneGraph::AbstractObject3D<>* object);
 
         ~MotionBlurCamera();
 
-        void setViewport(const Math::Vector2<GLsizei>& size);
-        void draw();
+        void setViewport(const Vector2i& size) override;
+        void draw(SceneGraph::DrawableGroup3D<>& group) override;
 
     private:
         class MotionBlurShader: public AbstractShaderProgram {
             public:
-                typedef Attribute<0, Vector4> Vertex;
+                typedef Attribute<0, Point3D> Position;
+
+                /* Frame texture layers are from 0 to FrameCount */
 
                 MotionBlurShader();
-
-                inline void setFrameUniform(size_t id, Texture2D* frame) {
-                    setUniform(frameUniforms[id], frame);
-                }
-
-            private:
-                GLint frameUniforms[MotionBlurCamera::FrameCount];
         };
 
-        class MotionBlurCanvas: public Object {
+        class MotionBlurCanvas: public Object3D {
             public:
-                MotionBlurCanvas(Texture2D** frames, Object* parent = nullptr);
+                MotionBlurCanvas(Texture2D** frames, Object3D* parent = nullptr);
 
-                void draw(size_t currentFrame);
+                void draw(std::size_t currentFrame);
 
             private:
                 MotionBlurShader shader;
+                Buffer buffer;
                 Mesh mesh;
                 Texture2D** frames;
         };
 
-        BufferedImage2D framebuffer;
+        BufferImage2D framebuffer;
         Texture2D* frames[FrameCount];
-        size_t currentFrame;
+        std::size_t currentFrame;
         MotionBlurCanvas canvas;
 };
 

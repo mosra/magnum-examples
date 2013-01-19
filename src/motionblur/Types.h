@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TexturedIdentityShader_h
-#define Magnum_Examples_TexturedIdentityShader_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,24 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include <SceneGraph/MatrixTransformation3D.h>
 
-namespace Magnum { namespace Examples {
+namespace Magnum {
 
-class TexturedIdentityShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector4> Vertex;
-        typedef Attribute<1, Vector2> TextureCoordinates;
+namespace SceneGraph {
+    template<class> class Scene;
+}
 
-        TexturedIdentityShader();
+namespace Examples {
 
-        inline void setTextureUniform(const AbstractTexture* texture) {
-            setUniform(textureUniform, texture);
-        }
-
-    private:
-        GLint textureUniform;
-};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 }}
 

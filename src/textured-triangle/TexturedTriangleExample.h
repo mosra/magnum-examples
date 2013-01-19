@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TriangleExample_h
-#define Magnum_Examples_TriangleExample_h
+#ifndef Magnum_Examples_TexturedTriangleExample_h
+#define Magnum_Examples_TexturedTriangleExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -17,15 +17,16 @@
 
 #include <Buffer.h>
 #include <Mesh.h>
+#include <Texture.h>
 #include <Platform/GlutApplication.h>
 
-#include "TriangleShader.h"
+#include "TexturedTriangleShader.h"
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Platform::GlutApplication {
+class TexturedTriangleExample: public Platform::GlutApplication {
     public:
-        TriangleExample(int& argc, char** argv);
+        TexturedTriangleExample(int& argc, char** argv);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
@@ -34,7 +35,8 @@ class TriangleExample: public Platform::GlutApplication {
     private:
         Buffer buffer;
         Magnum::Mesh mesh;
-        TriangleShader shader;
+        TexturedTriangleShader shader;
+        Magnum::Texture2D texture;
 };
 
 }}

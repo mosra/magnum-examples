@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TriangleExample_h
-#define Magnum_Examples_TriangleExample_h
+#ifndef Magnum_Examples_CubeMapExample_h
+#define Magnum_Examples_CubeMapExample_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,26 +15,30 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Buffer.h>
-#include <Mesh.h>
 #include <Platform/GlutApplication.h>
+#include <SceneGraph/Drawable.h>
+#include <SceneGraph/Scene.h>
+#include <SceneGraph/Camera3D.h>
 
-#include "TriangleShader.h"
+#include "Types.h"
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Platform::GlutApplication {
+class CubeMapExample: public Platform::GlutApplication {
     public:
-        TriangleExample(int& argc, char** argv);
+        CubeMapExample(int& argc, char** argv);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 
     private:
-        Buffer buffer;
-        Magnum::Mesh mesh;
-        TriangleShader shader;
+        CubeMapResourceManager resourceManager;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
 };
 
 }}

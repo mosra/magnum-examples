@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Triangle_h
-#define Magnum_Examples_Triangle_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,22 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
-#include "Mesh.h"
-#include "TriangleShader.h"
+#include <SceneGraph/MatrixTransformation3D.h>
 
-namespace Magnum { namespace Examples {
+namespace Magnum {
 
-class Triangle: public Magnum::Object {
-    public:
-        Triangle(Magnum::Object* parent = nullptr);
+namespace SceneGraph {
+    template<class> class Scene;
+}
 
-        void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
+namespace Examples {
 
-    private:
-        Magnum::Mesh mesh;
-        TriangleShader shader;
-};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 }}
 

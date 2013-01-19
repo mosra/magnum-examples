@@ -1,8 +1,6 @@
-#version 330
+in vec3 varyingColor;
 
-in vec4 varyingColor;
-
-out vec4 fragmentColor;
+out vec3 fragmentColor;
 
 void main() {
     fragmentColor = varyingColor;

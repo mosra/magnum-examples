@@ -15,27 +15,22 @@
 
 #include "ColorCorrectionShader.h"
 
-#include "Utility/Resource.h"
-
-using namespace Corrade::Utility;
+#include <Utility/Resource.h>
+#include <Shader.h>
 
 namespace Magnum { namespace Examples {
 
 ColorCorrectionShader::ColorCorrectionShader() {
-    Resource rs("shader");
-    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("ColorCorrectionShader.vert")));
-    attachShader(Shader::fromData(Shader::Type::Fragment, rs.get("ColorCorrectionShader.frag")));
-
-    bindAttribute(Vertex::Location, "vertex");
-    bindFragmentDataLocation(0, "original");
-    bindFragmentDataLocation(1, "grayscale");
-    bindFragmentDataLocation(2, "corrected");
+    Corrade::Utility::Resource rs("shader");
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ColorCorrectionShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ColorCorrectionShader.frag")));
 
     link();
 
     matrixUniform = uniformLocation("matrix");
-    textureUniform = uniformLocation("textureData");
-    correctionTextureUniform = uniformLocation("correctionTextureData");
+
+    setUniform(uniformLocation("textureData"), TextureLayer);
+    setUniform(uniformLocation("colorCorrectionTextureData"), ColorCorrectionTextureLayer);
 }
 
 }}

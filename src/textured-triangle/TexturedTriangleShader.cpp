@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_TexturedTriangle_h
-#define Magnum_Examples_TexturedTriangle_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,27 +13,23 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Object.h"
-#include "Mesh.h"
-#include "Texture.h"
-#include "Trade/ImageData.h"
+#include "TexturedTriangleShader.h"
 
-#include "TexturedIdentityShader.h"
+#include <Utility/Resource.h>
+#include <Shader.h>
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangle: public Object {
-    public:
-        TexturedTriangle(Trade::ImageData2D* image, Object* parent = nullptr);
+TexturedTriangleShader::TexturedTriangleShader() {
+    Corrade::Utility::Resource rs("data");
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("TexturedTriangleShader.vert")));
+    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("TexturedTriangleShader.frag")));
 
-        void draw(const Matrix4& transformationMatrix, Camera* camera);
+    link();
 
-    private:
-        Mesh mesh;
-        TexturedIdentityShader shader;
-        Texture2D texture;
-};
+    baseColorUniform = uniformLocation("baseColor");
+
+    setUniform(uniformLocation("textureData"), TextureLayer);
+}
 
 }}
-
-#endif

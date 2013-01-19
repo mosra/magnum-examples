@@ -15,18 +15,18 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "Camera.h"
-#include "Framebuffer.h"
-#include "Renderbuffer.h"
+#include <Framebuffer.h>
+#include <Renderbuffer.h>
+#include <SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionCamera: public Camera {
+class ColorCorrectionCamera: public SceneGraph::Camera2D<> {
     public:
-        ColorCorrectionCamera(Object* parent = nullptr);
+        ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object);
 
-        void draw();
-        void setViewport(const Math::Vector2<GLsizei>& size);
+        void draw(SceneGraph::DrawableGroup2D<>& group) override;
+        void setViewport(const Vector2i& size) override;
 
     private:
         enum { /* Color attachments */
@@ -35,7 +35,6 @@ class ColorCorrectionCamera: public Camera {
             Corrected = 2
         };
 
-        bool initialized;
         Framebuffer framebuffer;
         Renderbuffer original,
             grayscale,

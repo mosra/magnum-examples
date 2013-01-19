@@ -16,33 +16,33 @@
 #include "Billboard.h"
 
 #include "Buffer.h"
-#include "Camera.h"
-#include "Primitives/Plane.h"
+#include <Primitives/Square.h>
+#include <SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
 
-Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object* parent): Object(parent), mesh(Mesh::Primitive::TriangleStrip, 4), colorCorrectionTexture(1) {
-    Primitives::Plane plane;
+Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D<>* group): Object2D(parent), SceneGraph::Drawable2D<>(this, group) {
+    Primitives::Square square;
+    buffer.setData(*square.positions(0), Buffer::Usage::StaticDraw);
+    mesh.setPrimitive(square.primitive())
+        ->setVertexCount(square.positions(0)->size())
+        ->addVertexBuffer(&buffer, ColorCorrectionShader::Position());
 
-    Buffer* buffer = mesh.addBuffer(Mesh::BufferType::NonInterleaved);
-    buffer->setData(*plane.vertices(0), Buffer::Usage::StaticDraw);
-    mesh.bindAttribute<ColorCorrectionShader::Vertex>(buffer);
+    texture.setWrapping(Texture2D::Wrapping::ClampToBorder)
+        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setImage(0, Texture2D::InternalFormat::RGBA8, image);
 
-    texture.setWrapping({AbstractTexture::Wrapping::ClampToBorder, AbstractTexture::Wrapping::ClampToBorder});
-    texture.setMagnificationFilter(AbstractTexture::Filter::LinearInterpolation);
-    texture.setMinificationFilter(AbstractTexture::Filter::LinearInterpolation);
-    texture.setData(0, AbstractTexture::Format::RGBA, image);
+    colorCorrectionTexture.setBuffer(BufferTexture::InternalFormat::R32F, colorCorrectionBuffer);
 
-    colorCorrectionTexture.setBuffer(BufferedTexture::Components::Red|BufferedTexture::ComponentType::Float, colorCorrectionBuffer);
-
-    scale({1, GLfloat(image->dimensions()[1])/image->dimensions()[0], 1});
+    scale(Vector2::yScale(GLfloat(image->size()[1])/image->size()[0]));
 }
 
-void Billboard::draw(const Matrix4& transformationMatrix, Camera* camera) {
+void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D<>* camera) {
     shader.use();
     shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
-    shader.setTextureUniform(&texture);
-    shader.setCorrectionTextureUniform(&colorCorrectionTexture);
+    texture.bind(ColorCorrectionShader::TextureLayer);
+    colorCorrectionTexture.bind(ColorCorrectionShader::ColorCorrectionTextureLayer);
 
     mesh.draw();
 }

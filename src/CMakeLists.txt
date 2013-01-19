@@ -1,22 +1,32 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++0x -fvisibility=hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -pedantic -std=c++0x -fvisibility=hidden -fno-rtti -fno-exceptions")
 
-find_package(Magnum REQUIRED GlutContext)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
+endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CORRADE_INCLUDE_DIR} ${MAGNUM_INCLUDE_DIR})
+find_package(Magnum REQUIRED)
+if(NOT MAGNUM_TARGET_GLES)
+    find_package(Magnum REQUIRED GlutApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+else()
+    find_package(Magnum REQUIRED XEglApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_XEGLAPPLICATION_LIBRARIES})
+endif()
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MAGNUM_INCLUDE_DIRS})
 
 add_library(MagnumExample STATIC
     FpsCounterExample.cpp
 )
-target_link_libraries(MagnumExample ${MAGNUM_GLUTCONTEXT_LIBRARY})
-if(WIN32)
-    target_link_libraries(MagnumExample ${CORRADE_UTILITY_LIBRARY})
+set(MAGNUM_EXAMPLE_LIBRARIES MagnumExample ${APPLICATION_LIBRARIES})
+
+if(NOT MAGNUM_TARGET_GLES)
+    add_subdirectory(cubemap)
+    add_subdirectory(framebuffer)
+    add_subdirectory(motionblur)
+    add_subdirectory(pool)
+    add_subdirectory(triangle)
+    add_subdirectory(textured-triangle)
 endif()
 
-add_subdirectory(cubemap)
-add_subdirectory(framebuffer)
-add_subdirectory(benchmark)
-add_subdirectory(motionblur)
-add_subdirectory(pool)
-add_subdirectory(triangle)
-add_subdirectory(texturedTriangle)
 add_subdirectory(viewer)

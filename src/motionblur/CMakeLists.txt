@@ -1,6 +1,24 @@
-find_package(Magnum REQUIRED GlutContext MeshTools Primitives Shaders)
+find_package(Magnum REQUIRED
+    GlutApplication
+    MeshTools
+    Primitives
+    SceneGraph
+    Shaders)
 
-corrade_add_resource(MotionBlurShaders shaders MotionBlurShader.frag MotionBlurShader.vert)
+include_directories(${MAGNUM_INCLUDE_DIRS})
 
-add_executable(motionblurExample MotionBlurExample.cpp Icosphere.cpp MotionBlurCamera.cpp ${MotionBlurShaders})
-target_link_libraries(motionblurExample ${CORRADE_UTILITY_LIBRARY} ${MAGNUM_LIBRARY} ${MAGNUM_GLUTCONTEXT_LIBRARY} ${MAGNUM_PRIMITIVES_LIBRARY} ${MAGNUM_SHADERS_LIBRARY} ${GLEW_LIBRARY} ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARY})
+corrade_add_resource(MotionBlurShaders shaders
+    MotionBlurShader.frag
+    MotionBlurShader.vert)
+add_executable(motionblurExample
+    MotionBlurCamera.cpp
+    MotionBlurExample.cpp
+    Icosphere.cpp
+    ${MotionBlurShaders})
+target_link_libraries(motionblurExample
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES})

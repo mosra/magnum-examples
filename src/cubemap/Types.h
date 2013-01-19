@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Reflector_h
-#define Magnum_Examples_Reflector_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -16,36 +16,32 @@
 */
 
 #include <ResourceManager.h>
-#include <SceneGraph/Drawable.h>
-
-#include "Types.h"
+#include <SceneGraph/MatrixTransformation3D.h>
 
 namespace Magnum {
 
 class AbstractShaderProgram;
-class Buffer;
 class CubeMapTexture;
+class Buffer;
 class IndexedMesh;
 template<std::uint8_t> class Texture;
 typedef Texture<2> Texture2D;
 
+namespace SceneGraph {
+    template<class> class Scene;
+}
+
+namespace Trade {
+    class AbstractImporter;
+}
+
+extern template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
+
 namespace Examples {
 
-class ReflectorShader;
-
-class Reflector: public Object3D, SceneGraph::Drawable3D<> {
-    public:
-        Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
-
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
-
-    private:
-        Resource<Buffer> buffer;
-        Resource<IndexedMesh> sphere;
-        Resource<AbstractShaderProgram, ReflectorShader> shader;
-        Resource<CubeMapTexture> texture;
-        Resource<Texture2D> tarnishTexture;
-};
+typedef ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 }}
 

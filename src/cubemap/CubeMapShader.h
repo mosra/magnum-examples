@@ -15,28 +15,28 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
-
-#include "CubeMapTexture.h"
+#include <Math/Matrix4.h>
+#include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 
 class CubeMapShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector4> Vertex;
+        typedef Attribute<0, Point3D> Position;
+
+        enum: GLint {
+            TextureLayer = 0
+        };
 
         CubeMapShader();
 
-        void setModelViewProjectionMatrixUniform(const Matrix4& matrix) {
-            setUniform(modelViewProjectionMatrixUniform, matrix);
-        }
-
-        void setTextureUniform(const CubeMapTexture* texture) {
-            setUniform(textureUniform, texture);
+        inline CubeMapShader* setTransformationProjectionMatrix(const Matrix4& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
+            return this;
         }
 
     private:
-        GLint textureUniform, modelViewProjectionMatrixUniform;
+        GLint transformationProjectionMatrixUniform;
 };
 
 }}

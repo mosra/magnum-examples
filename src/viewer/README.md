@@ -3,7 +3,7 @@ more objects and display them. COLLADA support is currently aimed at opening
 files exported from Blender 2.6. Only triangle meshes with Phong shading
 without textures are currently supported.
 
-![Viewer](https://github.com/mosra/magnum-examples/raw/master/src/viewer/screenshot.png)
+![Viewer](https://github.com/mosra/magnum-examples/raw/master/src/viewer/viewer.png)
 
 Usage
 -----
@@ -20,6 +20,7 @@ Mouse and key shortcuts
 
  * **Arrow keys** or **mouse drag** rotate the camera around the scene.
  * **Page Up** and **Page Down** or **mouse wheel** zooms in and out.
- * **Home** toggles between wireframe and shaded view.
+ * **Home** toggles between wireframe and shaded view (not available on OpenGL
+   ES).
  * **End** key toggles benchmarking. FPS count is measured during a few
    seconds and the result is written to console output.

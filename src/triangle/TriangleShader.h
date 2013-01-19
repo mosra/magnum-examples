@@ -15,14 +15,14 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 
 class TriangleShader: public Magnum::AbstractShaderProgram {
     public:
-        typedef Magnum::AbstractShaderProgram::Attribute<0, Vector4> Vertex;
-        typedef Magnum::AbstractShaderProgram::Attribute<1, Vector4> Color;
+        typedef Magnum::AbstractShaderProgram::Attribute<0, Magnum::Vector3> Position;
+        typedef Magnum::AbstractShaderProgram::Attribute<1, Magnum::Vector3> Color;
 
         TriangleShader();
 };

@@ -15,24 +15,24 @@
 
 #include "Icosphere.h"
 
-#include "Camera.h"
 #include "Mesh.h"
+#include <SceneGraph/Camera3D.h>
 #include "Shaders/PhongShader.h"
 
 namespace Magnum { namespace Examples {
 
-Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object* parent): Object(parent), mesh(mesh), shader(shader), color(color) {
+Icosphere::Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group), mesh(mesh), shader(shader), color(color) {
     scale(Vector3(0.1f));
 }
 
-void Icosphere::draw(const Matrix4& transformationMatrix, Camera* camera) {
-    shader->use();
-    shader->setDiffuseColorUniform(color);
-    shader->setSpecularColorUniform({1.0f, 1.0f, 1.0f});
-    shader->setShininessUniform(20);
-    shader->setLightUniform({3.0f, -3.0f, 3.0f});
-    shader->setTransformationMatrixUniform(transformationMatrix);
-    shader->setProjectionMatrixUniform(camera->projectionMatrix());
+void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) {
+    shader->setDiffuseColor(color)
+        ->setSpecularColor(Color3<GLfloat>(1.0f))
+        ->setShininess(20)
+        ->setLightPosition({3.0f, -3.0f, 3.0f})
+        ->setTransformationMatrix(transformationMatrix)
+        ->setProjectionMatrix(camera->projectionMatrix())
+        ->use();
 
     mesh->draw();
 }

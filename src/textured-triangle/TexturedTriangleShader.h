@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ColorCorrectionShader_h
-#define Magnum_Examples_ColorCorrectionShader_h
+#ifndef Magnum_Examples_TexturedTriangleShader_h
+#define Magnum_Examples_TexturedTriangleShader_h
 /*
     Copyright © 2010, 2011, 2012 Vladimír Vondruš <mosra@centrum.cz>
 
@@ -15,34 +15,29 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Math/Matrix3.h>
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
+#include <Color.h>
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionShader: public AbstractShaderProgram {
+class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point2D> Position;
-
-        enum: GLuint {
-            OriginalColorOutput = 0,
-            GrayscaleOutput = 1,
-            ColorCorrectedOutput = 2
-        };
+        typedef Magnum::AbstractShaderProgram::Attribute<0, Magnum::Point2D> Position;
+        typedef Magnum::AbstractShaderProgram::Attribute<1, Magnum::Vector2> TextureCoordinates;
 
         enum: GLint {
-            TextureLayer = 0,
-            ColorCorrectionTextureLayer = 1
+            TextureLayer = 0
         };
 
-        ColorCorrectionShader();
+        TexturedTriangleShader();
 
-        inline void setMatrixUniform(const Matrix3& matrix) {
-            setUniform(matrixUniform, matrix);
+        inline TexturedTriangleShader* setBaseColor(const Color3<GLfloat>& color) {
+            setUniform(baseColorUniform, color);
+            return this;
         }
 
     private:
-        GLint matrixUniform;
+        GLint baseColorUniform;
 };
 
 }}
