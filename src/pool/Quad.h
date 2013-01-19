@@ -1,34 +1,38 @@
-#ifndef Quad_h
-#define Quad_h
+#ifndef Magnum_Examples_Quad_h
+#define Magnum_Examples_Quad_h
 
 #include <array>
 #include <PluginManager/PluginManager.h>
-#include <Object.h>
 #include <Mesh.h>
 #include <Texture.h>
+#include <SceneGraph/Animable.h>
+#include <SceneGraph/Drawable.h>
+#include <SceneGraph/MatrixTransformation3D.h>
+#include <SceneGraph/Object.h>
 #include <Trade/AbstractImporter.h>
 
 #include "PoolShader.h"
+#include "Types.h"
 
-namespace Magnum {
-    class Light;
-}
+namespace Magnum { namespace Examples {
 
-class Quad: public Magnum::Object {
+class Quad: public Object3D, SceneGraph::Drawable3D<>, SceneGraph::Animable3D<> {
     public:
-        Quad(Corrade::PluginManager::PluginManager<Magnum::Trade::AbstractImporter>* manager, const std::array<Magnum::Light*, PoolShader::LightCount>& lights, Object* parent = nullptr);
+        Quad(Corrade::PluginManager::PluginManager<Trade::AbstractImporter>* manager, const std::array<Point3D, PoolShader::LightCount>& lights, Object* parent, SceneGraph::DrawableGroup3D<>* drawables, SceneGraph::AnimableGroup3D<>* animables);
 
-        void draw(const Magnum::Matrix4& transformationMatrix, Magnum::Camera* camera);
+    protected:
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
+        void animationStep(GLfloat time, GLfloat delta) override;
 
     private:
-        Magnum::Mesh mesh;
-        std::array<Magnum::Light*, PoolShader::LightCount> lights;
-        Magnum::Texture2D diffuse;
-        Magnum::Texture2D specular;
-        Magnum::Texture2D water;
+        Mesh mesh;
+        std::array<Point3D, PoolShader::LightCount> lights;
+        Texture2D diffuse, specular, water;
         PoolShader shader;
 
-        Magnum::Vector2 translation;
+        Point2D translation;
 };
+
+}}
 
 #endif

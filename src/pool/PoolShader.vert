@@ -1,5 +1,3 @@
-#version 150
-
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 

@@ -1,9 +1,15 @@
 #include <array>
 #include <PluginManager/PluginManager.h>
-#include <Scene.h>
-#include <Camera.h>
-#include <Light.h>
-#include <Contexts/GlutContext.h>
+#include <Math/Constants.h>
+#include <Math/Algorithms/GramSchmidt.h>
+#include <DefaultFramebuffer.h>
+#include <Renderer.h>
+#include <Timeline.h>
+#include <Platform/GlutApplication.h>
+#include <SceneGraph/AnimableGroup.h>
+#include <SceneGraph/Camera3D.h>
+#include <SceneGraph/MatrixTransformation3D.h>
+#include <SceneGraph/Scene.h>
 #include <Trade/AbstractImporter.h>
 
 #include "Quad.h"
@@ -11,73 +17,101 @@
 
 #include "configure.h"
 
-using namespace std;
-using namespace Corrade::PluginManager;
-
 namespace Magnum { namespace Examples {
 
-class Pool: public Contexts::GlutContext {
+class Pool: public Platform::GlutApplication {
     public:
-        Pool(int& argc, char** argv): GlutContext(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR), ducks(nullptr) {
-            /* Every scene needs a camera */
-            camera = new Camera(&scene);
-            camera->setPerspective(deg(35.0f), 0.1f, 100.0f);
-            camera->setClearColor({0.9f, 0.95f, 1.0f});
-            camera->translate({0.0f, 0.0f, 3.5f})->rotate(deg(-15.0f), Vector3::xAxis())->rotate(deg(25.0f), Vector3::yAxis());
-            Camera::setFeature(Camera::Feature::DepthTest, true);
-
-            /* Light */
-            array<Light*, PoolShader::LightCount> lights;
-            (lights[0] = new Light(&scene))->translate({0.0f, -3.0f, 0.0f});
-            (lights[1] = new Light(&scene))->translate({-0.0f, 2.5f, -0.0f});
-
-            /* Add quad and duck */
-            new Quad(&manager, lights, &scene);
-            ducks = Ducks::tryCreate(&manager, lights[1], &scene);
-        }
+        Pool(int& argc, char** argv);
 
     protected:
-        inline void viewportEvent(const Math::Vector2<GLsizei>& size) {
-            camera->setViewport(size);
-        }
-
-        inline void drawEvent() {
-            camera->draw();
-            swapBuffers();
-
-            Corrade::Utility::sleep(30);
-            redraw();
-        }
-
-        virtual void keyEvent(Key key, const Magnum::Math::Vector2<int>& position) {
-            if(key == Key::Left)
-                camera->rotate(deg(5.0f), Vector3::yAxis());
-            else if(key == Key::Right)
-                camera->rotate(deg(-5.0f), Vector3::yAxis());
-            else if(key == Key::Up)
-                camera->rotate(deg(-5.0f), camera->transformation()[0].xyz());
-            else if(key == Key::Down)
-                camera->rotate(deg(5.0f), camera->transformation()[0].xyz());
-            else if(key == Key::PageUp)
-                camera->translate(Vector3::zAxis(-0.2f), Object::Transformation::Local);
-            else if(key == Key::PageDown)
-                camera->translate(Vector3::zAxis(0.2f), Object::Transformation::Local);
-            else if(key == Key::End)
-                ducks->flip();
-
-            redraw();
-        }
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 
     private:
-        PluginManager<Trade::AbstractImporter> manager;
-        Scene scene;
-        Camera* camera;
+        Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager;
+        Timeline timeline;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        SceneGraph::AnimableGroup3D<> animables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
         Ducks* ducks;
 };
 
+Pool::Pool(int& argc, char** argv): Platform::GlutApplication(argc, argv, "Pool"), manager(PLUGIN_IMPORTER_DIR), ducks(nullptr) {
+    Renderer::setFeature(Renderer::Feature::DepthTest, true);
+    Renderer::setClearColor({0.9f, 0.95f, 1.0f});
+
+    /* Every scene needs a camera */
+    (cameraObject = new Object3D(&scene))
+        ->translate({0.0f, 0.0f, 3.5f})
+        ->rotateX(deg(-15.0f))
+        ->rotateY(deg(25.0f));
+    (camera = new SceneGraph::Camera3D<>(cameraObject))
+        ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        ->setPerspective(deg(35.0f), 1.0f, 0.1f, 100.0f);
+
+    /* Light */
+    std::array<Point3D, PoolShader::LightCount> lights{{
+        {0.0f, -3.0f, 0.0f},
+        {-0.0f, 2.5f, -0.0f}
+    }};
+
+    /* Add quad and duck */
+    new Quad(&manager, lights, &scene, &drawables, &animables);
+    ducks = Ducks::tryCreate(&manager, lights[1], &scene, &drawables, &animables);
+
+    timeline.setMinimalFrameTime(1/60.0f);
+    timeline.start();
+}
+
+void Pool::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
+
+    camera->setViewport(size);
+}
+
+void Pool::drawEvent() {
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+
+    animables.step(timeline.previousFrameTime(), timeline.previousFrameDuration());
+    camera->draw(drawables);
+
+    swapBuffers();
+    redraw();
+
+    timeline.nextFrame();
+}
+
+void Pool::keyPressEvent(KeyEvent& event) {
+    /* Fix floating-point drifting */
+    cameraObject->setTransformation(Matrix4::from(Math::Algorithms::gramSchmidt(
+        cameraObject->transformation().rotationScaling()),
+        cameraObject->transformation().translation()));
+
+    if(event.key() == KeyEvent::Key::Left)
+        cameraObject->rotateY(deg(5.0f));
+    else if(event.key() == KeyEvent::Key::Right)
+        cameraObject->rotateY(deg(-5.0f));
+
+    else if(event.key() == KeyEvent::Key::Up)
+        cameraObject->rotate(deg(-5.0f), cameraObject->transformation().right());
+    else if(event.key() == KeyEvent::Key::Down)
+        cameraObject->rotate(deg(5.0f), cameraObject->transformation().right());
+
+    else if(event.key() == KeyEvent::Key::PageUp)
+        cameraObject->translate(Vector3::zAxis(-0.2f), SceneGraph::TransformationType::Local);
+    else if(event.key() == KeyEvent::Key::PageDown)
+        cameraObject->translate(Vector3::zAxis(0.2f), SceneGraph::TransformationType::Local);
+
+    else if(event.key()== KeyEvent::Key::End)
+        ducks->flip();
+
+    event.setAccepted();
+    redraw();
+}
+
 }}
 
-int main(int argc, char** argv) {
-    Magnum::Examples::Pool e(argc, argv);
-    return e.exec();
-}
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::Pool)

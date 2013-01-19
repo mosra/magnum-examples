@@ -1,49 +1,54 @@
-#ifndef PoolShader_h
-#define PoolShader_h
+#ifndef Magnum_Examples_PoolShader_h
+#define Magnum_Examples_PoolShader_h
 
+#include <Math/Matrix4.h>
+#include <Math/Matrix3.h>
 #include <AbstractShaderProgram.h>
-#include <Texture.h>
+
+namespace Magnum { namespace Examples {
 
 class PoolShader: public Magnum::AbstractShaderProgram {
     public:
-        static const unsigned int LightCount = 2;
+        enum: std::size_t {
+            LightCount = 2
+        };
+
+        enum: GLint {
+            DiffuseTextureLayer = 0,
+            SpecularTextureLayer = 1,
+            WaterTextureLayer = 2
+        };
 
         PoolShader();
 
-        inline void setTransformationMatrixUniform(const Magnum::Matrix4& matrix) {
+        inline PoolShader* setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
+            return this;
         }
 
-        inline void setNormalMatrixUniform(const Magnum::Matrix3& matrix) {
+        inline PoolShader* setNormalMatrix(const Matrix3& matrix) {
             setUniform(normalMatrixUniform, matrix);
+            return this;
         }
 
-        inline void setProjectionMatrixUniform(const Magnum::Matrix4& matrix) {
+        inline PoolShader* setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
+            return this;
         }
 
-        inline void setCameraDirectionUniform(const Magnum::Vector3& position) {
+        inline PoolShader* setCameraDirection(const Vector3& position) {
             setUniform(cameraDirectionUniform, position);
+            return this;
         }
 
-        inline void setDiffuseTextureUniform(const Magnum::Texture2D* texture) {
-            setUniform(diffuseTextureUniform, texture);
-        }
-
-        inline void setSpecularTextureUniform(const Magnum::Texture2D* texture) {
-            setUniform(specularTextureUniform, texture);
-        }
-
-        inline void setLightPositionUniform(unsigned int id, const Magnum::Vector3& light) {
+        inline PoolShader* setLightPosition(std::size_t id, const Vector3& light) {
             setUniform(lightUniform[id], light);
+            return this;
         }
 
-        inline void setWaterTextureUniform(const Magnum::Texture2D* texture) {
-            setUniform(waterTextureUniform, texture);
-        }
-
-        inline void setWaterTextureTranslationUniform(const Magnum::Vector2& translation) {
+        inline PoolShader* setWaterTextureTranslation(const Vector2& translation) {
             setUniform(waterTextureTranslationUniform, translation);
+            return this;
         }
 
     private:
@@ -51,12 +56,11 @@ class PoolShader: public Magnum::AbstractShaderProgram {
             normalMatrixUniform,
             projectionMatrixUniform,
             cameraDirectionUniform,
-            diffuseTextureUniform,
-            specularTextureUniform,
-            waterTextureUniform,
             waterTextureTranslationUniform;
 
         GLint lightUniform[LightCount];
 };
+
+}}
 
 #endif

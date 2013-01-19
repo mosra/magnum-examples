@@ -1,24 +1,19 @@
 #include "PoolShader.h"
 
-#include <sstream>
 #include <Utility/Resource.h>
 #include <Shader.h>
 
-using namespace std;
-using namespace Corrade::Utility;
-using namespace Magnum;
+namespace Magnum { namespace Examples {
 
 PoolShader::PoolShader() {
-    Resource rs("pool");
-    ostringstream ss;
-    ss << LightCount;
+    Corrade::Utility::Resource rs("pool");
 
     /* Vertex shader */
-    attachShader(Shader::fromData(Shader::Type::Vertex, rs.get("PoolShader.vert")));
+    attachShader(Shader::fromData(Version::GL320, Shader::Type::Vertex, rs.get("PoolShader.vert")));
 
     /* Fragment shader */
-    Shader fragmentShader(Shader::Type::Fragment);
-    fragmentShader.addSource("#version 150\n#define POOL_LIGHT_COUNT " + ss.str() + '\n');
+    Shader fragmentShader(Version::GL320, Shader::Type::Fragment);
+    fragmentShader.addSource("#define POOL_LIGHT_COUNT " + std::to_string(LightCount) + '\n');
     fragmentShader.addSource(rs.get("PoolShader.frag"));
     attachShader(fragmentShader);
 
@@ -28,14 +23,14 @@ PoolShader::PoolShader() {
     normalMatrixUniform = uniformLocation("normalMatrix");
     projectionMatrixUniform = uniformLocation("projectionMatrix");
     cameraDirectionUniform = uniformLocation("cameraDirection");
-    diffuseTextureUniform = uniformLocation("diffuseTexture");
-    specularTextureUniform = uniformLocation("specularTexture");
-    waterTextureUniform = uniformLocation("waterTexture");
     waterTextureTranslationUniform = uniformLocation("waterTextureTranslation");
 
-    for(unsigned int i = 0; i != LightCount; ++i) {
-        ss.str("");
-        ss << "light[" << i << ']';
-        lightUniform[i] = uniformLocation(ss.str());
-    }
+    for(std::size_t i = 0; i != LightCount; ++i)
+        lightUniform[i] = uniformLocation("light[" + std::to_string(i) + ']');
+
+    setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
+    setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
+    setUniform(uniformLocation("waterTexture"), WaterTextureLayer);
 }
+
+}}
