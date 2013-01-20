@@ -15,7 +15,6 @@
 
 #include <Math/Constants.h>
 #include <DefaultFramebuffer.h>
-#include <IndexedMesh.h>
 #include <Renderer.h>
 #include "SceneGraph/Scene.h"
 #include "MeshTools/CompressIndices.h"
@@ -109,7 +108,7 @@ class MotionBlurExample: public Platform::GlutApplication {
         SceneGraph::Camera3D<>* camera;
         Buffer buffer;
         Buffer indexBuffer;
-        IndexedMesh mesh;
+        Mesh mesh;
         PhongShader shader;
         Object3D* spheres[3];
 };

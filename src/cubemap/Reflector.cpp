@@ -18,7 +18,6 @@
 #include <sstream>
 #include <Utility/Resource.h>
 #include <CubeMapTexture.h>
-#include <IndexedMesh.h>
 #include <Texture.h>
 #include <MeshTools/CompressIndices.h>
 #include <MeshTools/Interleave.h>
@@ -35,8 +34,8 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
     CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
 
     /* Sphere mesh */
-    if(!(sphere = resourceManager->get<IndexedMesh>("sphere"))) {
-        IndexedMesh* mesh = new IndexedMesh;
+    if(!(sphere = resourceManager->get<Mesh>("sphere"))) {
+        Mesh* mesh = new Mesh;
         Buffer* buffer = new Buffer;
         Buffer* indexBuffer = new Buffer;
 

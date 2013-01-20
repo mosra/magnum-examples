@@ -18,12 +18,12 @@
 #include <AbstractShaderProgram.h>
 #include <Buffer.h>
 #include <CubeMapTexture.h>
-#include <IndexedMesh.h>
+#include <Mesh.h>
 #include <Texture.h>
 #include <Trade/AbstractImporter.h>
 
 namespace Magnum {
 
-template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
+template class ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 
 }

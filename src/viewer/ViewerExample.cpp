@@ -18,7 +18,7 @@
 
 #include "PluginManager/PluginManager.h"
 #include <Math/Constants.h>
-#include <IndexedMesh.h>
+#include <Mesh.h>
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
 #include "Trade/AbstractImporter.h"
@@ -172,7 +172,7 @@ class ViewerExample: public FpsCounterExample {
         SceneGraph::Camera3D<>* camera;
         PhongShader shader;
         Object3D* o;
-        std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, IndexedMesh*>> meshes;
+        std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, Mesh*>> meshes;
         std::size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
         bool wireframe;
         Vector3 previousPosition;
@@ -251,7 +251,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
         ++objectCount;
 
         /* Use already processed mesh, if exists */
-        IndexedMesh* mesh;
+        Mesh* mesh;
         auto found = meshes.find(object->instanceId());
         if(found != meshes.end()) mesh = std::get<2>(found->second);
 
@@ -259,7 +259,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
         else {
             ++meshCount;
 
-            mesh = new IndexedMesh;
+            mesh = new Mesh;
             Buffer* buffer = new Buffer;
             Buffer* indexBuffer = new Buffer;
             meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
