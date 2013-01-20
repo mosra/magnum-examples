@@ -1,7 +1,7 @@
 Displays bottomless pool with waving water and ducks using only two triangles
 for the pool and a few thousand more for all the ducks.
 
-![Pool](https://github.com/mosra/magnum-examples/raw/hwgr/src/pool/screenshot.png)
+![Pool](https://github.com/mosra/magnum-examples/raw/school/src/pool/screenshot.png)
 
 Usage
 -----
