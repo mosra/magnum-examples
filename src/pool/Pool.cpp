@@ -54,8 +54,8 @@ Pool::Pool(int& argc, char** argv): Platform::GlutApplication(argc, argv, "Pool"
 
     /* Light */
     std::array<Point3D, PoolShader::LightCount> lights{{
-        {0.0f, -3.0f, 0.0f},
-        {-0.0f, 2.5f, -0.0f}
+        Vector3::yAxis(-3.0f),
+        Vector3::yAxis(2.5f)
     }};
 
     /* Add quad and duck */
@@ -79,9 +79,8 @@ void Pool::drawEvent() {
     camera->draw(drawables);
 
     swapBuffers();
-    redraw();
-
     timeline.nextFrame();
+    redraw();
 }
 
 void Pool::keyPressEvent(KeyEvent& event) {

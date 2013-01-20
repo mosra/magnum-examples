@@ -37,9 +37,9 @@ Interpolation::Interpolation(int& argc, char** argv): GlutApplication(argc, argv
     Renderer::setClearColor(Color3<>(0.15f));
 
     /* Object renderer configuration */
-    manager.set<DebugTools::ObjectRendererOptions>("small", (new DebugTools::ObjectRendererOptions)->setSize(0.5f));
-    manager.set<DebugTools::ObjectRendererOptions>("medium", (new DebugTools::ObjectRendererOptions)->setSize(1.0f));
-    manager.set<DebugTools::ObjectRendererOptions>("large", (new DebugTools::ObjectRendererOptions)->setSize(1.2f));
+    manager.set("small", (new DebugTools::ObjectRendererOptions)->setSize(0.5f));
+    manager.set("medium", (new DebugTools::ObjectRendererOptions)->setSize(1.0f));
+    manager.set("large", (new DebugTools::ObjectRendererOptions)->setSize(1.2f));
 
     /* Configure camera */
     Object3D* cameraObject = new Object3D(&scene);
