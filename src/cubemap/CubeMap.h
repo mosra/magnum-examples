@@ -19,18 +19,7 @@
 
 #include "Types.h"
 
-namespace Magnum {
-
-class AbstractShaderProgram;
-class Buffer;
-class CubeMapTexture;
-class IndexedMesh;
-
-namespace Trade {
-    class AbstractImporter;
-}
-
-namespace Examples {
+namespace Magnum { namespace Examples {
 
 class CubeMapShader;
 
@@ -42,7 +31,7 @@ class CubeMap: public Object3D, SceneGraph::Drawable3D<> {
 
     private:
         Resource<Buffer> buffer;
-        Resource<IndexedMesh> cube;
+        Resource<Mesh> cube;
         Resource<AbstractShaderProgram, CubeMapShader> shader;
         Resource<CubeMapTexture> texture;
 };

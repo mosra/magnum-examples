@@ -20,26 +20,15 @@
 
 namespace Magnum {
 
-class AbstractShaderProgram;
-class CubeMapTexture;
-class Buffer;
-class IndexedMesh;
-template<std::uint8_t> class Texture;
-typedef Texture<2> Texture2D;
-
-namespace SceneGraph {
-    template<class> class Scene;
-}
-
 namespace Trade {
     class AbstractImporter;
 }
 
-extern template class ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
+extern template class ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 
 namespace Examples {
 
-typedef ResourceManager<Buffer, IndexedMesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
+typedef ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 

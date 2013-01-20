@@ -19,7 +19,6 @@
 #include <Utility/Resource.h>
 #include <Math/Constants.h>
 #include <CubeMapTexture.h>
-#include <IndexedMesh.h>
 #include <MeshTools/FlipNormals.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
@@ -39,8 +38,8 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
     CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
 
     /* Cube mesh */
-    if(!(cube = resourceManager->get<IndexedMesh>("cube"))) {
-        IndexedMesh* mesh = new IndexedMesh;
+    if(!(cube = resourceManager->get<Mesh>("cube"))) {
+        Mesh* mesh = new Mesh;
         Buffer* buffer = new Buffer;
         Buffer* indexBuffer = new Buffer;
 

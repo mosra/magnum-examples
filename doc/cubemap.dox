@@ -15,8 +15,7 @@ includes these new features:
 - Using SceneGraph for managing objects, their relations and transformations.
 - Employing ResourceManager for convenient resource management instead of
   passing them around manually.
-- Using @ref IndexedMesh "indexed meshes" and building them from pre-made
-  @ref Primitives "primitives".
+- Using indexed meshes and building them from pre-made @ref Primitives "primitives".
 - Handling keyboard input for scene interactivity.
 
 @section examples-cubemap-scenegraph Scene graph
@@ -170,12 +169,12 @@ have to create it from scratch, but use pre-made Primitives::Cube class. Each
 primitive is subclass of @ref Trade::MeshData3D "Trade::MeshData*D", which
 provides access to separate position, normal, texture and other arrays. Most
 of the primitives are indexed meshes to avoid unnecessary data repetition,
-which means that we need to use IndexedMesh class and next to vertex buffer
-have also the index buffer. Index array consists of unsigned integers and if
-the vertex array isn't too large, we don't need the full 32-bit range for
-indexing it. MeshTools::compressIndices() will do the work for us - store the
-index array in the smallest possible type, fill index buffer and set proper
-index count and type.
+which means that we need to have also index buffer next to vertex buffer.
+Index array consists of unsigned integers and if the vertex array isn't too
+large, we don't need the full 32-bit range for indexing it.
+MeshTools::compressIndices() will do the work for us - store the index array
+in the smallest possible type, fill index buffer and set proper index count
+and type.
 
 In this example we are looking at the cube from inside and we enabled
 back-face culling earlier, thus the cube faces would not be visible, unless we
@@ -183,7 +182,7 @@ solve it by calling MeshTools::flipFaceWinding(). Last thing is to fill vertex
 array of the mesh with actual vertex positions. We also must not forget to set
 mesh primitive, add the vertex buffer and specify attribute locations to use
 with our shader.
-@skip resourceManager->get<IndexedMesh>("cube")
+@skip resourceManager->get<Mesh>("cube")
 @until addVertexBuffer
 @note You can conveniently use MeshTools::interleave() even if you have only
     one attribute array. The function is specialized for this case and causes

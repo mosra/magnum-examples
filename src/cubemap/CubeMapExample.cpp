@@ -20,7 +20,7 @@
 #include <AbstractShaderProgram.h>
 #include <DefaultFramebuffer.h>
 #include <Extensions.h>
-#include <IndexedMesh.h>
+#include <Mesh.h>
 #include <Renderer.h>
 #include <Texture.h>
 #include <SceneGraph/Camera3D.h>
