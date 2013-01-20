@@ -3,7 +3,7 @@
 
 #include <PluginManager/PluginManager.h>
 #include <Buffer.h>
-#include <IndexedMesh.h>
+#include <Mesh.h>
 #include <SceneGraph/Animable.h>
 #include <SceneGraph/Drawable.h>
 #include <SceneGraph/MatrixTransformation3D.h>
@@ -38,7 +38,7 @@ class Ducks: public Object3D, SceneGraph::Animable3D<> {
 
         Ducks(const Point3D& lightPosition, Object3D* parent, SceneGraph::AnimableGroup3D<>* animables);
 
-        IndexedMesh mesh;
+        Mesh mesh;
         Buffer vertexBuffer, indexBuffer;
         Vector3 color;
         Point3D lightPosition;
