@@ -293,7 +293,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
             ++materialCount;
 
             material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData3D*>(object)->material()));
-            if(!material) material = new PhongMaterialData("", {0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
+            if(!material) material = new PhongMaterialData({0.0f, 0.0f, 0.0f}, {0.9f, 0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}, 50.0f);
         }
 
         /* Add object */

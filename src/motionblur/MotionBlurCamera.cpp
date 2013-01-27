@@ -89,7 +89,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3
     buffer.setData(vertices, Buffer::Usage::StaticDraw);
     mesh.setPrimitive(Mesh::Primitive::TriangleStrip)
         ->setVertexCount(4)
-        ->addVertexBuffer(&buffer, MotionBlurShader::Position());
+        ->addVertexBuffer(&buffer, 0, MotionBlurShader::Position());
 }
 
 void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {

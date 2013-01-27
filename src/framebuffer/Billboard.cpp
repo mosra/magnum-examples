@@ -18,15 +18,16 @@
 #include "Buffer.h"
 #include <Primitives/Square.h>
 #include <SceneGraph/Camera2D.h>
+#include <Trade/MeshData2D.h>
 
 namespace Magnum { namespace Examples {
 
 Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D<>* group): Object2D(parent), SceneGraph::Drawable2D<>(this, group) {
-    Primitives::Square square;
+    Trade::MeshData2D square = Primitives::Square::solid();
     buffer.setData(*square.positions(0), Buffer::Usage::StaticDraw);
     mesh.setPrimitive(square.primitive())
         ->setVertexCount(square.positions(0)->size())
-        ->addVertexBuffer(&buffer, ColorCorrectionShader::Position());
+        ->addVertexBuffer(&buffer, 0, ColorCorrectionShader::Position());
 
     texture.setWrapping(Texture2D::Wrapping::ClampToBorder)
         ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)

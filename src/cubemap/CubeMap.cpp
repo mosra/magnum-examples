@@ -27,6 +27,7 @@
 #include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
+#include <Trade/MeshData3D.h>
 
 #include "CubeMapShader.h"
 
@@ -43,12 +44,12 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         Buffer* buffer = new Buffer;
         Buffer* indexBuffer = new Buffer;
 
-        Primitives::Cube cubeData;
+        Trade::MeshData3D cubeData = Primitives::Cube::solid();
         MeshTools::flipFaceWinding(*cubeData.indices());
         MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cubeData.indices());
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
         mesh->setPrimitive(cubeData.primitive())
-            ->addVertexBuffer(buffer, CubeMapShader::Position());
+            ->addVertexBuffer(buffer, 0, CubeMapShader::Position());
 
         resourceManager->set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident);
         resourceManager->set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident);
