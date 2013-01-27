@@ -2,6 +2,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2013 Jan Dupal <dupal.j@gmail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -22,16 +23,23 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED
+    DebugTools
+    GlutApplication
+    Physics
+    SceneGraph
+    Shaders)
 
-if(NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(bullet)
-    add_subdirectory(cubemap)
-    add_subdirectory(framebuffer)
-    add_subdirectory(motionblur)
-    add_subdirectory(textured-triangle)
-endif()
+find_package(MagnumIntegration REQUIRED Bullet)
 
-add_subdirectory(primitives)
-add_subdirectory(triangle)
-add_subdirectory(viewer)
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
+
+add_executable(bulletExample BulletExample.cpp)
+target_link_libraries(bulletExample
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
+    ${MAGNUM_DEBUGTOOLS_LIBRARIES}
+    ${MAGNUM_PHYSICS_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
