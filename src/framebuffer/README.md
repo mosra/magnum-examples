@@ -4,7 +4,7 @@ color-corrected versions of the same image, all in one shader pass. On top
 left side is original image, on right side grayscale version and on bottom
 color corrected version.
 
-![Framebuffer](https://github.com/mosra/magnum-examples/raw/master/src/framebuffer/framebuffer.png)
+![Framebuffer](framebuffer.png)
 
 Usage
 -----

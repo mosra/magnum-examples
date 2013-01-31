@@ -3,7 +3,7 @@ layers for simulation of open world with two tarnish reflective spheres in
 front of the camera. This example also demonstrates usage of scene graph,
 resource manager and pre-made primitives.
 
-![Cube Map](https://github.com/mosra/magnum-examples/raw/master/src/cubemap/cubemap.png)
+![Cube Map](cubemap.png)
 
 Usage
 -----
