@@ -22,7 +22,8 @@
 #  Primitives    - Library with stock geometric primitives (static)
 #  SceneGraph    - Scene graph library
 #  Shaders       - Library with stock shaders
-#  Text          - Text rendering library
+#  Text          - Text rendering library (depends on TextureTools component,
+#                  FreeType library and possibly HarfBuzz library, see below)
 #  TextureTools  - TextureTools library
 #  GlxApplication - GLX application (depends on X11 libraries)
 #  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
@@ -39,6 +40,14 @@
 #  MAGNUM_*_FOUND   - Whether the component was found
 #  MAGNUM_*_LIBRARIES - Component library and dependent libraries
 #  MAGNUM_*_INCLUDE_DIRS - Include dirs of module dependencies
+#
+# Features of found Magnum library are exposed in these variables:
+#  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
+#  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES emulation
+#                         on desktop OpenGL
+#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native Client
+#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -88,6 +97,10 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_USE_HARFBUZZ" _USE_HARFBUZZ)
+if(NOT _USE_HARFBUZZ EQUAL -1)
+    set(MAGNUM_USE_HARFBUZZ 1)
 endif()
 
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
@@ -208,6 +221,18 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Text library
     if(${component} STREQUAL Text)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Font.h)
+
+        # Dependencies
+        find_package(FreeType)
+        if(NOT FREETYPE_FOUND)
+            unset(MAGNUM_${_COMPONENT}_LIBRARY)
+        endif()
+        if(MAGNUM_USE_HARFBUZZ)
+            find_package(HarfBuzz)
+            if(NOT HARFBUZZ_FOUND)
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
     endif()
 
     # TextureTools library
@@ -254,7 +279,7 @@ else()
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
 endif()
 if(NOT MAGNUM_TARGET_GLES)
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${GLEW_LIBRARY})
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${GLEW_LIBRARIES})
 endif()
 
 # Installation dirs
