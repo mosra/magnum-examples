@@ -17,7 +17,6 @@
 
 #include <fstream>
 #include <Utility/Resource.h>
-#include <Math/Constants.h>
 #include <CubeMapTexture.h>
 #include <MeshTools/FlipNormals.h>
 #include <MeshTools/Interleave.h>

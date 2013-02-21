@@ -13,7 +13,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include <Math/Constants.h>
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
 #include "SceneGraph/Scene.h"
@@ -38,7 +37,7 @@ class MotionBlurExample: public Platform::GlutApplication {
                 ->translate(Vector3::zAxis(3.0f));
             (camera = new MotionBlurCamera(cameraObject))
                 ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-                ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
+                ->setPerspective(35.0_degf, 1.0f, 0.001f, 100);
             Renderer::setClearColor({0.1f, 0.1f, 0.1f});
             Renderer::setFeature(Renderer::Feature::DepthTest, true);
             Renderer::setFeature(Renderer::Feature::FaceCulling, true);
@@ -49,37 +48,37 @@ class MotionBlurExample: public Platform::GlutApplication {
             mesh.addInterleavedVertexBuffer(&buffer, 0, PhongShader::Position(), PhongShader::Normal());
 
             /* Add spheres to the scene */
-            Icosphere* i = new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
+            new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
 
             spheres[0] = new Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
-            i->translate(Vector3::yAxis(0.25f));
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
-            i->translate(Vector3::yAxis(0.25f));
-            i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables);
-            i->translate(Vector3::yAxis(0.25f));
-            i->rotate(deg(240.0f), Vector3::zAxis());
+            (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+                ->translate(Vector3::yAxis(0.25f));
+            (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+                ->translate(Vector3::yAxis(0.25f))
+                ->rotateZ(120.0_degf);
+            (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+                ->translate(Vector3::yAxis(0.25f))
+                ->rotateZ(240.0_degf);
 
             spheres[1] = new Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
-            i->translate(Vector3::yAxis(0.50f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
-            i->translate(Vector3::yAxis(0.50f));
-            i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables);
-            i->translate(Vector3::yAxis(0.50f));
-            i->rotate(deg(240.0f), Vector3::zAxis());
+            (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+                ->translate(Vector3::yAxis(0.50f));
+            (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+                ->translate(Vector3::yAxis(0.50f))
+                ->rotateZ(120.0_degf);
+            (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+                ->translate(Vector3::yAxis(0.50f))
+                ->rotateZ(240.0_degf);
 
             spheres[2] = new Object3D(&scene);
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
-            i->translate(Vector3::yAxis(0.75f));
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
-            i->translate(Vector3::yAxis(0.75f));
-            i->rotate(deg(120.0f), Vector3::zAxis());
-            i = new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables);
-            i->translate(Vector3::yAxis(0.75f));
-            i->rotate(deg(240.0f), Vector3::zAxis());
+            (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+                ->translate(Vector3::yAxis(0.75f));
+            (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+                ->translate(Vector3::yAxis(0.75f))
+                ->rotateZ(120.0_degf);
+            (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+                ->translate(Vector3::yAxis(0.75f))
+                ->rotateZ(240.0_degf);
         }
 
     protected:
@@ -93,10 +92,10 @@ class MotionBlurExample: public Platform::GlutApplication {
             camera->draw(drawables);
             swapBuffers();
 
-            cameraObject->rotateX(deg(1.0f));
-            spheres[0]->rotateZ(deg(-2.0f));
-            spheres[1]->rotateZ(deg(1.0f));
-            spheres[2]->rotateZ(deg(-0.5f));
+            cameraObject->rotateX(1.0_degf);
+            spheres[0]->rotateZ(-2.0_degf);
+            spheres[1]->rotateZ(1.0_degf);
+            spheres[2]->rotateZ(-0.5_degf);
             Utility::sleep(40);
             redraw();
         }

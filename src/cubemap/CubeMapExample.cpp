@@ -16,7 +16,6 @@
 #include "CubeMapExample.h"
 
 #include <PluginManager/PluginManager.h>
-#include <Math/Constants.h>
 #include <AbstractShaderProgram.h>
 #include <DefaultFramebuffer.h>
 #include <Extensions.h>
@@ -46,7 +45,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
         ->translate(Vector3::zAxis(3.0f));
     (camera = new SceneGraph::Camera3D<>(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(deg(55.0f), 1.0f, 0.001f, 100.0f);
+        ->setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
 
     /* Load TGA importer plugin */
     PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -67,7 +66,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
 
     (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.3f))
-        ->rotate(deg(37.0f), Vector3::xAxis())
+        ->rotate(37.0_degf, Vector3::xAxis())
         ->translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
@@ -89,15 +88,15 @@ void CubeMapExample::drawEvent() {
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        cameraObject->rotate(deg(-10.0f), cameraObject->transformation().right().normalized());
+        cameraObject->rotate(-10.0_degf, cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        cameraObject->rotate(deg(10.0f), cameraObject->transformation().right().normalized());
+        cameraObject->rotate(10.0_degf, cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         GLfloat translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
-            ->rotateY(event.key() == KeyEvent::Key::Left ? deg(10.0f) : deg(-10.0f))
+            ->rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
             ->translate(Vector3::yAxis(translationY));
 
     } else return;

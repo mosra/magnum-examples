@@ -14,7 +14,6 @@
 */
 
 #include "PluginManager/PluginManager.h"
-#include <Math/Constants.h>
 #include <DefaultFramebuffer.h>
 #include <Platform/GlutApplication.h>
 #include "SceneGraph/Scene.h"

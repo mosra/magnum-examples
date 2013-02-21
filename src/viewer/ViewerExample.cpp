@@ -17,7 +17,6 @@
 #include <unordered_map>
 
 #include "PluginManager/PluginManager.h"
-#include <Math/Constants.h>
 #include <Mesh.h>
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
@@ -73,16 +72,16 @@ class ViewerExample: public FpsCounterExample {
         void keyPressEvent(KeyEvent& event) override {
             switch(event.key()) {
                 case KeyEvent::Key::Up:
-                    o->rotate(deg(10.0f), Vector3::xAxis(-1));
+                    o->rotateX(-10.0_degf);
                     break;
                 case KeyEvent::Key::Down:
-                    o->rotate(deg(10.0f), Vector3::xAxis(1));
+                    o->rotateX(10.0_degf);
                     break;
                 case KeyEvent::Key::Left:
-                    o->rotate(deg(10.0f), Vector3::yAxis(-1), SceneGraph::TransformationType::Local);
+                    o->rotateY(-10.0_degf, SceneGraph::TransformationType::Local);
                     break;
                 case KeyEvent::Key::Right:
-                    o->rotate(deg(10.0f), Vector3::yAxis(1), SceneGraph::TransformationType::Local);
+                    o->rotateY(10.0_degf, SceneGraph::TransformationType::Local);
                     break;
                 case KeyEvent::Key::PageUp:
                     cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
@@ -144,7 +143,7 @@ class ViewerExample: public FpsCounterExample {
 
             if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-            GLfloat angle = std::acos(Vector3::dot(previousPosition, currentPosition));
+            Rad angle = Math::acos(Vector3::dot(previousPosition, currentPosition));
             o->rotate(angle, axis.normalized());
 
             previousPosition = currentPosition;
@@ -205,7 +204,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
         ->translate(Vector3::zAxis(5));
     (camera = new SceneGraph::Camera3D<>(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(deg(35.0f), 1.0f, 0.001f, 100);
+        ->setPerspective(35.0_degf, 1.0f, 0.001f, 100);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 

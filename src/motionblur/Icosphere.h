@@ -34,7 +34,7 @@ class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
     public:
         Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
 
-        inline void advance(GLfloat angle) { rotate(angle, Vector3::zAxis()); }
+        inline void advance(Rad angle) { rotate(angle, Vector3::zAxis()); }
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
 
