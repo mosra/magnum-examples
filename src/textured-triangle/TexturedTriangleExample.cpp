@@ -18,7 +18,6 @@
 #include <array>
 #include <sstream>
 #include <PluginManager/PluginManager.h>
-#include <Math/Point2D.h>
 #include <Buffer.h>
 #include <DefaultFramebuffer.h>
 #include <MeshTools/Interleave.h>
@@ -30,7 +29,7 @@
 namespace Magnum { namespace Examples {
 
 TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Textured triangle example") {
-    constexpr static std::array<Point2D, 3> positions{{
+    constexpr static std::array<Vector2, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},
         {0.0f, 0.5f}

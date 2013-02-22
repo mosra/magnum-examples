@@ -24,7 +24,7 @@ namespace Magnum { namespace Examples {
 
 class ReflectorShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position;
+        typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
         enum: GLint {

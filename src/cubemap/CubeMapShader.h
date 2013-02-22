@@ -22,7 +22,7 @@ namespace Magnum { namespace Examples {
 
 class CubeMapShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point3D> Position;
+        typedef Attribute<0, Vector3> Position;
 
         enum: GLint {
             TextureLayer = 0

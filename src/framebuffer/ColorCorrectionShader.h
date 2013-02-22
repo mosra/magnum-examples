@@ -22,7 +22,7 @@ namespace Magnum { namespace Examples {
 
 class ColorCorrectionShader: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Point2D> Position;
+        typedef Attribute<0, Vector2> Position;
 
         enum: GLuint {
             OriginalColorOutput = 0,
