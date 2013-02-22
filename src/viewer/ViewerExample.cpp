@@ -233,8 +233,7 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-    Rad angle = Math::acos(Vector3::dot(previousPosition, currentPosition));
-    o->rotate(angle, axis.normalized());
+    o->rotate(Vector3::angle(previousPosition, currentPosition), axis.normalized());
 
     previousPosition = currentPosition;
 
