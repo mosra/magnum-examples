@@ -17,13 +17,12 @@ implement two required functions, one which is called after the window is
 resized and one for rendering into the window. We also need mesh encapsulating
 our triangle, buffer to store vertex data and shader (created below) which
 will take care of rendering.
-@dontinclude triangle/TriangleExample.h
+@dontinclude triangle/TriangleExample.cpp
 @skip class TriangleExample
 @until };
 
 In the constructor we pass necessary arguments to
 @ref Platform::GlutApplication "GlutApplication" class.
-@dontinclude triangle/TriangleExample.cpp
 @skipline TriangleExample::TriangleExample
 
 Now we specify vertex attributes, consisting of positions and colors. For
@@ -63,7 +62,6 @@ drawing.
 @skip TriangleExample::drawEvent
 @until }
 
- - @ref triangle/TriangleExample.h
  - @ref triangle/TriangleExample.cpp
 
 @section examples-triangle-shader Triangle shader

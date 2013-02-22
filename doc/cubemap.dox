@@ -88,7 +88,7 @@ transformation implementation. We typedef the classes to save us some typing:
 Our main class contains instance of our resource manager, scene, group of all
 drawable objects, object holding the camera and camera feature. We will also
 handle keyboard input for moving around the scene.
-@dontinclude cubemap/CubeMapExample.h
+@dontinclude cubemap/CubeMapExample.cpp
 @skip class CubeMapExample
 @until };
 
@@ -98,7 +98,6 @@ back-facing polygons (with clockwise vertex order) are excluded from rendering
 directly instead of waiting for depth test to discard them. We also configure
 our camera - we parent the object to the scene and move it to desired place,
 add camera feature to it and setup perspective projection.
-@dontinclude cubemap/CubeMapExample.cpp
 @skip CubeMapExample::CubeMapExample
 @until ->setPerspective
 
@@ -140,7 +139,6 @@ the scene to the user.
 
 - @ref cubemap/Types.h
 - @ref cubemap/Types.cpp
-- @ref cubemap/CubeMapExample.h
 - @ref cubemap/CubeMapExample.cpp
 
 @section examples-cubemap-cubemap Cube map object

@@ -13,8 +13,6 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "CubeMapExample.h"
-
 #include <PluginManager/PluginManager.h>
 #include <AbstractShaderProgram.h>
 #include <DefaultFramebuffer.h>
@@ -22,16 +20,37 @@
 #include <Mesh.h>
 #include <Renderer.h>
 #include <Texture.h>
+#include <Platform/GlutApplication.h>
+#include <SceneGraph/Drawable.h>
+#include <SceneGraph/Scene.h>
 #include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
 #include "Reflector.h"
+#include "Types.h"
 #include "configure.h"
 
 using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
+
+class CubeMapExample: public Platform::GlutApplication {
+    public:
+        CubeMapExample(int& argc, char** argv);
+
+    protected:
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
+
+    private:
+        CubeMapResourceManager resourceManager;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Object3D* cameraObject;
+        SceneGraph::Camera3D<>* camera;
+};
 
 CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, "Cube map example") {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);

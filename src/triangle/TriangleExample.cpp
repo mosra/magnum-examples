@@ -13,12 +13,29 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TriangleExample.h"
-
 #include <Math/Vector3.h>
+#include <Buffer.h>
 #include <DefaultFramebuffer.h>
+#include <Mesh.h>
+#include <Platform/GlutApplication.h>
+
+#include "TriangleShader.h"
 
 namespace Magnum { namespace Examples {
+
+class TriangleExample: public Platform::GlutApplication {
+    public:
+        TriangleExample(int& argc, char** argv);
+
+    protected:
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+
+    private:
+        Buffer buffer;
+        Magnum::Mesh mesh;
+        TriangleShader shader;
+};
 
 TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Triangle example") {
     constexpr static Vector3 data[] = {

@@ -16,7 +16,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @todo MotionBlur: handle resizing for the second framebuffer
 @todo MotionBlur: make the canvas non-object (or 2D object)?
 
-@example triangle/TriangleExample.h
 @example triangle/TriangleExample.cpp
 @example triangle/CMakeLists.txt
 @example triangle/TriangleShader.h
@@ -24,7 +23,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @example triangle/TriangleShader.vert
 @example triangle/TriangleShader.frag
 
-@example textured-triangle/TexturedTriangleExample.h
 @example textured-triangle/TexturedTriangleExample.cpp
 @example textured-triangle/configure.h.cmake
 @example textured-triangle/CMakeLists.txt
@@ -33,7 +31,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @example textured-triangle/TexturedTriangleShader.vert
 @example textured-triangle/TexturedTriangleShader.frag
 
-@example cubemap/CubeMapExample.h
 @example cubemap/CubeMapExample.cpp
 @example cubemap/CubeMap.h
 @example cubemap/CubeMap.cpp

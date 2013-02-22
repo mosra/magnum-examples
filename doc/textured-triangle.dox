@@ -24,7 +24,7 @@ these features:
 
 The basic skeleton of main example class remains similar to previous example,
 except for added texture.
-@dontinclude textured-triangle/TexturedTriangleExample.h
+@dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip class TexturedTriangle
 @until };
 
@@ -35,7 +35,6 @@ texture coordinates) and fills the buffer with the result. You may think that
 is is possible to have them interleaved from the beginning (such as using
 array of `GLfloat`s), but sometimes it is inconvenient or not possible (e.g.
 when loading the data from a file).
-@dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip TexturedTriangleExample::TexturedTriangleExample
 @until textureCoordinates);
 
@@ -84,7 +83,6 @@ perform the drawing. Last thing is again buffer swap.
 @until }
 @until }
 
- - @ref textured-triangle/TexturedTriangleExample.h
  - @ref textured-triangle/TexturedTriangleExample.cpp
 
 @section examples-textured-triangle-shader Textured triangle shader

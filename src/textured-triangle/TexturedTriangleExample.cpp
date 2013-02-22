@@ -13,20 +13,37 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "TexturedTriangleExample.h"
-
 #include <array>
 #include <sstream>
 #include <PluginManager/PluginManager.h>
 #include <Buffer.h>
 #include <DefaultFramebuffer.h>
+#include <Mesh.h>
+#include <Texture.h>
 #include <MeshTools/Interleave.h>
+#include <Platform/GlutApplication.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
 
+#include "TexturedTriangleShader.h"
 #include "configure.h"
 
 namespace Magnum { namespace Examples {
+
+class TexturedTriangleExample: public Platform::GlutApplication {
+    public:
+        TexturedTriangleExample(int& argc, char** argv);
+
+    protected:
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+
+    private:
+        Buffer buffer;
+        Magnum::Mesh mesh;
+        TexturedTriangleShader shader;
+        Magnum::Texture2D texture;
+};
 
 TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Textured triangle example") {
     constexpr static std::array<Vector2, 3> positions{{
