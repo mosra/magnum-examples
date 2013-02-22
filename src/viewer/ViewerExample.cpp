@@ -45,123 +45,18 @@ namespace Magnum { namespace Examples {
 class ViewerExample: public FpsCounterExample {
     public:
         ViewerExample(int& argc, char** argv);
-
-        ~ViewerExample() {
-            for(auto i: meshes) {
-                delete std::get<0>(i.second);
-                delete std::get<1>(i.second);
-                delete std::get<2>(i.second);
-            }
-        }
+        ~ViewerExample();
 
     protected:
-        inline void viewportEvent(const Vector2i& size) override {
-            defaultFramebuffer.setViewport({{}, size});
-            camera->setViewport(size);
-            FpsCounterExample::viewportEvent(size);
-        }
-
-        void drawEvent() override {
-            defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
-            camera->draw(drawables);
-            swapBuffers();
-
-            if(fpsCounterEnabled()) redraw();
-        }
-
-        void keyPressEvent(KeyEvent& event) override {
-            switch(event.key()) {
-                case KeyEvent::Key::Up:
-                    o->rotateX(-10.0_degf);
-                    break;
-                case KeyEvent::Key::Down:
-                    o->rotateX(10.0_degf);
-                    break;
-                case KeyEvent::Key::Left:
-                    o->rotateY(-10.0_degf, SceneGraph::TransformationType::Local);
-                    break;
-                case KeyEvent::Key::Right:
-                    o->rotateY(10.0_degf, SceneGraph::TransformationType::Local);
-                    break;
-                case KeyEvent::Key::PageUp:
-                    cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
-                    break;
-                case KeyEvent::Key::PageDown:
-                    cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
-                    break;
-                #ifndef MAGNUM_TARGET_GLES
-                case KeyEvent::Key::Home:
-                    Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
-                    wireframe = !wireframe;
-                    break;
-                #endif
-                case KeyEvent::Key::End:
-                    if(fpsCounterEnabled()) printCounterStatistics();
-                    else resetCounter();
-
-                    setFpsCounterEnabled(!fpsCounterEnabled());
-                    break;
-                default: break;
-            }
-
-            redraw();
-        }
-
-        void mousePressEvent(MouseEvent& event) override {
-            switch(event.button()) {
-                case MouseEvent::Button::Left:
-                    previousPosition = positionOnSphere(event.position());
-                    break;
-                case MouseEvent::Button::WheelUp:
-                case MouseEvent::Button::WheelDown: {
-                    /* Distance between origin and near camera clipping plane */
-                    GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
-
-                    /* Move 15% of the distance back or forward */
-                    if(event.button() == MouseEvent::Button::WheelUp)
-                        distance *= 1 - 1/0.85f;
-                    else
-                        distance *= 1 - 0.85f;
-                    cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
-
-                    redraw();
-                    break;
-                }
-                default: ;
-            }
-        }
-
-        void mouseReleaseEvent(MouseEvent& event) override {
-            if(event.button() == MouseEvent::Button::Left)
-                previousPosition = Vector3();
-        }
-
-        void mouseMoveEvent(MouseMoveEvent& event) override {
-            Vector3 currentPosition = positionOnSphere(event.position());
-
-            Vector3 axis = Vector3::cross(previousPosition, currentPosition);
-
-            if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
-
-            Rad angle = Math::acos(Vector3::dot(previousPosition, currentPosition));
-            o->rotate(angle, axis.normalized());
-
-            previousPosition = currentPosition;
-
-            redraw();
-        }
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
 
     private:
-        Vector3 positionOnSphere(const Vector2i& _position) const {
-            Vector2i viewport = camera->viewport();
-            Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
-                             _position.y()*2.0f/viewport.y() - 1.0f);
-
-            GLfloat length = position.length();
-            Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
-            result.y() *= -1.0f;
-            return result.normalized();
-        }
+        Vector3 positionOnSphere(const Vector2i& _position) const;
 
         void addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId);
 
@@ -240,6 +135,121 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
 
     colladaImporter->close();
     delete colladaImporter.release();
+}
+
+ViewerExample::~ViewerExample() {
+    for(auto i: meshes) {
+        delete std::get<0>(i.second);
+        delete std::get<1>(i.second);
+        delete std::get<2>(i.second);
+    }
+}
+
+void ViewerExample::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
+    camera->setViewport(size);
+    FpsCounterExample::viewportEvent(size);
+}
+
+void ViewerExample::drawEvent() {
+    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+    camera->draw(drawables);
+    swapBuffers();
+
+    if(fpsCounterEnabled()) redraw();
+}
+
+void ViewerExample::keyPressEvent(KeyEvent& event) {
+    switch(event.key()) {
+        case KeyEvent::Key::Up:
+            o->rotateX(-10.0_degf);
+            break;
+        case KeyEvent::Key::Down:
+            o->rotateX(10.0_degf);
+            break;
+        case KeyEvent::Key::Left:
+            o->rotateY(-10.0_degf, SceneGraph::TransformationType::Local);
+            break;
+        case KeyEvent::Key::Right:
+            o->rotateY(10.0_degf, SceneGraph::TransformationType::Local);
+            break;
+        case KeyEvent::Key::PageUp:
+            cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
+            break;
+        case KeyEvent::Key::PageDown:
+            cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
+            break;
+        #ifndef MAGNUM_TARGET_GLES
+        case KeyEvent::Key::Home:
+            Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
+            wireframe = !wireframe;
+            break;
+        #endif
+        case KeyEvent::Key::End:
+            if(fpsCounterEnabled()) printCounterStatistics();
+            else resetCounter();
+
+            setFpsCounterEnabled(!fpsCounterEnabled());
+            break;
+        default: break;
+    }
+
+    redraw();
+}
+
+void ViewerExample::mousePressEvent(MouseEvent& event) {
+    switch(event.button()) {
+        case MouseEvent::Button::Left:
+            previousPosition = positionOnSphere(event.position());
+            break;
+        case MouseEvent::Button::WheelUp:
+        case MouseEvent::Button::WheelDown: {
+            /* Distance between origin and near camera clipping plane */
+            GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
+
+            /* Move 15% of the distance back or forward */
+            if(event.button() == MouseEvent::Button::WheelUp)
+                distance *= 1 - 1/0.85f;
+            else
+                distance *= 1 - 0.85f;
+            cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
+
+            redraw();
+            break;
+        }
+        default: ;
+    }
+}
+
+void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
+    if(event.button() == MouseEvent::Button::Left)
+        previousPosition = Vector3();
+}
+
+void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
+    Vector3 currentPosition = positionOnSphere(event.position());
+
+    Vector3 axis = Vector3::cross(previousPosition, currentPosition);
+
+    if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+
+    Rad angle = Math::acos(Vector3::dot(previousPosition, currentPosition));
+    o->rotate(angle, axis.normalized());
+
+    previousPosition = currentPosition;
+
+    redraw();
+}
+
+Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
+    Vector2i viewport = camera->viewport();
+    Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
+                     _position.y()*2.0f/viewport.y() - 1.0f);
+
+    GLfloat length = position.length();
+    Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
+    result.y() *= -1.0f;
+    return result.normalized();
 }
 
 void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId) {
