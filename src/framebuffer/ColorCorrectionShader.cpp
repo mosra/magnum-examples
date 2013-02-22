@@ -27,7 +27,7 @@ ColorCorrectionShader::ColorCorrectionShader() {
 
     link();
 
-    matrixUniform = uniformLocation("matrix");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
     setUniform(uniformLocation("colorCorrectionTextureData"), ColorCorrectionTextureLayer);

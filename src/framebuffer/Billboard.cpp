@@ -40,8 +40,8 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
 }
 
 void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D<>* camera) {
-    shader.use();
-    shader.setMatrixUniform(camera->projectionMatrix()*transformationMatrix);
+    shader.setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix)
+        ->use();
     texture.bind(ColorCorrectionShader::TextureLayer);
     colorCorrectionTexture.bind(ColorCorrectionShader::ColorCorrectionTextureLayer);
 

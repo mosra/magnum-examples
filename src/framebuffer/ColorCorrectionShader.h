@@ -37,12 +37,13 @@ class ColorCorrectionShader: public AbstractShaderProgram {
 
         ColorCorrectionShader();
 
-        inline void setMatrixUniform(const Matrix3& matrix) {
-            setUniform(matrixUniform, matrix);
+        inline ColorCorrectionShader* setTransformationProjectionMatrix(const Matrix3& matrix) {
+            setUniform(transformationProjectionMatrixUniform, matrix);
+            return this;
         }
 
     private:
-        GLint matrixUniform;
+        GLint transformationProjectionMatrixUniform;
 };
 
 }}
