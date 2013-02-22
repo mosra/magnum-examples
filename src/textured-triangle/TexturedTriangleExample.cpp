@@ -40,7 +40,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
         {0.5f, 1.0f}
     }};
 
-    Magnum::MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw,
+    MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw,
         positions, textureCoordinates);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setVertexCount(3)
@@ -48,9 +48,9 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
 
     /* Load TGA importer plugin */
     Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Magnum::Trade::AbstractImporter* importer;
+    Trade::AbstractImporter* importer;
     if(manager.load("TgaImporter") != Corrade::PluginManager::AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
-        Corrade::Utility::Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
 
@@ -58,7 +58,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     Corrade::Utility::Resource rs("data");
     std::istringstream in(rs.get("stone.tga"));
     if(!importer->open(in) || !importer->image2DCount()) {
-        Corrade::Utility::Error() << "Cannot load texture";
+        Error() << "Cannot load texture";
         std::exit(2);
     }
 

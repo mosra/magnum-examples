@@ -20,10 +20,10 @@
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
+class TexturedTriangleShader: public AbstractShaderProgram {
     public:
-        typedef Magnum::AbstractShaderProgram::Attribute<0, Magnum::Vector2> Position;
-        typedef Magnum::AbstractShaderProgram::Attribute<1, Magnum::Vector2> TextureCoordinates;
+        typedef Attribute<0, Vector2> Position;
+        typedef Attribute<1, Vector2> TextureCoordinates;
 
         enum: GLint {
             TextureLayer = 0
@@ -31,7 +31,7 @@ class TexturedTriangleShader: public Magnum::AbstractShaderProgram {
 
         TexturedTriangleShader();
 
-        inline TexturedTriangleShader* setBaseColor(const Color3<GLfloat>& color) {
+        inline TexturedTriangleShader* setBaseColor(const Color3<>& color) {
             setUniform(baseColorUniform, color);
             return this;
         }

@@ -20,8 +20,8 @@
 namespace Magnum { namespace Examples {
 
 TriangleShader::TriangleShader() {
-    attachShader(Magnum::Shader::fromFile(Version::GL330, Magnum::Shader::Type::Vertex, "TriangleShader.vert"));
-    attachShader(Magnum::Shader::fromFile(Version::GL330, Magnum::Shader::Type::Fragment, "TriangleShader.frag"));
+    attachShader(Shader::fromFile(Version::GL330, Shader::Type::Vertex, "TriangleShader.vert"));
+    attachShader(Shader::fromFile(Version::GL330, Shader::Type::Fragment, "TriangleShader.frag"));
 
     link();
 }
