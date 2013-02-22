@@ -17,12 +17,9 @@
 
 #include <ResourceManager.h>
 #include <SceneGraph/MatrixTransformation3D.h>
+#include <Trade/Trade.h>
 
 namespace Magnum {
-
-namespace Trade {
-    class AbstractImporter;
-}
 
 extern template class ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
 

@@ -14,9 +14,10 @@
 */
 
 #include "ColorCorrectionCamera.h"
-#include "ColorCorrectionShader.h"
 
 #include <DefaultFramebuffer.h>
+
+#include "ColorCorrectionShader.h"
 
 namespace Magnum { namespace Examples {
 

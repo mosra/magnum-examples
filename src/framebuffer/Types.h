@@ -17,13 +17,7 @@
 
 #include <SceneGraph/MatrixTransformation2D.h>
 
-namespace Magnum {
-
-namespace SceneGraph {
-    template<class> class Scene;
-}
-
-namespace Examples {
+namespace Magnum { namespace Examples {
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D<>> Scene2D;

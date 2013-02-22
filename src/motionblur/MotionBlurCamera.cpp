@@ -16,8 +16,7 @@
 #include "MotionBlurCamera.h"
 
 #include <sstream>
-
-#include "Utility/Resource.h"
+#include <Utility/Resource.h>
 #include <DefaultFramebuffer.h>
 #include <Shader.h>
 

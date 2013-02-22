@@ -16,9 +16,9 @@
 */
 
 #include <BufferImage.h>
-#include "Texture.h"
-#include "AbstractShaderProgram.h"
-#include "Mesh.h"
+#include <Texture.h>
+#include <AbstractShaderProgram.h>
+#include <Mesh.h>
 #include <SceneGraph/Camera3D.h>
 
 #include "Types.h"

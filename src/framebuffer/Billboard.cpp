@@ -15,7 +15,7 @@
 
 #include "Billboard.h"
 
-#include "Buffer.h"
+#include <Buffer.h>
 #include <Primitives/Square.h>
 #include <SceneGraph/Camera2D.h>
 #include <Trade/MeshData2D.h>

@@ -16,20 +16,20 @@
 #include <memory>
 #include <unordered_map>
 
-#include "PluginManager/PluginManager.h"
-#include <Mesh.h>
+#include <PluginManager/PluginManager.h>
 #include <DefaultFramebuffer.h>
+#include <Mesh.h>
 #include <Renderer.h>
-#include "Trade/AbstractImporter.h"
-#include "Trade/MeshData3D.h"
-#include "Trade/MeshObjectData3D.h"
-#include "Trade/SceneData.h"
-#include "MeshTools/Tipsify.h"
-#include "MeshTools/Interleave.h"
-#include "MeshTools/CompressIndices.h"
-#include "SceneGraph/Scene.h"
+#include <MeshTools/Tipsify.h>
+#include <MeshTools/Interleave.h>
+#include <MeshTools/CompressIndices.h>
+#include <SceneGraph/Scene.h>
 #include <SceneGraph/Camera3D.h>
-#include "Shaders/PhongShader.h"
+#include <Shaders/PhongShader.h>
+#include <Trade/AbstractImporter.h>
+#include <Trade/MeshData3D.h>
+#include <Trade/MeshObjectData3D.h>
+#include <Trade/SceneData.h>
 
 #include "FpsCounterExample.h"
 #include "ViewedObject.h"

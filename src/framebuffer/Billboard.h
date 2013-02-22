@@ -17,11 +17,11 @@
 
 #include <Buffer.h>
 #include <BufferTexture.h>
-#include "Mesh.h"
-#include "Texture.h"
-#include "SceneGraph/Object.h"
+#include <Mesh.h>
+#include <Texture.h>
+#include <SceneGraph/Object.h>
 #include <SceneGraph/Drawable.h>
-#include "Trade/ImageData.h"
+#include <Trade/ImageData.h>
 
 #include "ColorCorrectionShader.h"
 #include "Types.h"

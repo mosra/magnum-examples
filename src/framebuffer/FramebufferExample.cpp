@@ -13,11 +13,11 @@
     GNU Lesser General Public License version 3 for more details.
 */
 
-#include "PluginManager/PluginManager.h"
+#include <PluginManager/PluginManager.h>
 #include <DefaultFramebuffer.h>
 #include <Platform/GlutApplication.h>
-#include "SceneGraph/Scene.h"
-#include "Trade/AbstractImporter.h"
+#include <SceneGraph/Scene.h>
+#include <Trade/AbstractImporter.h>
 
 #include "Billboard.h"
 #include "ColorCorrectionCamera.h"

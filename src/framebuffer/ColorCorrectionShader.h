@@ -16,7 +16,7 @@
 */
 
 #include <Math/Matrix3.h>
-#include "AbstractShaderProgram.h"
+#include <AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 

@@ -15,12 +15,12 @@
 
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
-#include "SceneGraph/Scene.h"
-#include "MeshTools/CompressIndices.h"
-#include "MeshTools/Interleave.h"
+#include <MeshTools/CompressIndices.h>
+#include <MeshTools/Interleave.h>
 #include <Platform/GlutApplication.h>
-#include "Primitives/Icosphere.h"
-#include "Shaders/PhongShader.h"
+#include <Primitives/Icosphere.h>
+#include <SceneGraph/Scene.h>
+#include <Shaders/PhongShader.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
