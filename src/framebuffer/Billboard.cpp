@@ -36,7 +36,7 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
 
     colorCorrectionTexture.setBuffer(BufferTexture::InternalFormat::R32F, colorCorrectionBuffer);
 
-    scale(Vector2::yScale(GLfloat(image->size()[1])/image->size()[0]));
+    scale(Vector2::yScale(Float(image->size()[1])/image->size()[0]));
 }
 
 void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D<>* camera) {

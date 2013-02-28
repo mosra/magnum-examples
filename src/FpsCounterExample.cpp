@@ -39,12 +39,12 @@ void FpsCounterExample::redraw() {
         #ifndef MAGNUM_TARGET_GLES
         if(primitiveEnabled) {
             primitiveQuery.end();
-            primitives += primitiveQuery.result<GLuint>();
+            primitives += primitiveQuery.result<UnsignedInt>();
             primitiveQuery.begin(Query::Target::PrimitivesGenerated);
         }
         if(sampleEnabled) {
             sampleQuery.end();
-            samples += sampleQuery.result<GLuint>();
+            samples += sampleQuery.result<UnsignedInt>();
             sampleQuery.begin(SampleQuery::Target::SamplesPassed);
         }
         #endif

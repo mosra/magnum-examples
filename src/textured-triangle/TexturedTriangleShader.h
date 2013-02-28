@@ -25,7 +25,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector2> Position;
         typedef Attribute<1, Vector2> TextureCoordinates;
 
-        enum: GLint {
+        enum: Int {
             TextureLayer = 0
         };
 
@@ -37,7 +37,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
         }
 
     private:
-        GLint baseColorUniform;
+        Int baseColorUniform;
 };
 
 }}

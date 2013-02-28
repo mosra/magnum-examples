@@ -48,7 +48,7 @@ class ViewedObject: public Object3D, SceneGraph::Drawable3D<> {
         Vector3 ambientColor,
             diffuseColor,
             specularColor;
-        GLfloat shininess;
+        Float shininess;
         Shaders::PhongShader* shader;
 };
 

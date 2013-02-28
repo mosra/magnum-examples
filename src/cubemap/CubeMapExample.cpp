@@ -113,7 +113,7 @@ void CubeMapExample::keyPressEvent(KeyEvent& event) {
         cameraObject->rotate(10.0_degf, cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
-        GLfloat translationY = cameraObject->transformation().translation().y();
+        Float translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
             ->rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
             ->translate(Vector3::yAxis(translationY));

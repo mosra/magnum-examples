@@ -41,7 +41,7 @@ class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
     private:
         Mesh* mesh;
         Shaders::PhongShader* shader;
-        Color3<GLfloat> color;
+        Color3<> color;
 };
 
 }}

@@ -24,13 +24,13 @@ class ColorCorrectionShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector2> Position;
 
-        enum: GLuint {
+        enum: UnsignedInt {
             OriginalColorOutput = 0,
             GrayscaleOutput = 1,
             ColorCorrectedOutput = 2
         };
 
-        enum: GLint {
+        enum: Int {
             TextureLayer = 0,
             ColorCorrectionTextureLayer = 1
         };
@@ -43,7 +43,7 @@ class ColorCorrectionShader: public AbstractShaderProgram {
         }
 
     private:
-        GLint transformationProjectionMatrixUniform;
+        Int transformationProjectionMatrixUniform;
 };
 
 }}

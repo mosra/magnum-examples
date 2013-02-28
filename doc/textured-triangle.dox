@@ -33,8 +33,8 @@ positions and the other containing texture coordinates. We then use
 MeshTools::interleave() which interleaves them together (first position, then
 texture coordinates) and fills the buffer with the result. You may think that
 is is possible to have them interleaved from the beginning (such as using
-array of `GLfloat`s), but sometimes it is inconvenient or not possible (e.g.
-when loading the data from a file).
+array of floats), but sometimes it is inconvenient or not possible (e.g. when
+loading the data from a file).
 @skip TexturedTriangleExample::TexturedTriangleExample
 @until textureCoordinates);
 

@@ -205,7 +205,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
         case MouseEvent::Button::WheelUp:
         case MouseEvent::Button::WheelDown: {
             /* Distance between origin and near camera clipping plane */
-            GLfloat distance = cameraObject->transformation().translation().z()-0-camera->near();
+            Float distance = cameraObject->transformation().translation().z()-0-camera->near();
 
             /* Move 15% of the distance back or forward */
             if(event.button() == MouseEvent::Button::WheelUp)
@@ -245,7 +245,7 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
     Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
                      _position.y()*2.0f/viewport.y() - 1.0f);
 
-    GLfloat length = position.length();
+    Float length = position.length();
     Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
     result.y() *= -1.0f;
     return result.normalized();

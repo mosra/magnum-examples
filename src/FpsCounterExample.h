@@ -132,7 +132,7 @@ class FpsCounterExample: public Application {
         double minimalDuration, totalDuration;
         bool fpsEnabled;
         #ifndef MAGNUM_TARGET_GLES
-        GLuint primitives, totalPrimitives, samples, totalSamples;
+        UnsignedInt primitives, totalPrimitives, samples, totalSamples;
         bool primitiveEnabled, sampleEnabled;
         Query primitiveQuery;
         SampleQuery sampleQuery;

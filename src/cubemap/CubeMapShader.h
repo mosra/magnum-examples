@@ -24,7 +24,7 @@ class CubeMapShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position;
 
-        enum: GLint {
+        enum: Int {
             TextureLayer = 0
         };
 
@@ -36,7 +36,7 @@ class CubeMapShader: public AbstractShaderProgram {
         }
 
     private:
-        GLint transformationProjectionMatrixUniform;
+        Int transformationProjectionMatrixUniform;
 };
 
 }}

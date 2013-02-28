@@ -27,7 +27,7 @@ class ReflectorShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
-        enum: GLint {
+        enum: Int {
             TextureLayer = 0,
             TarnishTextureLayer = 1
         };
@@ -54,18 +54,18 @@ class ReflectorShader: public AbstractShaderProgram {
             return this;
         }
 
-        inline ReflectorShader* setReflectivity(GLfloat reflectivity) {
+        inline ReflectorShader* setReflectivity(Float reflectivity) {
             setUniform(reflectivityUniform, reflectivity);
             return this;
         }
 
-        inline ReflectorShader* setDiffuseColor(const Color3<GLfloat>& color) {
+        inline ReflectorShader* setDiffuseColor(const Color3<>& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }
 
     private:
-        GLint transformationMatrixUniform,
+        Int transformationMatrixUniform,
             normalMatrixUniform,
             projectionMatrixUniform,
             cameraMatrixUniform,

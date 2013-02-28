@@ -23,7 +23,7 @@
 namespace Magnum { namespace Examples {
 
 MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte), currentFrame(0), canvas(frames) {
-    for(GLint i = 0; i != FrameCount; ++i) {
+    for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Texture2D::Wrapping::ClampToEdge)
             ->setMinificationFilter(Texture2D::Filter::NearestNeighbor)
@@ -32,7 +32,7 @@ MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Came
 }
 
 MotionBlurCamera::~MotionBlurCamera() {
-    for(GLint i = 0; i != FrameCount; ++i)
+    for(Int i = 0; i != FrameCount; ++i)
         delete frames[i];
 }
 
@@ -40,13 +40,13 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
-    std::size_t textureSize = size.x()*size.y()*AbstractImage::pixelSize(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte);
-    GLubyte* texture = new GLubyte[textureSize]();
-    framebuffer.setData(size, AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, texture, Buffer::Usage::DynamicDraw);
+    std::size_t textureSize = size.product()*AbstractImage::pixelSize(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte);
+    UnsignedByte* texture = new UnsignedByte[textureSize]();
+    framebuffer.setData(size, AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, nullptr, Buffer::Usage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
-    for(GLint i = 0; i != FrameCount; ++i)
+    for(Int i = 0; i != FrameCount; ++i)
         frames[i]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 }
 
@@ -69,7 +69,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     link();
 
     std::stringstream ss;
-    for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i) {
+    for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i) {
         ss.str("");
         ss << "frame[" << i << "]";
         setUniform(uniformLocation(ss.str()), i);
@@ -92,7 +92,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3
 
 void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {
     shader.use();
-    for(GLint i = 0; i != MotionBlurCamera::FrameCount; ++i)
+    for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i)
         frames[i]->bind((i+currentFrame)%MotionBlurCamera::FrameCount);
     mesh.draw();
 }

@@ -70,9 +70,9 @@ FramebufferExample::FramebufferExample(int& argc, char** argv): GlutApplication(
     }
 
     /* Create color correction texture */
-    GLfloat texture[1024];
+    Float texture[1024];
     for(std::size_t i = 0; i != 1024; ++i) {
-        GLfloat x = i*2/1023.0-1;
+        Float x = i*2/1023.0-1;
         texture[i] = (std::sin(x*Constants::pi())/3.7f+x+1)/2;
     }
     colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
