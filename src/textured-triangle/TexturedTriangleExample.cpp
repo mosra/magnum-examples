@@ -81,8 +81,8 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
 
     /* Set texture data and parameters */
     texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
-        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMagnificationFilter(Texture2D::Filter::Linear)
+        ->setMinificationFilter(Texture2D::Filter::Linear)
         ->setImage(0, Texture2D::InternalFormat::RGB8, importer->image2D(0));
 
     /* We don't need the importer plugin anymore */

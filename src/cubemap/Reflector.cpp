@@ -62,8 +62,8 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
 
         Texture2D* texture = new Texture2D;
         texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
-            ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
-            ->setMinificationFilter(Texture2D::Filter::LinearInterpolation, Texture2D::Mipmap::LinearInterpolation)
+            ->setMagnificationFilter(Texture2D::Filter::Linear)
+            ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
             ->setStorage(Math::log2(size.min())+1, Texture2D::InternalFormat::RGB8, size)
             ->setSubImage(0, {}, importer->image2D(0))
             ->generateMipmap();

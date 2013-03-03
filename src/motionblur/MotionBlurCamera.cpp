@@ -26,8 +26,8 @@ MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Came
     for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Texture2D::Wrapping::ClampToEdge)
-            ->setMinificationFilter(Texture2D::Filter::NearestNeighbor)
-            ->setMagnificationFilter(Texture2D::Filter::NearestNeighbor);
+            ->setMinificationFilter(Texture2D::Filter::Nearest)
+            ->setMagnificationFilter(Texture2D::Filter::Nearest);
     }
 }
 

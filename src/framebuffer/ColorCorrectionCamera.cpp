@@ -48,21 +48,21 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{0, defaultFramebuffer.viewport().height()/2}, {defaultFramebuffer.viewport().width()/2, defaultFramebuffer.viewport().height()}},
-        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::Linear);
 
     /* Grayscale at top right */
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Grayscale));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {defaultFramebuffer.viewport().size()/2, defaultFramebuffer.viewport().size()},
-        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::Linear);
 
     /* Color corrected at bottom */
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Corrected));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{defaultFramebuffer.viewport().width()/4, 0}, {defaultFramebuffer.viewport().width()*3/4, defaultFramebuffer.viewport().height()/2}},
-        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::LinearInterpolation);
+        AbstractFramebuffer::Blit::ColorBuffer, AbstractFramebuffer::BlitFilter::Linear);
 }
 
 void ColorCorrectionCamera::setViewport(const Vector2i& size) {

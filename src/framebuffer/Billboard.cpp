@@ -30,8 +30,8 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
         ->addVertexBuffer(&buffer, 0, ColorCorrectionShader::Position());
 
     texture.setWrapping(Texture2D::Wrapping::ClampToBorder)
-        ->setMagnificationFilter(Texture2D::Filter::LinearInterpolation)
-        ->setMinificationFilter(Texture2D::Filter::LinearInterpolation)
+        ->setMagnificationFilter(Texture2D::Filter::Linear)
+        ->setMinificationFilter(Texture2D::Filter::Linear)
         ->setImage(0, Texture2D::InternalFormat::RGBA8, image);
 
     colorCorrectionTexture.setBuffer(BufferTexture::InternalFormat::R32F, colorCorrectionBuffer);

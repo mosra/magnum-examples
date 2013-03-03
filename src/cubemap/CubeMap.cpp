@@ -60,8 +60,8 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         CubeMapTexture* cubeMap = new CubeMapTexture;
 
         cubeMap->setWrapping(CubeMapTexture::Wrapping::ClampToEdge)
-            ->setMagnificationFilter(CubeMapTexture::Filter::LinearInterpolation)
-            ->setMinificationFilter(CubeMapTexture::Filter::LinearInterpolation, CubeMapTexture::Mipmap::LinearInterpolation);
+            ->setMagnificationFilter(CubeMapTexture::Filter::Linear)
+            ->setMinificationFilter(CubeMapTexture::Filter::Linear, CubeMapTexture::Mipmap::Linear);
 
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         importer->open(prefix + "+x.tga");
