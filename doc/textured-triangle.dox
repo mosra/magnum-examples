@@ -65,8 +65,8 @@ incomplete.
 @skip texture.setWrapping
 @until ;
 @note Setters in most %Magnum classes are implemented in a way which allows
-    [method chaining](http://en.wikipedia.org/wiki/Method_chaining) - so you
-    don't have to write repeated code.
+    @ref method-chaining "method chaining" - so you don't have to write repeated
+    code.
 
 The importer is now not needed and we can delete it. If we wouldn't do that,
 next to the obvious memory leak of the instance and data of opened image the
