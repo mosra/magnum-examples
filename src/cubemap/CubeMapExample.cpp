@@ -69,7 +69,7 @@ CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, ar
     /* Load TGA importer plugin */
     PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
+    if(manager.load("TgaImporter") != LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TGAImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }

@@ -66,7 +66,7 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
     /* Load TGA importer plugin */
     Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != Corrade::PluginManager::AbstractPluginManager::LoadOk || !(importer = manager.instance("TgaImporter"))) {
+    if(manager.load("TgaImporter") != Corrade::PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
