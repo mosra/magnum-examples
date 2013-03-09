@@ -3,10 +3,10 @@ find_package(Magnum REQUIRED
     Primitives
     SceneGraph)
 
+include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_resource(ColorCorrectionShader shader
     ColorCorrectionShader.frag

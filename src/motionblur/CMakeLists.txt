@@ -10,6 +10,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS})
 corrade_add_resource(MotionBlurShaders shaders
     MotionBlurShader.frag
     MotionBlurShader.vert)
+
 add_executable(motionblurExample
     MotionBlurCamera.cpp
     MotionBlurExample.cpp

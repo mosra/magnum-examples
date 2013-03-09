@@ -1,9 +1,3 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wold-style-cast -Winit-self -pedantic -std=c++0x -fvisibility=hidden -fno-rtti -fno-exceptions")
-
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdouble-promotion")
-endif()
-
 find_package(Magnum REQUIRED)
 if(NOT MAGNUM_TARGET_GLES)
     find_package(Magnum REQUIRED GlutApplication)
@@ -13,11 +7,11 @@ else()
     set(APPLICATION_LIBRARIES ${MAGNUM_XEGLAPPLICATION_LIBRARIES})
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MAGNUM_INCLUDE_DIRS})
 
 add_library(MagnumExample STATIC
-    FpsCounterExample.cpp
-)
+    FpsCounterExample.cpp)
 set(MAGNUM_EXAMPLE_LIBRARIES MagnumExample ${APPLICATION_LIBRARIES})
 
 if(NOT MAGNUM_TARGET_GLES)

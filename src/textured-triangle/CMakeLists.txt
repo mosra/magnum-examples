@@ -9,6 +9,7 @@ corrade_add_resource(TexturedTriangleData data
     TexturedTriangleShader.frag
     TexturedTriangleShader.vert
     stone.tga)
+
 add_executable(texturedTriangleExample
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
