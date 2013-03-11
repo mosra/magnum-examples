@@ -15,24 +15,25 @@
 # components. The base library depends on Corrade, OpenGL and GLEW
 # libraries. Additional dependencies are specified by the components. The
 # optional components are:
-#  DebugTools    - DebugTools library (depends on MeshTools, Physics,
-#                  Primitives, SceneGraph and Shaders components)
-#  MeshTools     - MeshTools library
-#  Physics       - Physics library
-#  Primitives    - Library with stock geometric primitives (static)
-#  SceneGraph    - Scene graph library
-#  Shaders       - Library with stock shaders
-#  Text          - Text rendering library (depends on TextureTools component,
-#                  FreeType library and possibly HarfBuzz library, see below)
-#  TextureTools  - TextureTools library
-#  GlxApplication - GLX application (depends on X11 libraries)
-#  XEglApplication - X/EGL application (depends on EGL and X11 libraries)
+#  DebugTools       - DebugTools library (depends on MeshTools, Physics,
+#                     Primitives, SceneGraph and Shaders components)
+#  MeshTools        - MeshTools library
+#  Physics          - Physics library
+#  Primitives       - Library with stock geometric primitives (static)
+#  SceneGraph       - Scene graph library
+#  Shaders          - Library with stock shaders
+#  Text             - Text rendering library (depends on TextureTools
+#                     component, FreeType library and possibly HarfBuzz
+#                     library, see below)
+#  TextureTools     - TextureTools library
+#  GlxApplication   - GLX application (depends on X11 libraries)
+#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
 #  WindowlessGlxApplication - Windowless GLX application (depends on X11
-#   libraries)
-#  GlutApplication - GLUT application (depends on GLUT library)
-#  Sdl2Application - SDL2 application (depends on SDL2 library)
-#  NaClApplication - NaCl application (only if targetting Google Chrome
-#   Native Client)
+#                     libraries)
+#  GlutApplication  - GLUT application (depends on GLUT library)
+#  Sdl2Application  - SDL2 application (depends on SDL2 library)
+#  NaClApplication  - NaCl application (only if targetting Google Chrome
+#                     Native Client)
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -44,10 +45,12 @@
 # Features of found Magnum library are exposed in these variables:
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
-#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES emulation
-#                         on desktop OpenGL
-#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native Client
-#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text rendering
+#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
+#   emulation on desktop OpenGL
+#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
+#   Client
+#  MAGNUM_USE_HARFBUZZ  - Defined if HarfBuzz library is used for text
+#   rendering
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -65,6 +68,30 @@
 #  MAGNUM_INCLUDE_INSTALL_DIR           - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR   - Plugin header installation
 #   directory
+#
+
+#
+#   This file is part of Magnum.
+#
+#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
+#
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
+#
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
 #
 
 # Dependencies
