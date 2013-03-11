@@ -61,3 +61,9 @@ awesome idea? Feel free to visit my website or contact me at:
  * GitHub - https://github.com/mosra/magnum-examples
  * E-mail - mosra@centrum.cz
  * Jabber - mosra@jabbim.cz
+
+LICENSE
+=======
+
+Magnum is licensed under MIT/Expat license, see [COPYING](COPYING) file for
+details.
