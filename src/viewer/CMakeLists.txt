@@ -23,16 +23,24 @@
 #
 
 find_package(Magnum REQUIRED MeshTools Shaders SceneGraph)
+if(NOT MAGNUM_TARGET_GLES)
+    find_package(Magnum REQUIRED GlutApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+else()
+    find_package(Magnum REQUIRED XEglApplication)
+    set(APPLICATION_LIBRARIES ${MAGNUM_XEGLAPPLICATION_LIBRARIES})
+endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-add_executable(magnum-viewer ViewerExample.cpp)
+add_executable(magnum-viewer FpsCounterExample.cpp ViewerExample.cpp)
 target_link_libraries(magnum-viewer
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_EXAMPLE_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES})
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${APPLICATION_LIBRARIES})

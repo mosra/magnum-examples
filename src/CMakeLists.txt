@@ -22,22 +22,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED)
-if(NOT MAGNUM_TARGET_GLES)
-    find_package(Magnum REQUIRED GlutApplication)
-    set(APPLICATION_LIBRARIES ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
-else()
-    find_package(Magnum REQUIRED XEglApplication)
-    set(APPLICATION_LIBRARIES ${MAGNUM_XEGLAPPLICATION_LIBRARIES})
-endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MAGNUM_INCLUDE_DIRS})
-
-add_library(MagnumExample STATIC
-    FpsCounterExample.cpp)
-set(MAGNUM_EXAMPLE_LIBRARIES MagnumExample ${APPLICATION_LIBRARIES})
-
 if(NOT MAGNUM_TARGET_GLES)
     add_subdirectory(cubemap)
     add_subdirectory(framebuffer)
