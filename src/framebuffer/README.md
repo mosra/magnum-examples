@@ -11,7 +11,7 @@ Usage
 
 The application loads and displays TGA image passed as parameter:
 
-    ./framebufferExample image.tga
+    ./framebuffer image.tga
 
 Mouse shortcuts
 ---------------

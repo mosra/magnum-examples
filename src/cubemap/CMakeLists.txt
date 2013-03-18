@@ -22,12 +22,16 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+cmake_minimum_required(VERSION 2.8)
+project(MagnumCubeMapExample)
+
 find_package(Magnum REQUIRED
     GlutApplication
     MeshTools
     Primitives
     SceneGraph)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -38,7 +42,7 @@ corrade_add_resource(CubeMapData data
     ReflectorShader.vert ReflectorShader.frag
     tarnish.tga)
 
-add_executable(cubeMapExample
+add_executable(cubemap
     CubeMapExample.cpp
     CubeMap.cpp
     CubeMapShader.cpp
@@ -46,7 +50,7 @@ add_executable(cubeMapExample
     ReflectorShader.cpp
     Types.cpp
     ${CubeMapData})
-target_link_libraries(cubeMapExample
+target_link_libraries(cubemap
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}

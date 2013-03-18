@@ -10,7 +10,7 @@ Usage
 
 Pass path to COLLADA file as parameter:
 
-    ./magnum-viewer ~/models/scene.dae
+    ./viewer ~/models/scene.dae
 
 The application opens the file and displays the scene. The meshes are
 optimized for faster viewing. Import progress is written to console output.

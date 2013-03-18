@@ -22,8 +22,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED GlutApplication)
+cmake_minimum_required(VERSION 2.8)
+project(MagnumTexturedTriangleExample)
 
+find_package(Magnum REQUIRED
+    GlutApplication)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -34,10 +39,10 @@ corrade_add_resource(TexturedTriangleData data
     TexturedTriangleShader.vert
     stone.tga)
 
-add_executable(texturedTriangleExample
+add_executable(textured-triangle
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
     ${TexturedTriangleData})
-target_link_libraries(texturedTriangleExample
+target_link_libraries(textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_GLUTAPPLICATION_LIBRARIES})

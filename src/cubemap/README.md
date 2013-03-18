@@ -24,7 +24,7 @@ that all images must be turned upside down (+Y is top):
 You can also pass file path prefix to the application as parameter, for
 example
 
-    ./cubeMapExample ~/images/city
+    ./cubemap ~/images/city
 
 The application will then load `~/images/city+x.tga`, `~/images/city-x.tga`
 etc. as cube map texture.

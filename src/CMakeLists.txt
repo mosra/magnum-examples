@@ -22,6 +22,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Magnum REQUIRED)
+
 if(NOT MAGNUM_TARGET_GLES)
     add_subdirectory(cubemap)
     add_subdirectory(framebuffer)

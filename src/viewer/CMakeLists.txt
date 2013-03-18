@@ -22,6 +22,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+cmake_minimum_required(VERSION 2.8)
+project(MagnumViewerExample)
+
 find_package(Magnum REQUIRED MeshTools Shaders SceneGraph)
 if(NOT MAGNUM_TARGET_GLES)
     find_package(Magnum REQUIRED GlutApplication)
@@ -37,8 +40,8 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-add_executable(magnum-viewer FpsCounterExample.cpp ViewerExample.cpp)
-target_link_libraries(magnum-viewer
+add_executable(viewer FpsCounterExample.cpp ViewerExample.cpp)
+target_link_libraries(viewer
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}

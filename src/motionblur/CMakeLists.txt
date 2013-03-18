@@ -22,6 +22,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+cmake_minimum_required(VERSION 2.8)
+project(MagnumMotionblurExample)
+
 find_package(Magnum REQUIRED
     GlutApplication
     MeshTools
@@ -29,18 +32,19 @@ find_package(Magnum REQUIRED
     SceneGraph
     Shaders)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS})
 
 corrade_add_resource(MotionBlurShaders shaders
     MotionBlurShader.frag
     MotionBlurShader.vert)
 
-add_executable(motionblurExample
+add_executable(motionblur
     MotionBlurCamera.cpp
     MotionBlurExample.cpp
     Icosphere.cpp
     ${MotionBlurShaders})
-target_link_libraries(motionblurExample
+target_link_libraries(motionblur
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_GLUTAPPLICATION_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
