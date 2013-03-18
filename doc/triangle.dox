@@ -24,7 +24,7 @@
 
 namespace Magnum {
 /** @page examples-triangle Your first triangle
-@brief Creating OpenGL context and basic rendering.
+@brief Basic rendering with builtin shaders.
 
 - Next example: @ref examples-textured-triangle
 
@@ -32,15 +32,14 @@ namespace Magnum {
 @image latex triangle/triangle.png
 
 @tableofcontents
-
 @section examples-triangle-context Setting up, preparing the mesh and shader
 
-For this example we will use GLUT toolkit, which is implemented in
-Platform::GlutApplication class. We subclass it and next to the constructor we
-implement two required functions, one which is called after the window is
-resized and one for rendering into the window. We also need mesh encapsulating
-our triangle, buffer to store vertex data and shader (created below) which
-will take care of rendering.
+For the first example we will use the simple GLUT toolkit, which is available
+on most platforms. It is implemented in Platform::GlutApplication class. We
+subclass it and next to the constructor we implement two required functions,
+one which is called after the window is resized and one for rendering into the
+window. We also need mesh encapsulating our triangle, buffer to store vertex
+data and shader which will take care of rendering.
 @dontinclude triangle/TriangleExample.cpp
 @skip class TriangleExample
 @until };
@@ -52,9 +51,9 @@ In the constructor we pass necessary arguments to
 Now we specify vertex attributes, consisting of positions and colors. For
 performance reasons it is common to interleave them, so data for each vertex
 are in one continuous place in memory. We will cheat a bit here and use
-three-component vectors for both 2D positions and colors (homogeneous 2D
-coordinates and RGB values), so we can interleave them in place. In next
-tutorial we will learn how to interleave them programatically.
+three-component vectors for both 3D positions and RGB colors, so we can
+interleave them easily in place. In the following tutorials we will learn how
+to interleave them programatically.
 @skip data
 @until };
 
@@ -66,10 +65,9 @@ with appropriate @ref Buffer::Usage "buffer usage".
 
 Now we configure the mesh - we specify @ref Mesh::Primitive "mesh primitive"
 and vertex count, add vertex buffer and specify attribute locations for use
-with our shader. We specify our attributes in the same order as physical
+with the shader. We specify our attributes in the same order as physical
 location of vertex attributes in the buffer - zero offset from the beginning,
-first position, then color. Vertex attribute definitions are in
-`TriangleShader` class, which will be explained later.
+first the position, then the color.
 @skip mesh.
 @until }
 
@@ -79,40 +77,18 @@ so the triangle is rendered at proper size and position.
 @until }
 @until }
 
-Function `drawEvent()` will take care about drawing the scene. We clear color
-buffer, tell that the drawing is done using our shader and then we draw the
-mesh. The context is double buffered, so we need to swap the buffers after
-drawing.
+Function `drawEvent()` will take care about drawing the scene. We will draw to
+the default framebuffer, clear its color buffer, tell that the drawing is done
+using our shader and then we draw the mesh. The context is double buffered, so
+we need to swap the buffers after drawing.
 @skip TriangleExample::drawEvent
 @until }
 
  - @ref triangle/TriangleExample.cpp
 
-@section examples-triangle-shader Triangle shader
-
-Our shader is pretty simple - it takes only vertex position and color and
-doesn't need any uniform to operate. We define both attributes as @ref Vector3
-(the same type we used for the mesh data earlier) and assign vertex position
-to location zero and color to one:
-@dontinclude triangle/TriangleShader.h
-@skip class TriangleShader
-@until };
-
-In the constructor we load GLSL sources for fragment and vertex shader, attach
-them to shader program and link the program together:
-@dontinclude triangle/TriangleShader.cpp
-@skip TriangleShader::TriangleShader
-@until }
-
- - @ref triangle/TriangleShader.h
- - @ref triangle/TriangleShader.cpp
- - @ref triangle/TriangleShader.vert
- - @ref triangle/TriangleShader.frag
-
-@section examples-triangle-compilation Compilation
-
-Now we can compile the whole example using CMake. First we find required
-%Magnum package with GlutApplication library and add its include dir.
+That's all, now we can compile the whole example using CMake. First we find
+required %Magnum package with %Shaders and GlutApplication component and add
+its include dir.
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package

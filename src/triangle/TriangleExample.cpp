@@ -27,8 +27,7 @@
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Platform/GlutApplication.h>
-
-#include "TriangleShader.h"
+#include <Shaders/VertexColorShader.h>
 
 namespace Magnum { namespace Examples {
 
@@ -42,8 +41,8 @@ class TriangleExample: public Platform::GlutApplication {
 
     private:
         Buffer buffer;
-        Magnum::Mesh mesh;
-        TriangleShader shader;
+        Mesh mesh;
+        Shaders::VertexColorShader3D shader;
 };
 
 TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Triangle example") {
@@ -56,7 +55,9 @@ TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, 
     buffer.setData(data, Buffer::Usage::StaticDraw);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setVertexCount(3)
-        ->addInterleavedVertexBuffer(&buffer, 0, TriangleShader::Position(), TriangleShader::Color());
+        ->addInterleavedVertexBuffer(&buffer, 0,
+            Shaders::VertexColorShader3D::Position(),
+            Shaders::VertexColorShader3D::Color());
 }
 
 void TriangleExample::viewportEvent(const Vector2i& size) {
@@ -64,6 +65,7 @@ void TriangleExample::viewportEvent(const Vector2i& size) {
 }
 
 void TriangleExample::drawEvent() {
+    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
     defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
 
     shader.use();

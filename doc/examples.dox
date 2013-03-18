@@ -42,10 +42,6 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 
 @example triangle/TriangleExample.cpp
 @example triangle/CMakeLists.txt
-@example triangle/TriangleShader.h
-@example triangle/TriangleShader.cpp
-@example triangle/TriangleShader.vert
-@example triangle/TriangleShader.frag
 
 @example textured-triangle/TexturedTriangleExample.cpp
 @example textured-triangle/configure.h.cmake
