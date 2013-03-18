@@ -24,7 +24,7 @@
 
 namespace Magnum {
 /** @page examples-textured-triangle Textured triangle
-@brief Texturing, compiled-in resources, shader uniforms and mesh tools.
+@brief Texturing, custom shaders, compiled-in resources, shader uniforms and mesh tools.
 
 - Previous example: @ref examples-triangle
 - Next example: @ref examples-cubemap
@@ -36,12 +36,11 @@ namespace Magnum {
 
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
- - Using Corrade::PluginManager::PluginManager to load
-   Trade::TgaImporter::TgaImporter and import the texture with it.
- - Storing shader sources and the texture in the executable using
-   Corrade::Utility::Resource, so they don't have to be carried as separate
-   files.
- - Using textures and managing texture and other uniforms in the shader.
+ - Working with textures and using Corrade::PluginManager::PluginManager to
+   load Trade::TgaImporter::TgaImporter for importing image data.
+ - Creating custom shaders.
+ - Storing resources in the executable using Corrade::Utility::Resource, so
+   they don't have to be carried as separate files.
  - Using MeshTools for easier creation of mesh data.
 
 @section examples-textured-triangle-setup Setting up and loading the texture
@@ -111,19 +110,22 @@ perform the drawing. Last thing is again buffer swap.
 
 @section examples-textured-triangle-shader Textured triangle shader
 
-%Shader for textured triangle takes now vertex position and two-dimensional
+Our shader is pretty simple - it takes only vertex position and two-dimensional
 texture coordinates. Next to these two attributes it now also needs uniform
-for base color and texture layer. For the color uniform we provide public
-setter function, texture layer uniform will be set to fixed value specified
-with `TextureLayer` constant. Good practice is to allow method chaining on
-uniform setters.
+for base color and texture layer. We define both attributes with proper types
+(i.e., the same types we used for the mesh data earlier) and assign vertex
+position to location zero and texture coordinates to location one. For the
+color uniform we provide public setter function, texture layer uniform will be
+set to fixed value specified with `TextureLayer` constant. Good practice is to
+allow @ref method-chaining "method chaining" on uniform setters.
 @dontinclude textured-triangle/TexturedTriangleShader.h
 @skip class TexturedTriangleShader
 @until };
+@until };
 
-In the constructor we load GLSL sources from compiled-in resources, attach
-and link and then retrieve location for the base color uniform. Then we set
-texture layer uniform to fixed value, so it doesn't have to be set manually
+In the constructor we load GLSL sources from compiled-in resources, attach them,
+link the program and then retrieve location for the base color uniform. Then we
+set texture layer uniform to fixed value, so it doesn't have to be set manually
 when using the shader for rendering. With OpenGL 4.2 we can also set it
 explicitly inside the shader itself, see @ref AbstractShaderProgram-texture-layer.
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
@@ -150,7 +152,8 @@ to include current binary dir, because it will contain our generated
 `configure.h`. We create it from template `configure.h.cmake` with these
 contents:
 
-@include textured-triangle/configure.h.cmake
+@dontinclude textured-triangle/configure.h.cmake
+@skipline #define
 
 We then process it with CMake, which will replace
 `${MAGNUM_PLUGINS_IMPORTER_DIR}` with path gathered when looking for %Magnum.
