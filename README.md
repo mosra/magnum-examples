@@ -6,6 +6,7 @@ http://mosra.cz/blog/magnum-doc/example-index.html. Featured examples:
 
  * **Triangle** - *Hello World* of 3D graphics, displaying triangle with
    interpolated colors.
+ * **Primitives** - Colored cube which can be rotated using mouse.
  * **Textured Triangle** - Loads texture and displays triangle with texture on
    it.
  * **Cube Map** - Demonstrates usage of cube map textures and different

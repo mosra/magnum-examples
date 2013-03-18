@@ -26,13 +26,10 @@ namespace Magnum {
 /** @page examples-triangle Your first triangle
 @brief Basic rendering with builtin shaders.
 
-- Next example: @ref examples-textured-triangle
+- Next example: @ref examples-primitives
 
 @image html triangle/triangle.png
 @image latex triangle/triangle.png
-
-@tableofcontents
-@section examples-triangle-context Setting up, preparing the mesh and shader
 
 For the first example we will use the simple GLUT toolkit, which is available
 on most platforms. It is implemented in Platform::GlutApplication class. We
@@ -102,7 +99,7 @@ libraries.
 
 - @ref triangle/CMakeLists.txt
 
-- Next example: @ref examples-textured-triangle
+- Next example: @ref examples-primitives
 
 */
 }

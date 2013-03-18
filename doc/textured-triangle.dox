@@ -26,7 +26,7 @@ namespace Magnum {
 /** @page examples-textured-triangle Textured triangle
 @brief Texturing, custom shaders, compiled-in resources, shader uniforms and mesh tools.
 
-- Previous example: @ref examples-triangle
+- Previous example: @ref examples-primitives
 - Next example: @ref examples-cubemap
 
 @image html textured-triangle/textured-triangle.png

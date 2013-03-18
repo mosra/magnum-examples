@@ -22,15 +22,22 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED)
+cmake_minimum_required(VERSION 2.6)
+project(MagnumPrimitivesExample)
 
-if(NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(cubemap)
-    add_subdirectory(framebuffer)
-    add_subdirectory(motionblur)
-    add_subdirectory(textured-triangle)
-endif()
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+    GlutApplication)
 
-add_subdirectory(primitives)
-add_subdirectory(triangle)
-add_subdirectory(viewer)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS})
+
+add_executable(primitives PrimitivesExample.cpp)
+target_link_libraries(primitives
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})

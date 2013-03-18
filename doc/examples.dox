@@ -32,9 +32,10 @@ OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
 (attributes, uniforms, vertex/fragment shaders...). Knowledge of OpenGL API
 itself is not required, as %Magnum wraps the functionality in its own classes.
 
- - @subpage examples-triangle - @copybrief examples-triangle
- - @subpage examples-textured-triangle - @copybrief examples-textured-triangle
- - @subpage examples-cubemap - @copybrief examples-cubemap
+ - @subpage examples-triangle -- @copybrief examples-triangle
+ - @subpage examples-primitives -- @copybrief examples-primitives
+ - @subpage examples-textured-triangle -- @copybrief examples-textured-triangle
+ - @subpage examples-cubemap -- @copybrief examples-cubemap
 
 @todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
 @todo MotionBlur: handle resizing for the second framebuffer
@@ -42,6 +43,9 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 
 @example triangle/TriangleExample.cpp
 @example triangle/CMakeLists.txt
+
+@example primitives/PrimitivesExample.cpp
+@example primitives/CMakeLists.txt
 
 @example textured-triangle/TexturedTriangleExample.cpp
 @example textured-triangle/configure.h.cmake
