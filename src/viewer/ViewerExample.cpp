@@ -81,7 +81,7 @@ class ViewerExample: public FpsCounterExample {
         Vector3 previousPosition;
 };
 
-ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, argv, "Magnum Viewer"), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
+ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, argv, (new Configuration())->setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "file.dae";
         std::exit(0);

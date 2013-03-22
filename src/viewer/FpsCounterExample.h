@@ -44,7 +44,7 @@ typedef Platform::XEglApplication Application;
 /** @brief Base class for examples with FPS counter */
 class FpsCounterExample: public Application {
     public:
-        FpsCounterExample(int& argc, char** argv, const std::string& name = "Magnum Example", const Vector2i& size = Vector2i(800, 600));
+        FpsCounterExample(int& argc, char** argv, Configuration* configuration);
 
         /**
          * @brief Minimal duration between printing FPS to console
