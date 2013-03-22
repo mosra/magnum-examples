@@ -34,7 +34,10 @@ endif()
 
 add_subdirectory(primitives)
 add_subdirectory(triangle)
-add_subdirectory(viewer)
+
+if(NOT CORRADE_TARGET_NACL)
+    add_subdirectory(viewer)
+endif()
 
 # Installation for NaCl
 if(CORRADE_TARGET_NACL)
