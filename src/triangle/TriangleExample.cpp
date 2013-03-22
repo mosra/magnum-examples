@@ -45,7 +45,7 @@ class TriangleExample: public Platform::GlutApplication {
         Shaders::VertexColorShader3D shader;
 };
 
-TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Triangle example") {
+TriangleExample::TriangleExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Triangle example")) {
     constexpr static Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */

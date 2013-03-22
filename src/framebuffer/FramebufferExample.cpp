@@ -56,7 +56,7 @@ class FramebufferExample: public Platform::GlutApplication {
         Buffer colorCorrectionBuffer;
 };
 
-FramebufferExample::FramebufferExample(int& argc, char** argv): GlutApplication(argc, argv, "Framebuffer example") {
+FramebufferExample::FramebufferExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Framebuffer example")) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "image.tga";
         std::exit(0);

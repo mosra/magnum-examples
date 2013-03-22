@@ -54,7 +54,7 @@ class TexturedTriangleExample: public Platform::GlutApplication {
         Magnum::Texture2D texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, "Textured triangle example") {
+TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Textured triangle example")) {
     constexpr static std::array<Vector2, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},
