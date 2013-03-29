@@ -82,17 +82,21 @@ TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutAp
 
     /* Load the texture */
     Corrade::Utility::Resource rs("data");
-    std::istringstream in(rs.get("stone.tga"));
-    if(!importer->open(in) || !importer->image2DCount()) {
+    const unsigned char* data;
+    std::size_t size;
+    std::tie(data, size) = rs.getRaw("stone.tga");
+    if(!importer->openData(data, size) || !importer->image2DCount()) {
         Error() << "Cannot load texture";
         std::exit(2);
     }
 
     /* Set texture data and parameters */
+    Trade::ImageData2D* image = importer->image2D(0);
     texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
         ->setMagnificationFilter(Texture2D::Filter::Linear)
         ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setImage(0, Texture2D::InternalFormat::RGB8, importer->image2D(0));
+        ->setImage(0, Texture2D::InternalFormat::RGB8, image);
+    delete image;
 
     /* We don't need the importer plugin anymore */
     delete importer;

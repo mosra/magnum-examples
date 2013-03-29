@@ -73,23 +73,39 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
             ->setMinificationFilter(CubeMapTexture::Filter::Linear, CubeMapTexture::Mipmap::Linear);
 
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
-        importer->open(prefix + "+x.tga");
 
         /* Configure texture storage using size of first image */
-        Vector2i size = importer->image2D(0)->size();
+        importer->openFile(prefix + "+x.tga");
+        Trade::ImageData2D* image = importer->image2D(0);
+        Vector2i size = image->size();
         cubeMap->setStorage(Math::log2(size.min())+1, CubeMapTexture::InternalFormat::RGB8, size);
+        cubeMap->setSubImage(CubeMapTexture::PositiveX, 0, {}, image);
+        delete image;
 
-        cubeMap->setSubImage(CubeMapTexture::PositiveX, 0, {}, importer->image2D(0));
-        importer->open(prefix + "-x.tga");
-        cubeMap->setSubImage(CubeMapTexture::NegativeX, 0, {}, importer->image2D(0));
-        importer->open(prefix + "+y.tga");
-        cubeMap->setSubImage(CubeMapTexture::PositiveY, 0, {}, importer->image2D(0));
-        importer->open(prefix + "-y.tga");
-        cubeMap->setSubImage(CubeMapTexture::NegativeY, 0, {}, importer->image2D(0));
-        importer->open(prefix + "+z.tga");
-        cubeMap->setSubImage(CubeMapTexture::PositiveZ, 0, {}, importer->image2D(0));
-        importer->open(prefix + "-z.tga");
-        cubeMap->setSubImage(CubeMapTexture::NegativeZ, 0, {}, importer->image2D(0));
+        importer->openFile(prefix + "-x.tga");
+        image = importer->image2D(0);
+        cubeMap->setSubImage(CubeMapTexture::NegativeX, 0, {}, image);
+        delete image;
+
+        importer->openFile(prefix + "+y.tga");
+        image = importer->image2D(0);
+        cubeMap->setSubImage(CubeMapTexture::PositiveY, 0, {}, image);
+        delete image;
+
+        importer->openFile(prefix + "-y.tga");
+        image = importer->image2D(0);
+        cubeMap->setSubImage(CubeMapTexture::NegativeY, 0, {}, image);
+        delete image;
+
+        importer->openFile(prefix + "+z.tga");
+        image = importer->image2D(0);
+        cubeMap->setSubImage(CubeMapTexture::PositiveZ, 0, {}, image);
+        delete image;
+
+        importer->openFile(prefix + "-z.tga");
+        image = importer->image2D(0);
+        cubeMap->setSubImage(CubeMapTexture::NegativeZ, 0, {}, image);
+        delete image;
 
         cubeMap->generateMipmap();
 

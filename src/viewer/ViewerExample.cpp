@@ -115,7 +115,7 @@ ViewerExample::ViewerExample(int& argc, char** argv): FpsCounterExample(argc, ar
     Debug() << "Opening file" << argv[1];
 
     /* Load file */
-    if(!colladaImporter->open(argv[1]))
+    if(!colladaImporter->openFile(argv[1]))
         std::exit(4);
 
     if(colladaImporter->sceneCount() == 0)
@@ -298,6 +298,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
 
             /* Compress indices */
             MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data->indices());
+            delete data;
         }
 
         /* Use already processed material, if exists */
@@ -315,6 +316,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
 
         /* Add object */
         Object3D* o = new ViewedObject(mesh, material, &shader, parent, &drawables);
+        delete material;
         o->setTransformation(object->transformation());
     }
 

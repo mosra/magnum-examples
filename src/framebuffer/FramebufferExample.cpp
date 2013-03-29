@@ -73,7 +73,7 @@ FramebufferExample::FramebufferExample(int& argc, char** argv): GlutApplication(
     }
 
     /* Load the image */
-    if(!importer->open(argv[1]) || !importer->image2DCount()) {
+    if(!importer->openFile(argv[1]) || !importer->image2DCount()) {
         Error() << "Cannot open image" << argv[1];
         std::exit(2);
     }

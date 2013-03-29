@@ -63,19 +63,20 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
     if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         Corrade::Utility::Resource rs("data");
-        std::istringstream in(rs.get("tarnish.tga"));
-        importer->open(in);
+        const unsigned char* data;
+        std::size_t size;
+        std::tie(data, size) = rs.getRaw("tarnish.tga");
+        importer->openData(data, size);
 
-        /* Image size */
-        Vector2i size = importer->image2D(0)->size();
-
+        Trade::ImageData2D* image = importer->image2D(0);
         Texture2D* texture = new Texture2D;
         texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
             ->setMagnificationFilter(Texture2D::Filter::Linear)
             ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
-            ->setStorage(Math::log2(size.min())+1, Texture2D::InternalFormat::RGB8, size)
-            ->setSubImage(0, {}, importer->image2D(0))
+            ->setStorage(Math::log2(image->size().min())+1, Texture2D::InternalFormat::RGB8, image->size())
+            ->setSubImage(0, {}, image)
             ->generateMipmap();
+        delete image;
 
         resourceManager->set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
     }
