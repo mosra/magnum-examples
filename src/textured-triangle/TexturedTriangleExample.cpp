@@ -41,7 +41,7 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangleExample: public Platform::GlutApplication {
     public:
-        TexturedTriangleExample(int& argc, char** argv);
+        TexturedTriangleExample(const Arguments& arguments);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
@@ -54,7 +54,7 @@ class TexturedTriangleExample: public Platform::GlutApplication {
         Magnum::Texture2D texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Textured triangle example")) {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Textured triangle example")) {
     constexpr static std::array<Vector2, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},

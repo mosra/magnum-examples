@@ -46,7 +46,7 @@ namespace Magnum { namespace Examples {
 
 class CubeMapExample: public Platform::GlutApplication {
     public:
-        CubeMapExample(int& argc, char** argv);
+        CubeMapExample(const Arguments& arguments);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
@@ -61,7 +61,7 @@ class CubeMapExample: public Platform::GlutApplication {
         SceneGraph::Camera3D<>* camera;
 };
 
-CubeMapExample::CubeMapExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Cube map example")) {
+CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Cube map example")) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 

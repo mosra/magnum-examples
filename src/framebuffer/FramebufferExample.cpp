@@ -39,7 +39,7 @@ namespace Magnum { namespace Examples {
 
 class FramebufferExample: public Platform::GlutApplication {
     public:
-        FramebufferExample(int& argc, char** argv);
+        FramebufferExample(const Arguments& arguments);
 
     protected:
         void viewportEvent(const Vector2i& size) override;
@@ -56,7 +56,7 @@ class FramebufferExample: public Platform::GlutApplication {
         Buffer colorCorrectionBuffer;
 };
 
-FramebufferExample::FramebufferExample(int& argc, char** argv): GlutApplication(argc, argv, (new Configuration())->setTitle("Framebuffer example")) {
+FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Framebuffer example")) {
     if(argc != 2) {
         Debug() << "Usage:" << argv[0] << "image.tga";
         std::exit(0);
