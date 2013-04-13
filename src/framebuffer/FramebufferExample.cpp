@@ -56,9 +56,9 @@ class FramebufferExample: public Platform::GlutApplication {
         Buffer colorCorrectionBuffer;
 };
 
-FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Framebuffer example")) {
-    if(argc != 2) {
-        Debug() << "Usage:" << argv[0] << "image.tga";
+FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration)->setTitle("Framebuffer example")) {
+    if(arguments.argc != 2) {
+        Debug() << "Usage:" << arguments.argv[0] << "image.tga";
         std::exit(0);
     }
 
@@ -73,8 +73,8 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
     }
 
     /* Load the image */
-    if(!importer->openFile(argv[1]) || !importer->image2DCount()) {
-        Error() << "Cannot open image" << argv[1];
+    if(!importer->openFile(arguments.argv[1]) || !importer->image2DCount()) {
+        Error() << "Cannot open image" << arguments.argv[1];
         std::exit(2);
     }
 

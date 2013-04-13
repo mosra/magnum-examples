@@ -34,6 +34,7 @@
 #include <SceneGraph/Camera3D.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
+#include <Trade/MeshData3D.h>
 
 #include "ReflectorShader.h"
 
@@ -48,7 +49,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
         Buffer* buffer = new Buffer;
         Buffer* indexBuffer = new Buffer;
 
-        Primitives::UVSphere sphereData(16, 32, Primitives::UVSphere::TextureCoords::Generate);
+        Trade::MeshData3D sphereData = Primitives::UVSphere::solid(16, 32, Primitives::UVSphere::TextureCoords::Generate);
         MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *sphereData.positions(0), *sphereData.textureCoords2D(0));
         MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *sphereData.indices());
         mesh->setPrimitive(sphereData.primitive())

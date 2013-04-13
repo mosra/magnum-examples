@@ -59,7 +59,7 @@ class MotionBlurExample: public Platform::GlutApplication {
         Object3D* spheres[3];
 };
 
-MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Motion blur example")) {
+MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration)->setTitle("Motion blur example")) {
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(cameraObject))

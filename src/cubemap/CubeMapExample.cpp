@@ -61,7 +61,7 @@ class CubeMapExample: public Platform::GlutApplication {
         SceneGraph::Camera3D<>* camera;
 };
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration())->setTitle("Cube map example")) {
+CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration)->setTitle("Cube map example")) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 
@@ -85,7 +85,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
     resourceManager.set<Trade::AbstractImporter>("tga-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(argc == 2 ? argv[1] : "", &scene, &drawables))
+    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &scene, &drawables))
         ->scale(Vector3(20.0f));
 
     (new Reflector(&scene, &drawables))

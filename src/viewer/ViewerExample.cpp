@@ -81,9 +81,9 @@ class ViewerExample: public FpsCounterExample {
         Vector3 previousPosition;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(arguments, (new Configuration())->setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
-    if(argc != 2) {
-        Debug() << "Usage:" << argv[0] << "file.dae";
+ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(arguments, (new Configuration)->setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
+    if(arguments.argc != 2) {
+        Debug() << "Usage:" << arguments.argv[0] << "file.dae";
         std::exit(0);
     }
 
@@ -112,10 +112,10 @@ ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(argu
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
-    Debug() << "Opening file" << argv[1];
+    Debug() << "Opening file" << arguments.argv[1];
 
     /* Load file */
-    if(!colladaImporter->openFile(argv[1]))
+    if(!colladaImporter->openFile(arguments.argv[1]))
         std::exit(4);
 
     if(colladaImporter->sceneCount() == 0)
