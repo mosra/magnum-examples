@@ -73,7 +73,15 @@ class BulletExample: public Platform::Application {
         btRigidBody* bGround;
 };
 
-BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, (new Configuration())->setTitle("Bullet Integration Example")) {
+BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, nullptr) {
+    /* Try 16x MSAA */
+    auto conf = new Configuration;
+    conf->setTitle("Bullet Integration Example")
+        ->setSampleCount(16);
+    if(!tryCreateContext(conf))
+        createContext(conf->setSampleCount(0));
+    else delete conf;
+
     Renderer::setClearColor(Color3<>(0.15f));
 
     /* Camera setup */
