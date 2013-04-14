@@ -96,6 +96,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     /* Debug draw setup */
     manager.set("ground", (new DebugTools::ShapeRendererOptions)->setColor(Color3<>(0.45f)));
     manager.set("box", (new DebugTools::ShapeRendererOptions)->setColor(Color3<>(0.85f)));
+    manager.set("redbox", (new DebugTools::ShapeRendererOptions)->setColor({0.9f, 0.0f, 0.0f}));
 
     /* Bullet setup */
     btBroadphaseInterface* broadphase = new btDbvtBroadphase();
@@ -196,7 +197,7 @@ void BulletExample::shootBox(Vector3& dir) {
     Object3D* box = new Object3D(&scene);
     box->translate(cameraObject->absoluteTransformation().translation());
 
-    createRigidBody(1.f, box, bBoxShape, "box")->setLinearVelocity(btVector3(dir*50.f));
+    createRigidBody(1.f, box, bBoxShape, "redbox")->setLinearVelocity(btVector3(dir*50.f));
 }
 
 }}
