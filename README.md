@@ -9,6 +9,8 @@ http://mosra.cz/blog/magnum-doc/example-index.html. Featured examples:
  * **Primitives** - Colored cube which can be rotated using mouse.
  * **Textured Triangle** - Loads texture and displays triangle with texture on
    it.
+ * **Bullet** - Demonstrates integration of [Bullet Physics](http://www.bulletphysics.com)
+   into Magnum
  * **Cube Map** - Demonstrates usage of cube map textures and different
    texture layers for simulation of open world.
  * **Motion Blur** - Moving spheres with motion blur.
