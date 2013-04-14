@@ -132,10 +132,8 @@ btRigidBody* BulletExample::createRigidBody(float mass, Object3D* object, btColl
     bWord->addRigidBody(bRigidBody);
 
     /* Debug draw */
-    auto shape =
     new DebugTools::ShapeRenderer3D((new Physics::ObjectShape3D(object, &shapes))
-        ->setShape(BulletIntegration::convertShape(bShape)),
-        renderOptions, &drawables);
+        ->setShape(BulletIntegration::convertShape(bShape)), renderOptions, &drawables);
 
     return bRigidBody;
 }
