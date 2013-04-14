@@ -56,7 +56,7 @@ class BulletExample: public Platform::Application {
         void mousePressEvent(MouseEvent& event) override;
 
     private:
-        btRigidBody* createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
+        btRigidBody* createRigidBody(Float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
         void shootBox(Vector3& direction);
 
         DebugTools::ResourceManager manager;
@@ -104,9 +104,9 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
 
     /* Create boxes */
     bBoxShape = new btBoxShape({.5f, .5f, .5f});
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
-            for(int k = 0; k < 5; k++) {
+    for(Int i = 0; i < 5; i++) {
+        for(Int j = 0; j < 5; j++) {
+            for(Int k = 0; k < 5; k++) {
                 Object3D* box = new Object3D(&scene);
                 box->translate({i - 2.f, j + 4.f, k - 2.f});
                 createRigidBody(1.f, box, bBoxShape, "box");
@@ -120,7 +120,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     redraw();
 }
 
-btRigidBody* BulletExample::createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions) {
+btRigidBody* BulletExample::createRigidBody(Float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions) {
     btVector3 bInertia(0,0,0);
     if(mass != 0.f)
         bShape->calculateLocalInertia(mass, bInertia);
