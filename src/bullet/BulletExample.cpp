@@ -25,6 +25,7 @@
 
 #include <btBulletDynamicsCommon.h>
 #include <BulletIntegration/ConvertShape.h>
+#include <BulletIntegration/Integration.h>
 #include <BulletIntegration/MotionState.h>
 #include <DefaultFramebuffer.h>
 #include <Math/Constants.h>
@@ -187,8 +188,7 @@ void BulletExample::shootBox(Vector3& dir) {
     Object3D* box = new Object3D(&scene);
     box->translate(cameraObject->absoluteTransformation().translation());
 
-    btVector3 linearVelocity = {dir.x(), dir.y(), dir.z()};
-    createRigidBody(1.f, box, bBoxShape, "box")->setLinearVelocity(linearVelocity * 50.f);
+    createRigidBody(1.f, box, bBoxShape, "box")->setLinearVelocity(btVector3(dir*50.f));
 }
 
 }}
