@@ -36,8 +36,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS})
 include_directories(SYSTEM ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
 
-add_executable(bulletExample BulletExample.cpp)
-target_link_libraries(bulletExample
+add_executable(bullet BulletExample.cpp)
+target_link_libraries(bullet
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
     ${MAGNUM_DEBUGTOOLS_LIBRARIES}
