@@ -50,14 +50,15 @@ class BulletExample: public Platform::Application {
     public:
         explicit BulletExample(const Arguments& arguments);
 
-        btRigidBody* createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
-        void shootBox(Vector3& direction);
 
     private:
+        btRigidBody* createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
+        void shootBox(Vector3& direction);
+
         DebugTools::ResourceManager manager;
         Scene3D scene;
         SceneGraph::DrawableGroup3D<> drawables;
