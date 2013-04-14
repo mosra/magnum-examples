@@ -41,35 +41,34 @@
 #include <SceneGraph/Scene.h>
 #include <Timeline.h>
 
-
 namespace Magnum { namespace Examples {
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
 
 class BulletExample: public Platform::Application {
-public:
-    explicit BulletExample(const Arguments& arguments);
+    public:
+        explicit BulletExample(const Arguments& arguments);
 
-    btRigidBody* createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
-    void viewportEvent(const Vector2i& size) override;
-    void drawEvent() override;
-    void keyPressEvent(KeyEvent& event) override;
-    void mousePressEvent(MouseEvent& event) override;
-    void shootBox(Vector3& direction);
+        btRigidBody* createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
+        void viewportEvent(const Vector2i& size) override;
+        void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void shootBox(Vector3& direction);
 
-private:
-    DebugTools::ResourceManager manager;
-    Scene3D scene;
-    SceneGraph::DrawableGroup3D<> drawables;
-    Physics::ObjectShapeGroup3D shapes;
-    SceneGraph::Camera3D<>* camera;
-    Timeline timeline;
+    private:
+        DebugTools::ResourceManager manager;
+        Scene3D scene;
+        SceneGraph::DrawableGroup3D<> drawables;
+        Physics::ObjectShapeGroup3D shapes;
+        SceneGraph::Camera3D<>* camera;
+        Timeline timeline;
 
-    Object3D *cameraRig, *cameraObject, *ground;
-    btDiscreteDynamicsWorld* bWord;
-    btCollisionShape* bBoxShape;
-    btRigidBody* bGround;
+        Object3D *cameraRig, *cameraObject, *ground;
+        btDiscreteDynamicsWorld* bWord;
+        btCollisionShape* bBoxShape;
+        btRigidBody* bGround;
 };
 
 BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, (new Configuration())->setTitle("Bullet Integration Example")) {
@@ -120,8 +119,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     redraw();
 }
 
-btRigidBody* BulletExample::createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions)
-{
+btRigidBody* BulletExample::createRigidBody(float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions) {
     btVector3 bInertia(0,0,0);
     if(mass != 0.f)
         bShape->calculateLocalInertia(mass, bInertia);
@@ -141,7 +139,6 @@ btRigidBody* BulletExample::createRigidBody(float mass, Object3D* object, btColl
 
     return bRigidBody;
 }
-
 
 void BulletExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
@@ -178,8 +175,7 @@ void BulletExample::keyPressEvent(KeyEvent& event) {
     event.setAccepted();
 }
 
-void BulletExample::mousePressEvent(MouseEvent& event)
-{
+void BulletExample::mousePressEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::Left) {
         Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2(event.position())/defaultFramebuffer.viewport().size()-Vector2(0.5f))*camera->projectionSize();
         Vector3 direction = (cameraObject->absoluteTransformation().rotationScaling() * Vector3(clickPoint, -1.f)).normalized();
@@ -188,11 +184,10 @@ void BulletExample::mousePressEvent(MouseEvent& event)
     }
 }
 
-void BulletExample::shootBox(Vector3& dir)
-{
+void BulletExample::shootBox(Vector3& dir) {
     Object3D* box = new Object3D(&scene);
     box->translate(cameraObject->absoluteTransformation().translation());
-   
+
     btVector3 linearVelocity = {dir.x(), dir.y(), dir.z()};
     createRigidBody(1.f, box, bBoxShape, "box")->setLinearVelocity(linearVelocity * 50.f);
 }
