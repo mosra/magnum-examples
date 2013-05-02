@@ -19,8 +19,16 @@
 # hidden visibility by default.
 #
 # Features of found Corrade library are exposed in these variables:
-#  CORRADE_GCC46_COMPATIBILITY - Defined if compiled with compatibility
+#  CORRADE_GCC46_COMPATIBILITY  - Defined if compiled with compatibility
 #   mode for GCC 4.6
+#  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
+#  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome
+#   Native Client
+#  CORRADE_TARGET_NACL_NEWLIB   - Defined if compiled for Google Chrome
+#   Native Client with `newlib` toolchain
+#  CORRADE_TARGET_NACL_GLIBC    - Defined if compiled for Google Chrome
+#   Native Client with `glibc` toolchain
+#  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #
 # Corrade provides these macros and functions:
 #
@@ -149,11 +157,37 @@ string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_
 if(NOT _GCC46_COMPATIBILITY EQUAL -1)
     set(CORRADE_GCC46_COMPATIBILITY 1)
 endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_STATIC" _BUILD_STATIC)
+if(NOT _BUILD_STATIC EQUAL -1)
+    set(CORRADE_BUILD_STATIC 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL" _TARGET_NACL)
+if(NOT _TARGET_NACL EQUAL -1)
+    set(CORRADE_TARGET_NACL 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL_NEWLIB" _TARGET_NACL_NEWLIB)
+if(NOT _TARGET_NACL_NEWLIB EQUAL -1)
+    set(CORRADE_TARGET_NACL_NEWLIB 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_NACL_GLIBC" _TARGET_NACL_GLIBC)
+if(NOT _TARGET_NACL_GLIBC EQUAL -1)
+    set(CORRADE_TARGET_NACL_GLIBC 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_EMSCRIPTEN" _TARGET_EMSCRIPTEN)
+if(NOT _TARGET_EMSCRIPTEN EQUAL -1)
+    set(CORRADE_TARGET_EMSCRIPTEN 1)
+endif()
 
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
 set(CORRADE_INTERCONNECT_LIBRARIES ${CORRADE_INTERCONNECT_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
+
+# At least static build needs this
+if((UNIX OR CORRADE_TARGET_NACL) AND NOT CORRADE_TARGET_NACL_NEWLIB)
+    set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARIES} dl)
+endif()
+
 mark_as_advanced(CORRADE_UTILITY_LIBRARY
     CORRADE_INTERCONNECT_LIBRARY
     CORRADE_PLUGINMANAGER_LIBRARY

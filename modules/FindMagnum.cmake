@@ -45,13 +45,12 @@
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
+#  MAGNUM_BUILD_STATIC  - Defined if compiled as static libraries
 #  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
 #  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
-#  MAGNUM_TARGET_NACL   - Defined if compiled for Google Chrome Native
-#   Client
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR                   - Root include dir (w/o
@@ -113,7 +112,10 @@ find_path(MAGNUM_INCLUDE_DIR
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
 
-# Built for specific target?
+string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
+if(NOT _BUILD_STATIC EQUAL -1)
+    set(MAGNUM_BUILD_STATIC 1)
+endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
 if(NOT _TARGET_GLES EQUAL -1)
     set(MAGNUM_TARGET_GLES 1)
@@ -125,10 +127,6 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
 if(NOT _TARGET_GLES3 EQUAL -1)
     set(MAGNUM_TARGET_GLES3 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_NACL" _TARGET_NACL)
-if(NOT _TARGET_NACL EQUAL -1)
-    set(MAGNUM_TARGET_NACL 1)
 endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
@@ -144,11 +142,12 @@ if(NOT MAGNUM_TARGET_GLES)
     find_package(GLEW REQUIRED)
 endif()
 
-# On Windows, *Application libraries need to have ${MAGNUM_LIBRARY} listed
-# in dependencies also after *Application.lib static library name to avoid
-# linker errors
-if(WIN32)
-    set(_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY ${MAGNUM_LIBRARY})
+# On Windows and in static builds, *Application libraries need to have
+# ${MAGNUM_LIBRARIES} listed in dependencies also after all other library names
+# to avoid linker errors. Applicaiton libraries are often last thus it is
+# +- sufficient to add it there only.
+if(WIN32 OR MAGNUM_BUILD_STATIC)
+    set(_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY ${MAGNUM_LIBRARIES})
 endif()
 
 # Additional components
@@ -169,7 +168,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL GlutApplication)
             find_package(GLUT)
             if(GLUT_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -179,20 +178,23 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL Sdl2Application)
             find_package(SDL2)
             if(SDL2_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
 
-        # NaCl application has no additional dependencies
+        # NaCl application dependencies
+        if(${component} STREQUAL NaClApplication)
+            set(_MAGNUM_${_COMPONENT}_LIBRARIES ppapi_cpp ppapi ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+        endif()
 
         # GLX application dependencies
         if(${component} STREQUAL GlxApplication)
             find_package(X11)
             if(X11_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -203,7 +205,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY} ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY} ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -213,7 +215,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         if(${component} STREQUAL WindowlessGlxApplication)
             find_package(X11)
             if(X11_FOUND)
-                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARY_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
@@ -311,8 +313,8 @@ set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
     ${MAGNUM_INCLUDE_DIR}/OpenGL
     ${CORRADE_INCLUDE_DIR})
 set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
-    ${CORRADE_UTILITY_LIBRARY}
-    ${CORRADE_PLUGINMANAGER_LIBRARY})
+    ${CORRADE_UTILITY_LIBRARIES}
+    ${CORRADE_PLUGINMANAGER_LIBRARIES})
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
 else()
