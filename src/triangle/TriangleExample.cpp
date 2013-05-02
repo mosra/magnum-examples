@@ -27,7 +27,7 @@
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Platform/GlutApplication.h>
-#include <Shaders/VertexColorShader.h>
+#include <Shaders/VertexColor.h>
 
 namespace Magnum { namespace Examples {
 
@@ -42,7 +42,7 @@ class TriangleExample: public Platform::GlutApplication {
     private:
         Buffer buffer;
         Mesh mesh;
-        Shaders::VertexColorShader3D shader;
+        Shaders::VertexColor3D shader;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments): Platform::GlutApplication(arguments, (new Configuration)->setTitle("Triangle example")) {
@@ -56,8 +56,8 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::GlutAppl
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->setVertexCount(3)
         ->addInterleavedVertexBuffer(&buffer, 0,
-            Shaders::VertexColorShader3D::Position(),
-            Shaders::VertexColorShader3D::Color());
+            Shaders::VertexColor3D::Position(),
+            Shaders::VertexColor3D::Color());
 }
 
 void TriangleExample::viewportEvent(const Vector2i& size) {

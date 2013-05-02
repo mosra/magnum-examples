@@ -31,8 +31,11 @@ namespace Magnum { namespace Examples {
 
 CubeMapShader::CubeMapShader() {
     Corrade::Utility::Resource rs("data");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("CubeMapShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("CubeMapShader.frag")));
+
+    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
+        .addSource(rs.get("CubeMapShader.vert")));
+    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
+        .addSource(rs.get("CubeMapShader.frag")));
 
     link();
 

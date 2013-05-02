@@ -29,13 +29,12 @@
 #include <Platform/GlutApplication.h>
 #include <Primitives/Icosphere.h>
 #include <SceneGraph/Scene.h>
-#include <Shaders/PhongShader.h>
+#include <Shaders/Phong.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
 
 using namespace Corrade;
-using namespace Magnum::Shaders;
 
 namespace Magnum { namespace Examples {
 
@@ -55,7 +54,7 @@ class MotionBlurExample: public Platform::GlutApplication {
         Buffer buffer;
         Buffer indexBuffer;
         Mesh mesh;
-        PhongShader shader;
+        Shaders::Phong shader;
         Object3D* spheres[3];
 };
 
@@ -72,7 +71,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplicatio
     Primitives::Icosphere<3> data;
     MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
     MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, *data.positions(0), *data.normals(0));
-    mesh.addInterleavedVertexBuffer(&buffer, 0, PhongShader::Position(), PhongShader::Normal());
+    mesh.addInterleavedVertexBuffer(&buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);

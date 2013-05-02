@@ -49,7 +49,7 @@ void FpsCounterExample::redraw() {
         if(primitiveEnabled) {
             primitiveQuery.end();
             primitives += primitiveQuery.result<UnsignedInt>();
-            primitiveQuery.begin(Query::Target::PrimitivesGenerated);
+            primitiveQuery.begin(PrimitiveQuery::Target::PrimitivesGenerated);
         }
         if(sampleEnabled) {
             sampleQuery.end();
@@ -113,7 +113,7 @@ void FpsCounterExample::setPrimitiveCounterEnabled(bool enabled) {
     resetCounter();
 
     if(enabled)
-        primitiveQuery.begin(Query::Target::PrimitivesGenerated);
+        primitiveQuery.begin(PrimitiveQuery::Target::PrimitivesGenerated);
     else {
         setSampleCounterEnabled(false);
         primitiveQuery.end();

@@ -31,8 +31,11 @@ namespace Magnum { namespace Examples {
 
 ReflectorShader::ReflectorShader() {
     Corrade::Utility::Resource rs("data");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ReflectorShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ReflectorShader.frag")));
+
+    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
+        .addSource(rs.get("ReflectorShader.vert")));
+    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
+        .addSource(rs.get("ReflectorShader.frag")));
 
     link();
 

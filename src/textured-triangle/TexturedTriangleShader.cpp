@@ -31,8 +31,11 @@ namespace Magnum { namespace Examples {
 
 TexturedTriangleShader::TexturedTriangleShader() {
     Corrade::Utility::Resource rs("data");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("TexturedTriangleShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("TexturedTriangleShader.frag")));
+
+    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
+        .addSource(rs.get("TexturedTriangleShader.vert")));
+    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
+        .addSource(rs.get("TexturedTriangleShader.frag")));
 
     link();
 

@@ -31,8 +31,11 @@ namespace Magnum { namespace Examples {
 
 ColorCorrectionShader::ColorCorrectionShader() {
     Corrade::Utility::Resource rs("shader");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("ColorCorrectionShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("ColorCorrectionShader.frag")));
+
+    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
+        .addSource(rs.get("ColorCorrectionShader.vert")));
+    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
+        .addSource(rs.get("ColorCorrectionShader.frag")));
 
     link();
 

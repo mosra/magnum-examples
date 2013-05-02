@@ -34,7 +34,7 @@
 #include <MeshTools/CompressIndices.h>
 #include <SceneGraph/Scene.h>
 #include <SceneGraph/Camera3D.h>
-#include <Shaders/PhongShader.h>
+#include <Shaders/Phong.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/MeshData3D.h>
 #include <Trade/MeshObjectData3D.h>
@@ -45,7 +45,6 @@
 #include "configure.h"
 
 using namespace Corrade::PluginManager;
-using namespace Magnum::Shaders;
 using namespace Magnum::Trade;
 using namespace Magnum::Examples;
 
@@ -73,7 +72,7 @@ class ViewerExample: public FpsCounterExample {
         SceneGraph::DrawableGroup3D<> drawables;
         Object3D* cameraObject;
         SceneGraph::Camera3D<>* camera;
-        PhongShader shader;
+        Shaders::Phong shader;
         Object3D* o;
         std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, Mesh*>> meshes;
         std::size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
@@ -294,7 +293,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
 
             /* Interleave mesh data */
             MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->positions(0), *data->normals(0));
-            mesh->addInterleavedVertexBuffer(buffer, 0, PhongShader::Position(), PhongShader::Normal());
+            mesh->addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
             /* Compress indices */
             MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data->indices());

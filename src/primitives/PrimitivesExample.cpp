@@ -28,7 +28,7 @@
 #include <MeshTools/CompressIndices.h>
 #include <Platform/GlutApplication.h>
 #include <Primitives/Cube.h>
-#include <Shaders/PhongShader.h>
+#include <Shaders/Phong.h>
 #include <Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
@@ -46,7 +46,7 @@ class PrimitivesExample: public Platform::GlutApplication {
     private:
         Buffer indexBuffer, vertexBuffer;
         Mesh mesh;
-        Shaders::PhongShader shader;
+        Shaders::Phong shader;
 
         Matrix4 transformation, projection;
         Vector2i previousMousePosition;
@@ -67,8 +67,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Glut
 
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->addInterleavedVertexBuffer(&vertexBuffer, 0,
-            Shaders::PhongShader::Position(),
-            Shaders::PhongShader::Normal());
+            Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));

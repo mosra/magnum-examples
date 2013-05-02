@@ -28,7 +28,7 @@
 #include <SceneGraph/AbstractCamera.h>
 #include <SceneGraph/Drawable.h>
 #include "SceneGraph/Object.h"
-#include "Shaders/PhongShader.h"
+#include "Shaders/Phong.h"
 #include "Trade/PhongMaterialData.h"
 
 #include "Types.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace Examples {
 
 class ViewedObject: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::PhongShader* shader, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
+        ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::Phong* shader, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override {
             shader->setAmbientColor(ambientColor)
@@ -58,7 +58,7 @@ class ViewedObject: public Object3D, SceneGraph::Drawable3D<> {
             diffuseColor,
             specularColor;
         Float shininess;
-        Shaders::PhongShader* shader;
+        Shaders::Phong* shader;
 };
 
 }}

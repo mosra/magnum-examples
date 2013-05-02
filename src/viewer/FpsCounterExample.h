@@ -143,7 +143,7 @@ class FpsCounterExample: public Application {
         #ifndef MAGNUM_TARGET_GLES
         UnsignedInt primitives, totalPrimitives, samples, totalSamples;
         bool primitiveEnabled, sampleEnabled;
-        Query primitiveQuery;
+        PrimitiveQuery primitiveQuery;
         SampleQuery sampleQuery;
         #endif
         std::chrono::high_resolution_clock::time_point before;

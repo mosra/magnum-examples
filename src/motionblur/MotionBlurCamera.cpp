@@ -72,8 +72,11 @@ void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
 
 MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     Corrade::Utility::Resource rs("shaders");
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Vertex, rs.get("MotionBlurShader.vert")));
-    attachShader(Shader::fromData(Version::GL330, Shader::Type::Fragment, rs.get("MotionBlurShader.frag")));
+
+    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
+        .addSource(rs.get("MotionBlurShader.vert")));
+    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
+        .addSource(rs.get("MotionBlurShader.frag")));
 
     link();
 

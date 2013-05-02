@@ -26,22 +26,15 @@
 
 #include <Color.h>
 #include <SceneGraph/Drawable.h>
+#include <Shaders/Shaders.h>
 
 #include "Types.h"
 
-namespace Magnum {
-
-class Mesh;
-
-namespace Shaders {
-    class PhongShader;
-}
-
-namespace Examples {
+namespace Magnum { namespace Examples {
 
 class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
     public:
-        Icosphere(Mesh* mesh, Shaders::PhongShader* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
+        Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
 
         inline void advance(Rad angle) { rotate(angle, Vector3::zAxis()); }
 
@@ -49,7 +42,7 @@ class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
 
     private:
         Mesh* mesh;
-        Shaders::PhongShader* shader;
+        Shaders::Phong* shader;
         Color3<> color;
 };
 
