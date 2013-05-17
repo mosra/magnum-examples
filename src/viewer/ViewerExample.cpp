@@ -189,7 +189,7 @@ void ViewerExample::keyPressEvent(KeyEvent& event) {
             break;
         #ifndef MAGNUM_TARGET_GLES
         case KeyEvent::Key::Home:
-            Mesh::setPolygonMode(wireframe ? Mesh::PolygonMode::Fill : Mesh::PolygonMode::Line);
+            Renderer::setPolygonMode(wireframe ? Renderer::PolygonMode::Fill : Renderer::PolygonMode::Line);
             wireframe = !wireframe;
             break;
         #endif

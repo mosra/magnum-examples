@@ -26,9 +26,9 @@
 find_package(Magnum REQUIRED
     DebugTools
     GlutApplication
-    Physics
     SceneGraph
-    Shaders)
+    Shaders
+    Shapes)
 
 find_package(MagnumIntegration REQUIRED Bullet)
 
@@ -41,7 +41,7 @@ target_link_libraries(bullet
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
     ${MAGNUM_DEBUGTOOLS_LIBRARIES}
-    ${MAGNUM_PHYSICS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_SHAPES_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})

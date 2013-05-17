@@ -32,9 +32,9 @@
 #include <Mesh.h>
 #include <DebugTools/ShapeRenderer.h>
 #include <DebugTools/ResourceManager.h>
-#include <Physics/ObjectShape.h>
-#include <Physics/ObjectShapeGroup.h>
-#include <Physics/Box.h>
+#include <Shapes/Box.h>
+#include <Shapes/Shape.h>
+#include <Shapes/ShapeGroup.h>
 #include <Platform/GlutApplication.h>
 #include <Renderer.h>
 #include <SceneGraph/Camera3D.h>
@@ -63,7 +63,7 @@ class BulletExample: public Platform::Application {
         DebugTools::ResourceManager manager;
         Scene3D scene;
         SceneGraph::DrawableGroup3D<> drawables;
-        Physics::ObjectShapeGroup3D shapes;
+        Shapes::ShapeGroup3D shapes;
         SceneGraph::Camera3D<>* camera;
         Timeline timeline;
 
@@ -143,8 +143,8 @@ btRigidBody* BulletExample::createRigidBody(Float mass, Object3D* object, btColl
     bWord->addRigidBody(bRigidBody);
 
     /* Debug draw */
-    new DebugTools::ShapeRenderer3D((new Physics::ObjectShape3D(object, &shapes))
-        ->setShape(BulletIntegration::convertShape(bShape)), renderOptions, &drawables);
+    new DebugTools::ShapeRenderer3D(BulletIntegration::convertShape(object, bShape, &shapes),
+                                    renderOptions, &drawables);
 
     return bRigidBody;
 }
