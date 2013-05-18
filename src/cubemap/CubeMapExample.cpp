@@ -24,6 +24,7 @@
 
 #include <PluginManager/PluginManager.h>
 #include <AbstractShaderProgram.h>
+#include <CubeMapTexture.h>
 #include <DefaultFramebuffer.h>
 #include <Extensions.h>
 #include <Mesh.h>

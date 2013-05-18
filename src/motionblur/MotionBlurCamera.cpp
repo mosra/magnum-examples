@@ -62,7 +62,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
     Camera3D::draw(group);
 
-    defaultFramebuffer.read({0, 0}, viewport(), AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, &framebuffer, Buffer::Usage::DynamicDraw);
+    defaultFramebuffer.read({0, 0}, viewport(), &framebuffer, Buffer::Usage::DynamicDraw);
 
     frames[currentFrame]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
 
