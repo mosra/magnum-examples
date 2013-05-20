@@ -22,6 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Utility/utilities.h>
 #include <DefaultFramebuffer.h>
 #include <Renderer.h>
 #include <MeshTools/CompressIndices.h>
@@ -33,8 +34,6 @@
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
-
-using namespace Corrade;
 
 namespace Magnum { namespace Examples {
 
@@ -113,7 +112,7 @@ void MotionBlurExample::viewportEvent(const Vector2i& size) {
 }
 
 void MotionBlurExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
     camera->draw(drawables);
     swapBuffers();
 

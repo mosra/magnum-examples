@@ -156,7 +156,7 @@ void BulletExample::viewportEvent(const Vector2i& size) {
 }
 
 void BulletExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+    defaultFramebuffer.clear(FramebufferClear::Color);
 
     /* Step bullet simulation */
     bWord->stepSimulation(timeline.previousFrameDuration(), 5);

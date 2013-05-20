@@ -65,8 +65,8 @@ void TriangleExample::viewportEvent(const Vector2i& size) {
 }
 
 void TriangleExample::drawEvent() {
-    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+    defaultFramebuffer.bind(FramebufferTarget::Draw);
+    defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.use();
     mesh.draw();

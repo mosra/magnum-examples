@@ -28,6 +28,7 @@
 #include <Utility/Resource.h>
 #include <CubeMapTexture.h>
 #include <Texture.h>
+#include <TextureFormat.h>
 #include <MeshTools/CompressIndices.h>
 #include <MeshTools/Interleave.h>
 #include <Primitives/UVSphere.h>
@@ -63,7 +64,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
     /* Tarnish texture */
     if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
-        Corrade::Utility::Resource rs("data");
+        Utility::Resource rs("data");
         const unsigned char* data;
         std::size_t size;
         std::tie(data, size) = rs.getRaw("tarnish.tga");
@@ -71,10 +72,10 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
 
         Trade::ImageData2D* image = importer->image2D(0);
         Texture2D* texture = new Texture2D;
-        texture->setWrapping(Texture2D::Wrapping::ClampToEdge)
-            ->setMagnificationFilter(Texture2D::Filter::Linear)
-            ->setMinificationFilter(Texture2D::Filter::Linear, Texture2D::Mipmap::Linear)
-            ->setStorage(Math::log2(image->size().min())+1, Texture2D::InternalFormat::RGB8, image->size())
+        texture->setWrapping(Sampler::Wrapping::ClampToEdge)
+            ->setMagnificationFilter(Sampler::Filter::Linear)
+            ->setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
+            ->setStorage(Math::log2(image->size().min())+1, TextureFormat::RGB8, image->size())
             ->setSubImage(0, {}, image)
             ->generateMipmap();
         delete image;

@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/PluginManager.h>
+#include <PluginManager/Manager.h>
 #include <AbstractShaderProgram.h>
 #include <CubeMapTexture.h>
 #include <DefaultFramebuffer.h>
@@ -40,8 +40,6 @@
 #include "Reflector.h"
 #include "Types.h"
 #include "configure.h"
-
-using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
@@ -77,9 +75,9 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
         ->setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
 
     /* Load TGA importer plugin */
-    PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
+    if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TGAImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
@@ -108,7 +106,7 @@ void CubeMapExample::viewportEvent(const Vector2i& size) {
 }
 
 void CubeMapExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Depth);
+    defaultFramebuffer.clear(FramebufferClear::Depth);
     defaultFramebuffer.invalidate({DefaultFramebuffer::InvalidationAttachment::Color});
 
     camera->draw(drawables);

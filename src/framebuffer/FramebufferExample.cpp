@@ -22,7 +22,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/PluginManager.h>
+#include <PluginManager/Manager.h>
 #include <DefaultFramebuffer.h>
 #include <Platform/GlutApplication.h>
 #include <SceneGraph/Scene.h>
@@ -32,8 +32,6 @@
 #include "ColorCorrectionCamera.h"
 
 #include "configure.h"
-
-using namespace Corrade::PluginManager;
 
 namespace Magnum { namespace Examples {
 
@@ -65,9 +63,9 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
     camera = new ColorCorrectionCamera(&scene);
 
     /* Load TGA importer plugin */
-    PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
+    if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
@@ -97,7 +95,7 @@ void FramebufferExample::viewportEvent(const Vector2i& size) {
 }
 
 void FramebufferExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+    defaultFramebuffer.clear(FramebufferClear::Color);
     camera->draw(drawables);
     swapBuffers();
 }

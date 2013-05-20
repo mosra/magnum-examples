@@ -25,6 +25,7 @@
 #include "Billboard.h"
 
 #include <Buffer.h>
+#include <TextureFormat.h>
 #include <Primitives/Square.h>
 #include <SceneGraph/Camera2D.h>
 #include <Trade/MeshData2D.h>
@@ -38,12 +39,12 @@ Billboard::Billboard(Trade::ImageData2D* image, Buffer* colorCorrectionBuffer, O
         ->setVertexCount(square.positions(0)->size())
         ->addVertexBuffer(&buffer, 0, ColorCorrectionShader::Position());
 
-    texture.setWrapping(Texture2D::Wrapping::ClampToBorder)
-        ->setMagnificationFilter(Texture2D::Filter::Linear)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setImage(0, Texture2D::InternalFormat::RGBA8, image);
+    texture.setWrapping(Sampler::Wrapping::ClampToBorder)
+        ->setMagnificationFilter(Sampler::Filter::Linear)
+        ->setMinificationFilter(Sampler::Filter::Linear)
+        ->setImage(0, TextureFormat::RGBA8, image);
 
-    colorCorrectionTexture.setBuffer(BufferTexture::InternalFormat::R32F, colorCorrectionBuffer);
+    colorCorrectionTexture.setBuffer(BufferTextureFormat::R32F, colorCorrectionBuffer);
 
     scale(Vector2::yScale(Float(image->size()[1])/image->size()[0]));
 }

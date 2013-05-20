@@ -25,7 +25,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include <PluginManager/PluginManager.h>
+#include <PluginManager/Manager.h>
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Renderer.h>
@@ -44,9 +44,7 @@
 #include "ViewedObject.h"
 #include "configure.h"
 
-using namespace Corrade::PluginManager;
 using namespace Magnum::Trade;
-using namespace Magnum::Examples;
 
 namespace Magnum { namespace Examples {
 
@@ -87,8 +85,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(argu
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(manager.load("ColladaImporter") != LoadState::Loaded) {
+    PluginManager::Manager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    if(manager.load("ColladaImporter") != PluginManager::LoadState::Loaded) {
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
@@ -160,7 +158,7 @@ void ViewerExample::viewportEvent(const Vector2i& size) {
 }
 
 void ViewerExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
     camera->draw(drawables);
     swapBuffers();
 

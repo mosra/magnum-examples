@@ -83,8 +83,8 @@ void PrimitivesExample::viewportEvent(const Vector2i& size) {
 }
 
 void PrimitivesExample::drawEvent() {
-    defaultFramebuffer.bind(DefaultFramebuffer::Target::Draw);
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color|DefaultFramebuffer::Clear::Depth);
+    defaultFramebuffer.bind(FramebufferTarget::Draw);
+    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     shader.setLightPosition({7.0f, 5.0f, 2.5f})
         ->setLightColor(Color3<>(1.0f))

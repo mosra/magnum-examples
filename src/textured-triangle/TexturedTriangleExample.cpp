@@ -24,11 +24,12 @@
 
 #include <array>
 #include <sstream>
-#include <PluginManager/PluginManager.h>
+#include <PluginManager/Manager.h>
 #include <Buffer.h>
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Texture.h>
+#include <TextureFormat.h>
 #include <MeshTools/Interleave.h>
 #include <Platform/GlutApplication.h>
 #include <Trade/AbstractImporter.h>
@@ -73,15 +74,15 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         ->addInterleavedVertexBuffer(&buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
-    Corrade::PluginManager::PluginManager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != Corrade::PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
+    if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
 
     /* Load the texture */
-    Corrade::Utility::Resource rs("data");
+    Utility::Resource rs("data");
     const unsigned char* data;
     std::size_t size;
     std::tie(data, size) = rs.getRaw("stone.tga");
@@ -92,10 +93,10 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
 
     /* Set texture data and parameters */
     Trade::ImageData2D* image = importer->image2D(0);
-    texture.setWrapping(Texture2D::Wrapping::ClampToEdge)
-        ->setMagnificationFilter(Texture2D::Filter::Linear)
-        ->setMinificationFilter(Texture2D::Filter::Linear)
-        ->setImage(0, Texture2D::InternalFormat::RGB8, image);
+    texture.setWrapping(Sampler::Wrapping::ClampToEdge)
+        ->setMagnificationFilter(Sampler::Filter::Linear)
+        ->setMinificationFilter(Sampler::Filter::Linear)
+        ->setImage(0, TextureFormat::RGB8, image);
     delete image;
 
     /* We don't need the importer plugin anymore */
@@ -107,7 +108,7 @@ void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
 }
 
 void TexturedTriangleExample::drawEvent() {
-    defaultFramebuffer.clear(DefaultFramebuffer::Clear::Color);
+    defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.setBaseColor({1.0f, 0.7f, 0.7f})
         ->use();

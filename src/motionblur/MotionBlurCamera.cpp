@@ -27,16 +27,18 @@
 #include <sstream>
 #include <Utility/Resource.h>
 #include <DefaultFramebuffer.h>
+#include <ImageFormat.h>
 #include <Shader.h>
+#include <TextureFormat.h>
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(ImageFormat::RGB, ImageType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
-            ->setWrapping(Texture2D::Wrapping::ClampToEdge)
-            ->setMinificationFilter(Texture2D::Filter::Nearest)
-            ->setMagnificationFilter(Texture2D::Filter::Nearest);
+            ->setWrapping(Sampler::Wrapping::ClampToEdge)
+            ->setMinificationFilter(Sampler::Filter::Nearest)
+            ->setMagnificationFilter(Sampler::Filter::Nearest);
     }
 }
 
@@ -49,14 +51,14 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
-    std::size_t textureSize = size.product()*AbstractImage::pixelSize(AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte);
+    std::size_t textureSize = size.product()*framebuffer.pixelSize();
     UnsignedByte* texture = new UnsignedByte[textureSize]();
-    framebuffer.setData(size, AbstractImage::Format::RGB, AbstractImage::Type::UnsignedByte, nullptr, Buffer::Usage::DynamicDraw);
+    framebuffer.setData(size, ImageFormat::RGB, ImageType::UnsignedByte, nullptr, Buffer::Usage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
     for(Int i = 0; i != FrameCount; ++i)
-        frames[i]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
+        frames[i]->setImage(0, TextureFormat::RGB8, &framebuffer);
 }
 
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
@@ -64,14 +66,14 @@ void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
 
     defaultFramebuffer.read({0, 0}, viewport(), &framebuffer, Buffer::Usage::DynamicDraw);
 
-    frames[currentFrame]->setImage(0, Texture2D::InternalFormat::RGB8, &framebuffer);
+    frames[currentFrame]->setImage(0, TextureFormat::RGB8, &framebuffer);
 
     canvas.draw(currentFrame);
     currentFrame = (currentFrame+1)%FrameCount;
 }
 
 MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
-    Corrade::Utility::Resource rs("shaders");
+    Utility::Resource rs("shaders");
 
     attachShader(Shader(Version::GL330, Shader::Type::Vertex)
         .addSource(rs.get("MotionBlurShader.vert")));
