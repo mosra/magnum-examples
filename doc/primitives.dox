@@ -33,8 +33,8 @@ namespace Magnum {
 
 @todoc To be written
 
- - @ref primitives/PrimitivesExample.cpp
- - @ref primitives/CMakeLists.txt
+- @ref primitives/PrimitivesExample.cpp
+- @ref primitives/CMakeLists.txt
 
 - Next example: @ref examples-textured-triangle
 
