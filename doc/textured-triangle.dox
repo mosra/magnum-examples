@@ -123,11 +123,13 @@ allow @ref method-chaining "method chaining" on uniform setters.
 @until };
 @until };
 
-In the constructor we load GLSL sources from compiled-in resources, attach them,
-link the program and then retrieve location for the base color uniform. Then we
-set texture layer uniform to fixed value, so it doesn't have to be set manually
-when using the shader for rendering. With OpenGL 4.2 we can also set it
-explicitly inside the shader itself, see @ref AbstractShaderProgram-texture-layer.
+In the constructor we load GLSL sources from compiled-in resources, compile and
+attach them and link the program together. Note that we explicitly check for
+compilation and link status. It's better to exit the program instead of leaving
+it in undefined state. We then retrieve location for the base color uniform.
+Then we set texture layer uniform to fixed value, so it doesn't have to be set
+manually when using the shader for rendering. With OpenGL 4.2 we can also set
+it explicitly inside the shader itself, see @ref AbstractShaderProgram-texture-layer.
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
 @skip TexturedTriangleShader::TexturedTriangleShader
 @until }

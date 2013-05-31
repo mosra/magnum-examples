@@ -32,12 +32,17 @@ namespace Magnum { namespace Examples {
 ColorCorrectionShader::ColorCorrectionShader() {
     Utility::Resource rs("shader");
 
-    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
-        .addSource(rs.get("ColorCorrectionShader.vert")));
-    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
-        .addSource(rs.get("ColorCorrectionShader.frag")));
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(rs.get("ColorCorrectionShader.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    link();
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(rs.get("ColorCorrectionShader.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 

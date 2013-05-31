@@ -32,12 +32,17 @@ namespace Magnum { namespace Examples {
 ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
 
-    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
-        .addSource(rs.get("ReflectorShader.vert")));
-    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
-        .addSource(rs.get("ReflectorShader.frag")));
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(rs.get("ReflectorShader.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    link();
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(rs.get("ReflectorShader.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     transformationMatrixUniform = uniformLocation("transformationMatrix");
     normalMatrixUniform = uniformLocation("normalMatrix");

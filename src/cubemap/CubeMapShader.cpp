@@ -32,12 +32,17 @@ namespace Magnum { namespace Examples {
 CubeMapShader::CubeMapShader() {
     Utility::Resource rs("data");
 
-    attachShader(Shader(Version::GL330, Shader::Type::Vertex)
-        .addSource(rs.get("CubeMapShader.vert")));
-    attachShader(Shader(Version::GL330, Shader::Type::Fragment)
-        .addSource(rs.get("CubeMapShader.frag")));
+    Shader vert(Version::GL330, Shader::Type::Vertex);
+    vert.addSource(rs.get("CubeMapShader.vert"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
+    attachShader(vert);
 
-    link();
+    Shader frag(Version::GL330, Shader::Type::Fragment);
+    frag.addSource(rs.get("CubeMapShader.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
