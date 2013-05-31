@@ -36,9 +36,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(ColorCorrectionShader shader
-    ColorCorrectionShader.frag
-    ColorCorrectionShader.vert)
+corrade_add_resource(ColorCorrectionShader resources.conf)
 
 add_executable(framebuffer
     FramebufferExample.cpp

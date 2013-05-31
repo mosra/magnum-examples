@@ -297,12 +297,15 @@ and now require also Primitives and SceneGraph libraries:
 
 Then we create and include configuration file for plugin manager, like in
 previous example:
-@skip configure_file
-@until include_directories
+@skip include_directories
+@until )
+@until )
 
 Then we compile our resources - both shaders and tarnish texture:
-@skip corrade_add_resource
-@until )
+@include cubemap/resources.conf
+
+@dontinclude cubemap/CMakeLists.txt
+@skipline corrade_add_resource
 
 Lastly we compile the executable and link it to all needed %Magnum libraries:
 @skip add_executable
@@ -313,6 +316,7 @@ Running the example in source directory will use attached TGA files for
 environment map. You can pass path to your own images as argument.
 
 - @ref cubemap/configure.h.cmake
+- @ref cubemap/resources.conf
 - @ref cubemap/CMakeLists.txt
 */
 }

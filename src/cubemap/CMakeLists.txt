@@ -37,10 +37,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(CubeMapData data
-    CubeMapShader.vert CubeMapShader.frag
-    ReflectorShader.vert ReflectorShader.frag
-    tarnish.tga)
+corrade_add_resource(CubeMapData resources.conf)
 
 add_executable(cubemap
     CubeMapExample.cpp

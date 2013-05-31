@@ -49,6 +49,7 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 
 @example textured-triangle/TexturedTriangleExample.cpp
 @example textured-triangle/configure.h.cmake
+@example textured-triangle/resources.conf
 @example textured-triangle/CMakeLists.txt
 @example textured-triangle/TexturedTriangleShader.h
 @example textured-triangle/TexturedTriangleShader.cpp
@@ -71,6 +72,7 @@ itself is not required, as %Magnum wraps the functionality in its own classes.
 @example cubemap/Types.h
 @example cubemap/Types.cpp
 @example cubemap/configure.h.cmake
+@example cubemap/resources.conf
 @example cubemap/CMakeLists.txt
 
 */

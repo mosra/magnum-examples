@@ -35,9 +35,7 @@ find_package(Magnum REQUIRED
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS})
 
-corrade_add_resource(MotionBlurShaders shaders
-    MotionBlurShader.frag
-    MotionBlurShader.vert)
+corrade_add_resource(MotionBlurShaders resources.conf)
 
 add_executable(motionblur
     MotionBlurCamera.cpp

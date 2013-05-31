@@ -36,8 +36,8 @@ namespace Magnum {
 
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
- - Working with textures and using Corrade::PluginManager::PluginManager to
-   load Trade::TgaImporter::TgaImporter for importing image data.
+ - Working with textures and using Corrade::PluginManager::Manager to load
+   Trade::TgaImporter::TgaImporter for importing image data.
  - Creating custom shaders.
  - Storing resources in the executable using Corrade::Utility::Resource, so
    they don't have to be carried as separate files.
@@ -71,7 +71,7 @@ provided by CMake in `MAGNUM_PLUGINS_IMPORTER_DIR` (explained later) and try
 to load TgaImporter plugin. If the plugin cannot be loaded or instantiated, we
 print error message and exit immediately.
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
-@skip Corrade::PluginManager::PluginManager
+@skip PluginManager::Manager
 @until }
 
 Now we need to load the texture. As advertised above, the texture is stored
@@ -79,7 +79,7 @@ as resource in the executable. The resource data will be compiled into source
 file using CMake later. We access the resource and load the texture image
 using the plugin:
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
-@skip Corrade::Utility::Resource
+@skip Utility::Resource
 @until }
 
 After the image is loaded, we create texture from it. Note that we have to
@@ -162,16 +162,21 @@ We then process it with CMake, which will replace
 @skip configure_file
 @until ${CMAKE_CURRENT_BINARY_DIR}/configure.h
 
-Now we compile the resources using `corrade_add_resource()` macro. Important
-thing is to use the same resource name as when we were accessing them above
-(`data`). Then we create executable from the result and other source files.
-Last step is linking, the same as previously.
+Now we compile the resources into the executable. First we create file
+describing listing the resources and then we compile it using
+`corrade_add_resource()` macro. Important thing is to use the same resource
+name as when we were accessing them above (`data`). Then we create executable
+from the result and other source files. Last step is linking, the same as
+previously.
+
+@include textured-triangle/resources.conf
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
 @until ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
 
 - @ref textured-triangle/configure.h.cmake
+- @ref textured-triangle/resources.conf
 - @ref textured-triangle/CMakeLists.txt
 
 - Next example: @ref examples-cubemap

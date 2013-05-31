@@ -34,10 +34,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(TexturedTriangleData data
-    TexturedTriangleShader.frag
-    TexturedTriangleShader.vert
-    stone.tga)
+corrade_add_resource(TexturedTriangleData resources.conf)
 
 add_executable(textured-triangle
     TexturedTriangleExample.cpp
