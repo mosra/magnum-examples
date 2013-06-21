@@ -23,7 +23,7 @@
 */
 
 #include <array>
-#include <sstream>
+#include <Containers/Array.h>
 #include <PluginManager/Manager.h>
 #include <Buffer.h>
 #include <DefaultFramebuffer.h>
@@ -83,10 +83,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
 
     /* Load the texture */
     Utility::Resource rs("data");
-    const unsigned char* data;
-    std::size_t size;
-    std::tie(data, size) = rs.getRaw("stone.tga");
-    if(!importer->openData(data, size) || !importer->image2DCount()) {
+    if(!importer->openData(rs.getRaw("stone.tga")) || !importer->image2DCount()) {
         Error() << "Cannot load texture";
         std::exit(2);
     }

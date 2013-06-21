@@ -25,6 +25,7 @@
 #include "Reflector.h"
 
 #include <sstream>
+#include <Containers/Array.h>
 #include <Utility/Resource.h>
 #include <CubeMapTexture.h>
 #include <Texture.h>
@@ -65,10 +66,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Ob
     if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
         Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
         Utility::Resource rs("data");
-        const unsigned char* data;
-        std::size_t size;
-        std::tie(data, size) = rs.getRaw("tarnish.tga");
-        importer->openData(data, size);
+        importer->openData(rs.getRaw("tarnish.tga"));
 
         Trade::ImageData2D* image = importer->image2D(0);
         Texture2D* texture = new Texture2D;

@@ -95,10 +95,6 @@ ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(argu
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
     }
-    if(!(colladaImporter->features() & AbstractImporter::Feature::OpenFile)) {
-        Error() << "ColladaImporter cannot open files";
-        std::exit(3);
-    }
 
     /* Every scene needs a camera */
     (cameraObject = new Object3D(&scene))
