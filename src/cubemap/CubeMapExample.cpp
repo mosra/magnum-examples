@@ -55,9 +55,9 @@ class CubeMapExample: public Platform::GlutApplication {
     private:
         CubeMapResourceManager resourceManager;
         Scene3D scene;
-        SceneGraph::DrawableGroup3D<> drawables;
+        SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
-        SceneGraph::Camera3D<>* camera;
+        SceneGraph::Camera3D* camera;
 };
 
 CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration)->setTitle("Cube map example")) {
@@ -70,7 +70,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
     /* Set up perspective camera */
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
-    (camera = new SceneGraph::Camera3D<>(cameraObject))
+    (camera = new SceneGraph::Camera3D(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
 

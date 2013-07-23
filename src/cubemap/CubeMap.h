@@ -32,11 +32,11 @@ namespace Magnum { namespace Examples {
 
 class CubeMapShader;
 
-class CubeMap: public Object3D, SceneGraph::Drawable3D<> {
+class CubeMap: public Object3D, SceneGraph::Drawable3D {
     public:
-        CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
+        CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) override;
 
     private:
         Resource<Buffer> buffer;

@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* object): Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D* object): SceneGraph::Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
 
     original.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());
@@ -47,11 +47,11 @@ ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D<>* obj
                             {ColorCorrectionShader::ColorCorrectedOutput, Framebuffer::ColorAttachment(Corrected)}});
 }
 
-void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
+void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     /* Draw original scene */
     framebuffer.clear(FramebufferClear::Color);
     framebuffer.bind(FramebufferTarget::Draw);
-    Camera2D::draw(group);
+    SceneGraph::Camera2D::draw(group);
 
     /* Original image at top left */
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Original));
@@ -76,7 +76,7 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D<>& group) {
 }
 
 void ColorCorrectionCamera::setViewport(const Vector2i& size) {
-    Camera2D::setViewport(size/2);
+    SceneGraph::Camera2D::setViewport(size/2);
 
     /* Reset storage for renderbuffer */
     if(framebuffer.viewport().size() != size/2) {

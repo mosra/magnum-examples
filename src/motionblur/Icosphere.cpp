@@ -30,13 +30,13 @@
 
 namespace Magnum { namespace Examples {
 
-Icosphere::Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group), mesh(mesh), shader(shader), color(color) {
+Icosphere::Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(mesh), shader(shader), color(color) {
     scale(Vector3(0.1f));
 }
 
-void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) {
+void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
     shader->setDiffuseColor(color)
-        ->setSpecularColor(Color3<>(1.0f))
+        ->setSpecularColor(Color3(1.0f))
         ->setShininess(20)
         ->setLightPosition({3.0f, -3.0f, 3.0f})
         ->setTransformationMatrix(transformationMatrix)

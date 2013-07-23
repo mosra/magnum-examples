@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D<>* object): Camera3D(object), framebuffer(ImageFormat::RGB, ImageType::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D* object): SceneGraph::Camera3D(object), framebuffer(ImageFormat::RGB, ImageType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Sampler::Wrapping::ClampToEdge)
@@ -48,7 +48,7 @@ MotionBlurCamera::~MotionBlurCamera() {
 }
 
 void MotionBlurCamera::setViewport(const Vector2i& size) {
-    Camera3D::setViewport(size);
+    SceneGraph::Camera3D::setViewport(size);
 
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
@@ -58,15 +58,15 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 
     Buffer::unbind(Buffer::Target::PixelPack);
     for(Int i = 0; i != FrameCount; ++i)
-        frames[i]->setImage(0, TextureFormat::RGB8, &framebuffer);
+        frames[i]->setImage(0, TextureFormat::RGB8, framebuffer);
 }
 
-void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D<>& group) {
-    Camera3D::draw(group);
+void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D& group) {
+    SceneGraph::Camera3D::draw(group);
 
-    defaultFramebuffer.read({0, 0}, viewport(), &framebuffer, Buffer::Usage::DynamicDraw);
+    defaultFramebuffer.read({0, 0}, viewport(), framebuffer, Buffer::Usage::DynamicDraw);
 
-    frames[currentFrame]->setImage(0, TextureFormat::RGB8, &framebuffer);
+    frames[currentFrame]->setImage(0, TextureFormat::RGB8, framebuffer);
 
     canvas.draw(currentFrame);
     currentFrame = (currentFrame+1)%FrameCount;

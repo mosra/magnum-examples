@@ -28,8 +28,8 @@
 
 namespace Magnum { namespace Examples {
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D<>> Object2D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D<>> Scene2D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;
 
 }}
 

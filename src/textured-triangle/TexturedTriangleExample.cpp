@@ -93,7 +93,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
     texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         ->setMagnificationFilter(Sampler::Filter::Linear)
         ->setMinificationFilter(Sampler::Filter::Linear)
-        ->setImage(0, TextureFormat::RGB8, image);
+        ->setImage(0, TextureFormat::RGB8, *image);
     delete image;
 
     /* We don't need the importer plugin anymore */

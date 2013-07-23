@@ -35,8 +35,8 @@ extern template class ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Tex
 namespace Examples {
 
 typedef ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram> CubeMapResourceManager;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 }}
 

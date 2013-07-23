@@ -50,20 +50,18 @@ class PrimitivesExample: public Platform::GlutApplication {
 
         Matrix4 transformation, projection;
         Vector2i previousMousePosition;
-        Color3<> color;
+        Color3 color;
 };
 
 PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::GlutApplication(arguments, (new Configuration)->setTitle("Primitives example")) {
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setClearColor(Color3<>(0.125f));
+    Renderer::setClearColor(Color3(0.125f));
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 
-    MeshTools::interleave(&mesh, &vertexBuffer, Buffer::Usage::StaticDraw,
-                          *cube.positions(0), *cube.normals(0));
-    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw,
-                               *cube.indices());
+    MeshTools::interleave(&mesh, &vertexBuffer, Buffer::Usage::StaticDraw, cube.positions(0), cube.normals(0));
+    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, cube.indices());
 
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         ->addInterleavedVertexBuffer(&vertexBuffer, 0,
@@ -72,7 +70,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Glut
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));
 
-    color = Color3<>::fromHSV(Deg(35.0f), 1.0f, 1.0f);
+    color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
 }
 
 void PrimitivesExample::viewportEvent(const Vector2i& size) {
@@ -87,9 +85,9 @@ void PrimitivesExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     shader.setLightPosition({7.0f, 5.0f, 2.5f})
-        ->setLightColor(Color3<>(1.0f))
+        ->setLightColor(Color3(1.0f))
         ->setDiffuseColor(color)
-        ->setAmbientColor(Color3<>::fromHSV(color.hue(), 1.0f, 0.3f))
+        ->setAmbientColor(Color3::fromHSV(color.hue(), 1.0f, 0.3f))
         ->setTransformationMatrix(transformation)
         ->setProjectionMatrix(projection)
         ->use();
@@ -107,7 +105,7 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
-    color = Color3<>::fromHSV(color.hue() + Deg(50.0), 1.0f, 1.0f);
+    color = Color3::fromHSV(color.hue() + Deg(50.0), 1.0f, 1.0f);
 
     event.setAccepted();
     redraw();

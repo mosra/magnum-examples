@@ -67,9 +67,9 @@ class ViewerExample: public FpsCounterExample {
         void addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId);
 
         Scene3D scene;
-        SceneGraph::DrawableGroup3D<> drawables;
+        SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
-        SceneGraph::Camera3D<>* camera;
+        SceneGraph::Camera3D* camera;
         Shaders::Phong shader;
         Object3D* o;
         std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, Mesh*>> meshes;
@@ -99,7 +99,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(argu
     /* Every scene needs a camera */
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(5));
-    (camera = new SceneGraph::Camera3D<>(cameraObject))
+    (camera = new SceneGraph::Camera3D(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(35.0_degf, 1.0f, 0.001f, 100);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
@@ -275,22 +275,22 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
             meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
 
             MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
-            if(!data || !data->indices() || !data->positionArrayCount() || !data->normalArrayCount())
+            if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount())
                 std::exit(6);
 
-            vertexCount += data->positions(0)->size();
-            triangleCount += data->indices()->size()/3;
+            vertexCount += data->positions(0).size();
+            triangleCount += data->indices().size()/3;
 
             /* Optimize vertices */
             Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
-            MeshTools::tipsify(*data->indices(), data->positions(0)->size(), 24);
+            MeshTools::tipsify(data->indices(), data->positions(0).size(), 24);
 
             /* Interleave mesh data */
-            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *data->positions(0), *data->normals(0));
+            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data->positions(0), data->normals(0));
             mesh->addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
             /* Compress indices */
-            MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *data->indices());
+            MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data->indices());
             delete data;
         }
 

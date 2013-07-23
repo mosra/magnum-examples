@@ -48,8 +48,8 @@ class FramebufferExample: public Platform::GlutApplication {
     private:
         Vector2i previous;
         Scene2D scene;
-        SceneGraph::DrawableGroup2D<> drawables;
-        SceneGraph::Camera2D<>* camera;
+        SceneGraph::DrawableGroup2D drawables;
+        SceneGraph::Camera2D* camera;
         Billboard* billboard;
         Buffer colorCorrectionBuffer;
 };

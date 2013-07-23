@@ -31,6 +31,7 @@
 #include <Primitives/Icosphere.h>
 #include <SceneGraph/Scene.h>
 #include <Shaders/Phong.h>
+#include <Trade/MeshData3D.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
@@ -47,9 +48,9 @@ class MotionBlurExample: public Platform::GlutApplication {
 
     private:
         Scene3D scene;
-        SceneGraph::DrawableGroup3D<> drawables;
+        SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
-        SceneGraph::Camera3D<>* camera;
+        SceneGraph::Camera3D* camera;
         Buffer buffer;
         Buffer indexBuffer;
         Mesh mesh;
@@ -67,9 +68,9 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplicatio
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
-    Primitives::Icosphere<3> data;
-    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, *data.indices());
-    MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, *data.positions(0), *data.normals(0));
+    Trade::MeshData3D data = Primitives::Icosphere::solid(3);
+    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+    MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, data.positions(0), data.normals(0));
     mesh.addInterleavedVertexBuffer(&buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     /* Add spheres to the scene */

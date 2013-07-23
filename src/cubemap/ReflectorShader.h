@@ -68,7 +68,7 @@ class ReflectorShader: public AbstractShaderProgram {
             return this;
         }
 
-        inline ReflectorShader* setDiffuseColor(const Color3<>& color) {
+        inline ReflectorShader* setDiffuseColor(const Color3& color) {
             setUniform(diffuseColorUniform, color);
             return this;
         }

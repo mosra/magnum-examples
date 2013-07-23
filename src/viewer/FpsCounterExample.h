@@ -44,7 +44,7 @@ typedef Platform::XEglApplication Application;
 /** @brief Base class for examples with FPS counter */
 class FpsCounterExample: public Application {
     public:
-        explicit FpsCounterExample(const Arguments& arguments, Configuration* configuration);
+        explicit FpsCounterExample(const Arguments& arguments, const Configuration& configuration);
 
         /**
          * @brief Minimal duration between printing FPS to console

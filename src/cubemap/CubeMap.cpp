@@ -42,7 +42,7 @@
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D<>* group): Object3D(parent), SceneGraph::Drawable3D<>(this, group) {
+CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group) {
     CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
 
     /* Cube mesh */
@@ -52,9 +52,9 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         Buffer* indexBuffer = new Buffer;
 
         Trade::MeshData3D cubeData = Primitives::Cube::solid();
-        MeshTools::flipFaceWinding(*cubeData.indices());
-        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, *cubeData.indices());
-        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, *cubeData.positions(0));
+        MeshTools::flipFaceWinding(cubeData.indices());
+        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, cubeData.indices());
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, cubeData.positions(0));
         mesh->setPrimitive(cubeData.primitive())
             ->addVertexBuffer(buffer, 0, CubeMapShader::Position());
 
@@ -78,32 +78,32 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         Trade::ImageData2D* image = importer->image2D(0);
         Vector2i size = image->size();
         cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "-x.tga");
         image = importer->image2D(0);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "+y.tga");
         image = importer->image2D(0);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveY, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveY, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "-y.tga");
         image = importer->image2D(0);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeY, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeY, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "+z.tga");
         image = importer->image2D(0);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveZ, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveZ, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "-z.tga");
         image = importer->image2D(0);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeZ, 0, {}, image);
+        cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeZ, 0, {}, *image);
         delete image;
 
         cubeMap->generateMipmap();
@@ -116,7 +116,7 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         resourceManager->set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) {
+void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
     shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix)
         ->use();
 

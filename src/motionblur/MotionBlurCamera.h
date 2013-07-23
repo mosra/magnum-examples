@@ -34,16 +34,16 @@
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurCamera: public SceneGraph::Camera3D<> {
+class MotionBlurCamera: public SceneGraph::Camera3D {
     public:
         static const Int FrameCount = 7;
 
-        MotionBlurCamera(SceneGraph::AbstractObject3D<>* object);
+        MotionBlurCamera(SceneGraph::AbstractObject3D* object);
 
         ~MotionBlurCamera();
 
         void setViewport(const Vector2i& size) override;
-        void draw(SceneGraph::DrawableGroup3D<>& group) override;
+        void draw(SceneGraph::DrawableGroup3D& group) override;
 
     private:
         class MotionBlurShader: public AbstractShaderProgram {

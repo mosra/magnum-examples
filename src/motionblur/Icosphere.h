@@ -32,18 +32,18 @@
 
 namespace Magnum { namespace Examples {
 
-class Icosphere: public Object3D, SceneGraph::Drawable3D<> {
+class Icosphere: public Object3D, SceneGraph::Drawable3D {
     public:
-        Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D<>* group);
+        Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         inline void advance(Rad angle) { rotate(angle, Vector3::zAxis()); }
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D<>* camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) override;
 
     private:
         Mesh* mesh;
         Shaders::Phong* shader;
-        Color3<> color;
+        Color3 color;
 };
 
 }}

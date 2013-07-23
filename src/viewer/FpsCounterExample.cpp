@@ -31,7 +31,7 @@ using namespace Magnum;
 
 namespace Magnum { namespace Examples {
 
-FpsCounterExample::FpsCounterExample(const Arguments& arguments, Configuration* configuration): Application(arguments, configuration), frames(0), totalFrames(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false)
+FpsCounterExample::FpsCounterExample(const Arguments& arguments, const Configuration& configuration): Application(arguments, configuration), frames(0), totalFrames(0), minimalDuration(3.5), totalDuration(0.0), fpsEnabled(false)
     #ifndef MAGNUM_TARGET_GLES
     , primitives(0), totalPrimitives(0), samples(0), totalSamples(0), primitiveEnabled(false), sampleEnabled(false)
     #endif
