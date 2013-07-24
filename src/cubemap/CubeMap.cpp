@@ -71,37 +71,37 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
             ->setMagnificationFilter(Sampler::Filter::Linear)
             ->setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear);
 
-        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
+        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("jpeg-importer");
 
         /* Configure texture storage using size of first image */
-        importer->openFile(prefix + "+x.tga");
+        importer->openFile(prefix + "+x.jpg");
         Trade::ImageData2D* image = importer->image2D(0);
         Vector2i size = image->size();
         cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, *image);
         delete image;
 
-        importer->openFile(prefix + "-x.tga");
+        importer->openFile(prefix + "-x.jpg");
         image = importer->image2D(0);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, *image);
         delete image;
 
-        importer->openFile(prefix + "+y.tga");
+        importer->openFile(prefix + "+y.jpg");
         image = importer->image2D(0);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveY, 0, {}, *image);
         delete image;
 
-        importer->openFile(prefix + "-y.tga");
+        importer->openFile(prefix + "-y.jpg");
         image = importer->image2D(0);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeY, 0, {}, *image);
         delete image;
 
-        importer->openFile(prefix + "+z.tga");
+        importer->openFile(prefix + "+z.jpg");
         image = importer->image2D(0);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveZ, 0, {}, *image);
         delete image;
 
-        importer->openFile(prefix + "-z.tga");
+        importer->openFile(prefix + "-z.jpg");
         image = importer->image2D(0);
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeZ, 0, {}, *image);
         delete image;

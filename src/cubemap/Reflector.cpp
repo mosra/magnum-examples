@@ -64,9 +64,9 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
 
     /* Tarnish texture */
     if(!(tarnishTexture = resourceManager->get<Texture2D>("tarnish-texture"))) {
-        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("tga-importer");
+        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("jpeg-importer");
         Utility::Resource rs("data");
-        importer->openData(rs.getRaw("tarnish.tga"));
+        importer->openData(rs.getRaw("tarnish.jpg"));
 
         Trade::ImageData2D* image = importer->image2D(0);
         Texture2D* texture = new Texture2D;

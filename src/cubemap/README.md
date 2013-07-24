@@ -9,8 +9,8 @@ Usage
 -----
 
 The application tries to load cube map texture from directory in which it is
-run. Cube map texture consists of six TGA files `+x.tga`, `-x.tga`, `+y.tga`,
-`-y.tga`, `+z.tga` and `-z.tga`, each representing one side of the cube. Note
+run. Cube map texture consists of six JEPG files `+x.jpg`, `-x.jpg`, `+y.jpg`,
+`-y.jpg`, `+z.jpg` and `-z.jpg`, each representing one side of the cube. Note
 that all images must be turned upside down (+Y is top):
 
               +----+
@@ -26,7 +26,7 @@ example
 
     ./cubemap ~/images/city
 
-The application will then load `~/images/city+x.tga`, `~/images/city-x.tga`
+The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
 etc. as cube map texture.
 
 Key shortcuts
@@ -40,3 +40,10 @@ Documentation
 
 This example is thoroughly explained in the documentation, which you can read
 also online at http://mosra.cz/blog/magnum-doc/examples-cubemap.html .
+
+Image Source
+------------
+
+The cube map images are work of Emil Persson, aka Humus, http://www.humus.name.
+The images are licensed under a Creative Commons Attribution 3.0 Unported
+License, http://creativecommons.org/licenses/by/3.0/.
