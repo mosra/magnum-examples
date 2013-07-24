@@ -76,14 +76,14 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     Trade::AbstractImporter* importer;
-    if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
-        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+    if(manager.load("JpegImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("JpegImporter"))) {
+        Error() << "Cannot load PngImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
 
     /* Load the texture */
     Utility::Resource rs("data");
-    if(!importer->openData(rs.getRaw("stone.tga")) || !importer->image2DCount()) {
+    if(!importer->openData(rs.getRaw("stone.jpg")) || !importer->image2DCount()) {
         Error() << "Cannot load texture";
         std::exit(2);
     }
