@@ -68,7 +68,7 @@ class ViewerExample: public Platform::Application {
     private:
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
-        void addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::size_t objectId);
+        void addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId);
 
         ViewerResourceManager resourceManager;
 
@@ -128,8 +128,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    Trade::AbstractImporter* colladaImporter = manager.instance("ColladaImporter");
-    if(colladaImporter) resourceManager.set("importer", colladaImporter, ResourceDataState::Final, ResourcePolicy::Manual);
+    Trade::AbstractImporter* importer = manager.instance("ColladaImporter");
+    if(importer) resourceManager.set("importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
     else {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
@@ -147,11 +147,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Debug() << "Opening file" << arguments.argv[1];
 
     /* Load file */
-    if(!colladaImporter->openFile(arguments.argv[1])) {
+    if(!importer->openFile(arguments.argv[1])) {
         std::exit(4);
     }
 
-    if(!colladaImporter->sceneCount()) {
+    if(!importer->sceneCount()) {
         std::exit(5);
     }
 
@@ -173,17 +173,17 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     material->specularColor() = {1.0f, 1.0f, 1.0f};
     resourceManager.setFallback(material);
 
-    Debug() << "Adding default scene" << colladaImporter->sceneName(colladaImporter->defaultScene());
+    Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
     /* Default object, parent of all (for manipulation) */
     o = new Object3D(&scene);
 
     /* Load the scene */
-    Trade::SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
+    Trade::SceneData* scene = importer->scene(importer->defaultScene());
 
     /* Add all children */
     for(UnsignedInt objectId: scene->children3D())
-        addObject(colladaImporter, o, objectId);
+        addObject(importer, o, objectId);
 
     /* Importer, materials and loaders are not needed anymore */
     resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
@@ -259,14 +259,14 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
     return result.normalized();
 }
 
-void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::size_t objectId) {
-    Trade::ObjectData3D* object = colladaImporter->object3D(objectId);
+void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId) {
+    Trade::ObjectData3D* object = importer->object3D(objectId);
 
-    Debug() << "Importing object" << colladaImporter->object3DName(objectId);
+    Debug() << "Importing object" << importer->object3DName(objectId);
 
     /* Only meshes for now */
     if(object->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
-        const auto materialName = colladaImporter->materialName(static_cast<Trade::MeshObjectData3D*>(object)->material());
+        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(object)->material());
         const ResourceKey materialKey(materialName);
 
         /* Decide what object to add based on material type */
@@ -274,7 +274,7 @@ void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D
 
         /* Color-only material */
         if(!material->flags())
-            (new ViewedObject(colladaImporter->mesh3DName(object->instance()), materialKey, parent, &drawables))
+            (new ViewedObject(importer->mesh3DName(object->instance()), materialKey, parent, &drawables))
                 ->setTransformation(object->transformation());
 
         /* No other material types are supported yet */
@@ -283,7 +283,7 @@ void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D
 
     /* Recursively add children */
     for(std::size_t id: object->children())
-        addObject(colladaImporter, o, id);
+        addObject(importer, o, id);
 }
 
 MeshLoader::MeshLoader(): importer(ViewerResourceManager::instance()->get<Trade::AbstractImporter>("importer")) {
