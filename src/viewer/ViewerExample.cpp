@@ -49,8 +49,6 @@
 #include "ViewedObject.h"
 #include "configure.h"
 
-using namespace Magnum::Trade;
-
 namespace Magnum { namespace Examples {
 
 class ViewerExample: public Platform::Application {
@@ -69,7 +67,7 @@ class ViewerExample: public Platform::Application {
     private:
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
-        void addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId);
+        void addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, Trade::PhongMaterialData*>& materials, std::size_t objectId);
 
         Scene3D scene;
         SceneGraph::DrawableGroup3D drawables;
@@ -90,12 +88,12 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     }
 
     /* Instance ColladaImporter plugin */
-    PluginManager::Manager<AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(manager.load("ColladaImporter") != PluginManager::LoadState::Loaded) {
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    std::unique_ptr<AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    std::unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
@@ -120,7 +118,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         std::exit(5);
 
     /* Map with materials */
-    std::unordered_map<std::size_t, PhongMaterialData*> materials;
+    std::unordered_map<std::size_t, Trade::PhongMaterialData*> materials;
 
     /* Default object, parent of all (for manipulation) */
     o = new Object3D(&scene);
@@ -128,7 +126,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Debug() << "Adding default scene...";
 
     /* Load the scene */
-    SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
+    Trade::SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
     for(std::size_t objectId: scene->children3D())
@@ -249,11 +247,11 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
     return result.normalized();
 }
 
-void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, PhongMaterialData*>& materials, std::size_t objectId) {
-    ObjectData3D* object = colladaImporter->object3D(objectId);
+void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, Trade::PhongMaterialData*>& materials, std::size_t objectId) {
+    Trade::ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
-    if(object->instanceType() == ObjectData3D::InstanceType::Mesh) {
+    if(object->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
         ++objectCount;
 
         /* Use already processed mesh, if exists */
@@ -270,7 +268,7 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
             Buffer* indexBuffer = new Buffer;
             meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
 
-            MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
+            Trade::MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount())
                 std::exit(6);
 
@@ -291,17 +289,17 @@ void ViewerExample::addObject(AbstractImporter* colladaImporter, Object3D* paren
         }
 
         /* Use already processed material, if exists */
-        PhongMaterialData* material;
-        auto materialFound = materials.find(static_cast<MeshObjectData3D*>(object)->material());
+        Trade::PhongMaterialData* material;
+        auto materialFound = materials.find(static_cast<Trade::MeshObjectData3D*>(object)->material());
         if(materialFound != materials.end()) material = materialFound->second;
 
         /* Else get material or create default one */
         else {
             ++materialCount;
 
-            material = static_cast<PhongMaterialData*>(colladaImporter->material(static_cast<MeshObjectData3D*>(object)->material()));
+            material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(static_cast<Trade::MeshObjectData3D*>(object)->material()));
             if(!material) {
-                material = new PhongMaterialData({}, 50.0f);
+                material = new Trade::PhongMaterialData({}, 50.0f);
                 material->ambientColor() = {0.0f, 0.0f, 0.0f};
                 material->diffuseColor() = {0.9f, 0.9f, 0.9f};
                 material->specularColor() = {1.0f, 1.0f, 1.0f};
