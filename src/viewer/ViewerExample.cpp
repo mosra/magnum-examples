@@ -22,7 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
 #include <unordered_map>
 
 #include <PluginManager/Manager.h>
@@ -93,7 +92,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    std::unique_ptr<Trade::AbstractImporter> colladaImporter(manager.instance("ColladaImporter"));
+    Trade::AbstractImporter* colladaImporter = manager.instance("ColladaImporter");
     if(!colladaImporter) {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
@@ -111,11 +110,15 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Debug() << "Opening file" << arguments.argv[1];
 
     /* Load file */
-    if(!colladaImporter->openFile(arguments.argv[1]))
+    if(!colladaImporter->openFile(arguments.argv[1])) {
+        delete colladaImporter;
         std::exit(4);
+    }
 
-    if(colladaImporter->sceneCount() == 0)
+    if(!colladaImporter->sceneCount()) {
+        delete colladaImporter;
         std::exit(5);
+    }
 
     /* Map with materials */
     std::unordered_map<std::size_t, Trade::PhongMaterialData*> materials;
@@ -130,7 +133,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
 
     /* Add all children */
     for(std::size_t objectId: scene->children3D())
-        addObject(colladaImporter.get(), o, materials, objectId);
+        addObject(colladaImporter, o, materials, objectId);
 
     Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
     Debug() << "    " << vertexCount << "vertices and" << triangleCount << "triangles total.";
@@ -138,8 +141,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     /* Delete materials, as they are now unused */
     for(auto i: materials) delete i.second;
 
-    colladaImporter->close();
-    delete colladaImporter.release();
+    delete colladaImporter;
 }
 
 ViewerExample::~ViewerExample() {
