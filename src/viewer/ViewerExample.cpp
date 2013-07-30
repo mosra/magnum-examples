@@ -185,7 +185,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Trade::SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
-    for(std::size_t objectId: scene->children3D())
+    for(UnsignedInt objectId: scene->children3D())
         addObject(colladaImporter, o, objectId);
 
     /* Importer, materials and loaders are not needed anymore */
@@ -248,6 +248,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
         case MouseEvent::Button::Left:
             previousPosition = positionOnSphere(event.position());
             break;
+
         case MouseEvent::Button::WheelUp:
         case MouseEvent::Button::WheelDown: {
             /* Distance between origin and near camera clipping plane */
@@ -260,6 +261,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
             redraw();
             break;
         }
+
         default: ;
     }
 }
@@ -284,9 +286,7 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
-    Vector2i viewport = camera->viewport();
-    Vector2 position(_position.x()*2.0f/viewport.x() - 1.0f,
-                     _position.y()*2.0f/viewport.y() - 1.0f);
+    Vector2 position = Vector2(_position*2)/camera->viewport() - Vector2(1.0f);
 
     Float length = position.length();
     Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
