@@ -22,12 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <unordered_map>
-
 #include <PluginManager/Manager.h>
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Renderer.h>
+#include <ResourceManager.h>
 #include <MeshTools/Tipsify.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
@@ -52,13 +51,13 @@
 
 namespace Magnum { namespace Examples {
 
+typedef ResourceManager<Trade::AbstractImporter, Trade::PhongMaterialData, Shaders::Phong, Mesh, Buffer> ViewerResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class ViewerExample: public Platform::Application {
     public:
         explicit ViewerExample(const Arguments& arguments);
-        ~ViewerExample();
 
     protected:
         void viewportEvent(const Vector2i& size) override;
@@ -71,36 +70,56 @@ class ViewerExample: public Platform::Application {
     private:
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
-        void addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, Trade::PhongMaterialData*>& materials, std::size_t objectId);
+        void addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::size_t objectId);
+
+        ViewerResourceManager resourceManager;
 
         Scene3D scene;
-        SceneGraph::DrawableGroup3D drawables;
-        Object3D* cameraObject;
+        Object3D *o, *cameraObject;
         SceneGraph::Camera3D* camera;
-        Shaders::Phong shader;
-        Object3D* o;
-        std::unordered_map<std::size_t, std::tuple<Buffer*, Buffer*, Mesh*>> meshes;
-        std::size_t vertexCount, triangleCount, objectCount, meshCount, materialCount;
+        SceneGraph::DrawableGroup3D drawables;
         bool wireframe;
         Vector3 previousPosition;
 };
 
+class MeshLoader: public AbstractResourceLoader<Mesh> {
+    public:
+        explicit MeshLoader();
+
+    private:
+        void doLoad(ResourceKey key) override;
+
+        Resource<Trade::AbstractImporter> importer;
+        std::unordered_map<ResourceKey, std::size_t> keyMap;
+};
+
+class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
+    public:
+        explicit MaterialLoader();
+
+    private:
+        void doLoad(ResourceKey key) override;
+
+        Resource<Trade::AbstractImporter> importer;
+        std::unordered_map<ResourceKey, std::size_t> keyMap;
+};
+
 class ViewedObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::Phong* shader, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        ViewedObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) override;
 
     private:
-        Mesh* mesh;
+        Resource<Mesh> mesh;
+        Resource<Shaders::Phong> shader;
         Vector3 ambientColor,
             diffuseColor,
             specularColor;
         Float shininess;
-        Shaders::Phong* shader;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer")), wireframe(false) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "file.dae";
         std::exit(0);
@@ -113,7 +132,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         std::exit(1);
     }
     Trade::AbstractImporter* colladaImporter = manager.instance("ColladaImporter");
-    if(!colladaImporter) {
+    if(colladaImporter) resourceManager.set("importer", colladaImporter, ResourceDataState::Final, ResourcePolicy::Manual);
+    else {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
     }
@@ -131,45 +151,53 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
 
     /* Load file */
     if(!colladaImporter->openFile(arguments.argv[1])) {
-        delete colladaImporter;
         std::exit(4);
     }
 
     if(!colladaImporter->sceneCount()) {
-        delete colladaImporter;
         std::exit(5);
     }
 
-    /* Map with materials */
-    std::unordered_map<std::size_t, Trade::PhongMaterialData*> materials;
+    /* Resource loaders */
+    auto meshLoader = new MeshLoader;
+    auto materialLoader = new MaterialLoader;
+    resourceManager.setLoader(meshLoader)->setLoader(materialLoader);
+
+    /* Phong shader instance */
+    resourceManager.set("color", new Shaders::Phong);
+
+    /* Fallback mesh for objects with no mesh */
+    resourceManager.setFallback(new Mesh);
+
+    /* Fallback material for objects with no material */
+    auto material = new Trade::PhongMaterialData({}, 50.0f);
+    material->ambientColor() = {0.0f, 0.0f, 0.0f};
+    material->diffuseColor() = {0.9f, 0.9f, 0.9f};
+    material->specularColor() = {1.0f, 1.0f, 1.0f};
+    resourceManager.setFallback(material);
+
+    Debug() << "Adding default scene...";
 
     /* Default object, parent of all (for manipulation) */
     o = new Object3D(&scene);
-
-    Debug() << "Adding default scene...";
 
     /* Load the scene */
     Trade::SceneData* scene = colladaImporter->scene(colladaImporter->defaultScene());
 
     /* Add all children */
     for(std::size_t objectId: scene->children3D())
-        addObject(colladaImporter, o, materials, objectId);
+        addObject(colladaImporter, o, objectId);
 
-    Debug() << "Imported" << objectCount << "objects with" << meshCount << "meshes and" << materialCount << "materials,";
-    Debug() << "    " << vertexCount << "vertices and" << triangleCount << "triangles total.";
+    /* Importer, materials and loaders are not needed anymore */
+    resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
+        ->setLoader<Mesh>(nullptr)
+        ->setLoader<Trade::PhongMaterialData>(nullptr)
+        ->clear<Trade::PhongMaterialData>()
+        ->clear<Trade::AbstractImporter>();
 
-    /* Delete materials, as they are now unused */
-    for(auto i: materials) delete i.second;
-
-    delete colladaImporter;
-}
-
-ViewerExample::~ViewerExample() {
-    for(auto i: meshes) {
-        delete std::get<0>(i.second);
-        delete std::get<1>(i.second);
-        delete std::get<2>(i.second);
-    }
+    Debug() << "Imported" << meshLoader->loadedCount() << "meshes and"
+            << materialLoader->loadedCount() << "materials," << meshLoader->notFoundCount()
+            << "meshes and" << materialLoader->notFoundCount() << "materials weren't found.";
 }
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
@@ -266,79 +294,91 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
     return result.normalized();
 }
 
-void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::unordered_map<std::size_t, Trade::PhongMaterialData*>& materials, std::size_t objectId) {
+void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::size_t objectId) {
     Trade::ObjectData3D* object = colladaImporter->object3D(objectId);
 
     /* Only meshes for now */
     if(object->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
-        ++objectCount;
+        const auto materialName = colladaImporter->materialName(static_cast<Trade::MeshObjectData3D*>(object)->material());
+        const ResourceKey materialKey(materialName);
 
-        /* Use already processed mesh, if exists */
-        Mesh* mesh;
-        auto found = meshes.find(object->instanceId());
-        if(found != meshes.end()) mesh = std::get<2>(found->second);
+        /* Decide what object to add based on material type */
+        Resource<Trade::PhongMaterialData> material = resourceManager.get<Trade::PhongMaterialData>(materialKey);
 
-        /* Or create a new one */
-        else {
-            ++meshCount;
+        /* Color-only material */
+        if(!material->flags())
+            (new ViewedObject(colladaImporter->mesh3DName(object->instance()), materialKey, parent, &drawables))
+                ->setTransformation(object->transformation());
 
-            mesh = new Mesh;
-            Buffer* buffer = new Buffer;
-            Buffer* indexBuffer = new Buffer;
-            meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
-
-            Debug() << "Importing mesh" << colladaImporter->mesh3DName(object->instanceId()) << "...";
-
-            Trade::MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
-            if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount())
-                std::exit(6);
-
-            vertexCount += data->positions(0).size();
-            triangleCount += data->indices().size()/3;
-
-            /* Optimize vertices */
-            Debug() << "Optimizing vertices using Tipsify algorithm (cache size 24)...";
-            MeshTools::tipsify(data->indices(), data->positions(0).size(), 24);
-
-            /* Interleave mesh data */
-            MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data->positions(0), data->normals(0));
-            mesh->addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
-
-            /* Compress indices */
-            MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data->indices());
-            delete data;
-        }
-
-        /* Use already processed material, if exists */
-        Trade::PhongMaterialData* material;
-        auto materialFound = materials.find(static_cast<Trade::MeshObjectData3D*>(object)->material());
-        if(materialFound != materials.end()) material = materialFound->second;
-
-        /* Else get material or create default one */
-        else {
-            ++materialCount;
-
-            material = static_cast<Trade::PhongMaterialData*>(colladaImporter->material(static_cast<Trade::MeshObjectData3D*>(object)->material()));
-            if(!material) {
-                material = new Trade::PhongMaterialData({}, 50.0f);
-                material->ambientColor() = {0.0f, 0.0f, 0.0f};
-                material->diffuseColor() = {0.9f, 0.9f, 0.9f};
-                material->specularColor() = {1.0f, 1.0f, 1.0f};
-            }
-        }
-
-        /* Add object */
-        Object3D* o = new ViewedObject(mesh, material, &shader, parent, &drawables);
-        delete material;
-        o->setTransformation(object->transformation());
+        /* No other material types are supported yet */
+        else Error() << "Texture combination of material" << materialName << "is not supported";
     }
 
     /* Recursively add children */
     for(std::size_t id: object->children())
-        addObject(colladaImporter, o, materials, id);
+        addObject(colladaImporter, o, id);
 }
 
-ViewedObject::ViewedObject(Mesh* mesh, Trade::PhongMaterialData* material, Shaders::Phong* shader, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(mesh), ambientColor(material->ambientColor()), diffuseColor(material->diffuseColor()), specularColor(material->specularColor()), shininess(material->shininess()), shader(shader) {}
+MeshLoader::MeshLoader(): importer(ViewerResourceManager::instance()->get<Trade::AbstractImporter>("importer")) {
+    /* Fill key->name map */
+    for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i)
+        keyMap.emplace(importer->mesh3DName(i), i);
+}
+
+void MeshLoader::doLoad(const ResourceKey key) {
+    const UnsignedInt id = keyMap.at(key);
+
+    Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
+
+    Trade::MeshData3D* data = importer->mesh3D(id);
+    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != Mesh::Primitive::Triangles) {
+        delete data;
+        setNotFound(key);
+        return;
+    }
+
+    /* Optimize vertices */
+    Debug() << "Optimizing vertices using Tipsify algorithm (cache size 24)...";
+    MeshTools::tipsify(data->indices(), data->positions(0).size(), 24);
+
+    /* Fill mesh data */
+    auto mesh = new Mesh;
+    auto buffer = new Buffer;
+    auto indexBuffer = new Buffer;
+    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data->positions(0), data->normals(0));
+    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data->indices());
+    mesh->addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal())
+        ->setPrimitive(data->primitive());
+
+    /* Save things */
+    ViewerResourceManager::instance()->set(importer->mesh3DName(id) + "-vertices", buffer);
+    ViewerResourceManager::instance()->set(importer->mesh3DName(id) + "-indices", indexBuffer);
+    set(key, mesh);
+    delete data;
+}
+
+MaterialLoader::MaterialLoader(): importer(ViewerResourceManager::instance()->get<Trade::AbstractImporter>("importer")) {
+    /* Fill key->name map */
+    for(UnsignedInt i = 0; i != importer->materialCount(); ++i)
+        keyMap.emplace(importer->materialName(i), i);
+}
+
+void MaterialLoader::doLoad(const ResourceKey key) {
+    const UnsignedInt id = keyMap.at(key);
+
+    auto material = importer->material(id);
+    if(material && material->type() == Trade::AbstractMaterialData::Type::Phong)
+        set(key, static_cast<Trade::PhongMaterialData*>(material), ResourceDataState::Final, ResourcePolicy::Manual);
+    else setNotFound(key);
+}
+
+ViewedObject::ViewedObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(ViewerResourceManager::instance()->get<Mesh>(meshKey)), shader(ViewerResourceManager::instance()->get<Shaders::Phong>("color")) {
+    Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance()->get<Trade::PhongMaterialData>(materialKey);
+    ambientColor = material->ambientColor();
+    diffuseColor = material->diffuseColor();
+    specularColor = material->specularColor();
+    shininess = material->shininess();
+}
 
 void ViewedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
     shader->setAmbientColor(ambientColor)
