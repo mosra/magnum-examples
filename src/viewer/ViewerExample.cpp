@@ -101,9 +101,9 @@ class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
         std::unordered_map<ResourceKey, std::size_t> keyMap;
 };
 
-class ViewedObject: public Object3D, SceneGraph::Drawable3D {
+class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        ViewedObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) override;
 
@@ -274,7 +274,7 @@ void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* paren
 
         /* Color-only material */
         if(!material->flags())
-            (new ViewedObject(importer->mesh3DName(object->instance()), materialKey, parent, &drawables))
+            (new ColoredObject(importer->mesh3DName(object->instance()), materialKey, parent, &drawables))
                 ->setTransformation(object->transformation());
 
         /* No other material types are supported yet */
@@ -337,7 +337,7 @@ void MaterialLoader::doLoad(const ResourceKey key) {
     else setNotFound(key);
 }
 
-ViewedObject::ViewedObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(ViewerResourceManager::instance()->get<Mesh>(meshKey)), shader(ViewerResourceManager::instance()->get<Shaders::Phong>("color")) {
+ColoredObject::ColoredObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(ViewerResourceManager::instance()->get<Mesh>(meshKey)), shader(ViewerResourceManager::instance()->get<Shaders::Phong>("color")) {
     Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance()->get<Trade::PhongMaterialData>(materialKey);
     ambientColor = material->ambientColor();
     diffuseColor = material->diffuseColor();
@@ -345,7 +345,7 @@ ViewedObject::ViewedObject(const ResourceKey meshKey, const ResourceKey material
     shininess = material->shininess();
 }
 
-void ViewedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
+void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
     shader->setAmbientColor(ambientColor)
         ->setDiffuseColor(diffuseColor)
         ->setSpecularColor(specularColor)
