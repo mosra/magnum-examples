@@ -46,6 +46,7 @@ class ViewedObject: public Object3D, SceneGraph::Drawable3D {
                 ->setShininess(shininess)
                 ->setLightPosition({-3.0f, 10.0f, 10.0f})
                 ->setTransformationMatrix(transformationMatrix)
+                ->setNormalMatrix(transformationMatrix.rotation())
                 ->setProjectionMatrix(camera->projectionMatrix())
                 ->use();
 
