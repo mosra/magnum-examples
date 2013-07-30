@@ -173,7 +173,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     material->specularColor() = {1.0f, 1.0f, 1.0f};
     resourceManager.setFallback(material);
 
-    Debug() << "Adding default scene...";
+    Debug() << "Adding default scene" << colladaImporter->sceneName(colladaImporter->defaultScene());
 
     /* Default object, parent of all (for manipulation) */
     o = new Object3D(&scene);
@@ -262,6 +262,8 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
 void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D* parent, std::size_t objectId) {
     Trade::ObjectData3D* object = colladaImporter->object3D(objectId);
 
+    Debug() << "Importing object" << colladaImporter->object3DName(objectId);
+
     /* Only meshes for now */
     if(object->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
         const auto materialName = colladaImporter->materialName(static_cast<Trade::MeshObjectData3D*>(object)->material());
@@ -326,6 +328,8 @@ MaterialLoader::MaterialLoader(): importer(ViewerResourceManager::instance()->ge
 
 void MaterialLoader::doLoad(const ResourceKey key) {
     const UnsignedInt id = keyMap.at(key);
+
+    Debug() << "Importing material" << importer->materialName(id);
 
     auto material = importer->material(id);
     if(material && material->type() == Trade::AbstractMaterialData::Type::Phong)
