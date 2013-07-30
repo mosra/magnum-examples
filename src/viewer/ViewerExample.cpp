@@ -147,13 +147,10 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Debug() << "Opening file" << arguments.argv[1];
 
     /* Load file */
-    if(!importer->openFile(arguments.argv[1])) {
+    if(!importer->openFile(arguments.argv[1]))
         std::exit(4);
-    }
-
-    if(!importer->sceneCount()) {
+    if(!importer->sceneCount() || importer->defaultScene() == -1)
         std::exit(5);
-    }
 
     /* Resource loaders */
     auto meshLoader = new MeshLoader;
