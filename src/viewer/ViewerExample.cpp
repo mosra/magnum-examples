@@ -27,7 +27,6 @@
 #include <Mesh.h>
 #include <Renderer.h>
 #include <ResourceManager.h>
-#include <MeshTools/Tipsify.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
 #include <SceneGraph/Scene.h>
@@ -62,7 +61,6 @@ class ViewerExample: public Platform::Application {
     protected:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
-        void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
@@ -78,7 +76,6 @@ class ViewerExample: public Platform::Application {
         Object3D *o, *cameraObject;
         SceneGraph::Camera3D* camera;
         SceneGraph::DrawableGroup3D drawables;
-        bool wireframe;
         Vector3 previousPosition;
 };
 
@@ -119,7 +116,7 @@ class ViewedObject: public Object3D, SceneGraph::Drawable3D {
         Float shininess;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer")), wireframe(false) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer")) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "file.dae";
         std::exit(0);
@@ -209,38 +206,6 @@ void ViewerExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
     camera->draw(drawables);
     swapBuffers();
-}
-
-void ViewerExample::keyPressEvent(KeyEvent& event) {
-    switch(event.key()) {
-        case KeyEvent::Key::Up:
-            o->rotateX(-10.0_degf);
-            break;
-        case KeyEvent::Key::Down:
-            o->rotateX(10.0_degf);
-            break;
-        case KeyEvent::Key::Left:
-            o->rotateY(-10.0_degf, SceneGraph::TransformationType::Local);
-            break;
-        case KeyEvent::Key::Right:
-            o->rotateY(10.0_degf, SceneGraph::TransformationType::Local);
-            break;
-        case KeyEvent::Key::PageUp:
-            cameraObject->translate(Vector3::zAxis(-0.5), SceneGraph::TransformationType::Local);
-            break;
-        case KeyEvent::Key::PageDown:
-            cameraObject->translate(Vector3::zAxis(0.5), SceneGraph::TransformationType::Local);
-            break;
-        #ifndef MAGNUM_TARGET_GLES
-        case KeyEvent::Key::Home:
-            Renderer::setPolygonMode(wireframe ? Renderer::PolygonMode::Fill : Renderer::PolygonMode::Line);
-            wireframe = !wireframe;
-            break;
-        #endif
-        default: break;
-    }
-
-    redraw();
 }
 
 void ViewerExample::mousePressEvent(MouseEvent& event) {
@@ -336,10 +301,6 @@ void MeshLoader::doLoad(const ResourceKey key) {
         setNotFound(key);
         return;
     }
-
-    /* Optimize vertices */
-    Debug() << "Optimizing vertices using Tipsify algorithm (cache size 24)...";
-    MeshTools::tipsify(data->indices(), data->positions(0).size(), 24);
 
     /* Fill mesh data */
     auto mesh = new Mesh;
