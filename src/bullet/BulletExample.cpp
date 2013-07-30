@@ -44,8 +44,8 @@
 
 namespace Magnum { namespace Examples {
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D<>> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D<>> Scene3D;
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class BulletExample: public Platform::Application {
     public:
@@ -62,9 +62,9 @@ class BulletExample: public Platform::Application {
 
         DebugTools::ResourceManager manager;
         Scene3D scene;
-        SceneGraph::DrawableGroup3D<> drawables;
+        SceneGraph::DrawableGroup3D drawables;
         Shapes::ShapeGroup3D shapes;
-        SceneGraph::Camera3D<>* camera;
+        SceneGraph::Camera3D* camera;
         Timeline timeline;
 
         Object3D *cameraRig, *cameraObject, *ground;
@@ -75,27 +75,26 @@ class BulletExample: public Platform::Application {
 
 BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, nullptr) {
     /* Try 16x MSAA */
-    auto conf = new Configuration;
-    conf->setTitle("Bullet Integration Example")
-        ->setSampleCount(16);
+    Configuration conf;
+    conf.setTitle("Bullet Integration Example")
+        .setSampleCount(16);
     if(!tryCreateContext(conf))
-        createContext(conf->setSampleCount(0));
-    else delete conf;
+        createContext(conf.setSampleCount(0));
 
-    Renderer::setClearColor(Color3<>(0.15f));
+    Renderer::setClearColor(Color3(0.15f));
 
     /* Camera setup */
     (cameraRig = new Object3D(&scene))
         ->translate({0.f, 4.f, 0.f});
     (cameraObject = new Object3D(cameraRig))
         ->translate({0.f, 0.f, 20.f});
-    (camera = new SceneGraph::Camera3D<>(cameraObject))
+    (camera = new SceneGraph::Camera3D(cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         ->setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
 
     /* Debug draw setup */
-    manager.set("ground", (new DebugTools::ShapeRendererOptions)->setColor(Color3<>(0.45f)));
-    manager.set("box", (new DebugTools::ShapeRendererOptions)->setColor(Color3<>(0.85f)));
+    manager.set("ground", (new DebugTools::ShapeRendererOptions)->setColor(Color3(0.45f)));
+    manager.set("box", (new DebugTools::ShapeRendererOptions)->setColor(Color3(0.85f)));
     manager.set("redbox", (new DebugTools::ShapeRendererOptions)->setColor({0.9f, 0.0f, 0.0f}));
 
     /* Bullet setup */
