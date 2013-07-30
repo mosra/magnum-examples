@@ -287,6 +287,8 @@ void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D
             Buffer* indexBuffer = new Buffer;
             meshes.insert(std::make_pair(object->instanceId(), std::make_tuple(buffer, indexBuffer, mesh)));
 
+            Debug() << "Importing mesh" << colladaImporter->mesh3DName(object->instanceId()) << "...";
+
             Trade::MeshData3D* data = colladaImporter->mesh3D(object->instanceId());
             if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount())
                 std::exit(6);
@@ -295,7 +297,7 @@ void ViewerExample::addObject(Trade::AbstractImporter* colladaImporter, Object3D
             triangleCount += data->indices().size()/3;
 
             /* Optimize vertices */
-            Debug() << "Optimizing vertices of mesh" << object->instanceId() << "using Tipsify algorithm (cache size 24)...";
+            Debug() << "Optimizing vertices using Tipsify algorithm (cache size 24)...";
             MeshTools::tipsify(data->indices(), data->positions(0).size(), 24);
 
             /* Interleave mesh data */
