@@ -40,7 +40,12 @@
 #include <Trade/MeshObjectData3D.h>
 #include <Trade/SceneData.h>
 
-#include "FpsCounterExample.h"
+#ifndef MAGNUM_TARGET_GLES
+#include <Platform/GlutApplication.h>
+#else
+#include <Platform/XEglApplication.h>
+#endif
+
 #include "ViewedObject.h"
 #include "configure.h"
 
@@ -48,7 +53,7 @@ using namespace Magnum::Trade;
 
 namespace Magnum { namespace Examples {
 
-class ViewerExample: public FpsCounterExample {
+class ViewerExample: public Platform::Application {
     public:
         explicit ViewerExample(const Arguments& arguments);
         ~ViewerExample();
@@ -78,7 +83,7 @@ class ViewerExample: public FpsCounterExample {
         Vector3 previousPosition;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): FpsCounterExample(arguments, Configuration().setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer")), vertexCount(0), triangleCount(0), objectCount(0), meshCount(0), materialCount(0), wireframe(false) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "file.dae";
         std::exit(0);
@@ -150,15 +155,12 @@ ViewerExample::~ViewerExample() {
 void ViewerExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
     camera->setViewport(size);
-    FpsCounterExample::viewportEvent(size);
 }
 
 void ViewerExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
     camera->draw(drawables);
     swapBuffers();
-
-    if(fpsCounterEnabled()) redraw();
 }
 
 void ViewerExample::keyPressEvent(KeyEvent& event) {
@@ -187,12 +189,6 @@ void ViewerExample::keyPressEvent(KeyEvent& event) {
             wireframe = !wireframe;
             break;
         #endif
-        case KeyEvent::Key::End:
-            if(fpsCounterEnabled()) printCounterStatistics();
-            else resetCounter();
-
-            setFpsCounterEnabled(!fpsCounterEnabled());
-            break;
         default: break;
     }
 

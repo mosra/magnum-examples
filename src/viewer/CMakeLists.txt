@@ -40,7 +40,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-add_executable(viewer FpsCounterExample.cpp ViewerExample.cpp)
+add_executable(viewer ViewerExample.cpp)
 target_link_libraries(viewer
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}

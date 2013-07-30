@@ -22,5 +22,3 @@ Mouse and key shortcuts
  * **Page Up** and **Page Down** or **mouse wheel** zooms in and out.
  * **Home** toggles between wireframe and shaded view (not available on OpenGL
    ES).
- * **End** key toggles benchmarking. FPS count is measured during a few
-   seconds and the result is written to console output.
