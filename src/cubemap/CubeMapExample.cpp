@@ -60,7 +60,7 @@ class CubeMapExample: public Platform::GlutApplication {
         SceneGraph::Camera3D* camera;
 };
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, (new Configuration)->setTitle("Cube map example")) {
+CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Cube map example")) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 

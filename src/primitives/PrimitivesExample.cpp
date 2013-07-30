@@ -53,7 +53,7 @@ class PrimitivesExample: public Platform::GlutApplication {
         Color3 color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::GlutApplication(arguments, (new Configuration)->setTitle("Primitives example")) {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Primitives example")) {
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setClearColor(Color3(0.125f));
