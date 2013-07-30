@@ -226,10 +226,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
             Float distance = cameraObject->transformation().translation().z()-0-camera->near();
 
             /* Move 15% of the distance back or forward */
-            if(event.button() == MouseEvent::Button::WheelUp)
-                distance *= 1 - 1/0.85f;
-            else
-                distance *= 1 - 0.85f;
+            distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
             cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
 
             redraw();
