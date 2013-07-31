@@ -24,21 +24,26 @@
 
 #include <PluginManager/Manager.h>
 #include <DefaultFramebuffer.h>
+#include <ImageFormat.h>
+#include <TextureFormat.h>
 #include <Mesh.h>
 #include <Renderer.h>
 #include <ResourceManager.h>
+#include <Texture.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
-#include <SceneGraph/Scene.h>
 #include <SceneGraph/Camera3D.h>
 #include <SceneGraph/Drawable.h>
 #include <SceneGraph/MatrixTransformation3D.h>
+#include <SceneGraph/Scene.h>
 #include <Shaders/Phong.h>
 #include <Trade/AbstractImporter.h>
+#include <Trade/ImageData.h>
 #include <Trade/MeshData3D.h>
 #include <Trade/MeshObjectData3D.h>
 #include <Trade/PhongMaterialData.h>
 #include <Trade/SceneData.h>
+#include <Trade/TextureData.h>
 
 #ifndef MAGNUM_TARGET_GLES
 #include <Platform/GlutApplication.h>
@@ -50,7 +55,7 @@
 
 namespace Magnum { namespace Examples {
 
-typedef ResourceManager<Trade::AbstractImporter, Trade::PhongMaterialData, Shaders::Phong, Mesh, Buffer> ViewerResourceManager;
+typedef ResourceManager<Trade::AbstractImporter, Trade::PhongMaterialData, Shaders::Phong, Mesh, Buffer, Texture2D> ViewerResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -101,6 +106,17 @@ class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
         std::unordered_map<ResourceKey, std::size_t> keyMap;
 };
 
+class TextureLoader: public AbstractResourceLoader<Texture2D> {
+    public:
+        explicit TextureLoader();
+
+    private:
+        void doLoad(ResourceKey key) override;
+
+        Resource<Trade::AbstractImporter> importer;
+        std::unordered_map<ResourceKey, std::size_t> keyMap;
+};
+
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
         ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
@@ -112,6 +128,21 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
         Resource<Shaders::Phong> shader;
         Vector3 ambientColor,
             diffuseColor,
+            specularColor;
+        Float shininess;
+};
+
+class TexturedObject: public Object3D, SceneGraph::Drawable3D {
+    public:
+        TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+
+        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) override;
+
+    private:
+        Resource<Mesh> mesh;
+        Resource<Texture2D> diffuseTexture;
+        Resource<Shaders::Phong> shader;
+        Vector3 ambientColor,
             specularColor;
         Float shininess;
 };
@@ -155,10 +186,14 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     /* Resource loaders */
     auto meshLoader = new MeshLoader;
     auto materialLoader = new MaterialLoader;
-    resourceManager.setLoader(meshLoader)->setLoader(materialLoader);
+    auto textureLoader = new TextureLoader;
+    resourceManager.setLoader(meshLoader)
+        ->setLoader(materialLoader)
+        ->setLoader(textureLoader);
 
-    /* Phong shader instance */
+    /* Phong shader instances */
     resourceManager.set("color", new Shaders::Phong);
+    resourceManager.set("texture", new Shaders::Phong(Shaders::Phong::Flag::DiffuseTexture));
 
     /* Fallback mesh for objects with no mesh */
     resourceManager.setFallback(new Mesh);
@@ -169,6 +204,9 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     material->diffuseColor() = {0.9f, 0.9f, 0.9f};
     material->specularColor() = {1.0f, 1.0f, 1.0f};
     resourceManager.setFallback(material);
+
+    /* Fallback texture for object without texture */
+    resourceManager.setFallback(new Texture2D);
 
     Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
@@ -185,13 +223,17 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     /* Importer, materials and loaders are not needed anymore */
     resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
         ->setLoader<Mesh>(nullptr)
+        ->setLoader<Texture2D>(nullptr)
         ->setLoader<Trade::PhongMaterialData>(nullptr)
         ->clear<Trade::PhongMaterialData>()
         ->clear<Trade::AbstractImporter>();
 
-    Debug() << "Imported" << meshLoader->loadedCount() << "meshes and"
-            << materialLoader->loadedCount() << "materials," << meshLoader->notFoundCount()
-            << "meshes and" << materialLoader->notFoundCount() << "materials weren't found.";
+    Debug() << "Imported" << meshLoader->loadedCount() << "meshes,"
+            << materialLoader->loadedCount() << "materials and"
+            << textureLoader->loadedCount() << "textures,"
+            << meshLoader->notFoundCount() << "meshes,"
+            << materialLoader->notFoundCount() << "materials and"
+            << textureLoader->notFoundCount() << "textures weren't found.";
 }
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
@@ -274,6 +316,11 @@ void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* paren
             (new ColoredObject(importer->mesh3DName(object->instance()), materialKey, parent, &drawables))
                 ->setTransformation(object->transformation());
 
+        /* Diffuse texture material */
+        else if(material->flags() == Trade::PhongMaterialData::Flag::DiffuseTexture)
+            (new TexturedObject(importer->mesh3DName(object->instance()), materialKey, importer->textureName(material->diffuseTexture()), parent, &drawables))
+                ->setTransformation(object->transformation());
+
         /* No other material types are supported yet */
         else Error() << "Texture combination of material" << materialName << "is not supported";
     }
@@ -305,10 +352,23 @@ void MeshLoader::doLoad(const ResourceKey key) {
     auto mesh = new Mesh;
     auto buffer = new Buffer;
     auto indexBuffer = new Buffer;
-    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data->positions(0), data->normals(0));
+    mesh->setPrimitive(data->primitive());
     MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data->indices());
-    mesh->addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal())
-        ->setPrimitive(data->primitive());
+
+    /* Textured mesh */
+    if(data->textureCoords2DArrayCount()) {
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
+            data->positions(0), data->normals(0), data->textureCoords2D(0));
+        mesh->addInterleavedVertexBuffer(buffer, 0,
+            Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
+
+    /* Non-textured mesh */
+    } else {
+        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
+            data->positions(0), data->normals(0));
+        mesh->addInterleavedVertexBuffer(buffer, 0,
+            Shaders::Phong::Position(), Shaders::Phong::Normal());
+    }
 
     /* Save things */
     ViewerResourceManager::instance()->set(importer->mesh3DName(id) + "-vertices", buffer);
@@ -334,6 +394,46 @@ void MaterialLoader::doLoad(const ResourceKey key) {
     else setNotFound(key);
 }
 
+TextureLoader::TextureLoader(): importer(ViewerResourceManager::instance()->get<Trade::AbstractImporter>("importer")) {
+    /* Fill key->name map */
+    for(UnsignedInt i = 0; i != importer->textureCount(); ++i)
+        keyMap.emplace(importer->textureName(i), i);
+}
+
+void TextureLoader::doLoad(const ResourceKey key) {
+    const UnsignedInt id = keyMap.at(key);
+
+    Debug() << "Importing texture" << importer->textureName(id);
+
+    Trade::TextureData* data = importer->texture(id);
+    if(!data || data->type() != Trade::TextureData::Type::Texture2D) {
+        delete data;
+        setNotFound(key);
+        return;
+    }
+
+    Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
+
+    Trade::ImageData2D* image = importer->image2D(data->image());
+    if(!image || (image->format() != ImageFormat::RGB && image->format() != ImageFormat::BGR)) {
+        delete data;
+        delete image;
+        setNotFound(key);
+        return;
+    }
+
+    /* Configure texture */
+    auto texture = new Texture2D;
+    texture->setMagnificationFilter(data->magnificationFilter())
+        ->setMinificationFilter(data->minificationFilter(), data->mipmapFilter())
+        ->setWrapping(data->wrapping().xy())
+        ->setImage(0, TextureFormat::RGB8, *image)
+        ->generateMipmap();
+
+    /* Save it */
+    set(key, texture);
+}
+
 ColoredObject::ColoredObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(ViewerResourceManager::instance()->get<Mesh>(meshKey)), shader(ViewerResourceManager::instance()->get<Shaders::Phong>("color")) {
     Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance()->get<Trade::PhongMaterialData>(materialKey);
     ambientColor = material->ambientColor();
@@ -352,6 +452,28 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         ->setNormalMatrix(transformationMatrix.rotation())
         ->setProjectionMatrix(camera->projectionMatrix())
         ->use();
+
+    mesh->draw();
+}
+
+TexturedObject::TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group), mesh(ViewerResourceManager::instance()->get<Mesh>(meshKey)), diffuseTexture(ViewerResourceManager::instance()->get<Texture2D>(diffuseTextureKey)), shader(ViewerResourceManager::instance()->get<Shaders::Phong>("texture")) {
+    Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance()->get<Trade::PhongMaterialData>(materialKey);
+    ambientColor = material->ambientColor();
+    specularColor = material->specularColor();
+    shininess = material->shininess();
+}
+
+void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
+    shader->setAmbientColor(ambientColor)
+        ->setSpecularColor(specularColor)
+        ->setShininess(shininess)
+        ->setLightPosition({-3.0f, 10.0f, 10.0f})
+        ->setTransformationMatrix(transformationMatrix)
+        ->setNormalMatrix(transformationMatrix.rotation())
+        ->setProjectionMatrix(camera->projectionMatrix())
+        ->use();
+
+    diffuseTexture->bind(Shaders::Phong::DiffuseTextureLayer);
 
     mesh->draw();
 }
