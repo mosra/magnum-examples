@@ -31,16 +31,16 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D* object): SceneGraph::Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& object): SceneGraph::Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
 
     original.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());
     grayscale.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());
     corrected.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());
 
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Original), &original);
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Grayscale), &grayscale);
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Corrected), &corrected);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Original), original);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Grayscale), grayscale);
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(Corrected), corrected);
 
     framebuffer.mapForDraw({{ColorCorrectionShader::OriginalColorOutput, Framebuffer::ColorAttachment(Original)},
                             {ColorCorrectionShader::GrayscaleOutput, Framebuffer::ColorAttachment(Grayscale)},

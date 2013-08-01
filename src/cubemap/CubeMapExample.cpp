@@ -70,9 +70,9 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
     /* Set up perspective camera */
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
-    (camera = new SceneGraph::Camera3D(cameraObject))
+    (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
+        .setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -89,12 +89,12 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
 
     (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.5f))
-        ->translate(Vector3::xAxis(-0.5f));
+        .translate(Vector3::xAxis(-0.5f));
 
     (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.3f))
-        ->rotate(37.0_degf, Vector3::xAxis())
-        ->translate(Vector3::xAxis(0.3f));
+        .rotate(37.0_degf, Vector3::xAxis())
+        .translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
     resourceManager.free<Trade::AbstractImporter>();
@@ -123,8 +123,8 @@ void CubeMapExample::keyPressEvent(KeyEvent& event) {
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         Float translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
-            ->rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
-            ->translate(Vector3::yAxis(translationY));
+            .rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
+            .translate(Vector3::yAxis(translationY));
 
     } else return;
 

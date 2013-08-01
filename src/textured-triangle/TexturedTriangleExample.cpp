@@ -67,11 +67,11 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         {0.5f, 1.0f}
     }};
 
-    MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw,
+    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
         positions, textureCoordinates);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setVertexCount(3)
-        ->addInterleavedVertexBuffer(&buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
+        .setVertexCount(3)
+        .addInterleavedVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -91,9 +91,9 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
     /* Set texture data and parameters */
     Trade::ImageData2D* image = importer->image2D(0);
     texture.setWrapping(Sampler::Wrapping::ClampToEdge)
-        ->setMagnificationFilter(Sampler::Filter::Linear)
-        ->setMinificationFilter(Sampler::Filter::Linear)
-        ->setImage(0, TextureFormat::RGB8, *image);
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setMinificationFilter(Sampler::Filter::Linear)
+        .setImage(0, TextureFormat::RGB8, *image);
     delete image;
 
     /* We don't need the importer plugin anymore */
@@ -108,7 +108,7 @@ void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.setBaseColor({1.0f, 0.7f, 0.7f})
-        ->use();
+        .use();
     texture.bind(TexturedTriangleShader::TextureLayer);
     mesh.draw();
 

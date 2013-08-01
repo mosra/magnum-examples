@@ -54,8 +54,8 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::GlutAppl
 
     buffer.setData(data, Buffer::Usage::StaticDraw);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->setVertexCount(3)
-        ->addInterleavedVertexBuffer(&buffer, 0,
+        .setVertexCount(3)
+        .addInterleavedVertexBuffer(buffer, 0,
             Shaders::VertexColor3D::Position(),
             Shaders::VertexColor3D::Color());
 }

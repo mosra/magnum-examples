@@ -43,34 +43,34 @@ class ReflectorShader: public AbstractShaderProgram {
 
         ReflectorShader();
 
-        inline ReflectorShader* setTransformationMatrix(const Matrix4& matrix) {
+        inline ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
-        inline ReflectorShader* setNormalMatrix(const Matrix3& matrix) {
+        inline ReflectorShader& setNormalMatrix(const Matrix3& matrix) {
             setUniform(normalMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
-        inline ReflectorShader* setProjectionMatrix(const Matrix4& matrix) {
+        inline ReflectorShader& setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
-        inline ReflectorShader* setCameraMatrix(const Matrix3& matrix) {
+        inline ReflectorShader& setCameraMatrix(const Matrix3& matrix) {
             setUniform(cameraMatrixUniform, matrix);
-            return this;
+            return *this;
         }
 
-        inline ReflectorShader* setReflectivity(Float reflectivity) {
+        inline ReflectorShader& setReflectivity(Float reflectivity) {
             setUniform(reflectivityUniform, reflectivity);
-            return this;
+            return *this;
         }
 
-        inline ReflectorShader* setDiffuseColor(const Color3& color) {
+        inline ReflectorShader& setDiffuseColor(const Color3& color) {
             setUniform(diffuseColorUniform, color);
-            return this;
+            return *this;
         }
 
     private:

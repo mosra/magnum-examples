@@ -42,43 +42,43 @@
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(this, group) {
-    CubeMapResourceManager* resourceManager = CubeMapResourceManager::instance();
+CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
+    CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
 
     /* Cube mesh */
-    if(!(cube = resourceManager->get<Mesh>("cube"))) {
+    if(!(cube = resourceManager.get<Mesh>("cube"))) {
         Mesh* mesh = new Mesh;
         Buffer* buffer = new Buffer;
         Buffer* indexBuffer = new Buffer;
 
         Trade::MeshData3D cubeData = Primitives::Cube::solid();
         MeshTools::flipFaceWinding(cubeData.indices());
-        MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, cubeData.indices());
-        MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, cubeData.positions(0));
+        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, cubeData.indices());
+        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw, cubeData.positions(0));
         mesh->setPrimitive(cubeData.primitive())
-            ->addVertexBuffer(buffer, 0, CubeMapShader::Position());
+            .addVertexBuffer(*buffer, 0, CubeMapShader::Position());
 
-        resourceManager->set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident);
-        resourceManager->set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident);
-        resourceManager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager.set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
+            .set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)
+            .set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Cube map texture */
-    if(!(texture = resourceManager->get<CubeMapTexture>("texture"))) {
+    if(!(texture = resourceManager.get<CubeMapTexture>("texture"))) {
         CubeMapTexture* cubeMap = new CubeMapTexture;
 
         cubeMap->setWrapping(Sampler::Wrapping::ClampToEdge)
-            ->setMagnificationFilter(Sampler::Filter::Linear)
-            ->setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear);
+            .setMagnificationFilter(Sampler::Filter::Linear)
+            .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear);
 
-        Resource<Trade::AbstractImporter> importer = resourceManager->get<Trade::AbstractImporter>("jpeg-importer");
+        Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
 
         /* Configure texture storage using size of first image */
         importer->openFile(prefix + "+x.jpg");
         Trade::ImageData2D* image = importer->image2D(0);
         Vector2i size = image->size();
-        cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size);
-        cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, *image);
+        cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size)
+            .setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, *image);
         delete image;
 
         importer->openFile(prefix + "-x.jpg");
@@ -108,17 +108,17 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         cubeMap->generateMipmap();
 
-        resourceManager->set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
+        resourceManager.set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Shader */
-    if(!(shader = resourceManager->get<AbstractShaderProgram, CubeMapShader>("shader")))
-        resourceManager->set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
+    if(!(shader = resourceManager.get<AbstractShaderProgram, CubeMapShader>("shader")))
+        resourceManager.set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D* camera) {
-    shader->setTransformationProjectionMatrix(camera->projectionMatrix()*transformationMatrix)
-        ->use();
+void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+        .use();
 
     texture->bind(CubeMapShader::TextureLayer);
 

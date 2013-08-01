@@ -40,9 +40,9 @@ class TexturedTriangleShader: public AbstractShaderProgram {
 
         TexturedTriangleShader();
 
-        inline TexturedTriangleShader* setBaseColor(const Color3& color) {
+        inline TexturedTriangleShader& setBaseColor(const Color3& color) {
             setUniform(baseColorUniform, color);
-            return this;
+            return *this;
         }
 
     private:

@@ -60,7 +60,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
         std::exit(0);
     }
 
-    camera = new ColorCorrectionCamera(&scene);
+    camera = new ColorCorrectionCamera(scene);
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);

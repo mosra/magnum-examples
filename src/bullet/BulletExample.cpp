@@ -57,7 +57,7 @@ class BulletExample: public Platform::Application {
         void mousePressEvent(MouseEvent& event) override;
 
     private:
-        btRigidBody* createRigidBody(Float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions);
+        btRigidBody* createRigidBody(Float mass, Object3D& object, btCollisionShape& bShape, ResourceKey renderOptions);
         void shootBox(Vector3& direction);
 
         DebugTools::ResourceManager manager;
@@ -88,14 +88,21 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         ->translate({0.f, 4.f, 0.f});
     (cameraObject = new Object3D(cameraRig))
         ->translate({0.f, 0.f, 20.f});
-    (camera = new SceneGraph::Camera3D(cameraObject))
+    (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
+        .setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
 
     /* Debug draw setup */
-    manager.set("ground", (new DebugTools::ShapeRendererOptions)->setColor(Color3(0.45f)));
-    manager.set("box", (new DebugTools::ShapeRendererOptions)->setColor(Color3(0.85f)));
-    manager.set("redbox", (new DebugTools::ShapeRendererOptions)->setColor({0.9f, 0.0f, 0.0f}));
+    /** @todo Revert it back to oneliners when setters return rvalue refs properly */
+    auto groundOptions = new DebugTools::ShapeRendererOptions;
+    groundOptions->setColor(Color3(0.45f));
+    auto boxOptions = new DebugTools::ShapeRendererOptions;
+    boxOptions->setColor(Color3(0.85f));
+    auto redBoxOptions = new DebugTools::ShapeRendererOptions;
+    redBoxOptions->setColor({0.9f, 0.0f, 0.0f});
+    manager.set("ground", groundOptions)
+        .set("box", boxOptions)
+        .set("redbox", redBoxOptions);
 
     /* Bullet setup */
     btBroadphaseInterface* broadphase = new btDbvtBroadphase();
@@ -109,7 +116,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     /* Create ground */
     ground = new Object3D(&scene);
     btCollisionShape* bGroundShape = new btBoxShape({4.f, .5f, 4.f});
-    bGround = createRigidBody(0.f, ground, bGroundShape, "ground");
+    bGround = createRigidBody(0.f, *ground, *bGroundShape, "ground");
 
     /* Create boxes */
     bBoxShape = new btBoxShape({.5f, .5f, .5f});
@@ -118,7 +125,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
             for(Int k = 0; k < 5; k++) {
                 Object3D* box = new Object3D(&scene);
                 box->translate({i - 2.f, j + 4.f, k - 2.f});
-                createRigidBody(1.f, box, bBoxShape, "box");
+                createRigidBody(1.f, *box, *bBoxShape, "box");
             }
         }
     }
@@ -129,21 +136,22 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     redraw();
 }
 
-btRigidBody* BulletExample::createRigidBody(Float mass, Object3D* object, btCollisionShape* bShape, ResourceKey renderOptions) {
+btRigidBody* BulletExample::createRigidBody(Float mass, Object3D& object, btCollisionShape& bShape, ResourceKey renderOptions) {
     btVector3 bInertia(0,0,0);
     if(mass != 0.f)
-        bShape->calculateLocalInertia(mass, bInertia);
+        bShape.calculateLocalInertia(mass, bInertia);
 
     /* Bullet rigid body setup */
     BulletIntegration::MotionState* motionState = new BulletIntegration::MotionState(object);
-    btRigidBody::btRigidBodyConstructionInfo bRigidBodyCI(mass, motionState->btMotionState(), bShape, bInertia);
+    btRigidBody::btRigidBodyConstructionInfo bRigidBodyCI(mass, &motionState->btMotionState(), &bShape, bInertia);
     btRigidBody* bRigidBody = new btRigidBody(bRigidBodyCI);
     bRigidBody->forceActivationState(DISABLE_DEACTIVATION);
     bWord->addRigidBody(bRigidBody);
 
     /* Debug draw */
-    new DebugTools::ShapeRenderer3D(BulletIntegration::convertShape(object, bShape, &shapes),
-                                    renderOptions, &drawables);
+    auto shape = BulletIntegration::convertShape(object, bShape, &shapes);
+    CORRADE_INTERNAL_ASSERT(shape);
+    new DebugTools::ShapeRenderer3D(*shape, renderOptions, &drawables);
 
     return bRigidBody;
 }
@@ -196,7 +204,7 @@ void BulletExample::shootBox(Vector3& dir) {
     Object3D* box = new Object3D(&scene);
     box->translate(cameraObject->absoluteTransformation().translation());
 
-    createRigidBody(1.f, box, bBoxShape, "redbox")->setLinearVelocity(btVector3(dir*50.f));
+    createRigidBody(1.f, *box, *bBoxShape, "redbox")->setLinearVelocity(btVector3(dir*50.f));
 }
 
 }}

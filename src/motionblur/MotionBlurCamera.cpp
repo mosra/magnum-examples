@@ -33,12 +33,12 @@
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D* object): SceneGraph::Camera3D(object), framebuffer(ImageFormat::RGB, ImageType::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), framebuffer(ImageFormat::RGB, ImageType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Sampler::Wrapping::ClampToEdge)
-            ->setMinificationFilter(Sampler::Filter::Nearest)
-            ->setMagnificationFilter(Sampler::Filter::Nearest);
+            .setMinificationFilter(Sampler::Filter::Nearest)
+            .setMagnificationFilter(Sampler::Filter::Nearest);
     }
 }
 
@@ -105,8 +105,8 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3
 
     buffer.setData(vertices, Buffer::Usage::StaticDraw);
     mesh.setPrimitive(Mesh::Primitive::TriangleStrip)
-        ->setVertexCount(4)
-        ->addVertexBuffer(&buffer, 0, MotionBlurShader::Position());
+        .setVertexCount(4)
+        .addVertexBuffer(buffer, 0, MotionBlurShader::Position());
 }
 
 void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {

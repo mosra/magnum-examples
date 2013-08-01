@@ -60,11 +60,11 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Glut
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 
-    MeshTools::interleave(&mesh, &vertexBuffer, Buffer::Usage::StaticDraw, cube.positions(0), cube.normals(0));
-    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, cube.indices());
+    MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw, cube.positions(0), cube.normals(0));
+    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, cube.indices());
 
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        ->addInterleavedVertexBuffer(&vertexBuffer, 0,
+        .addInterleavedVertexBuffer(vertexBuffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     transformation = Matrix4::rotationX(Deg(30.0f))*
@@ -85,12 +85,13 @@ void PrimitivesExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     shader.setLightPosition({7.0f, 5.0f, 2.5f})
-        ->setLightColor(Color3(1.0f))
-        ->setDiffuseColor(color)
-        ->setAmbientColor(Color3::fromHSV(color.hue(), 1.0f, 0.3f))
-        ->setTransformationMatrix(transformation)
-        ->setProjectionMatrix(projection)
-        ->use();
+        .setLightColor(Color3(1.0f))
+        .setDiffuseColor(color)
+        .setAmbientColor(Color3::fromHSV(color.hue(), 1.0f, 0.3f))
+        .setTransformationMatrix(transformation)
+        .setNormalMatrix(transformation.rotation())
+        .setProjectionMatrix(projection)
+        .use();
     mesh.draw();
 
     swapBuffers();

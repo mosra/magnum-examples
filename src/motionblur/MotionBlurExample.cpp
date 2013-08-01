@@ -61,17 +61,17 @@ class MotionBlurExample: public Platform::GlutApplication {
 MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Motion blur example")) {
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
-    (camera = new MotionBlurCamera(cameraObject))
+    (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        ->setPerspective(35.0_degf, 1.0f, 0.001f, 100);
+        .setPerspective(35.0_degf, 1.0f, 0.001f, 100);
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     Trade::MeshData3D data = Primitives::Icosphere::solid(3);
-    MeshTools::compressIndices(&mesh, &indexBuffer, Buffer::Usage::StaticDraw, data.indices());
-    MeshTools::interleave(&mesh, &buffer, Buffer::Usage::StaticDraw, data.positions(0), data.normals(0));
-    mesh.addInterleavedVertexBuffer(&buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
+    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data.indices());
+    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data.positions(0), data.normals(0));
+    mesh.addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
@@ -81,30 +81,30 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplicatio
         ->translate(Vector3::yAxis(0.25f));
     (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        ->rotateZ(120.0_degf);
+        .rotateZ(120.0_degf);
     (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        ->rotateZ(240.0_degf);
+        .rotateZ(240.0_degf);
 
     spheres[1] = new Object3D(&scene);
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f));
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        ->rotateZ(120.0_degf);
+        .rotateZ(120.0_degf);
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        ->rotateZ(240.0_degf);
+        .rotateZ(240.0_degf);
 
     spheres[2] = new Object3D(&scene);
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f));
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        ->rotateZ(120.0_degf);
+        .rotateZ(120.0_degf);
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        ->rotateZ(240.0_degf);
+        .rotateZ(240.0_degf);
 }
 
 void MotionBlurExample::viewportEvent(const Vector2i& size) {
