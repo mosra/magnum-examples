@@ -1,0 +1,278 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-viewer Model viewer
+@brief Scene graph, resource manager and model importing.
+
+- Previous example: @ref examples-textured-triangle
+
+@image html viewer/viewer.png
+@image latex viewer/viewer.png
+
+@tableofcontents
+
+In this example we will import 3D scene from COLLADA file and display it to the
+user. This example includes these new features:
+-   Using SceneGraph for managing objects, their relations and transformations.
+-   Employing ResourceManager for convenient resource management.
+-   Importing scenes, meshes, materials and textures via Trade::AbstractImporter.
+
+@section examples-viewer-scenegraph Scene graph
+
+In previous examples we managed our scene manually, because there was only one
+object. However, as object count increases, it's better to have the objects in
+scene graph. Scene graph maintains three key things:
+
+-   object hierarchy, simplifying memory management
+-   object transformations, implemented using various mathematic
+    structures
+-   object features, providing rendering and animation capabilities, collision
+    detection, physics etc.
+
+Basically there is one root @ref SceneGraph::Scene "Scene" object and some
+@ref SceneGraph::Object "Object" instances. Each object can have some parent
+and maintains list of its children and features. This hierarchy is used also
+to simplify memory management -- when destroying any object, all its children
+and features are recursively destroyed too.
+
+Each particular scene graph uses some transformation implementation, which
+for each object stores transformation (relative to parent) and provides
+convenience functions for most used transformations, like translation, rotation
+and scaling. It is also possible to compute absolute transformation or
+transformation relative to some arbitrary object in the same scene.
+
+Features are added to objects to make them do something useful. The most common
+feature, which will be also used in this example, is @ref SceneGraph::Drawable "Drawable".
+When implemented, it allows the object to be drawn on screen. Each Drawable is
+part of some @ref SceneGraph::DrawableGroup "DrawableGroup". This group can be
+then rendered in one shot using @ref SceneGraph::Camera3D "Camera" feature,
+attached to some object in the same scene. The object controls camera
+transformation and the camera feature itself controls projection and aspect
+ratio correction.
+
+%Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
+the same and differs only in obvious ways (e.g. perspective projection is
+not available in 2D).
+
+See also @ref scenegraph for more information.
+
+@section examples-viewer-resourcemanager Resource manager
+
+In most scenes it is common that one resource (e.g. mesh, shader or texture) is
+shared by more than one object. One possible approach might be to load all
+available resources in main class and then explicitly pass references to them
+to relevant objects. Sooner or later it would get out of hand and you end up
+having the main class unnecessarily large and doing much more work than it
+should do. Asynchronous loading or managing temporary resources, which are used
+only part of the time, would be also rather difficult.
+
+@ref ResourceManager allows storing of data of defined set of types under
+specific keys and retrieving them later. The key is stored as 32- or 64-bit
+integer and in most cases is hashed from some string. The data can be either
+persistent during whole lifetime of resource manager or have limited lifetime,
+managed either by manual freeing of unused data or automatic reference
+counting.
+
+When an resource is requested from the manager using @ref ResourceManager::get(),
+it is wrapped in @ref Resource class. The wrapper takes care of reference
+counting (so the resource isn't removed while it is still in use) and updates
+the resource if the manager has new version. The resources can be added to the
+manager either manually using @ref ResourceManager::set() or automatically
+using resource loader. The loader is subclass of @ref AbstractResourceLoader
+and after attaching to manager it is notified about all not-yet-loaded
+resources of given type and takes care of the loading, either synchronously or
+in different thread.
+
+@section examples-viewer-setup Setting up, initializing resource manager and scene graph
+
+Our resource manager will store vertex and index buffers, meshes, textures and
+shaders for whole lifetime of our application. During loading we would need to
+access also the importer and material data, but these will be deleted after
+everything is loaded. We `typedef` the manager with all the types for easier
+usage later.
+@dontinclude viewer/ViewerExample.cpp
+@skipline typedef ResourceManager
+
+For this example we will use scene graph with @ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D"
+transformation implementation. It is a good default choice, if you don't want
+to be limited in how you transform the objects, but on the other hand it eats
+up more memory and is slightly slower than for example @ref SceneGraph::DualQuaternionTransformation "DualQuaternionTransformation" implementation. We typedef the classes too to
+save us more typing.
+@skip typedef SceneGraph::Object
+@until typedef SceneGraph::Scene
+
+Our main class contains instance of our resource manager (which needs to exist
+during lifetime of all other objects, thus it is first), scene, group of all
+drawables, object holding the camera and the camera feature.
+@skip class ViewerExample
+@until };
+
+In the constructor we first try to load the plugin and open the file passed as
+parameter on command line. If that fails or the file is empty, the program
+exits.
+@skip ViewerExample::ViewerExample
+@until std::exit(5);
+
+If opening succeeds, we can start populating our resource manager. We save the
+importer to have it available elsewhere and attach loaders for given data types
+as described earlier. The loaders will be described later in the tutorial, now
+we can assume that they just work and return proper mesh, material on texture
+on request.
+@skip resourceManager.set("importer"
+@until .setLoader(textureLoader);
+
+We add our two shader flavors and add also fallback mesh, material and texture
+which will be used in case some resource is missing in the file.
+@skip resourceManager.set("color
+@until resourceManager.setFallback(new Texture2D);
+
+Now we setup the camera and renderer features and add default object for
+convenient manipulation.
+@skip (cameraObject
+@until o = new Object3D
+
+Everything is now ready for importing the scene graph from the file, it is just
+matter of recursively adding the objects, starting from direct descendants of
+default scene. After everything is imported, we can remove now unused data from
+the manager.
+@skip Debug()
+@until }
+
+The actual function which adds the objects is pretty simple. It recursively
+populates scene graph until there are no child objects left and for each mesh
+object adds special type of object which is able to draw something on the
+screen.
+@skip void ViewerExample::addObject
+@until }
+@until }
+
+Viewport and draw events delegate everything to our camera. The camera does
+proper aspect ratio correction based on viewport size and draws all objects
+added to drawable group.
+@skip void ViewerExample::viewportEvent
+@until }
+@until }
+@until }
+
+Lastly there is mouse handling, nothing new to talk about.
+@skip void ViewerExample::mousePressEvent
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+
+@section examples-viewer-objects Drawable objects
+
+As explained above, all objects that want to draw something on the screen must
+have Drawable feature attached. The most convenient way is to use multiple
+inheritance, see @ref scenegraph-features for more information. Our objects
+will need mesh and shader resource along with some material definition. The
+textured object has additional texture resource.
+@dontinclude viewer/ViewerExample.cpp
+@skip class ColoredObject
+@until };
+@until };
+
+In constructor two classes setup parent/children hierarchy and attach drawable
+to drawable group. They then acquire the resources from the manager. Again we
+don't deal with the actual resource loading here, it is done in the background
+and will be explained later.
+@skip ColoredObject::ColoredObject
+@until }
+@until }
+
+Drawing functions have nothing special, just shader preparation, texture
+binding and mesh drawing.
+@skip void ColoredObject::draw
+@until }
+@until }
+@until }
+@until }
+
+@section examples-viewer-loaders Resource loaders
+
+Last thing in this example are the actual resource loaders. Each loader needs
+access to the importer (which is provided by resource manager) and needs to map
+resource keys from the manager to data IDs in the importer. After every call to @ref ResourceManager::get() the manager checks if the resource is loaded and if not,
+calls function `doLoad()` on particular loader. The loader should then load the
+data. For simplicity we will load the data synchronously.
+@dontinclude viewer/ViewerExample.cpp
+@skip class MeshLoader
+@until };
+@until };
+@until };
+
+The constructor just requests the importer resource and fills the key map.
+@skip MeshLoader::MeshLoader
+@until }
+@until }
+@until }
+
+Mesh loading is done similarly to the way explained in previous examples.
+Texture coordinates are added to the mesh, if available, to allow texturing.
+If the importing failed due to missing or unexpected data, we call
+@ref AbstractResourceLoader::setNotFound() and all the objects using this mesh
+will use the fallback one instead. After importing is done, we save our index
+and vertex buffer to the manager (directly) and call @ref AbstractResourceLoader::set()
+to save the actual mesh. The manager does some additional checking and keeps
+statistics on loaded resources, so we shouldn't save the type we are importing
+directly using @ref ResourceManager::set().
+@skip void MeshLoader::doLoad
+@until }
+@until }
+@until }
+
+Material loader is the simplest one, it just puts the data from importer
+directly to resource manager.
+@skip void MaterialLoader::doLoad
+@until }
+
+Texture loading is also nothing new. We load texture parameters and the actual
+image, check their formats, configure the texture, upload its data and save it
+to the manager.
+@skip void TextureLoader::doLoad
+@until }
+@until }
+@until }
+
+-   @ref viewer/ViewerExample.cpp
+
+@section examples-viewer-compilation Compilation
+
+Compilation is easy as usual, we just need to provide also path to plugin dir.
+@dontinclude viewer/CMakeLists.txt
+@skip find_package(Magnum REQUIRED
+@until ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+
+@dontinclude viewer/configure.h.cmake
+@skipline #define MAGNUM_PLUGINS_IMPORTER_DIR
+
+-   @ref viewer/configure.h.cmake
+-   @ref viewer/CMakeLists.txt
+
+*/
+}

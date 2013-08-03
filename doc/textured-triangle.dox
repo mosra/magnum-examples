@@ -27,7 +27,7 @@ namespace Magnum {
 @brief Texturing, custom shaders, compiled-in resources, shader uniforms and mesh tools.
 
 - Previous example: @ref examples-primitives
-- Next example: @ref examples-cubemap
+- Next example: @ref examples-viewer
 
 @image html textured-triangle/textured-triangle.png
 @image latex textured-triangle/textured-triangle.png
@@ -181,7 +181,7 @@ previously.
 - @ref textured-triangle/resources.conf
 - @ref textured-triangle/CMakeLists.txt
 
-- Next example: @ref examples-cubemap
+- Next example: @ref examples-viewer
 
 */
 }

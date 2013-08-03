@@ -15,3 +15,9 @@ Pass path to COLLADA file as parameter:
 The application opens the file and displays the scene. Load progress is written
 to console output. **Mouse drag** rotates the camera around the scene,
 **mouse wheel** zooms in and out.
+
+Documentation
+-------------
+
+This example is thoroughly explained in the documentation, which you can read
+also online at http://mosra.cz/blog/magnum-doc/examples-viewer.html .
