@@ -54,22 +54,21 @@ class PrimitivesExample: public Platform::GlutApplication {
 };
 
 PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Primitives example")) {
-    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setClearColor(Color3(0.125f));
+    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 
-    MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw, cube.positions(0), cube.normals(0));
     MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, cube.indices());
 
+    MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
+        cube.positions(0), cube.normals(0));
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .addInterleavedVertexBuffer(vertexBuffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));
-
     color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
 }
 
@@ -101,7 +100,6 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
 
     previousMousePosition = event.position();
-
     event.setAccepted();
 }
 
@@ -114,10 +112,12 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
     Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/defaultFramebuffer.viewport().size();
+    transformation =
+        Matrix4::rotationX(Rad(delta.y()))*
+        transformation*
+        Matrix4::rotationY(Rad(delta.x()));
 
-    transformation = Matrix4::rotationX(Rad(delta.y()))*transformation*Matrix4::rotationY(Rad(delta.x()));
     previousMousePosition = event.position();
-
     event.setAccepted();
     redraw();
 }

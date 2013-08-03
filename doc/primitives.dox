@@ -24,19 +24,106 @@
 
 namespace Magnum {
 /** @page examples-primitives Primitives
-@brief Using pre-made primitives, basic input handling
+@brief Creating meshes from imported data, basic input handling.
 
-- Next example: @ref examples-textured-triangle
+-   Previous example: @ref examples-triangle
+-   Next example: @ref examples-textured-triangle
 
 @image html primitives/primitives.png
 @image latex primitives/primitives.png
 
-@todoc To be written
+@tableofcontents
 
-- @ref primitives/PrimitivesExample.cpp
-- @ref primitives/CMakeLists.txt
+This example shows how to create indexed meshes from imported data and do some
+basic user interaction, introducing these new features:
+-   Interleaving vertex data and compressing indices for better performance.
+-   Basic 3D transformations and perspective projection.
+-   Mouse event handling.
 
-- Next example: @ref examples-textured-triangle
+This example displays colored cube and the user will be able to rotate it using
+mouse and change its color.
+
+@section examples-primitives-setup Setting up and preparing the mesh
+
+In our class we now need two buffers instead of one and additionaly for user
+interactivity we need to implement mouse event handlers and store
+transformation, projection matrices and current color.
+@dontinclude primitives/PrimitivesExample.cpp
+@skip class PrimitivesExample
+@until };
+
+Because we are displaying 3D scene, we need to enable depth test to have the
+cube rendered in proper Z-order. Enabling face culling is not needed for proper
+rendering, but it will speed things up as only front-facing faces will be
+rendered.
+@skip PrimitivesExample::PrimitivesExample
+@until Renderer::setFeature(Renderer::Feature::FaceCulling
+
+We now use pre-made cube primitive and create mesh data from it. In most meshes
+the same data are shared among more than one vertex, for example a square
+consists of two triangles sharing the adjacent vertices. To save precious GPU
+memory, the mesh can be indexed, i.e. containing buffer with unique vertex data
+and index buffer telling which data belong to given vertex. Most meshes also
+don't need full 32-bit range to index vertex data -- our mesh has only 36
+unique vertices, thus 8-bit range is large enough. @ref MeshTools::compressIndices()
+does all the boring work for us -- checks vertex count and based on that
+creates index array consisting of @ref UnsignedByte, @ref UnsignedShort or
+@ref UnsignedInt. It then fills the buffer with the data, adds it to the mesh
+and configures index parameters, so we don't need to do anything else.
+@skip Trade::MeshData3D
+@until MeshTools::compressIndices
+
+To realistically render the cube, we need also normals next to vertex
+positions. We will interleave them using @ref MeshTools::interleave(). The
+function takes list of arrays to interleave and then fills the buffer with
+them. However, it doesn't know anything about the purpose of the data, so it
+only sets vertex count and we then need to set mesh primitive and specify
+attribute bindings for the shader.
+@skip MeshTools::interleave
+@until Shaders::Phong
+
+We now specify initial transformation and color. The projection depends on
+viewport aspect ratio, thus we need to set it in `viewportEvent()` function.
+See also @ref matrix-vector and @ref transformations for more thorough
+introduction to transformations.
+@skip transformation =
+@until }
+@until }
+@until }
+
+@section examples-primitives-rendering Rendering
+
+In draw event we clear the framebuffer (don't forget to clear also depth
+buffer), set transformation, normal and projection matrices and all material
+parameters and draw the mesh.
+@skip void PrimitivesExample::drawEvent
+@until }
+@until }
+
+@section examples-primitives-events Mouse event handling
+
+Event handling is also nothing complicated, on every click (press + release) we
+change color hue to some other and on mouse drag we rotate the object based on
+relative mouse position to previous event.
+@skip void PrimitivesExample::mousePressEvent
+@until }
+@until }
+@until }
+
+@section examples-primitives-compilation Compilation
+
+Compilation is pretty straigtforward. We now need some additional libraries,
+like MeshTools and Primitives, otherwise everything is the same as ever:
+@dontinclude primitives/CMakeLists.txt
+@skip find_package(Magnum REQUIRED
+@until ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+
+-   @ref primitives/PrimitivesExample.cpp
+-   @ref primitives/CMakeLists.txt
+
+As an task you can try using another primitive from Primitives namespace.
+
+-   Next example: @ref examples-textured-triangle
 
 */
 }
