@@ -26,7 +26,7 @@ namespace Magnum {
 /** @page examples-triangle Your first triangle
 @brief Basic rendering with builtin shaders.
 
-- Next example: @ref examples-primitives
+-   Next example: @ref examples-primitives
 
 @image html triangle/triangle.png
 @image latex triangle/triangle.png
@@ -35,8 +35,9 @@ For the first example we will use the simple GLUT toolkit, which is available
 on most platforms. It is implemented in Platform::GlutApplication class. We
 subclass it and next to the constructor we implement two required functions,
 one which is called after the window is resized and one for rendering into the
-window. We also need mesh encapsulating our triangle, buffer to store vertex
-data and shader which will take care of rendering.
+window. You can read more about platform support in @ref platform. We also need
+mesh encapsulating our triangle, buffer to store vertex data and shader which
+will take care of rendering.
 @dontinclude triangle/TriangleExample.cpp
 @skip class TriangleExample
 @until };
@@ -50,21 +51,22 @@ performance reasons it is common to interleave them, so data for each vertex
 are in one continuous place in memory. We will cheat a bit here and use
 three-component vectors for both 3D positions and RGB colors, so we can
 interleave them easily in place. In the following tutorials we will learn how
-to interleave them programatically.
+to interleave them programatically. See @ref types for more information about
+scalar and vector types used in %Magnum.
 @skip data
 @until };
 
 We then create vertex buffer and fill it with the data. The data won't be
-changed or read back into memory during application lifetime, so we mark them
-with appropriate @ref Buffer::Usage "buffer usage".
+changed or read back into main memory during application lifetime, so we mark
+them with appropriate @ref Buffer::Usage "buffer usage".
 @skip Buffer
 @until setData
 
 Now we configure the mesh - we specify @ref Mesh::Primitive "mesh primitive"
 and vertex count, add vertex buffer and specify attribute locations for use
-with the shader. We specify our attributes in the same order as physical
-location of vertex attributes in the buffer - zero offset from the beginning,
-first the position, then the color.
+with the shader. We need to describe physical location of vertex attributes in
+the buffer - zero offset from the beginning, first the position, then the
+color.
 @skip mesh.
 @until }
 
@@ -81,25 +83,26 @@ we need to swap the buffers after drawing.
 @skip TriangleExample::drawEvent
 @until }
 
- - @ref triangle/TriangleExample.cpp
+-   @ref triangle/TriangleExample.cpp
 
 That's all, now we can compile the whole example using CMake. First we find
 required %Magnum package with %Shaders and GlutApplication component and add
-its include dir.
-
+its include dir. It's recommended to use also Corrade's set of compiler flags
+to enable additional warnings.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
 @until include_directories
 
 Then we collect our source files, create our executable and link to %Magnum
 libraries.
-
 @skip add_executable
 @until MAGNUM_GLUTAPPLICATION_LIBRARIES})
 
-- @ref triangle/CMakeLists.txt
+-   @ref triangle/CMakeLists.txt
 
-- Next example: @ref examples-primitives
+As an task you can try chaning vertex count, positions or colors.
+
+-   Next example: @ref examples-primitives
 
 */
 }
