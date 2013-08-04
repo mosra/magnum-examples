@@ -26,8 +26,13 @@ cmake_minimum_required(VERSION 2.8)
 project(MagnumTriangleExample)
 
 find_package(Magnum REQUIRED
-    Shaders
-    GlutApplication)
+    Shaders)
+
+if(CORRADE_TARGET_NACL)
+    find_package(Magnum REQUIRED NaClApplication)
+else()
+    find_package(Magnum REQUIRED GlutApplication)
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
@@ -36,4 +41,13 @@ add_executable(triangle TriangleExample.cpp)
 target_link_libraries(triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+    ${MAGNUM_APPLICATION_LIBRARIES})
+
+# Installation for NaCl
+if(CORRADE_TARGET_NACL)
+    if(NOT CORRADE_TARGET_NACL_NEWLIB)
+        message(FATAL_ERROR "Only newlib NaCl target is supported")
+    endif()
+    install(FILES triangle.html triangle.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()

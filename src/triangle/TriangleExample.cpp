@@ -26,12 +26,21 @@
 #include <Buffer.h>
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
+#include <Renderer.h>
+#ifdef CORRADE_TARGET_NACL
+#include <Platform/NaClApplication.h>
+#else
 #include <Platform/GlutApplication.h>
+#endif
 #include <Shaders/VertexColor.h>
+
+#ifdef MAGNUM_BUILD_STATIC
+#include <Shaders/magnumShadersResourceImport.hpp>
+#endif
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Platform::GlutApplication {
+class TriangleExample: public Platform::Application {
     public:
         explicit TriangleExample(const Arguments& arguments);
 
@@ -45,7 +54,13 @@ class TriangleExample: public Platform::GlutApplication {
         Shaders::VertexColor3D shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Triangle example")) {
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
+#ifndef CORRADE_TARGET_NACL
+    .setTitle("Triangle example")
+#endif
+) {
+    Renderer::setClearColor(Color3(0.125f));
+
     constexpr static Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
