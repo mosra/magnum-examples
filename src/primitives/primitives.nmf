@@ -1,0 +1,6 @@
+{
+    "program": {
+        "x86-32": {"url": "primitives-x86-32.nexe"},
+        "x86-64": {"url": "primitives-x86-64.nexe"}
+    }
+}

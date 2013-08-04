@@ -28,8 +28,13 @@ project(MagnumPrimitivesExample)
 find_package(Magnum REQUIRED
     MeshTools
     Primitives
-    Shaders
-    GlutApplication)
+    Shaders)
+
+if(CORRADE_TARGET_NACL)
+    find_package(Magnum REQUIRED NaClApplication)
+else()
+    find_package(Magnum REQUIRED GlutApplication)
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS})
@@ -40,4 +45,13 @@ target_link_libraries(primitives
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+    ${MAGNUM_APPLICATION_LIBRARIES})
+
+# Installation for NaCl
+if(CORRADE_TARGET_NACL)
+    if(NOT CORRADE_TARGET_NACL_NEWLIB)
+        message(FATAL_ERROR "Only newlib NaCl target is supported")
+    endif()
+    install(FILES primitives.html primitives.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()

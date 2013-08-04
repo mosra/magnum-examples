@@ -26,14 +26,22 @@
 #include <Renderer.h>
 #include <MeshTools/Interleave.h>
 #include <MeshTools/CompressIndices.h>
+#ifdef CORRADE_TARGET_NACL
+#include <Platform/NaClApplication.h>
+#else
 #include <Platform/GlutApplication.h>
+#endif
 #include <Primitives/Cube.h>
 #include <Shaders/Phong.h>
 #include <Trade/MeshData3D.h>
 
+#ifdef MAGNUM_BUILD_STATIC
+#include <Shaders/magnumShadersResourceImport.hpp>
+#endif
+
 namespace Magnum { namespace Examples {
 
-class PrimitivesExample: public Platform::GlutApplication {
+class PrimitivesExample: public Platform::Application {
     public:
         explicit PrimitivesExample(const Arguments& arguments);
 
@@ -53,7 +61,13 @@ class PrimitivesExample: public Platform::GlutApplication {
         Color3 color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Primitives example")) {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
+#ifndef CORRADE_TARGET_NACL
+    .setTitle("Primitives example")
+#endif
+) {
+    indexBuffer.setTargetHint(Buffer::Target::ElementArray);
+
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
