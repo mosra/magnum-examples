@@ -35,3 +35,8 @@ endif()
 add_subdirectory(primitives)
 add_subdirectory(triangle)
 add_subdirectory(viewer)
+
+# Installation for NaCl
+if(CORRADE_TARGET_NACL)
+    install(FILES NaClApplication.css NaClApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
