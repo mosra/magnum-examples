@@ -23,6 +23,10 @@
 #   mode for GCC 4.7
 #  CORRADE_GCC46_COMPATIBILITY  - Defined if compiled with compatibility
 #   mode for GCC 4.6
+#  CORRADE_GCC45_COMPATIBILITY  - Defined if compiled with compatibility
+#   mode for GCC 4.5
+#  CORRADE_GCC44_COMPATIBILITY  - Defined if compiled with compatibility
+#   mode for GCC 4.4
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
 #  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome
 #   Native Client
@@ -138,6 +142,14 @@ endif()
 file(READ ${CORRADE_INCLUDE_DIR}/corradeConfigure.h _corradeConfigure)
 
 # Compatibility?
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC44_COMPATIBILITY" _GCC44_COMPATIBILITY)
+if(NOT _GCC44_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC44_COMPATIBILITY 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_GCC45_COMPATIBILITY" _GCC45_COMPATIBILITY)
+if(NOT _GCC45_COMPATIBILITY EQUAL -1)
+    set(CORRADE_GCC45_COMPATIBILITY 1)
+endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
 if(NOT _GCC46_COMPATIBILITY EQUAL -1)
     set(CORRADE_GCC46_COMPATIBILITY 1)
