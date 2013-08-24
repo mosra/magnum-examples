@@ -81,8 +81,6 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
 
-    Renderer::setClearColor(Color3(0.15f));
-
     /* Camera setup */
     (cameraRig = new Object3D(&scene))
         ->translate({0.f, 4.f, 0.f});
