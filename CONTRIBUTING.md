@@ -44,7 +44,8 @@ Code contribution
 Contact
 -------
 
-- Website - http://mosra.cz/blog/
-- GitHub - https://github.com/mosra/magnum-examples
-- E-mail - mosra@centrum.cz
-- Jabber - mosra@jabbim.cz
+*   Website - http://mosra.cz/blog/magnum.php
+*   GitHub - https://github.com/mosra/magnum-examples
+*   Twitter - https://twitter.com/czmosra
+*   E-mail - mosra@centrum.cz
+*   Jabber - mosra@jabbim.cz
