@@ -88,7 +88,7 @@ void PrimitivesExample::drawEvent() {
         .setDiffuseColor(color)
         .setAmbientColor(Color3::fromHSV(color.hue(), 1.0f, 0.3f))
         .setTransformationMatrix(transformation)
-        .setNormalMatrix(transformation.rotation())
+        .setNormalMatrix(transformation.rotationScaling()) /** @todo better solution? */
         .setProjectionMatrix(projection)
         .use();
     mesh.draw();
