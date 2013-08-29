@@ -125,6 +125,10 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
+    #ifdef CORRADE_TARGET_NACL
+    if(!(event.modifiers() & MouseMoveEvent::Modifier::LeftButton)) return;
+    #endif
+
     Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/defaultFramebuffer.viewport().size();
     transformation =
         Matrix4::rotationX(Rad(delta.y()))*
