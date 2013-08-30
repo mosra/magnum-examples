@@ -64,7 +64,7 @@ loading the data from a file).
 We then configure mesh primitive and vertex yount, add our vertex buffer and
 specify attribute locations for use with our shader:
 @skipline mesh
-@until addInterleavedVertexBuffer
+@until addVertexBuffer
 
 Now we will instantiate the plugin manager with plugin directory, which is
 provided by CMake in `MAGNUM_PLUGINS_IMPORTER_DIR` (explained later) and try

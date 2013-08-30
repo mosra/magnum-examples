@@ -372,14 +372,14 @@ void MeshLoader::doLoad(const ResourceKey key) {
     if(data->textureCoords2DArrayCount()) {
         MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
             data->positions(0), data->normals(0), data->textureCoords2D(0));
-        mesh->addInterleavedVertexBuffer(*buffer, 0,
+        mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
 
     /* Non-textured mesh */
     } else {
         MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
             data->positions(0), data->normals(0));
-        mesh->addInterleavedVertexBuffer(*buffer, 0,
+        mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
     }
 

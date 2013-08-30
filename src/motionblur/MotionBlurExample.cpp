@@ -71,7 +71,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplicatio
     Trade::MeshData3D data = Primitives::Icosphere::solid(3);
     MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data.indices());
     MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data.positions(0), data.normals(0));
-    mesh.addInterleavedVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
+    mesh.addVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);

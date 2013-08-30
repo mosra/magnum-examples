@@ -64,7 +64,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Glut
     MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
         cube.positions(0), cube.normals(0));
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        .addInterleavedVertexBuffer(vertexBuffer, 0,
+        .addVertexBuffer(vertexBuffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     transformation = Matrix4::rotationX(Deg(30.0f))*

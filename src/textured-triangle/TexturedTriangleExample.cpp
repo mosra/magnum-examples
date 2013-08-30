@@ -71,7 +71,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         positions, textureCoordinates);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .setVertexCount(3)
-        .addInterleavedVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
+        .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
