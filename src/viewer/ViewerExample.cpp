@@ -323,7 +323,7 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
-    Vector2 position = Vector2(_position*2)/camera->viewport() - Vector2(1.0f);
+    Vector2 position = Vector2(_position*2)/Vector2(camera->viewport()) - Vector2(1.0f);
 
     Float length = position.length();
     Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));

@@ -111,7 +111,7 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
-    Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/defaultFramebuffer.viewport().size();
+    Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/Vector2(defaultFramebuffer.viewport().size());
     transformation =
         Matrix4::rotationX(Rad(delta.y()))*
         transformation*

@@ -191,7 +191,7 @@ void BulletExample::keyPressEvent(KeyEvent& event) {
 
 void BulletExample::mousePressEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::Left) {
-        Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2(event.position())/defaultFramebuffer.viewport().size()-Vector2(0.5f))*camera->projectionSize();
+        Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2(event.position())/Vector2(defaultFramebuffer.viewport().size())-Vector2(0.5f))*camera->projectionSize();
         Vector3 direction = (cameraObject->absoluteTransformation().rotationScaling() * Vector3(clickPoint, -1.f)).normalized();
         shootBox(direction);
         event.setAccepted();
