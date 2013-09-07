@@ -68,15 +68,15 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
         Utility::Resource rs("data");
         importer->openData(rs.getRaw("tarnish.jpg"));
 
-        Trade::ImageData2D* image = importer->image2D(0);
-        Texture2D* texture = new Texture2D;
+        std::optional<Trade::ImageData2D> image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT(image);
+        auto texture = new Texture2D;
         texture->setWrapping(Sampler::Wrapping::ClampToEdge)
             .setMagnificationFilter(Sampler::Filter::Linear)
             .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
             .setStorage(Math::log2(image->size().min())+1, TextureFormat::RGB8, image->size())
             .setSubImage(0, {}, *image)
             .generateMipmap();
-        delete image;
 
         resourceManager.set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
     }

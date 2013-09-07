@@ -211,7 +211,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
     Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
     /* Load the scene */
-    Trade::SceneData* sceneData = importer->scene(importer->defaultScene());
+    std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
+    CORRADE_INTERNAL_ASSERT(sceneData);
 
     /* Add all children */
     for(UnsignedInt objectId: sceneData->children3D())
@@ -237,11 +238,12 @@ void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* paren
     Debug() << "Importing object" << importer->object3DName(objectId);
 
     Object3D* object = nullptr;
-    Trade::ObjectData3D* objectData = importer->object3D(objectId);
+    std::unique_ptr<Trade::ObjectData3D> objectData = importer->object3D(objectId);
+    CORRADE_INTERNAL_ASSERT(objectData);
 
     /* Only meshes for now */
-    if(objectData->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
-        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(objectData)->material());
+    if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
+        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(objectData.get())->material());
         const ResourceKey materialKey(materialName);
 
         /* Decide what object to add based on material type */
@@ -354,9 +356,8 @@ void MeshLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
 
-    Trade::MeshData3D* data = importer->mesh3D(id);
+    std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
     if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != Mesh::Primitive::Triangles) {
-        delete data;
         setNotFound(key);
         return;
     }
@@ -387,7 +388,6 @@ void MeshLoader::doLoad(const ResourceKey key) {
     ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-vertices", buffer)
         .set(importer->mesh3DName(id) + "-indices", indexBuffer);
     set(key, mesh);
-    delete data;
 }
 
 void MaterialLoader::doLoad(const ResourceKey key) {
@@ -395,9 +395,9 @@ void MaterialLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing material" << importer->materialName(id);
 
-    auto material = importer->material(id);
-    if(material && material->type() == Trade::AbstractMaterialData::Type::Phong)
-        set(key, static_cast<Trade::PhongMaterialData*>(material), ResourceDataState::Final, ResourcePolicy::Manual);
+    std::unique_ptr<Trade::AbstractMaterialData> material = importer->material(id);
+    if(material && material->type() == Trade::MaterialType::Phong)
+        set(key, static_cast<Trade::PhongMaterialData*>(material.release()), ResourceDataState::Final, ResourcePolicy::Manual);
     else setNotFound(key);
 }
 
@@ -406,19 +406,16 @@ void TextureLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing texture" << importer->textureName(id);
 
-    Trade::TextureData* data = importer->texture(id);
+    std::optional<Trade::TextureData> data = importer->texture(id);
     if(!data || data->type() != Trade::TextureData::Type::Texture2D) {
-        delete data;
         setNotFound(key);
         return;
     }
 
     Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
 
-    Trade::ImageData2D* image = importer->image2D(data->image());
+    std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
     if(!image || (image->format() != ImageFormat::RGB && image->format() != ImageFormat::BGR)) {
-        delete data;
-        delete image;
         setNotFound(key);
         return;
     }

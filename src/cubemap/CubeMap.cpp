@@ -75,36 +75,31 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         /* Configure texture storage using size of first image */
         importer->openFile(prefix + "+x.jpg");
-        Trade::ImageData2D* image = importer->image2D(0);
+        std::optional<Trade::ImageData2D> image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT(image);
         Vector2i size = image->size();
         cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size)
             .setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, *image);
-        delete image;
 
         importer->openFile(prefix + "-x.jpg");
-        image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, *image);
-        delete image;
 
         importer->openFile(prefix + "+y.jpg");
-        image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
         cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveY, 0, {}, *image);
-        delete image;
 
         importer->openFile(prefix + "-y.jpg");
-        image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeY, 0, {}, *image);
-        delete image;
 
         importer->openFile(prefix + "+z.jpg");
-        image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
         cubeMap->setSubImage(CubeMapTexture::Coordinate::PositiveZ, 0, {}, *image);
-        delete image;
 
         importer->openFile(prefix + "-z.jpg");
-        image = importer->image2D(0);
+        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
         cubeMap->setSubImage(CubeMapTexture::Coordinate::NegativeZ, 0, {}, *image);
-        delete image;
 
         cubeMap->generateMipmap();
 

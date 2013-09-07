@@ -89,12 +89,12 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
     }
 
     /* Set texture data and parameters */
-    Trade::ImageData2D* image = importer->image2D(0);
+    std::optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
     texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
         .setImage(0, TextureFormat::RGB8, *image);
-    delete image;
 
     /* We don't need the importer plugin anymore */
     delete importer;

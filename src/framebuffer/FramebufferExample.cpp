@@ -85,7 +85,9 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
     colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
     /* Add billboard to the scene */
-    billboard = new Billboard(importer->image2D(0), &colorCorrectionBuffer, &scene, &drawables);
+    auto image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
+    billboard = new Billboard(*image, &colorCorrectionBuffer, &scene, &drawables);
     delete importer;
 }
 
