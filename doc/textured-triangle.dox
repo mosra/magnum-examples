@@ -86,16 +86,10 @@ After the image is loaded, we create texture from it. Note that we have to
 explicitly set all texture parameters, otherwise the texture will be
 incomplete.
 @skip std::optional<Trade::ImageData2D>
+@until }
 @note Setters in most %Magnum classes are implemented in a way which allows
     @ref method-chaining "method chaining" - so you don't have to write repeated
     code.
-
-The importer is now not needed and we can delete it. If we wouldn't do that,
-next to the obvious memory leak of the instance and data of opened image the
-plugin manager will not be able to unload the plugin, which could cause
-problems later when trying to load the plugin again.
-@skip delete importer
-@until }
 
 The drawing function is again fairly simple. We clear the buffer, set base
 color to light red, mark the shader for usage and bind texture to the desired

@@ -64,7 +64,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Trade::AbstractImporter* importer;
+    std::unique_ptr<Trade::AbstractImporter> importer;
     if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
@@ -88,7 +88,6 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
     auto image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
     billboard = new Billboard(*image, &colorCorrectionBuffer, &scene, &drawables);
-    delete importer;
 }
 
 void FramebufferExample::viewportEvent(const Vector2i& size) {

@@ -150,11 +150,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
 
     /* Instance ColladaImporter plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(manager.load("ColladaImporter") != PluginManager::LoadState::Loaded) {
+    if(!(manager.load("ColladaImporter") & PluginManager::LoadState::Loaded)) {
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    Trade::AbstractImporter* importer = manager.instance("ColladaImporter");
+    Trade::AbstractImporter* importer = manager.instance("ColladaImporter").release();
     if(!importer) {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);

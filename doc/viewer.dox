@@ -131,7 +131,8 @@ drawables, object holding the camera and the camera feature.
 
 In the constructor we first try to load the plugin and open the file passed as
 parameter on command line. If that fails or the file is empty, the program
-exits.
+exits. We won't use `std::unique_ptr` for the loader plugin, but will pass it
+later to resource manager instead, which will manage its lifetime.
 @skip ViewerExample::ViewerExample
 @until std::exit(5);
 
@@ -217,7 +218,8 @@ binding and mesh drawing.
 
 Last thing in this example are the actual resource loaders. Each loader needs
 access to the importer (which is provided by resource manager) and needs to map
-resource keys from the manager to data IDs in the importer. After every call to @ref ResourceManager::get() the manager checks if the resource is loaded and if not,
+resource keys from the manager to data IDs in the importer. After every call to
+@ref ResourceManager::get() the manager checks if the resource is loaded and if not,
 calls function `doLoad()` on particular loader. The loader should then load the
 data. For simplicity we will load the data synchronously.
 @dontinclude viewer/ViewerExample.cpp
@@ -232,7 +234,7 @@ The constructor just requests the importer resource and fills the key map.
 @until }
 @until }
 
-Mesh loading is done similarly to the way explained in previous examples.
+%Mesh loading is done similarly to the way explained in previous examples.
 Texture coordinates are added to the mesh, if available, to allow texturing.
 If the importing failed due to missing or unexpected data, we call
 @ref AbstractResourceLoader::setNotFound() and all the objects using this mesh
@@ -251,7 +253,7 @@ directly to resource manager.
 @skip void MaterialLoader::doLoad
 @until }
 
-Texture loading is also nothing new. We load texture parameters and the actual
+%Texture loading is also nothing new. We load texture parameters and the actual
 image, check their formats, configure the texture, upload its data and save it
 to the manager.
 @skip void TextureLoader::doLoad

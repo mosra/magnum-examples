@@ -75,7 +75,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Trade::AbstractImporter* importer;
+    std::unique_ptr<Trade::AbstractImporter> importer;
     if(manager.load("JpegImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("JpegImporter"))) {
         Error() << "Cannot load PngImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
@@ -95,9 +95,6 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
         .setImage(0, TextureFormat::RGB8, *image);
-
-    /* We don't need the importer plugin anymore */
-    delete importer;
 }
 
 void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
