@@ -24,14 +24,28 @@
 
 find_package(Magnum REQUIRED)
 
-if(NOT MAGNUM_TARGET_GLES)
+if(WITH_BULLET)
     add_subdirectory(bullet)
+endif()
+
+if(WITH_CUBEMAP)
     add_subdirectory(cubemap)
+endif()
+
+if(WITH_FRAMEBUFFER)
     add_subdirectory(framebuffer)
-    add_subdirectory(motionblur)
+endif()
+
+if(WITH_TEXTURED_TRIANGLE)
     add_subdirectory(textured-triangle)
 endif()
 
+if(WITH_VIEWER)
+    add_subdirectory(viewer)
+endif()
+
+if(NOT MAGNUM_TARGET_GLES)
+    add_subdirectory(motionblur)
+endif()
 add_subdirectory(primitives)
 add_subdirectory(triangle)
-add_subdirectory(viewer)

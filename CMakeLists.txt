@@ -26,5 +26,13 @@ cmake_minimum_required(VERSION 2.6)
 project(MagnumExamples)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
+find_package(Magnum REQUIRED)
+
+include(CMakeDependentOption)
+option(WITH_BULLET "Build Bullet integration example (requires BulletIntegration library)" OFF)
+cmake_dependent_option(WITH_CUBEMAP "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+cmake_dependent_option(WITH_FRAMEBUFFER "Build Framebuffer example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
 
 add_subdirectory(src)
