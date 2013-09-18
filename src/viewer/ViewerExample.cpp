@@ -150,11 +150,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
 
     /* Instance ColladaImporter plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(manager.load("ColladaImporter") != PluginManager::LoadState::Loaded) {
+    if(!(manager.load("ColladaImporter") & PluginManager::LoadState::Loaded)) {
         Error() << "Could not load ColladaImporter plugin";
         std::exit(1);
     }
-    Trade::AbstractImporter* importer = manager.instance("ColladaImporter");
+    Trade::AbstractImporter* importer = manager.instance("ColladaImporter").release();
     if(!importer) {
         Error() << "Could not instance ColladaImporter plugin";
         std::exit(2);
@@ -211,7 +211,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
     Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
     /* Load the scene */
-    Trade::SceneData* sceneData = importer->scene(importer->defaultScene());
+    std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
+    CORRADE_INTERNAL_ASSERT(sceneData);
 
     /* Add all children */
     for(UnsignedInt objectId: sceneData->children3D())
@@ -237,11 +238,12 @@ void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* paren
     Debug() << "Importing object" << importer->object3DName(objectId);
 
     Object3D* object = nullptr;
-    Trade::ObjectData3D* objectData = importer->object3D(objectId);
+    std::unique_ptr<Trade::ObjectData3D> objectData = importer->object3D(objectId);
+    CORRADE_INTERNAL_ASSERT(objectData);
 
     /* Only meshes for now */
-    if(objectData->instanceType() == Trade::ObjectData3D::InstanceType::Mesh) {
-        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(objectData)->material());
+    if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
+        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(objectData.get())->material());
         const ResourceKey materialKey(materialName);
 
         /* Decide what object to add based on material type */
@@ -323,7 +325,7 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
-    Vector2 position = Vector2(_position*2)/camera->viewport() - Vector2(1.0f);
+    Vector2 position = Vector2(_position*2)/Vector2(camera->viewport()) - Vector2(1.0f);
 
     Float length = position.length();
     Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
@@ -354,9 +356,8 @@ void MeshLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
 
-    Trade::MeshData3D* data = importer->mesh3D(id);
+    std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
     if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != Mesh::Primitive::Triangles) {
-        delete data;
         setNotFound(key);
         return;
     }
@@ -372,14 +373,14 @@ void MeshLoader::doLoad(const ResourceKey key) {
     if(data->textureCoords2DArrayCount()) {
         MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
             data->positions(0), data->normals(0), data->textureCoords2D(0));
-        mesh->addInterleavedVertexBuffer(*buffer, 0,
+        mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
 
     /* Non-textured mesh */
     } else {
         MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
             data->positions(0), data->normals(0));
-        mesh->addInterleavedVertexBuffer(*buffer, 0,
+        mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
     }
 
@@ -387,7 +388,6 @@ void MeshLoader::doLoad(const ResourceKey key) {
     ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-vertices", buffer)
         .set(importer->mesh3DName(id) + "-indices", indexBuffer);
     set(key, mesh);
-    delete data;
 }
 
 void MaterialLoader::doLoad(const ResourceKey key) {
@@ -395,9 +395,9 @@ void MaterialLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing material" << importer->materialName(id);
 
-    auto material = importer->material(id);
-    if(material && material->type() == Trade::AbstractMaterialData::Type::Phong)
-        set(key, static_cast<Trade::PhongMaterialData*>(material), ResourceDataState::Final, ResourcePolicy::Manual);
+    std::unique_ptr<Trade::AbstractMaterialData> material = importer->material(id);
+    if(material && material->type() == Trade::MaterialType::Phong)
+        set(key, static_cast<Trade::PhongMaterialData*>(material.release()), ResourceDataState::Final, ResourcePolicy::Manual);
     else setNotFound(key);
 }
 
@@ -406,19 +406,16 @@ void TextureLoader::doLoad(const ResourceKey key) {
 
     Debug() << "Importing texture" << importer->textureName(id);
 
-    Trade::TextureData* data = importer->texture(id);
+    std::optional<Trade::TextureData> data = importer->texture(id);
     if(!data || data->type() != Trade::TextureData::Type::Texture2D) {
-        delete data;
         setNotFound(key);
         return;
     }
 
     Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
 
-    Trade::ImageData2D* image = importer->image2D(data->image());
+    std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
     if(!image || (image->format() != ImageFormat::RGB && image->format() != ImageFormat::BGR)) {
-        delete data;
-        delete image;
         setNotFound(key);
         return;
     }
@@ -457,7 +454,8 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setShininess(shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotation())
+        /** @todo How to avoid the assertions here? */
+        .setNormalMatrix(transformationMatrix.rotationNormalized())
         .setProjectionMatrix(camera.projectionMatrix())
         .use();
 
@@ -470,6 +468,7 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
         .setShininess(shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
+        /** @todo How to avoid the assertions here? */
         .setNormalMatrix(transformationMatrix.rotationNormalized())
         .setProjectionMatrix(camera.projectionMatrix())
         .use();

@@ -71,11 +71,11 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         positions, textureCoordinates);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .setVertexCount(3)
-        .addInterleavedVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
+        .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Trade::AbstractImporter* importer;
+    std::unique_ptr<Trade::AbstractImporter> importer;
     if(manager.load("JpegImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("JpegImporter"))) {
         Error() << "Cannot load PngImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
@@ -89,15 +89,12 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
     }
 
     /* Set texture data and parameters */
-    Trade::ImageData2D* image = importer->image2D(0);
+    std::optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
     texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
         .setImage(0, TextureFormat::RGB8, *image);
-    delete image;
-
-    /* We don't need the importer plugin anymore */
-    delete importer;
 }
 
 void TexturedTriangleExample::viewportEvent(const Vector2i& size) {

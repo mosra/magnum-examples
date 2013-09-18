@@ -76,12 +76,12 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Trade::AbstractImporter* importer;
+    std::unique_ptr<Trade::AbstractImporter> importer;
     if(manager.load("JpegImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("JpegImporter"))) {
         Error() << "Cannot load JpegImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
-    resourceManager.set<Trade::AbstractImporter>("jpeg-importer", importer, ResourceDataState::Final, ResourcePolicy::Manual);
+    resourceManager.set<Trade::AbstractImporter>("jpeg-importer", importer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
     (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &scene, &drawables))

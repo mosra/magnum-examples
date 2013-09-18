@@ -64,7 +64,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    Trade::AbstractImporter* importer;
+    std::unique_ptr<Trade::AbstractImporter> importer;
     if(manager.load("TgaImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("TgaImporter"))) {
         Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
@@ -85,8 +85,9 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
     colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
 
     /* Add billboard to the scene */
-    billboard = new Billboard(importer->image2D(0), &colorCorrectionBuffer, &scene, &drawables);
-    delete importer;
+    auto image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
+    billboard = new Billboard(*image, &colorCorrectionBuffer, &scene, &drawables);
 }
 
 void FramebufferExample::viewportEvent(const Vector2i& size) {
@@ -111,7 +112,7 @@ void FramebufferExample::mousePressEvent(MouseEvent& event) {
 }
 
 void FramebufferExample::mouseMoveEvent(MouseMoveEvent& event) {
-    billboard->translate(camera->projectionSize()*Vector2(event.position()-previous)/camera->viewport()*Vector2(2.0f, -2.0f));
+    billboard->translate(camera->projectionSize()*Vector2(event.position()-previous)/Vector2(camera->viewport())*Vector2(2.0f, -2.0f));
     previous = event.position();
     redraw();
 }

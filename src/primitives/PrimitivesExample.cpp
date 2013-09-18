@@ -78,7 +78,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
     MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
         cube.positions(0), cube.normals(0));
     mesh.setPrimitive(Mesh::Primitive::Triangles)
-        .addInterleavedVertexBuffer(vertexBuffer, 0,
+        .addVertexBuffer(vertexBuffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     transformation = Matrix4::rotationX(Deg(30.0f))*
@@ -129,7 +129,7 @@ void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.modifiers() & MouseMoveEvent::Modifier::LeftButton)) return;
     #endif
 
-    Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/defaultFramebuffer.viewport().size();
+    Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/Vector2(defaultFramebuffer.viewport().size());
     transformation =
         Matrix4::rotationX(Rad(delta.y()))*
         transformation*
