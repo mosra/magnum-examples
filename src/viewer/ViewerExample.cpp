@@ -23,8 +23,8 @@
 */
 
 #include <PluginManager/Manager.h>
+#include <ColorFormat.h>
 #include <DefaultFramebuffer.h>
-#include <ImageFormat.h>
 #include <TextureFormat.h>
 #include <Mesh.h>
 #include <Renderer.h>
@@ -415,7 +415,7 @@ void TextureLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
 
     std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
-    if(!image || (image->format() != ImageFormat::RGB && image->format() != ImageFormat::BGR)) {
+    if(!image || (image->format() != ColorFormat::RGB && image->format() != ColorFormat::BGR)) {
         setNotFound(key);
         return;
     }
