@@ -1,3 +1,12 @@
+# - Find SDL2
+#
+# This module defines:
+#
+#  SDL2_FOUND               - True if SDL2 library is found
+#  SDL2_LIBRARY             - SDL2 dynamic library
+#  SDL2_INCLUDE_DIR         - Include dir
+#
+
 #
 #   This file is part of Magnum.
 #
@@ -22,40 +31,24 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED)
-
-if(WITH_BULLET)
-    add_subdirectory(bullet)
-endif()
-
-if(WITH_CUBEMAP)
-    add_subdirectory(cubemap)
-endif()
-
-if(WITH_FRAMEBUFFER)
-    add_subdirectory(framebuffer)
-endif()
-
-if(WITH_TEXTURED_TRIANGLE)
-    add_subdirectory(textured-triangle)
-endif()
-
-if(WITH_VIEWER)
-    add_subdirectory(viewer)
-endif()
-
-if(NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(motionblur)
-endif()
-add_subdirectory(primitives)
-add_subdirectory(triangle)
-
-# Installation for NaCl
-if(CORRADE_TARGET_NACL)
-    install(FILES WebApplication.css NaClApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
-
-# Installation for Emscripten
+# In Emscripten SDL is linked automatically, thus no need to find the library.
+# Also the includes are in SDL subdirectory, not SDL2.
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES WebApplication.css EmscriptenApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
+    set(PATH_SUFFIXES SDL)
+else()
+    find_library(SDL2_LIBRARY SDL2)
+    set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
+    set(PATH_SUFFIXES SDL2)
 endif()
+
+# Include dir
+find_path(SDL2_INCLUDE_DIR
+    NAMES SDL.h SDL_scancode.h
+    PATH_SUFFIXES ${PATH_SUFFIXES}
+)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args("SDL2" DEFAULT_MSG
+    ${SDL2_LIBRARY_NEEDED}
+    SDL2_INCLUDE_DIR
+)
