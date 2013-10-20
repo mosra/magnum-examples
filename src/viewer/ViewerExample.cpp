@@ -311,6 +311,8 @@ void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
+    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+
     Vector3 currentPosition = positionOnSphere(event.position());
 
     Vector3 axis = Vector3::cross(previousPosition, currentPosition);
