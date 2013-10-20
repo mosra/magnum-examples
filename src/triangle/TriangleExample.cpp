@@ -29,6 +29,8 @@
 #include <Renderer.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Platform/NaClApplication.h>
+#elif defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Platform/Sdl2Application.h>
 #else
 #include <Platform/GlutApplication.h>
 #endif

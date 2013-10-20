@@ -30,6 +30,8 @@ find_package(Magnum REQUIRED
 
 if(CORRADE_TARGET_NACL)
     find_package(Magnum REQUIRED NaClApplication)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED Sdl2Application)
 else()
     find_package(Magnum REQUIRED GlutApplication)
 endif()
@@ -49,5 +51,11 @@ if(CORRADE_TARGET_NACL)
         message(FATAL_ERROR "Only newlib NaCl target is supported")
     endif()
     install(FILES triangle-nacl.html triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
+
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
