@@ -72,7 +72,8 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): GlutApplication(argu
         ->translate(Vector3::zAxis(3.0f));
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f);
+        .setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f)
+        .setViewport(defaultFramebuffer.viewport().size());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);

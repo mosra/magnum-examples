@@ -70,12 +70,15 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Glut
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));
     color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
+
+    projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(defaultFramebuffer.viewport().size()).aspectRatio(), 0.01f, 100.0f)*
+                 Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
 void PrimitivesExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
 
-    projection = Matrix4::perspectiveProjection(Deg(35.0f), Float(size.x())/size.y(), 0.01f, 100.0f)*
+    projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(size).aspectRatio(), 0.01f, 100.0f)*
                  Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 

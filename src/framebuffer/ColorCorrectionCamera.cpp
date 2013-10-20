@@ -33,6 +33,7 @@ namespace Magnum { namespace Examples {
 
 ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& object): SceneGraph::Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
+    setViewport(defaultFramebuffer.viewport().size());
 
     original.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());
     grayscale.setStorage(RenderbufferFormat::RGBA8, framebuffer.viewport().size());

@@ -63,7 +63,8 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplicatio
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100);
+        .setPerspective(35.0_degf, 1.0f, 0.001f, 100)
+        .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
