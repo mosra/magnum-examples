@@ -52,5 +52,5 @@ add_subdirectory(triangle)
 
 # Installation for NaCl
 if(CORRADE_TARGET_NACL)
-    install(FILES NaClApplication.css NaClApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES WebApplication.css NaClApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
