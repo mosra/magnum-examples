@@ -82,10 +82,10 @@ attribute bindings for the shader.
 @skip MeshTools::interleave
 @until Shaders::Phong
 
-We now specify initial transformation and color. The projection depends on
-viewport aspect ratio, thus we need to set it in `viewportEvent()` function.
-See also @ref matrix-vector and @ref transformations for more thorough
-introduction to transformations.
+We now specify initial transformation, color and projection. The projection
+depends on viewport aspect ratio, thus we need to set it again when viewport
+changes, i.e. in `viewportEvent()` function. See also @ref matrix-vector and
+@ref transformations for more thorough introduction to transformations.
 @skip transformation =
 @until }
 @until }

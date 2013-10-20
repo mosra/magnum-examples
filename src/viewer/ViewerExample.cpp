@@ -201,7 +201,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
         ->translate(Vector3::zAxis(5.0f));
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100);
+        .setPerspective(35.0_degf, 1.0f, 0.001f, 100)
+        .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
@@ -311,6 +312,8 @@ void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
+    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+
     Vector3 currentPosition = positionOnSphere(event.position());
 
     Vector3 axis = Vector3::cross(previousPosition, currentPosition);

@@ -88,7 +88,8 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         ->translate({0.f, 0.f, 20.f});
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
+        .setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f)
+        .setViewport(defaultFramebuffer.viewport().size());
 
     /* Debug draw setup */
     /** @todo Revert it back to oneliners when setters return rvalue refs properly */

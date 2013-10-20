@@ -84,12 +84,15 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));
     color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
+
+    projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(defaultFramebuffer.viewport().size()).aspectRatio(), 0.01f, 100.0f)*
+                 Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
 void PrimitivesExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
 
-    projection = Matrix4::perspectiveProjection(Deg(35.0f), Float(size.x())/size.y(), 0.01f, 100.0f)*
+    projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(size).aspectRatio(), 0.01f, 100.0f)*
                  Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
@@ -125,9 +128,7 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
-    #ifdef CORRADE_TARGET_NACL
-    if(!(event.modifiers() & MouseMoveEvent::Modifier::LeftButton)) return;
-    #endif
+    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
     Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/Vector2(defaultFramebuffer.viewport().size());
     transformation =
