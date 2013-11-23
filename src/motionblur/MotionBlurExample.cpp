@@ -70,8 +70,8 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     Trade::MeshData3D data = Primitives::Icosphere::solid(3);
-    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, data.indices());
-    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw, data.positions(0), data.normals(0));
+    MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw, data.indices());
+    MeshTools::interleave(mesh, buffer, BufferUsage::StaticDraw, data.positions(0), data.normals(0));
     mesh.addVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
 
     /* Add spheres to the scene */

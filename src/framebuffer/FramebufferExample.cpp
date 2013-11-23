@@ -82,7 +82,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): Platform::Ap
         Float x = i*2/1023.0-1;
         texture[i] = (std::sin(x*Constants::pi())/3.7f+x+1)/2;
     }
-    colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
+    colorCorrectionBuffer.setData(texture, BufferUsage::StaticDraw);
 
     /* Add billboard to the scene */
     auto image = importer->image2D(0);

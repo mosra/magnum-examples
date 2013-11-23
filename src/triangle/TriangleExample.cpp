@@ -52,7 +52,7 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
         { 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
     };
 
-    buffer.setData(data, Buffer::Usage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .setVertexCount(3)
         .addVertexBuffer(buffer, 0,

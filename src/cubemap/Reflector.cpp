@@ -52,8 +52,8 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
         Buffer* indexBuffer = new Buffer;
 
         Trade::MeshData3D sphereData = Primitives::UVSphere::solid(16, 32, Primitives::UVSphere::TextureCoords::Generate);
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw, sphereData.positions(0), sphereData.textureCoords2D(0));
-        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, sphereData.indices());
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw, sphereData.positions(0), sphereData.textureCoords2D(0));
+        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, sphereData.indices());
         mesh->setPrimitive(sphereData.primitive())
             .addVertexBuffer(*buffer, 0, ReflectorShader::Position(), ReflectorShader::TextureCoords());
 

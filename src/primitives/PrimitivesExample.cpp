@@ -59,9 +59,9 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 
-    MeshTools::compressIndices(mesh, indexBuffer, Buffer::Usage::StaticDraw, cube.indices());
+    MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw, cube.indices());
 
-    MeshTools::interleave(mesh, vertexBuffer, Buffer::Usage::StaticDraw,
+    MeshTools::interleave(mesh, vertexBuffer, BufferUsage::StaticDraw,
         cube.positions(0), cube.normals(0));
     mesh.setPrimitive(Mesh::Primitive::Triangles)
         .addVertexBuffer(vertexBuffer, 0,

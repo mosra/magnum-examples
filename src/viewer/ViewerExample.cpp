@@ -370,18 +370,18 @@ void MeshLoader::doLoad(const ResourceKey key) {
     auto buffer = new Buffer;
     auto indexBuffer = new Buffer;
     mesh->setPrimitive(data->primitive());
-    MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data->indices());
+    MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data->indices());
 
     /* Textured mesh */
     if(data->textureCoords2DArrayCount()) {
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
             data->positions(0), data->normals(0), data->textureCoords2D(0));
         mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
 
     /* Non-textured mesh */
     } else {
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
             data->positions(0), data->normals(0));
         mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
