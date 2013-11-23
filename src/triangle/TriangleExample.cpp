@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Examples {
 
-class TriangleExample: public Platform::GlutApplication {
+class TriangleExample: public Platform::Application {
     public:
         explicit TriangleExample(const Arguments& arguments);
 
@@ -45,7 +45,7 @@ class TriangleExample: public Platform::GlutApplication {
         Shaders::VertexColor3D shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Triangle example")) {
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Triangle example")) {
     constexpr static Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */

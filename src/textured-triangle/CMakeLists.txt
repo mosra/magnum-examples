@@ -42,4 +42,4 @@ add_executable(textured-triangle
     ${TexturedTriangleData})
 target_link_libraries(textured-triangle
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+    ${MAGNUM_APPLICATION_LIBRARIES})

@@ -54,7 +54,7 @@ typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::Abstract
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class ViewerExample: public Platform::GlutApplication {
+class ViewerExample: public Platform::Application {
     public:
         explicit ViewerExample(const Arguments& arguments);
 
@@ -483,4 +483,4 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
 
 }}
 
-MAGNUM_GLUTAPPLICATION_MAIN(Magnum::Examples::ViewerExample)
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::ViewerExample)

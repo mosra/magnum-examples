@@ -38,7 +38,7 @@
 
 namespace Magnum { namespace Examples {
 
-class MotionBlurExample: public Platform::GlutApplication {
+class MotionBlurExample: public Platform::Application {
     public:
         MotionBlurExample(const Arguments& arguments);
 
@@ -58,7 +58,7 @@ class MotionBlurExample: public Platform::GlutApplication {
         Object3D* spheres[3];
 };
 
-MotionBlurExample::MotionBlurExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Motion blur example")) {
+MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Motion blur example")) {
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))

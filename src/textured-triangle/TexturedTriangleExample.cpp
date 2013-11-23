@@ -40,7 +40,7 @@
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public Platform::GlutApplication {
+class TexturedTriangleExample: public Platform::Application {
     public:
         TexturedTriangleExample(const Arguments& arguments);
 
@@ -55,7 +55,7 @@ class TexturedTriangleExample: public Platform::GlutApplication {
         Magnum::Texture2D texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Textured triangle example")) {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Textured triangle example")) {
     constexpr static std::array<Vector2, 3> positions{{
         {-0.5f, -0.5f},
         {0.5f, -0.5f},
