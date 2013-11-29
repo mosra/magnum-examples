@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Examples {
 
-ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& object): SceneGraph::Camera2D(object), framebuffer(Rectanglei::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
+ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& object): SceneGraph::Camera2D(object), framebuffer(Range2Di::fromSize(defaultFramebuffer.viewport().bottomLeft(), defaultFramebuffer.viewport().size()/2)) {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Clip);
     setViewport(defaultFramebuffer.viewport().size());
 
@@ -58,7 +58,7 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Original));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
-        {{0, defaultFramebuffer.viewport().height()/2}, {defaultFramebuffer.viewport().width()/2, defaultFramebuffer.viewport().height()}},
+        {{0, defaultFramebuffer.viewport().sizeY()/2}, {defaultFramebuffer.viewport().sizeX()/2, defaultFramebuffer.viewport().sizeY()}},
         FramebufferBlit::ColorBuffer, FramebufferBlitFilter::Linear);
 
     /* Grayscale at top right */
@@ -72,7 +72,7 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Corrected));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
-        {{defaultFramebuffer.viewport().width()/4, 0}, {defaultFramebuffer.viewport().width()*3/4, defaultFramebuffer.viewport().height()/2}},
+        {{defaultFramebuffer.viewport().sizeX()/4, 0}, {defaultFramebuffer.viewport().sizeX()*3/4, defaultFramebuffer.viewport().sizeY()/2}},
         FramebufferBlit::ColorBuffer, FramebufferBlitFilter::Linear);
 }
 
