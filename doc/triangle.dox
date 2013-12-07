@@ -32,33 +32,33 @@ namespace Magnum {
 @image latex triangle/triangle.png
 
 For the first example we will use the simple GLUT toolkit, which is available
-on most platforms. It is implemented in Platform::GlutApplication class. We
-subclass it and next to the constructor we implement two required functions,
-one which is called after the window is resized and one for rendering into the
-window. You can read more about platform support in @ref platform. We also need
-mesh encapsulating our triangle, buffer to store vertex data and shader which
-will take care of rendering.
+on most platforms. Support for it is in @ref Platform::GlutApplication class.
+We subclass it and next to the constructor we implement the one required
+function which is needed for rendering into the window. You can read more about
+platform support and various portability tricks in @ref platform.
+
+We also need @ref Mesh encapsulating our triangle, @ref Buffer to store vertex
+data and @ref Shaders::Flat "shader" which will take care of rendering.
 @dontinclude triangle/TriangleExample.cpp
 @skip class TriangleExample
 @until };
 
-In the constructor we pass necessary arguments to
-@ref Platform::GlutApplication "GlutApplication" class.
+In the constructor we pass necessary arguments to the application class.
 @skipline TriangleExample::TriangleExample
 
 Now we specify vertex attributes, consisting of positions and colors. For
 performance reasons it is common to interleave them, so data for each vertex
 are in one continuous place in memory. We will cheat a bit here and use
-three-component vectors for both 3D positions and RGB colors, so we can
-interleave them easily in place. In the following tutorials we will learn how
-to interleave them programatically. See @ref types for more information about
-scalar and vector types used in %Magnum.
+@ref Vector3 for both 3D positions and RGB colors, so we can interleave them
+easily in place. In the following tutorial we will learn how to interleave them
+programatically. See @ref types for more information about scalar and vector
+types used in %Magnum.
 @skip data
 @until };
 
 We then create vertex buffer and fill it with the data. The data won't be
 changed or read back into main memory during application lifetime, so we mark
-them with appropriate @ref Buffer::Usage "buffer usage".
+them with appropriate @ref BufferUsage "buffer usage".
 @skip Buffer
 @until setData
 
@@ -66,41 +66,37 @@ Now we configure the mesh - we specify @ref Mesh::Primitive "mesh primitive"
 and vertex count, add vertex buffer and specify attribute locations for use
 with the shader. We need to describe physical location of vertex attributes in
 the buffer - zero offset from the beginning, first the position, then the
-color.
+color with no gaps in between.
 @skip mesh.
 @until }
+@note Setters in most %Magnum classes are implemented in a way which allows
+    @ref method-chaining "method chaining" - so you don't have to write
+    repeated code.
 
-Function `viewportEvent()` just passes current window size to the framebuffer,
-so the triangle is rendered at proper size and position.
-@skip TriangleExample::viewportEvent
-@until }
-@until }
-
-Function `drawEvent()` will take care about drawing the scene. We will draw to
-the default framebuffer, clear its color buffer, tell that the drawing is done
-using our shader and then we draw the mesh. The context is double buffered, so
-we need to swap the buffers after drawing.
+Function @ref Platform::GlutApplication::drawEvent() "drawEvent()" will take
+care about rendering the scene. We will draw to the default framebuffer, clear
+its color buffer, tell that the drawing is done using our shader and then we
+draw the mesh. The context is double-buffered, so we need to swap the buffers
+after drawing.
 @skip TriangleExample::drawEvent
 @until }
 
 -   @ref triangle/TriangleExample.cpp
 
 That's all, now we can compile the whole example using CMake. First we find
-required %Magnum package with %Shaders and GlutApplication component and add
-its include dir. It's recommended to use also Corrade's set of compiler flags
-to enable additional warnings.
+required `%Magnum` package with `%Shaders` and `GlutApplication` component and
+add include dirs for both core library and application to include path. It's
+recommended to use also Corrade's set of compiler flags to enable additional
+warnings. Then we collect our source files, create our executable and link to
+all %Magnum libraries we requested. See @ref cmake for more information.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
-@until include_directories
-
-Then we collect our source files, create our executable and link to %Magnum
-libraries.
-@skip add_executable
-@until MAGNUM_GLUTAPPLICATION_LIBRARIES})
+@until MAGNUM_APPLICATION_LIBRARIES})
 
 -   @ref triangle/CMakeLists.txt
 
-As an task you can try chaning vertex count, positions or colors.
+You can now try changing vertex count, positions or colors to see how the
+shader behaves.
 
 -   Next example: @ref examples-primitives
 
