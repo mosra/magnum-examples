@@ -42,11 +42,10 @@ class MotionBlurExample: public Platform::Application {
     public:
         MotionBlurExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
 
-    private:
         Scene3D scene;
         SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;

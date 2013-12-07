@@ -58,14 +58,13 @@ class ViewerExample: public Platform::Application {
     public:
         explicit ViewerExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-    private:
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
         void addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId);
@@ -116,9 +115,9 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
         ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
+    private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-    private:
         Resource<Mesh> mesh;
         Resource<Shaders::Phong> shader;
         Vector3 ambientColor,
@@ -131,9 +130,9 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     public:
         TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
+    private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-    private:
         Resource<Mesh> mesh;
         Resource<Texture2D> diffuseTexture;
         Resource<Shaders::Phong> shader;

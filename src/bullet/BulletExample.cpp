@@ -51,12 +51,12 @@ class BulletExample: public Platform::Application {
     public:
         explicit BulletExample(const Arguments& arguments);
 
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
 
-    private:
         btRigidBody* createRigidBody(Float mass, Object3D& object, btCollisionShape& bShape, ResourceKey renderOptions);
         void shootBox(Vector3& direction);
 

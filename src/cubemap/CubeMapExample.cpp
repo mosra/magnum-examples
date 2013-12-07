@@ -47,12 +47,11 @@ class CubeMapExample: public Platform::Application {
     public:
         CubeMapExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-    private:
         CubeMapResourceManager resourceManager;
         Scene3D scene;
         SceneGraph::DrawableGroup3D drawables;

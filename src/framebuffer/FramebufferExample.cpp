@@ -39,13 +39,12 @@ class FramebufferExample: public Platform::Application {
     public:
         FramebufferExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-    private:
         Vector2i previous;
         Scene2D scene;
         SceneGraph::DrawableGroup2D drawables;
