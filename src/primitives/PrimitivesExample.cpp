@@ -37,13 +37,12 @@ class PrimitivesExample: public Platform::Application {
     public:
         explicit PrimitivesExample(const Arguments& arguments);
 
-        void viewportEvent(const Vector2i& size) override;
+    private:
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-    private:
         Buffer indexBuffer, vertexBuffer;
         Mesh mesh;
         Shaders::Phong shader;
@@ -72,13 +71,6 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
     color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
 
     projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(defaultFramebuffer.viewport().size()).aspectRatio(), 0.01f, 100.0f)*
-                 Matrix4::translation(Vector3::zAxis(-10.0f));
-}
-
-void PrimitivesExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
-
-    projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(size).aspectRatio(), 0.01f, 100.0f)*
                  Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
