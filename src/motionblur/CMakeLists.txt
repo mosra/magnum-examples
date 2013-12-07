@@ -26,14 +26,14 @@ cmake_minimum_required(VERSION 2.8)
 project(MagnumMotionblurExample)
 
 find_package(Magnum REQUIRED
-    GlutApplication
     MeshTools
     Primitives
     SceneGraph
-    Shaders)
+    Shaders
+    GlutApplication)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS})
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 corrade_add_resource(MotionBlurShaders resources.conf)
 
