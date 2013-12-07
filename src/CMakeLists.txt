@@ -36,7 +36,7 @@ if(WITH_FRAMEBUFFER)
     add_subdirectory(framebuffer)
 endif()
 
-if(WITH_TEXTURED_TRIANGLE)
+if(WITH_TEXTUREDTRIANGLE)
     add_subdirectory(textured-triangle)
 endif()
 
