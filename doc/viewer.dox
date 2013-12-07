@@ -268,7 +268,7 @@ to the manager.
 Compilation is easy as usual, we just need to provide also path to plugin dir.
 @dontinclude viewer/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
-@until ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+@until ${MAGNUM_APPLICATION_LIBRARIES})
 
 @dontinclude viewer/configure.h.cmake
 @skipline #define MAGNUM_PLUGINS_IMPORTER_DIR
