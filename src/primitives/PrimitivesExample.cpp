@@ -62,7 +62,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
 
     MeshTools::interleave(mesh, vertexBuffer, BufferUsage::StaticDraw,
         cube.positions(0), cube.normals(0));
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    mesh.setPrimitive(cube.primitive())
         .addVertexBuffer(vertexBuffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
 
