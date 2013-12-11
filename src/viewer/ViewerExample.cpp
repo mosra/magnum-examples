@@ -359,7 +359,7 @@ void MeshLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
 
     std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
-    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != Mesh::Primitive::Triangles) {
+    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != MeshPrimitive::Triangles) {
         setNotFound(key);
         return;
     }

@@ -59,7 +59,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     };
 
     buffer.setData(data, BufferUsage::StaticDraw);
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3)
         .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
