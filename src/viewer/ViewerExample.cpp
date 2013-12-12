@@ -200,7 +200,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
         ->translate(Vector3::zAxis(5.0f));
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100)
+        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);

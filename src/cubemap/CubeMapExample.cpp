@@ -71,7 +71,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         ->translate(Vector3::zAxis(3.0f));
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(55.0_degf, 1.0f, 0.001f, 100.0f)
+        .setPerspective(Deg(55.0f), 1.0f, 0.001f, 100.0f)
         .setViewport(defaultFramebuffer.viewport().size());
 
     /* Load TGA importer plugin */
@@ -93,7 +93,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     (new Reflector(&scene, &drawables))
         ->scale(Vector3(0.3f))
-        .rotate(37.0_degf, Vector3::xAxis())
+        .rotate(Deg(37.0f), Vector3::xAxis())
         .translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
@@ -115,15 +115,15 @@ void CubeMapExample::drawEvent() {
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        cameraObject->rotate(-10.0_degf, cameraObject->transformation().right().normalized());
+        cameraObject->rotate(Deg(-10.0f), cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        cameraObject->rotate(10.0_degf, cameraObject->transformation().right().normalized());
+        cameraObject->rotate(Deg(10.0f), cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         Float translationY = cameraObject->transformation().translation().y();
         cameraObject->translate(Vector3::yAxis(-translationY))
-            .rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
+            .rotateY(event.key() == KeyEvent::Key::Left ? Deg(10.0f) : Deg(-10.0f))
             .translate(Vector3::yAxis(translationY));
 
     } else return;

@@ -62,7 +62,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100)
+        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
@@ -81,30 +81,30 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::yAxis(0.25f));
     (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        .rotateZ(120.0_degf);
+        .rotateZ(Deg(120.0f));
     (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        .rotateZ(240.0_degf);
+        .rotateZ(Deg(240.0f));
 
     spheres[1] = new Object3D(&scene);
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f));
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        .rotateZ(120.0_degf);
+        .rotateZ(Deg(120.0f));
     (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        .rotateZ(240.0_degf);
+        .rotateZ(Deg(240.0f));
 
     spheres[2] = new Object3D(&scene);
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f));
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        .rotateZ(120.0_degf);
+        .rotateZ(Deg(120.0f));
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        .rotateZ(240.0_degf);
+        .rotateZ(Deg(240.0f));
 }
 
 void MotionBlurExample::viewportEvent(const Vector2i& size) {
@@ -117,10 +117,10 @@ void MotionBlurExample::drawEvent() {
     camera->draw(drawables);
     swapBuffers();
 
-    cameraObject->rotateX(1.0_degf);
-    spheres[0]->rotateZ(-2.0_degf);
-    spheres[1]->rotateZ(1.0_degf);
-    spheres[2]->rotateZ(-0.5_degf);
+    cameraObject->rotateX(Deg(1.0f));
+    spheres[0]->rotateZ(Deg(-2.0f));
+    spheres[1]->rotateZ(Deg(1.0f));
+    spheres[2]->rotateZ(Deg(-0.5f));
     Utility::sleep(40);
     redraw();
 }

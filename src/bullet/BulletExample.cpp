@@ -88,7 +88,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         ->translate({0.f, 0.f, 20.f});
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f)
+        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100.0f)
         .setViewport(defaultFramebuffer.viewport().size());
 
     /* Debug draw setup */
@@ -178,13 +178,13 @@ void BulletExample::drawEvent() {
 
 void BulletExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Down)
-        cameraObject->rotateX(5.0_degf);
+        cameraObject->rotateX(Deg(5.0f));
     else if(event.key() == KeyEvent::Key::Up)
-        cameraObject->rotateX(-5.0_degf);
+        cameraObject->rotateX(Deg(-5.0f));
     else if(event.key() == KeyEvent::Key::Left)
-        cameraRig->rotateY(-5.0_degf);
+        cameraRig->rotateY(Deg(-5.0f));
     else if(event.key() == KeyEvent::Key::Right)
-        cameraRig->rotateY(5.0_degf);
+        cameraRig->rotateY(Deg(5.0f));
     else return;
 
     event.setAccepted();
