@@ -7,6 +7,7 @@
 #  MAGNUM_LIBRARIES             - Magnum library and dependent libraries
 #  MAGNUM_INCLUDE_DIRS          - Root include dir and include dirs of
 #   dependencies
+#  MAGNUM_PLUGINS_INCLUDE_DIR   - Include dir with plugins
 #  MAGNUM_PLUGINS_DIR           - Base directory with plugins. You can modify
 #   it (e.g. set it to `.` when deploying on Windows with plugins stored
 #   relatively to the executable), the following MAGNUM_PLUGINS_*_DIR
@@ -20,7 +21,7 @@
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
 # components. The optional components are:
-#  Audio            - Audio library (depends on OpenAL library)
+#  Audio            - Audio library
 #  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
 #                     SceneGraph, Shaders and Shapes components)
 #  MeshTools        - MeshTools library
@@ -30,14 +31,20 @@
 #  Shapes           - Shapes library (depends on SceneGraph component)
 #  Text             - Text library (depends on TextureTools component)
 #  TextureTools     - TextureTools library
-#  GlutApplication  - GLUT application (depends on GLUT library)
-#  GlxApplication   - GLX application (depends on GLX and X11 libraries)
-#  NaClApplication  - NaCl application (only if targeting Google Chrome
-#                     Native Client)
-#  Sdl2Application  - SDL2 application (depends on SDL2 library)
-#  XEglApplication  - X/EGL application (depends on EGL and X11 libraries)
-#  WindowlessGlxApplication - Windowless GLX application (depends on GLX
-#                     and X11 libraries)
+#  MagnumFont       - Magnum bitmap font plugin (depends on Text component
+#                     and TgaImporter plugin)
+#  MagnumFontConverter - Magnum bitmap font converter plugin (depends on Text
+#                     component and TgaImageConverter plugin)
+#  TgaImageConverter - TGA image converter plugin
+#  TgaImporter      - TGA importer plugin
+#  WavAudioImporter - WAV audio importer plugin (depends on Audio component)
+#  GlutApplication  - GLUT application
+#  GlxApplication   - GLX application
+#  NaClApplication  - NaCl application
+#  Sdl2Application  - SDL2 application
+#  XEglApplication  - X/EGL application
+#  WindowlessGlxApplication - Windowless GLX application
+#  WindowlessNaClApplication - Windowless NaCl application
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -52,11 +59,13 @@
 # / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
 #
 # Features of found Magnum library are exposed in these variables:
-#  MAGNUM_BUILD_STATIC  - Defined if compiled as static libraries
-#  MAGNUM_TARGET_GLES   - Defined if compiled for OpenGL ES
-#  MAGNUM_TARGET_GLES2  - Defined if compiled for OpenGL ES 2.0
-#  MAGNUM_TARGET_GLES3  - Defined if compiled for OpenGL ES 3.0
-#  MAGNUM_TARGET_DESKTOP_GLES - Defined if compiled with OpenGL ES
+#  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
+#   included
+#  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
+#  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
+#  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
+#  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
+#  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #
 # Additionally these variables are defined for internal usage:
@@ -76,7 +85,7 @@
 #   installation directory
 #  MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR  - Importer plugin installation
 #   directory
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR  - Audio omporter plugin
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_INSTALL_DIR - Audio omporter plugin
 #   installation directory
 #  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake
 #   Find* modules
@@ -123,6 +132,10 @@ find_path(MAGNUM_INCLUDE_DIR
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/magnumConfigure.h _magnumConfigure)
 
+string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
+if(NOT _BUILD_DEPRECATED EQUAL -1)
+    set(MAGNUM_BUILD_DEPRECATED 1)
+endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
 if(NOT _BUILD_STATIC EQUAL -1)
     set(MAGNUM_BUILD_STATIC 1)
@@ -162,15 +175,66 @@ endif()
 foreach(component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${component} _COMPONENT)
 
-    # Find the library
-    find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
+    # AudioImporter plugin specific name suffixes
+    if(${component} MATCHES ".+AudioImporter$")
+        set(_MAGNUM_${_COMPONENT}_IS_PLUGIN 1)
+        set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX audioimporters)
 
-    set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
+        # Audio importer class is Audio::*Importer, thus we need to convert
+        # *AudioImporter.h to *Importer.h
+        string(REPLACE "AudioImporter" "Importer" _MAGNUM_${_COMPONENT}_HEADER_NAME "${component}")
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_MAGNUM_${_COMPONENT}_HEADER_NAME}.h)
+
+    # Importer plugin specific name suffixes
+    elseif(${component} MATCHES ".+Importer$")
+        set(_MAGNUM_${_COMPONENT}_IS_PLUGIN 1)
+        set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX importers)
+
+    # Font plugin specific name suffixes
+    elseif(${component} MATCHES ".+Font$")
+        set(_MAGNUM_${_COMPONENT}_IS_PLUGIN 1)
+        set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX fonts)
+
+    # ImageConverter plugin specific name suffixes
+    elseif(${component} MATCHES ".+ImageConverter$")
+        set(_MAGNUM_${_COMPONENT}_IS_PLUGIN 1)
+        set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX imageconverters)
+
+    # FontConverter plugin specific name suffixes
+    elseif(${component} MATCHES ".+FontConverter$")
+        set(_MAGNUM_${_COMPONENT}_IS_PLUGIN 1)
+        set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX fontconverters)
+    endif()
+
+    # Set plugin defaults, find the plugin
+    if(_MAGNUM_${_COMPONENT}_IS_PLUGIN)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Plugins/${component})
+
+        # Don't override the one for *AudioImporter plugins
+        if(NOT _MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
+        endif()
+
+        # Dynamic plugins don't have any prefix (e.g. `lib` on Linux), search
+        # with empty prefix and then reset that back so we don't accidentaly
+        # break something else
+        set(_tmp_prefixes ${CMAKE_FIND_LIBRARY_PREFIXES})
+        set(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "")
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY ${component}
+            PATH_SUFFIXES magnum/${_MAGNUM_${_COMPONENT}_PATH_SUFFIX})
+        set(CMAKE_FIND_LIBRARY_PREFIXES ${_tmp_prefixes})
+
+    # Set library defaults, find the library
+    else()
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX ${component})
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
+
+        find_library(MAGNUM_${_COMPONENT}_LIBRARY Magnum${component})
+    endif()
 
     # Applications
     if(${component} MATCHES .+Application)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Platform)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${component}.h)
 
         # GLUT application dependencies
         if(${component} STREQUAL GlutApplication)
@@ -218,12 +282,9 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
         endif()
-    endif()
 
     # Audio library
-    if(${component} STREQUAL Audio)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Audio.h)
-
+    elseif(${component} STREQUAL Audio)
         find_package(OpenAL)
         if(OPENAL_FOUND)
             set(_MAGNUM_${_COMPONENT}_LIBRARIES ${OPENAL_LIBRARY})
@@ -231,45 +292,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         else()
             unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
-    endif()
-
-    # DebugTools library
-    if(${component} STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES DebugTools.h)
-    endif()
 
     # Mesh tools library
-    if(${component} STREQUAL MeshTools)
+    elseif(${component} STREQUAL MeshTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
-    endif()
 
     # Primitives library
-    if(${component} STREQUAL Primitives)
+    elseif(${component} STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
-    endif()
-
-    # Scene graph library
-    if(${component} STREQUAL SceneGraph)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES SceneGraph.h)
-    endif()
-
-    # Shaders library
-    if(${component} STREQUAL Shaders)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shaders.h)
-    endif()
-
-    # Shapes library
-    if(${component} STREQUAL Shapes)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Shapes.h)
-    endif()
-
-    # Text library
-    if(${component} STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Text.h)
-    endif()
 
     # TextureTools library
-    if(${component} STREQUAL TextureTools)
+    elseif(${component} STREQUAL TextureTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
 
@@ -362,6 +395,7 @@ set(MAGNUM_PLUGINS_DIR ${MAGNUM_PLUGINS_INSTALL_DIR}
     CACHE PATH "Base directory where to look for Magnum plugins")
 
 # Plugin directories
+set(MAGNUM_PLUGINS_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/Plugins)
 set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
 set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)

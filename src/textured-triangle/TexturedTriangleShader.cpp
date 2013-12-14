@@ -30,6 +30,8 @@
 namespace Magnum { namespace Examples {
 
 TexturedTriangleShader::TexturedTriangleShader() {
+    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+
     Utility::Resource rs("data");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);

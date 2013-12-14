@@ -22,7 +22,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <array>
 #include <Containers/Array.h>
 #include <PluginManager/Manager.h>
 #include <Buffer.h>
@@ -30,7 +29,6 @@
 #include <Mesh.h>
 #include <Texture.h>
 #include <TextureFormat.h>
-#include <MeshTools/Interleave.h>
 #include <Platform/GlutApplication.h>
 #include <Trade/AbstractImporter.h>
 #include <Trade/ImageData.h>
@@ -40,50 +38,43 @@
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public Platform::GlutApplication {
+class TexturedTriangleExample: public Platform::Application {
     public:
         TexturedTriangleExample(const Arguments& arguments);
 
-    protected:
-        void viewportEvent(const Vector2i& size) override;
+    private:
         void drawEvent() override;
 
-    private:
         Buffer buffer;
-        Magnum::Mesh mesh;
+        Mesh mesh;
         TexturedTriangleShader shader;
-        Magnum::Texture2D texture;
+        Texture2D texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Textured triangle example")) {
-    constexpr static std::array<Vector2, 3> positions{{
-        {-0.5f, -0.5f},
-        {0.5f, -0.5f},
-        {0.0f, 0.5f}
-    }};
-    constexpr static std::array<Vector2, 3> textureCoordinates{{
-        {0.0f, 0.0f},
-        {1.0f, 0.0f},
-        {0.5f, 1.0f}
-    }};
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Textured triangle example")) {
+    constexpr static Vector2 data[] = {
+        {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
+        { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
+        { 0.0f,  0.5f}, {0.5f, 1.0f}  /* Top vertex position and texture coordinate */
+    };
 
-    MeshTools::interleave(mesh, buffer, Buffer::Usage::StaticDraw,
-        positions, textureCoordinates);
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    buffer.setData(data, BufferUsage::StaticDraw);
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3)
         .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    std::unique_ptr<Trade::AbstractImporter> importer;
-    if(manager.load("JpegImporter") != PluginManager::LoadState::Loaded || !(importer = manager.instance("JpegImporter"))) {
-        Error() << "Cannot load PngImporter plugin from" << manager.pluginDirectory();
+    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded)) {
+        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
+    CORRADE_INTERNAL_ASSERT(importer);
 
     /* Load the texture */
     Utility::Resource rs("data");
-    if(!importer->openData(rs.getRaw("stone.jpg")) || !importer->image2DCount()) {
+    if(!importer->openData(rs.getRaw("stone.tga"))) {
         Error() << "Cannot load texture";
         std::exit(2);
     }
@@ -97,11 +88,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Gl
         .setImage(0, TextureFormat::RGB8, *image);
 }
 
-void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
-}
-
 void TexturedTriangleExample::drawEvent() {
+    defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.setBaseColor({1.0f, 0.7f, 0.7f})

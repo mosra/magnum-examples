@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_TexturedTriangleShader_h
-#define Magnum_Examples_TexturedTriangleShader_h
 /*
     This file is part of Magnum.
 
@@ -24,31 +22,4 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <AbstractShaderProgram.h>
-#include <Color.h>
-
-namespace Magnum { namespace Examples {
-
-class TexturedTriangleShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector2> Position;
-        typedef Attribute<1, Vector2> TextureCoordinates;
-
-        enum: Int {
-            TextureLayer = 0
-        };
-
-        explicit TexturedTriangleShader();
-
-        TexturedTriangleShader& setBaseColor(const Color3& color) {
-            setUniform(baseColorUniform, color);
-            return *this;
-        }
-
-    private:
-        Int baseColorUniform;
-};
-
-}}
-
-#endif
+#define MAGNUM_PLUGINS_FONT_DIR "${MAGNUM_PLUGINS_FONT_DIR}"

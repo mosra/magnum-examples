@@ -53,8 +53,8 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         Trade::MeshData3D cubeData = Primitives::Cube::solid();
         MeshTools::flipFaceWinding(cubeData.indices());
-        MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, cubeData.indices());
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw, cubeData.positions(0));
+        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, cubeData.indices());
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw, cubeData.positions(0));
         mesh->setPrimitive(cubeData.primitive())
             .addVertexBuffer(*buffer, 0, CubeMapShader::Position());
 

@@ -46,11 +46,9 @@ class TriangleExample: public Platform::Application {
     public:
         explicit TriangleExample(const Arguments& arguments);
 
-    protected:
-        void viewportEvent(const Vector2i& size) override;
+    private:
         void drawEvent() override;
 
-    private:
         Buffer buffer;
         Mesh mesh;
         Shaders::VertexColor3D shader;
@@ -69,16 +67,12 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
         { 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
     };
 
-    buffer.setData(data, Buffer::Usage::StaticDraw);
-    mesh.setPrimitive(Mesh::Primitive::Triangles)
+    buffer.setData(data, BufferUsage::StaticDraw);
+    mesh.setPrimitive(MeshPrimitive::Triangles)
         .setVertexCount(3)
         .addVertexBuffer(buffer, 0,
             Shaders::VertexColor3D::Position(),
             Shaders::VertexColor3D::Color());
-}
-
-void TriangleExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TriangleExample::drawEvent() {

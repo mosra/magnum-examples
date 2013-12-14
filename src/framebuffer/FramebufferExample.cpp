@@ -35,17 +35,16 @@
 
 namespace Magnum { namespace Examples {
 
-class FramebufferExample: public Platform::GlutApplication {
+class FramebufferExample: public Platform::Application {
     public:
         FramebufferExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-    private:
         Vector2i previous;
         Scene2D scene;
         SceneGraph::DrawableGroup2D drawables;
@@ -54,7 +53,7 @@ class FramebufferExample: public Platform::GlutApplication {
         Buffer colorCorrectionBuffer;
 };
 
-FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplication(arguments, Configuration().setTitle("Framebuffer example")) {
+FramebufferExample::FramebufferExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Framebuffer example")) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "image.tga";
         std::exit(0);
@@ -82,7 +81,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): GlutApplicat
         Float x = i*2/1023.0-1;
         texture[i] = (std::sin(x*Constants::pi())/3.7f+x+1)/2;
     }
-    colorCorrectionBuffer.setData(sizeof(texture), texture, Buffer::Usage::StaticDraw);
+    colorCorrectionBuffer.setData(texture, BufferUsage::StaticDraw);
 
     /* Add billboard to the scene */
     auto image = importer->image2D(0);

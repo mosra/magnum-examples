@@ -13,6 +13,8 @@
 #  MAGNUM_*INTEGRATION_FOUND    - Whether the component was found
 #  MAGNUM_*INTEGRATION_LIBRARIES - Component library and dependent libraries
 #
+# Additionally these variables are defined for internal usage:
+#  MAGNUM_*INTEGRATION_LIBRARY  - Component library (w/o dependencies)
 
 #
 #   This file is part of Magnum.

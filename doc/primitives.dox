@@ -24,7 +24,7 @@
 
 namespace Magnum {
 /** @page examples-primitives Primitives
-@brief Creating meshes from imported data, basic input handling.
+@brief Importing mesh data, 3D transformations and input handling.
 
 -   Previous example: @ref examples-triangle
 -   Next example: @ref examples-textured-triangle
@@ -40,14 +40,15 @@ basic user interaction, introducing these new features:
 -   Basic 3D transformations and perspective projection.
 -   Mouse event handling.
 
-This example displays colored cube and the user will be able to rotate it using
-mouse and change its color.
+This example displays colored cube and the user will be able to change its
+color and rotate it using mouse.
 
 @section examples-primitives-setup Setting up and preparing the mesh
 
 In our class we now need two buffers instead of one and additionaly for user
 interactivity we need to implement mouse event handlers and store
-transformation, projection matrices and current color.
+transformation and projection @ref Math::Matrix4 "matrices" and current
+@ref Color3 "color".
 @dontinclude primitives/PrimitivesExample.cpp
 @skip class PrimitivesExample
 @until };
@@ -59,36 +60,38 @@ rendered.
 @skip PrimitivesExample::PrimitivesExample
 @until Renderer::setFeature(Renderer::Feature::FaceCulling
 
-We now use pre-made cube primitive and create mesh data from it. In most meshes
-the same data are shared among more than one vertex, for example a square
-consists of two triangles sharing the adjacent vertices. To save precious GPU
+We now use pre-made @ref Primitives::Cube "cube primitive" and create mesh from
+it. Why do we need indexed mesh and what it actually is? In most meshes the
+same vertex data are shared among more than one vertex, even a simple square
+consists of two triangles sharing two adjacent vertices. To save precious GPU
 memory, the mesh can be indexed, i.e. containing buffer with unique vertex data
-and index buffer telling which data belong to given vertex. Most meshes also
-don't need full 32-bit range to index vertex data -- our mesh has only 36
-unique vertices, thus 8-bit range is large enough. @ref MeshTools::compressIndices()
-does all the boring work for us -- checks vertex count and based on that
-creates index array consisting of @ref UnsignedByte, @ref UnsignedShort or
-@ref UnsignedInt. It then fills the buffer with the data, adds it to the mesh
-and configures index parameters, so we don't need to do anything else.
+and index buffer telling which data belong to which vertex. The indices are by
+default just 32-bit integers. But most meshes don't need full 32-bit range to
+index vertex data -- our mesh has only 36 unique vertices, thus even the
+smallest possible 8-bit range is large enough and the additional 24 bits per
+vertex would waste memory.
+
+@ref MeshTools::compressIndices() does all the boring work for us -- checks
+vertex count and creates index array consisting of @ref UnsignedByte,
+@ref UnsignedShort or @ref UnsignedInt based on that. It then fills the buffer
+with the data, adds it to the mesh and configures index parameters, so we don't
+need to do anything else.
 @skip Trade::MeshData3D
 @until MeshTools::compressIndices
 
-To realistically render the cube, we need also normals next to vertex
-positions. We will interleave them using @ref MeshTools::interleave(). The
-function takes list of arrays to interleave and then fills the buffer with
-them. However, it doesn't know anything about the purpose of the data, so it
-only sets vertex count and we then need to set mesh primitive and specify
-attribute bindings for the shader.
+To realistically render the cube, we need also normals. We will interleave them
+with vertex positions using @ref MeshTools::interleave(). The function takes
+list of arrays to interleave and then fills the buffer with them. However, it
+doesn't know anything about the purpose of the data, so it only sets vertex
+count and we then need to set mesh primitive and specify attribute bindings for
+the shader manually.
 @skip MeshTools::interleave
 @until Shaders::Phong
 
-We now specify initial transformation, color and projection. The projection
-depends on viewport aspect ratio, thus we need to set it again when viewport
-changes, i.e. in `viewportEvent()` function. See also @ref matrix-vector and
-@ref transformations for more thorough introduction to transformations.
+We now specify initial transformation, color and projection. See
+@ref matrix-vector and @ref transformations for more thorough introduction to
+transformations.
 @skip transformation =
-@until }
-@until }
 @until }
 
 @section examples-primitives-rendering Rendering
@@ -113,15 +116,16 @@ relative mouse position to previous event.
 @section examples-primitives-compilation Compilation
 
 Compilation is pretty straigtforward. We now need some additional libraries,
-like MeshTools and Primitives, otherwise everything is the same as ever:
+like `%MeshTools` and `%Primitives`, everything else is the same as previously:
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
-@until ${MAGNUM_GLUTAPPLICATION_LIBRARIES})
+@until ${MAGNUM_APPLICATION_LIBRARIES})
 
 -   @ref primitives/PrimitivesExample.cpp
 -   @ref primitives/CMakeLists.txt
 
-As an task you can try using another primitive from Primitives namespace.
+You can now try using another primitive from @ref Primitives namespace or
+render the mesh with different shader from @ref Shaders namespace.
 
 -   Next example: @ref examples-textured-triangle
 

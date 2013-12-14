@@ -54,18 +54,17 @@ typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::Abstract
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class ViewerExample: public Platform::GlutApplication {
+class ViewerExample: public Platform::Application {
     public:
         explicit ViewerExample(const Arguments& arguments);
 
-    protected:
+    private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-    private:
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
         void addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId);
@@ -116,9 +115,9 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
         ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
+    private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-    private:
         Resource<Mesh> mesh;
         Resource<Shaders::Phong> shader;
         Vector3 ambientColor,
@@ -131,9 +130,9 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     public:
         TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
+    private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-    private:
         Resource<Mesh> mesh;
         Resource<Texture2D> diffuseTexture;
         Resource<Shaders::Phong> shader;
@@ -201,7 +200,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
         ->translate(Vector3::zAxis(5.0f));
     (camera = new SceneGraph::Camera3D(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(35.0_degf, 1.0f, 0.001f, 100)
+        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
@@ -360,7 +359,7 @@ void MeshLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
 
     std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
-    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != Mesh::Primitive::Triangles) {
+    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != MeshPrimitive::Triangles) {
         setNotFound(key);
         return;
     }
@@ -370,18 +369,18 @@ void MeshLoader::doLoad(const ResourceKey key) {
     auto buffer = new Buffer;
     auto indexBuffer = new Buffer;
     mesh->setPrimitive(data->primitive());
-    MeshTools::compressIndices(*mesh, *indexBuffer, Buffer::Usage::StaticDraw, data->indices());
+    MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data->indices());
 
     /* Textured mesh */
     if(data->textureCoords2DArrayCount()) {
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
             data->positions(0), data->normals(0), data->textureCoords2D(0));
         mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
 
     /* Non-textured mesh */
     } else {
-        MeshTools::interleave(*mesh, *buffer, Buffer::Usage::StaticDraw,
+        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
             data->positions(0), data->normals(0));
         mesh->addVertexBuffer(*buffer, 0,
             Shaders::Phong::Position(), Shaders::Phong::Normal());
@@ -483,4 +482,4 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
 
 }}
 
-MAGNUM_GLUTAPPLICATION_MAIN(Magnum::Examples::ViewerExample)
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::ViewerExample)

@@ -53,7 +53,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
     UnsignedByte* texture = new UnsignedByte[textureSize]();
-    framebuffer.setData(size, ColorFormat::RGB, ColorType::UnsignedByte, nullptr, Buffer::Usage::DynamicDraw);
+    framebuffer.setData(size, ColorFormat::RGB, ColorType::UnsignedByte, nullptr, BufferUsage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
@@ -64,7 +64,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 void MotionBlurCamera::draw(SceneGraph::DrawableGroup3D& group) {
     SceneGraph::Camera3D::draw(group);
 
-    defaultFramebuffer.read({0, 0}, viewport(), framebuffer, Buffer::Usage::DynamicDraw);
+    defaultFramebuffer.read({0, 0}, viewport(), framebuffer, BufferUsage::DynamicDraw);
 
     frames[currentFrame]->setImage(0, TextureFormat::RGB8, framebuffer);
 
@@ -103,8 +103,8 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(Texture2D** frames, Object3
         {0.0f, 1.0f}
     };
 
-    buffer.setData(vertices, Buffer::Usage::StaticDraw);
-    mesh.setPrimitive(Mesh::Primitive::TriangleStrip)
+    buffer.setData(vertices, BufferUsage::StaticDraw);
+    mesh.setPrimitive(MeshPrimitive::TriangleStrip)
         .setVertexCount(4)
         .addVertexBuffer(buffer, 0, MotionBlurShader::Position());
 }
