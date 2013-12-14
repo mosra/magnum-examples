@@ -32,10 +32,10 @@ for more comprehensive guide for building and crosscompiling.
 Minimal dependencies
 --------------------
 
-*   C++ compiler with good C++11 support. Currently there are two compilers
-    which are tested to support everything needed: **GCC** >= 4.6 and **Clang**
-    >= 3.1. On Windows you can use **MinGW**, Visual Studio compiler still
-    lacks some needed features.
+-   C++ compiler with good C++11 support. Currently there are two compilers
+    which are tested to have everything needed: **GCC** >= 4.6 and **Clang**
+    >= 3.1. On Windows you can use **MinGW**. Most of the examples should also
+    work on GCC 4.5, 4.4 and **MSVC** 2013.
 *   **CMake** >= 2.8.8
 *   **Magnum** - The engine itself
 
