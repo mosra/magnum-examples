@@ -19,6 +19,7 @@ http://mosra.cz/blog/magnum-doc/example-index.html.
     and framebuffer operations for displaying different color-corrected
     versions of the same image.
 *   **Motion Blur** -- Moving spheres with motion blur.
+*   **Text** -- Distance-field text rendering.
 
 Each example has its own README, explaining the features and key/mouse
 controls, see `src/` subdirectories.
@@ -69,6 +70,7 @@ repositories. You have to enable the other examples with these CMake options
 *   `WITH_MOTIONBLUR` -- Build *Motion Blur* example. Not available on OpenGL
     ES.
 *   `WITH_PRIMITIVES` -- Build *Primitives* example.
+*   `WITH_TEXT` -- Build *Text* example. Requires `FreeTypeFont` plugin.
 *   `WITH_TEXTUREDTRIANGLE` -- Build *Textured Triangle* example. Requires
     `JpegImporter` plugin, not available in OpenGL ES.
 *   `WITH_TRIANGLE` -- Build *Triangle* example.

@@ -44,6 +44,10 @@ if(WITH_PRIMITIVES)
     add_subdirectory(primitives)
 endif()
 
+if(WITH_TEXT)
+    add_subdirectory(text)
+endif()
+
 if(WITH_TEXTUREDTRIANGLE)
     add_subdirectory(textured-triangle)
 endif()

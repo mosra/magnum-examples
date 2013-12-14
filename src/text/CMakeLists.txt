@@ -22,21 +22,25 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.6)
-project(MagnumExamples)
+cmake_minimum_required(VERSION 2.8)
+project(MagnumTextExample)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED
+    Shaders
+    Text
+    GlutApplication)
 
-include(CMakeDependentOption)
-option(WITH_BULLET "Build Bullet integration example (requires BulletIntegration library)" OFF)
-cmake_dependent_option(WITH_CUBEMAP "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_FRAMEBUFFER "Build Framebuffer example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_MOTIONBLUR "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_PRIMITIVES "Build Primitives example" OFF)
-option(WITH_TEXT "Build Text example (requires FreeTypeFont plugin)" OFF)
-cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_TRIANGLE "Build Triangle example" ON)
-option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
-add_subdirectory(src)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+corrade_add_resource(TextExample_RESOURCES resources.conf)
+
+add_executable(text TextExample.cpp ${TextExample_RESOURCES})
+target_link_libraries(text
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_TEXT_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
