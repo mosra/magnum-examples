@@ -36,16 +36,22 @@ if(WITH_FRAMEBUFFER)
     add_subdirectory(framebuffer)
 endif()
 
+if(WITH_MOTIONBLUR)
+    add_subdirectory(motionblur)
+endif()
+
+if(WITH_PRIMITIVES)
+    add_subdirectory(primitives)
+endif()
+
 if(WITH_TEXTUREDTRIANGLE)
     add_subdirectory(textured-triangle)
+endif()
+
+if(WITH_TRIANGLE)
+    add_subdirectory(triangle)
 endif()
 
 if(WITH_VIEWER)
     add_subdirectory(viewer)
 endif()
-
-if(NOT MAGNUM_TARGET_GLES)
-    add_subdirectory(motionblur)
-endif()
-add_subdirectory(primitives)
-add_subdirectory(triangle)
