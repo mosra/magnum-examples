@@ -88,7 +88,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
             vertices, indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
     text2.reset(new Text::Renderer2D(*font, cache, 0.035f, Text::Alignment::TopRight));
-    text2->reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+    text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
     Renderer::setFeature(Renderer::Feature::Blending, true);
     Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
