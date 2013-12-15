@@ -25,17 +25,36 @@
 #include <iomanip>
 #include <sstream>
 #include <PluginManager/Manager.h>
+#ifdef CORRADE_TARGET_NACL
+#include <Platform/NaClApplication.h>
+#elif defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Platform/Sdl2Application.h>
+#else
 #include <Platform/GlutApplication.h>
+#endif
 #include <Math/Complex.h>
 #include <DefaultFramebuffer.h>
 #include <Mesh.h>
 #include <Renderer.h>
 #include <Shaders/DistanceFieldVector.h>
 #include <Text/AbstractFont.h>
-#include <Text/DistanceFieldGlyphCache.h>
+#include <Text/GlyphCache.h>
 #include <Text/Renderer.h>
+#include <Trade/AbstractImporter.h>
 
 #include "configure.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+/* Import shader resources in static build */
+#include <Shaders/magnumShadersResourceImport.hpp>
+
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(MagnumFont)
+    CORRADE_PLUGIN_IMPORT(TgaImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
 
 namespace Magnum { namespace Examples {
 
@@ -50,10 +69,11 @@ class TextExample: public Platform::Application {
 
         void updateText();
 
+        PluginManager::Manager<Trade::AbstractImporter> importerManager;
         PluginManager::Manager<Text::AbstractFont> manager;
         std::unique_ptr<Text::AbstractFont> font;
+        std::unique_ptr<Text::GlyphCache> cache;
 
-        Text::DistanceFieldGlyphCache cache;
         Mesh text;
         Buffer vertices, indices;
         std::unique_ptr<Text::Renderer2D> text2;
@@ -63,23 +83,32 @@ class TextExample: public Platform::Application {
         Matrix3 projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Text rendering example")), manager(MAGNUM_PLUGINS_FONT_DIR), cache(Vector2i(2048), Vector2i(512), 22) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
+    #ifndef CORRADE_TARGET_NACL
+    .setTitle("Text example")
+    #endif
+), importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), manager(MAGNUM_PLUGINS_FONT_DIR), vertices(Buffer::Target::Array), indices(Buffer::Target::ElementArray) {
     /* Load FreeTypeFont plugin */
-    if(!(manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot open any FreeTypeFont plugin";
+    if(!(manager.load("MagnumFont") & PluginManager::LoadState::Loaded)) {
+        Error() << "Cannot open MagnumFont plugin";
         std::exit(1);
     }
-    font = manager.instance("FreeTypeFont");
+    font = manager.instance("MagnumFont");
     CORRADE_INTERNAL_ASSERT(font);
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!font->openSingleData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
+    if(!font->openData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{
+        {"DejaVuSans.conf", rs.getRaw("DejaVuSans.conf")},
+        {"DejaVuSans.tga", rs.getRaw("DejaVuSans.tga")}}, 0.0f))
+    {
         Error() << "Cannot open font file";
         std::exit(1);
     }
-    font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!°ěäЗдравстуймиγειασουτνκόμ ");
-    std::tie(text, std::ignore) = Text::Renderer2D::render(*font, cache, 0.1295f,
+    cache = font->createGlyphCache();
+    CORRADE_INTERNAL_ASSERT(cache);
+
+    std::tie(text, std::ignore) = Text::Renderer2D::render(*font, *cache, 0.1295f,
             "Hello, world!\n"
             "Ahoj, světe!\n"
             "Здравствуй, мир!\n"
@@ -87,8 +116,8 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
             "Hej Världen!",
             vertices, indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
-    text2.reset(new Text::Renderer2D(*font, cache, 0.035f, Text::Alignment::TopRight));
-    text2->reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+    text2.reset(new Text::Renderer2D(*font, *cache, 0.035f, Text::Alignment::TopRight));
+    text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
     Renderer::setFeature(Renderer::Feature::Blending, true);
     Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
@@ -108,7 +137,7 @@ void TextExample::viewportEvent(const Vector2i& size) {
 void TextExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    cache.texture().bind(Shaders::DistanceFieldVector2D::VectorTextureLayer);
+    cache->texture().bind(Shaders::DistanceFieldVector2D::VectorTextureLayer);
 
     shader.setTransformationProjectionMatrix(projection*transformation)
         .setColor(Color3::fromHSV(Deg(15.0f), 0.9f, 0.4f))
@@ -146,7 +175,11 @@ void TextExample::updateText() {
     std::ostringstream out;
     out << std::setprecision(2)
         << "Rotation: "
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         << Float(Deg(Complex::fromMatrix(transformation.rotation()).angle()))
+        #else
+        << Deg(Complex::fromMatrix(transformation.rotation()).angle()).toUnderlyingType()
+        #endif
         << "°\nScale: "
         << transformation.uniformScaling();
     text2->render(out.str());

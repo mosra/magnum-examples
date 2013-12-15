@@ -15,3 +15,7 @@ Font license
 ------------
 
 This example uses `DejaVuSans.ttf` font from [DejaVu Project](dejavu-fonts.org).
+
+The font is generated using the following command:
+
+    magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter --characters 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ' --font-size 110 --output-size "512 512" --radius 22 DejaVuSans.ttf DejaVuSans
