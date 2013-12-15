@@ -53,7 +53,7 @@ class FramebufferExample: public Platform::Application {
         Buffer colorCorrectionBuffer;
 };
 
-FramebufferExample::FramebufferExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Framebuffer example")) {
+FramebufferExample::FramebufferExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Framebuffer Example")) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "image.tga";
         std::exit(0);

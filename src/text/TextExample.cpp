@@ -63,7 +63,7 @@ class TextExample: public Platform::Application {
         Matrix3 projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Text rendering example")), manager(MAGNUM_PLUGINS_FONT_DIR), cache(Vector2i(2048), Vector2i(512), 22) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), manager(MAGNUM_PLUGINS_FONT_DIR), cache(Vector2i(2048), Vector2i(512), 22) {
     /* Load FreeTypeFont plugin */
     if(!(manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded)) {
         Error() << "Cannot open any FreeTypeFont plugin";

@@ -52,7 +52,7 @@ class PrimitivesExample: public Platform::Application {
         Color3 color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Primitives example")) {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Primitives Example")) {
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 

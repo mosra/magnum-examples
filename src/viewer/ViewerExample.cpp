@@ -141,7 +141,7 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         Float shininess;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Magnum Viewer")) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Magnum Viewer Example")) {
     if(arguments.argc != 2) {
         Debug() << "Usage:" << arguments.argv[0] << "file.dae";
         std::exit(0);

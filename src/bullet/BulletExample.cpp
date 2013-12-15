@@ -76,7 +76,7 @@ class BulletExample: public Platform::Application {
 BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, nullptr) {
     /* Try 16x MSAA */
     Configuration conf;
-    conf.setTitle("Bullet Integration Example")
+    conf.setTitle("Magnum Bullet Integration Example")
         .setSampleCount(16);
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
