@@ -35,7 +35,7 @@ cmake_dependent_option(WITH_FRAMEBUFFER "Build Framebuffer example (requires Tga
 cmake_dependent_option(WITH_MOTIONBLUR "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 option(WITH_PRIMITIVES "Build Primitives example" OFF)
 option(WITH_TEXT "Build Text example (requires FreeTypeFont plugin)" OFF)
-cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF)
 option(WITH_TRIANGLE "Build Triangle example" ON)
 option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
 

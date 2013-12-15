@@ -25,7 +25,19 @@
 cmake_minimum_required(VERSION 2.8)
 project(MagnumTexturedTriangleExample)
 
-find_package(Magnum REQUIRED GlutApplication)
+find_package(Magnum REQUIRED Shaders)
+
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED TgaImporter)
+endif()
+
+if(CORRADE_TARGET_NACL)
+    find_package(Magnum REQUIRED NaClApplication)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED Sdl2Application)
+else()
+    find_package(Magnum REQUIRED GlutApplication)
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
@@ -37,8 +49,27 @@ corrade_add_resource(TexturedTriangleData resources.conf)
 
 add_executable(textured-triangle
     TexturedTriangleExample.cpp
-    TexturedTriangleShader.cpp
     ${TexturedTriangleData})
 target_link_libraries(textured-triangle
     ${MAGNUM_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+    target_link_libraries(textured-triangle ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_LIBRARIES})
+endif()
+
+# Installation for NaCl
+if(CORRADE_TARGET_NACL)
+    if(NOT CORRADE_TARGET_NACL_NEWLIB)
+        message(FATAL_ERROR "Only newlib NaCl target is supported")
+    endif()
+    install(FILES textured-triangle-nacl.html textured-triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
+
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES textured-triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
