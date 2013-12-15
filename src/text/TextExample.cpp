@@ -78,7 +78,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
         Error() << "Cannot open font file";
         std::exit(1);
     }
-    font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-,.!°ěäЗдравстуймиγειασουτνκόμ ");
+    font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ");
     std::tie(text, std::ignore) = Text::Renderer2D::render(*font, cache, 0.1295f,
             "Hello, world!\n"
             "Ahoj, světe!\n"
