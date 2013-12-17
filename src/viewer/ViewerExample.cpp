@@ -23,6 +23,7 @@
 */
 
 #include <PluginManager/Manager.h>
+#include <Utility/Arguments.h>
 #include <ColorFormat.h>
 #include <DefaultFramebuffer.h>
 #include <TextureFormat.h>
@@ -142,10 +143,9 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
 };
 
 ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Magnum Viewer Example")) {
-    if(arguments.argc != 2) {
-        Debug() << "Usage:" << arguments.argv[0] << "file.dae";
-        std::exit(0);
-    }
+    Utility::Arguments args;
+    args.addArgument("file").setHelpKey("file", "file.dae").setHelp("file", "file to load")
+        .parse(arguments.argc, arguments.argv);
 
     /* Instance ColladaImporter plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -159,10 +159,10 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
         std::exit(2);
     }
 
-    Debug() << "Opening file" << arguments.argv[1];
+    Debug() << "Opening file" << args.value("file");
 
     /* Load file */
-    if(!importer->openFile(arguments.argv[1]))
+    if(!importer->openFile(args.value("file")))
         std::exit(4);
     if(!importer->sceneCount() || importer->defaultScene() == -1)
         std::exit(5);
