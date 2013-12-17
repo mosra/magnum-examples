@@ -46,7 +46,7 @@ TexturedTriangleShader::TexturedTriangleShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    baseColorUniform = uniformLocation("baseColor");
+    colorUniform = uniformLocation("color");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
 }

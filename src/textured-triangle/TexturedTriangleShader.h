@@ -40,13 +40,13 @@ class TexturedTriangleShader: public AbstractShaderProgram {
 
         explicit TexturedTriangleShader();
 
-        TexturedTriangleShader& setBaseColor(const Color3& color) {
-            setUniform(baseColorUniform, color);
+        TexturedTriangleShader& setColor(const Color3& color) {
+            setUniform(colorUniform, color);
             return *this;
         }
 
     private:
-        Int baseColorUniform;
+        Int colorUniform;
 };
 
 }}

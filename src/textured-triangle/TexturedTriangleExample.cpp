@@ -92,7 +92,7 @@ void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    shader.setBaseColor({1.0f, 0.7f, 0.7f})
+    shader.setColor({1.0f, 0.7f, 0.7f})
         .use();
     texture.bind(TexturedTriangleShader::TextureLayer);
     mesh.draw();

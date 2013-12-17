@@ -95,15 +95,15 @@ perform the drawing. Last thing is again buffer swap.
 
 @section examples-textured-triangle-shader Textured triangle shader
 
-Our shader is pretty simple. It's very similar to textured @ref Shaders::Flat2D
-shader, but this one additionaly multiplies the texture with specifies color.
-The shader takes 2D vertex position and 2D texture coordinates. Next to these
-two attributes it also needs uniform for base color and texture layer.
-We define both attributes with proper type (i.e., the same type we used for
-the mesh data earlier) and assign vertex position to location zero and texture
-coordinates to location one. For the color uniform we provide public setter
-function, texture layer uniform will be set to fixed value specified with
-`TextureLayer` constant. Good practice is to allow
+Our shader is pretty simple. It's practically a stripped version of textured
+@ref Shaders::Flat2D, written for OpenGL 3.3 without bothering about backwards
+compatibility. The shader takes 2D vertex position and 2D texture coordinates.
+Next to these two attributes it also needs uniform for base color and texture
+layer. We define both attributes with proper type (i.e., the same type we used
+for the mesh data earlier) and assign vertex position to location zero and
+texture coordinates to location one. For the color uniform we provide public
+setter function, texture layer uniform will be set to fixed value specified
+with `TextureLayer` constant. Good practice is to allow
 @ref method-chaining "method chaining" on uniform setters.
 @dontinclude textured-triangle/TexturedTriangleShader.h
 @skip class TexturedTriangleShader
