@@ -68,11 +68,7 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
-    #ifndef CORRADE_TARGET_NACL
-    .setTitle("Textured triangle example")
-    #endif
-), shader(Shaders::Flat2D::Flag::Textured) {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Textured Triangle Example")), shader(Shaders::Flat2D::Flag::Textured) {
     constexpr static Vector2 data[] = {
         {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
         { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */

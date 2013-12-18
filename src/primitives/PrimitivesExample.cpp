@@ -62,11 +62,7 @@ class PrimitivesExample: public Platform::Application {
         Color3 color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
-#ifndef CORRADE_TARGET_NACL
-    .setTitle("Primitives example")
-#endif
-) {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Primitives Example")) {
     indexBuffer.setTargetHint(Buffer::Target::ElementArray);
 
     Renderer::setFeature(Renderer::Feature::DepthTest, true);

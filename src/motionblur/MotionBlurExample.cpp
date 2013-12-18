@@ -57,7 +57,7 @@ class MotionBlurExample: public Platform::Application {
         Object3D* spheres[3];
 };
 
-MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Motion blur example")) {
+MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Motion Blur Example")) {
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))

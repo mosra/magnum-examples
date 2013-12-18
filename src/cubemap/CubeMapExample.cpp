@@ -59,8 +59,7 @@ class CubeMapExample: public Platform::Application {
         SceneGraph::Camera3D* camera;
 };
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Cube map example")) {
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_storage);
+CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 
     Renderer::setFeature(Renderer::Feature::DepthTest, true);

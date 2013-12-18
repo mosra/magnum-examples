@@ -83,11 +83,7 @@ class TextExample: public Platform::Application {
         Matrix3 projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
-    #ifndef CORRADE_TARGET_NACL
-    .setTitle("Text example")
-    #endif
-), importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), manager(MAGNUM_PLUGINS_FONT_DIR), vertices(Buffer::Target::Array), indices(Buffer::Target::ElementArray) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), manager(MAGNUM_PLUGINS_FONT_DIR), vertices(Buffer::Target::Array), indices(Buffer::Target::ElementArray) {
     /* Load FreeTypeFont plugin */
     if(!(manager.load("MagnumFont") & PluginManager::LoadState::Loaded)) {
         Error() << "Cannot open MagnumFont plugin";

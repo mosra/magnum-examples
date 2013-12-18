@@ -54,13 +54,7 @@ class TriangleExample: public Platform::Application {
         Shaders::VertexColor3D shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration()
-#ifndef CORRADE_TARGET_NACL
-    .setTitle("Triangle example")
-#endif
-) {
-    Renderer::setClearColor(Color3(0.125f));
-
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Triangle Example")) {
     constexpr static Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
