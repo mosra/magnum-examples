@@ -53,7 +53,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
     UnsignedByte* texture = new UnsignedByte[textureSize]();
-    framebuffer.setData(size, ColorFormat::RGB, ColorType::UnsignedByte, nullptr, BufferUsage::DynamicDraw);
+    framebuffer.setData(ColorFormat::RGB, ColorType::UnsignedByte, size, nullptr, BufferUsage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
