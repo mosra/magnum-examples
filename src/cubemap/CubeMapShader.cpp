@@ -26,6 +26,7 @@
 
 #include <Utility/Resource.h>
 #include <Shader.h>
+#include <Version.h>
 
 namespace Magnum { namespace Examples {
 

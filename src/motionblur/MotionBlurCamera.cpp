@@ -30,6 +30,7 @@
 #include <DefaultFramebuffer.h>
 #include <Shader.h>
 #include <TextureFormat.h>
+#include <Version.h>
 
 namespace Magnum { namespace Examples {
 
