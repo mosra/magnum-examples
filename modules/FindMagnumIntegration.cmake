@@ -15,6 +15,7 @@
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_*INTEGRATION_LIBRARY  - Component library (w/o dependencies)
+#
 
 #
 #   This file is part of Magnum.
@@ -68,7 +69,7 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
     if(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES)
         find_path(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES}
-            PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX})
+            PATHS ${MAGNUM_INCLUDE_DIR}/Magnum/${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX})
     endif()
 
     # Decide if the library was found
