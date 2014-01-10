@@ -25,12 +25,12 @@
 #include "MotionBlurCamera.h"
 
 #include <sstream>
-#include <Utility/Resource.h>
-#include <ColorFormat.h>
-#include <DefaultFramebuffer.h>
-#include <Shader.h>
-#include <TextureFormat.h>
-#include <Version.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/ColorFormat.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Shader.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
 

@@ -24,8 +24,8 @@
 
 #include "ColorCorrectionCamera.h"
 
-#include <DefaultFramebuffer.h>
-#include <RenderbufferFormat.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/RenderbufferFormat.h>
 
 #include "ColorCorrectionShader.h"
 

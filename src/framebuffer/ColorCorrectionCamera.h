@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Framebuffer.h>
-#include <Renderbuffer.h>
-#include <SceneGraph/Camera2D.h>
+#include <Magnum/Framebuffer.h>
+#include <Magnum/Renderbuffer.h>
+#include <Magnum/SceneGraph/Camera2D.h>
 
 namespace Magnum { namespace Examples {
 

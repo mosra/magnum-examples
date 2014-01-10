@@ -22,30 +22,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/Manager.h>
-#include <Utility/Arguments.h>
-#include <ColorFormat.h>
-#include <DefaultFramebuffer.h>
-#include <TextureFormat.h>
-#include <Mesh.h>
-#include <Renderer.h>
-#include <ResourceManager.h>
-#include <Texture.h>
-#include <MeshTools/Interleave.h>
-#include <MeshTools/CompressIndices.h>
-#include <Platform/GlutApplication.h>
-#include <SceneGraph/Camera3D.h>
-#include <SceneGraph/Drawable.h>
-#include <SceneGraph/MatrixTransformation3D.h>
-#include <SceneGraph/Scene.h>
-#include <Shaders/Phong.h>
-#include <Trade/AbstractImporter.h>
-#include <Trade/ImageData.h>
-#include <Trade/MeshData3D.h>
-#include <Trade/MeshObjectData3D.h>
-#include <Trade/PhongMaterialData.h>
-#include <Trade/SceneData.h>
-#include <Trade/TextureData.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Arguments.h>
+#include <Magnum/ColorFormat.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/ResourceManager.h>
+#include <Magnum/Texture.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
+#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshObjectData3D.h>
+#include <Magnum/Trade/PhongMaterialData.h>
+#include <Magnum/Trade/SceneData.h>
+#include <Magnum/Trade/TextureData.h>
 
 #include "configure.h"
 

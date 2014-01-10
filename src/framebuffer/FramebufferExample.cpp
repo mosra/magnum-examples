@@ -22,11 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/Manager.h>
-#include <DefaultFramebuffer.h>
-#include <Platform/GlutApplication.h>
-#include <SceneGraph/Scene.h>
-#include <Trade/AbstractImporter.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Trade/AbstractImporter.h>
 
 #include "Billboard.h"
 #include "ColorCorrectionCamera.h"

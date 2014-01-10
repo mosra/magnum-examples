@@ -22,16 +22,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Containers/Array.h>
-#include <PluginManager/Manager.h>
-#include <Buffer.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Texture.h>
-#include <TextureFormat.h>
-#include <Platform/GlutApplication.h>
-#include <Trade/AbstractImporter.h>
-#include <Trade/ImageData.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
 
 #include "TexturedTriangleShader.h"
 #include "configure.h"

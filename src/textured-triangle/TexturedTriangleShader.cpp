@@ -24,10 +24,10 @@
 
 #include "TexturedTriangleShader.h"
 
-#include <Utility/Resource.h>
-#include <Context.h>
-#include <Shader.h>
-#include <Version.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/Context.h>
+#include <Magnum/Shader.h>
+#include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
 

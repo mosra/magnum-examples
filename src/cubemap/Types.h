@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <ResourceManager.h>
-#include <SceneGraph/MatrixTransformation3D.h>
-#include <Trade/Trade.h>
+#include <Magnum/ResourceManager.h>
+#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/Trade/Trade.h>
 
 namespace Magnum {
 

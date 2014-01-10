@@ -24,11 +24,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <BufferImage.h>
-#include <Texture.h>
-#include <AbstractShaderProgram.h>
-#include <Mesh.h>
-#include <SceneGraph/Camera3D.h>
+#include <Magnum/BufferImage.h>
+#include <Magnum/Texture.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/SceneGraph/Camera3D.h>
 
 #include "Types.h"
 

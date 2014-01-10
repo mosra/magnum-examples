@@ -24,16 +24,16 @@
 
 #include <iomanip>
 #include <sstream>
-#include <PluginManager/Manager.h>
-#include <Platform/GlutApplication.h>
-#include <Math/Complex.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Renderer.h>
-#include <Shaders/DistanceFieldVector.h>
-#include <Text/AbstractFont.h>
-#include <Text/DistanceFieldGlyphCache.h>
-#include <Text/Renderer.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Math/Complex.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Text/AbstractFont.h>
+#include <Magnum/Text/DistanceFieldGlyphCache.h>
+#include <Magnum/Text/Renderer.h>
 
 #include "configure.h"
 

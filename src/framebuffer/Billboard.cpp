@@ -24,11 +24,11 @@
 
 #include "Billboard.h"
 
-#include <Buffer.h>
-#include <TextureFormat.h>
-#include <Primitives/Square.h>
-#include <SceneGraph/Camera2D.h>
-#include <Trade/MeshData2D.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Primitives/Square.h>
+#include <Magnum/SceneGraph/Camera2D.h>
+#include <Magnum/Trade/MeshData2D.h>
 
 namespace Magnum { namespace Examples {
 

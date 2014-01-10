@@ -25,18 +25,18 @@
 #include "Reflector.h"
 
 #include <sstream>
-#include <Containers/Array.h>
-#include <Utility/Resource.h>
-#include <CubeMapTexture.h>
-#include <Texture.h>
-#include <TextureFormat.h>
-#include <MeshTools/CompressIndices.h>
-#include <MeshTools/Interleave.h>
-#include <Primitives/UVSphere.h>
-#include <SceneGraph/Camera3D.h>
-#include <Trade/AbstractImporter.h>
-#include <Trade/ImageData.h>
-#include <Trade/MeshData3D.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/CubeMapTexture.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/Primitives/UVSphere.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 #include "ReflectorShader.h"
 

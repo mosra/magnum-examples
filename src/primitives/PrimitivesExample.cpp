@@ -22,14 +22,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <DefaultFramebuffer.h>
-#include <Renderer.h>
-#include <MeshTools/Interleave.h>
-#include <MeshTools/CompressIndices.h>
-#include <Platform/GlutApplication.h>
-#include <Primitives/Cube.h>
-#include <Shaders/Phong.h>
-#include <Trade/MeshData3D.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Primitives/Cube.h>
+#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
 

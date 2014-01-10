@@ -22,12 +22,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Math/Vector3.h>
-#include <Buffer.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Platform/GlutApplication.h>
-#include <Shaders/VertexColor.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Math/Vector3.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Shaders/VertexColor.h>
 
 namespace Magnum { namespace Examples {
 

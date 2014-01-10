@@ -22,20 +22,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <PluginManager/Manager.h>
-#include <AbstractShaderProgram.h>
-#include <Context.h>
-#include <CubeMapTexture.h>
-#include <DefaultFramebuffer.h>
-#include <Extensions.h>
-#include <Mesh.h>
-#include <Renderer.h>
-#include <Texture.h>
-#include <Platform/GlutApplication.h>
-#include <SceneGraph/Drawable.h>
-#include <SceneGraph/Scene.h>
-#include <SceneGraph/Camera3D.h>
-#include <Trade/AbstractImporter.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Context.h>
+#include <Magnum/CubeMapTexture.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Extensions.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Texture.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
 #include "Reflector.h"

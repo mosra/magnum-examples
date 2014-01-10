@@ -25,18 +25,18 @@
 #include "CubeMap.h"
 
 #include <fstream>
-#include <Utility/Resource.h>
-#include <CubeMapTexture.h>
-#include <TextureFormat.h>
-#include <MeshTools/FlipNormals.h>
-#include <MeshTools/Interleave.h>
-#include <MeshTools/CompressIndices.h>
-#include <Primitives/Cube.h>
-#include <SceneGraph/Scene.h>
-#include <SceneGraph/Camera3D.h>
-#include <Trade/AbstractImporter.h>
-#include <Trade/ImageData.h>
-#include <Trade/MeshData3D.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/CubeMapTexture.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/MeshTools/FlipNormals.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/Primitives/Cube.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 #include "CubeMapShader.h"
 

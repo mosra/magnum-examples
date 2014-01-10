@@ -24,8 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <AbstractShaderProgram.h>
-#include <Color.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Color.h>
 
 namespace Magnum { namespace Examples {
 

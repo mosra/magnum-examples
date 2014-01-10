@@ -24,13 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Buffer.h>
-#include <BufferTexture.h>
-#include <Mesh.h>
-#include <Texture.h>
-#include <SceneGraph/Object.h>
-#include <SceneGraph/Drawable.h>
-#include <Trade/ImageData.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/BufferTexture.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
+#include <Magnum/SceneGraph/Object.h>
+#include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/Trade/ImageData.h>
 
 #include "ColorCorrectionShader.h"
 #include "Types.h"
