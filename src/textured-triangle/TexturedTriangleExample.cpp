@@ -36,6 +36,7 @@
 #else
 #include <Magnum/Platform/GlutApplication.h>
 #endif
+#include <Magnum/Shaders/Flat.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 

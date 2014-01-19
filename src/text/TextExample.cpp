@@ -37,6 +37,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
 #include <Magnum/Text/Renderer.h>
