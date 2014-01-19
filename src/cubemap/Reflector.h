@@ -24,8 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <ResourceManager.h>
-#include <SceneGraph/Drawable.h>
+#include <Magnum/ResourceManager.h>
+#include <Magnum/SceneGraph/Drawable.h>
 
 #include "Types.h"
 

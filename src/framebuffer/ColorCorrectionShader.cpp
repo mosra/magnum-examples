@@ -24,8 +24,9 @@
 
 #include "ColorCorrectionShader.h"
 
-#include <Utility/Resource.h>
-#include <Shader.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/Shader.h>
+#include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
 

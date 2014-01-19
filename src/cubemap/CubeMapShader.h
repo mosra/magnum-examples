@@ -24,8 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Math/Matrix4.h>
-#include <AbstractShaderProgram.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Math/Matrix4.h>
 
 namespace Magnum { namespace Examples {
 

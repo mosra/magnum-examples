@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <SceneGraph/MatrixTransformation2D.h>
+#include <Magnum/SceneGraph/MatrixTransformation2D.h>
 
 namespace Magnum { namespace Examples {
 

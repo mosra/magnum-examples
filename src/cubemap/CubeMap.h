@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/Drawable.h>
 
 #include "Types.h"
 

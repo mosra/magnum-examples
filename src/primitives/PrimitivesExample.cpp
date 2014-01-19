@@ -22,20 +22,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <DefaultFramebuffer.h>
-#include <Renderer.h>
-#include <MeshTools/Interleave.h>
-#include <MeshTools/CompressIndices.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/CompressIndices.h>
 #ifdef CORRADE_TARGET_NACL
-#include <Platform/NaClApplication.h>
+#include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Platform/Sdl2Application.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Platform/GlutApplication.h>
+#include <Magnum/Platform/GlutApplication.h>
 #endif
-#include <Primitives/Cube.h>
-#include <Shaders/Phong.h>
-#include <Trade/MeshData3D.h>
+#include <Magnum/Primitives/Cube.h>
+#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 #ifdef MAGNUM_BUILD_STATIC
 #include <Shaders/magnumShadersResourceImport.hpp>

@@ -24,12 +24,12 @@
 
 #include "Types.h"
 
-#include <AbstractShaderProgram.h>
-#include <Buffer.h>
-#include <CubeMapTexture.h>
-#include <Mesh.h>
-#include <Texture.h>
-#include <Trade/AbstractImporter.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/CubeMapTexture.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
+#include <Magnum/Trade/AbstractImporter.h>
 
 namespace Magnum {
 

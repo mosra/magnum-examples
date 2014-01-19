@@ -22,16 +22,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Utility/utilities.h>
-#include <DefaultFramebuffer.h>
-#include <Renderer.h>
-#include <MeshTools/CompressIndices.h>
-#include <MeshTools/Interleave.h>
-#include <Platform/GlutApplication.h>
-#include <Primitives/Icosphere.h>
-#include <SceneGraph/Scene.h>
-#include <Shaders/Phong.h>
-#include <Trade/MeshData3D.h>
+#include <Corrade/Utility/utilities.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Primitives/Icosphere.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"

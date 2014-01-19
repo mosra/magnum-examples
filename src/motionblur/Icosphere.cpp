@@ -24,9 +24,9 @@
 
 #include "Icosphere.h"
 
-#include <Mesh.h>
-#include <SceneGraph/Camera3D.h>
-#include <Shaders/Phong.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/Shaders/Phong.h>
 
 namespace Magnum { namespace Examples {
 

@@ -24,23 +24,22 @@
 
 #include <iomanip>
 #include <sstream>
-#include <PluginManager/Manager.h>
+#include <Corrade/PluginManager/Manager.h>
 #ifdef CORRADE_TARGET_NACL
-#include <Platform/NaClApplication.h>
+#include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Platform/Sdl2Application.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Platform/GlutApplication.h>
+#include <Magnum/Platform/GlutApplication.h>
 #endif
-#include <Math/Complex.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Renderer.h>
-#include <Shaders/DistanceFieldVector.h>
-#include <Text/AbstractFont.h>
-#include <Text/GlyphCache.h>
-#include <Text/Renderer.h>
-#include <Trade/AbstractImporter.h>
+#include <Magnum/Math/Complex.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Text/AbstractFont.h>
+#include <Magnum/Text/DistanceFieldGlyphCache.h>
+#include <Magnum/Text/Renderer.h>
 
 #include "configure.h"
 

@@ -22,23 +22,22 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Containers/Array.h>
-#include <PluginManager/Manager.h>
-#include <Buffer.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Texture.h>
-#include <TextureFormat.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
 #ifdef CORRADE_TARGET_NACL
-#include <Platform/NaClApplication.h>
+#include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Platform/Sdl2Application.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Platform/GlutApplication.h>
+#include <Magnum/Platform/GlutApplication.h>
 #endif
-#include <Shaders/Flat.h>
-#include <Trade/AbstractImporter.h>
-#include <Trade/ImageData.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
 
 #include "configure.h"
 

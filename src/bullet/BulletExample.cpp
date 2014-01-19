@@ -24,23 +24,23 @@
 */
 
 #include <btBulletDynamicsCommon.h>
-#include <BulletIntegration/ConvertShape.h>
-#include <BulletIntegration/Integration.h>
-#include <BulletIntegration/MotionState.h>
-#include <DefaultFramebuffer.h>
-#include <Math/Constants.h>
-#include <Mesh.h>
-#include <DebugTools/ShapeRenderer.h>
-#include <DebugTools/ResourceManager.h>
-#include <Shapes/Box.h>
-#include <Shapes/Shape.h>
-#include <Shapes/ShapeGroup.h>
-#include <Platform/GlutApplication.h>
-#include <Renderer.h>
-#include <SceneGraph/Camera3D.h>
-#include <SceneGraph/MatrixTransformation3D.h>
-#include <SceneGraph/Scene.h>
-#include <Timeline.h>
+#include <Magnum/BulletIntegration/ConvertShape.h>
+#include <Magnum/BulletIntegration/Integration.h>
+#include <Magnum/BulletIntegration/MotionState.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Math/Constants.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/DebugTools/ShapeRenderer.h>
+#include <Magnum/DebugTools/ResourceManager.h>
+#include <Magnum/Shapes/Box.h>
+#include <Magnum/Shapes/Shape.h>
+#include <Magnum/Shapes/ShapeGroup.h>
+#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Timeline.h>
 
 namespace Magnum { namespace Examples {
 

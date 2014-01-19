@@ -22,19 +22,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Math/Vector3.h>
-#include <Buffer.h>
-#include <DefaultFramebuffer.h>
-#include <Mesh.h>
-#include <Renderer.h>
+#include <Magnum/Buffer.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Math/Vector3.h>
 #ifdef CORRADE_TARGET_NACL
-#include <Platform/NaClApplication.h>
+#include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Platform/Sdl2Application.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Platform/GlutApplication.h>
+#include <Magnum/Platform/GlutApplication.h>
 #endif
-#include <Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColor.h>
 
 #ifdef MAGNUM_BUILD_STATIC
 #include <Shaders/magnumShadersResourceImport.hpp>

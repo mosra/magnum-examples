@@ -24,10 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Math/Matrix3.h>
-#include <Math/Matrix4.h>
-#include <AbstractShaderProgram.h>
-#include <Color.h>
+#include <Magnum/Math/Matrix3.h>
+#include <Magnum/Math/Matrix4.h>
+#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Color.h>
 
 namespace Magnum { namespace Examples {
 

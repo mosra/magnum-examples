@@ -25,11 +25,12 @@
 #include "MotionBlurCamera.h"
 
 #include <sstream>
-#include <Utility/Resource.h>
-#include <ColorFormat.h>
-#include <DefaultFramebuffer.h>
-#include <Shader.h>
-#include <TextureFormat.h>
+#include <Corrade/Utility/Resource.h>
+#include <Magnum/ColorFormat.h>
+#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Shader.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
 
@@ -53,7 +54,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
     UnsignedByte* texture = new UnsignedByte[textureSize]();
-    framebuffer.setData(size, ColorFormat::RGB, ColorType::UnsignedByte, nullptr, BufferUsage::DynamicDraw);
+    framebuffer.setData(ColorFormat::RGB, ColorType::UnsignedByte, size, nullptr, BufferUsage::DynamicDraw);
     delete texture;
 
     Buffer::unbind(Buffer::Target::PixelPack);
