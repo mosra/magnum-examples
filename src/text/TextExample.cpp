@@ -45,7 +45,7 @@
 
 #ifdef MAGNUM_BUILD_STATIC
 /* Import shader resources in static build */
-#include <Shaders/magnumShadersResourceImport.hpp>
+#include <Magnum/Shaders/resourceImport.hpp>
 
 /* Import plugins in static build */
 static int importStaticPlugins() {

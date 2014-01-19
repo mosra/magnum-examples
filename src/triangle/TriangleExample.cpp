@@ -36,7 +36,7 @@
 #include <Magnum/Shaders/VertexColor.h>
 
 #ifdef MAGNUM_BUILD_STATIC
-#include <Shaders/magnumShadersResourceImport.hpp>
+#include <Magnum/Shaders/resourceImport.hpp>
 #endif
 
 namespace Magnum { namespace Examples {
