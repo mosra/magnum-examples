@@ -15,13 +15,6 @@ Code contribution
 *   Follow the project coding guidelines. In short -- try to match style of the
     surrounding code and avoid any trailing whitespace. When in doubt, consult
     coding guidelines, which are available also [online](http://mosra.cz/blog/magnum-doc/coding-style.html).
-*   Document your code. When updating or adding new API, make sure that Doxygen
-    documentation is up to date. Run
-
-        doxygen
-
-    in project root to generate the documentation and check that your
-    modifications didn't add any warnings.
 *   Best way to contribute is by using GitHub [pull requests](https://github.com/mosra/magnum-examples/pulls)
     -- fork the repository and make pull request from feature branch. You can
     also send patches via e-mail or contact me any other way.
@@ -35,7 +28,8 @@ Code contribution
         /*
             This file is part of Magnum.
 
-            Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+            Copyright © 2010, 2011, 2012, 2013, 2014
+                      Vladimír Vondruš <mosra@centrum.cz>
             Copyright © YEAR YOUR_NAME <your@mail.com>
 
             Permission is hereby granted, free of charge, to any person obtaining a
