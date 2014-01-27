@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/TextureFormat.h>
+#include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/FlipNormals.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
