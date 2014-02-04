@@ -47,7 +47,7 @@ class ColorCorrectionShader: public AbstractShaderProgram {
 
         ColorCorrectionShader();
 
-        inline ColorCorrectionShader& setTransformationProjectionMatrix(const Matrix3& matrix) {
+        ColorCorrectionShader& setTransformationProjectionMatrix(const Matrix3& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }

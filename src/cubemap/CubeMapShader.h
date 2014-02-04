@@ -40,7 +40,7 @@ class CubeMapShader: public AbstractShaderProgram {
 
         CubeMapShader();
 
-        inline CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
+        CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }
