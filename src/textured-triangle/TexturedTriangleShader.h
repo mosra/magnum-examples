@@ -27,6 +27,7 @@
 
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Color.h>
+#include <Magnum/Texture.h>
 
 namespace Magnum { namespace Examples {
 
@@ -35,10 +36,6 @@ class TexturedTriangleShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector2> Position;
         typedef Attribute<1, Vector2> TextureCoordinates;
 
-        enum: Int {
-            TextureLayer = 0
-        };
-
         explicit TexturedTriangleShader();
 
         TexturedTriangleShader& setColor(const Color3& color) {
@@ -46,7 +43,14 @@ class TexturedTriangleShader: public AbstractShaderProgram {
             return *this;
         }
 
+        TexturedTriangleShader& setTexture(Texture2D& texture) {
+            texture.bind(TextureLayer);
+            return *this;
+        }
+
     private:
+        enum: Int { TextureLayer = 0 };
+
         Int colorUniform;
 };
 

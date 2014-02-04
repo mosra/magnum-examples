@@ -452,27 +452,24 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
         /** @todo How to avoid the assertions here? */
-        .setNormalMatrix(transformationMatrix.rotationNormalized())
-        .setProjectionMatrix(camera.projectionMatrix())
-        .use();
+        .setNormalMatrix(transformationMatrix.rotation())
+        .setProjectionMatrix(camera.projectionMatrix());
 
-    mesh->draw();
+    mesh->draw(*shader);
 }
 
 void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
     shader->setAmbientColor(ambientColor)
+        .setDiffuseTexture(*diffuseTexture)
         .setSpecularColor(specularColor)
         .setShininess(shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
         /** @todo How to avoid the assertions here? */
-        .setNormalMatrix(transformationMatrix.rotationNormalized())
-        .setProjectionMatrix(camera.projectionMatrix())
-        .use();
+        .setNormalMatrix(transformationMatrix.rotation())
+        .setProjectionMatrix(camera.projectionMatrix());
 
-    diffuseTexture->bind(Shaders::Phong::DiffuseTextureLayer);
-
-    mesh->draw();
+    mesh->draw(*shader);
 }
 
 }}

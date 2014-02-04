@@ -115,11 +115,9 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .use();
+        .setTexture(*texture);
 
-    texture->bind(CubeMapShader::TextureLayer);
-
-    cube->draw();
+    cube->draw(*shader);
 }
 
 }}

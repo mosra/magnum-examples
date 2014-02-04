@@ -75,10 +75,10 @@ with no gaps in between.
     repeated code.
 
 Function @ref Platform::GlutApplication::drawEvent() "drawEvent()" will take
-care about rendering the scene. We will draw to the default framebuffer, clear
-its color buffer, tell that the drawing is done using our shader and then we
-draw the mesh. The context is double-buffered, so we need to swap the buffers
-after drawing.
+care of rendering the scene. We will clear color buffer of the default
+framebuffer (which is also the default rendering target) and then we draw the
+mesh using our shader. The context is double-buffered, so we need to swap the
+buffers after drawing.
 @skip TriangleExample::drawEvent
 @until }
 

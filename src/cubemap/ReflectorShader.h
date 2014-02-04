@@ -37,11 +37,6 @@ class ReflectorShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
-        enum: Int {
-            TextureLayer = 0,
-            TarnishTextureLayer = 1
-        };
-
         ReflectorShader();
 
         ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
@@ -73,6 +68,10 @@ class ReflectorShader: public AbstractShaderProgram {
             setUniform(diffuseColorUniform, color);
             return *this;
         }
+
+        ReflectorShader& setTexture(CubeMapTexture& texture);
+
+        ReflectorShader& setTarnishTexture(Texture2D& texture);
 
     private:
         Int transformationMatrixUniform,

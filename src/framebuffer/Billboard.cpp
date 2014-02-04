@@ -52,11 +52,10 @@ Billboard::Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuf
 
 void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D& camera) {
     shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .use();
-    texture.bind(ColorCorrectionShader::TextureLayer);
-    colorCorrectionTexture.bind(ColorCorrectionShader::ColorCorrectionTextureLayer);
+        .setTexture(texture)
+        .setColorCorrectionTexture(colorCorrectionTexture);
 
-    mesh.draw();
+    mesh.draw(shader);
 }
 
 }}

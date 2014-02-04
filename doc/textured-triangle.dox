@@ -85,9 +85,8 @@ incomplete.
 @until }
 
 The drawing function is again fairly simple. We clear the buffer, set base
-color to light red, mark the shader for usage and bind texture to the desired
-layer (defined in `TexturedTriangleShader`, which is explained later) and
-perform the drawing. Last thing is again buffer swap.
+color to light red, set the texture and perform the drawing. Last thing is
+again buffer swap.
 @skip TexturedTriangleExample::drawEvent
 @until }
 @until }
@@ -99,13 +98,12 @@ perform the drawing. Last thing is again buffer swap.
 Our shader is pretty simple. It's practically a stripped version of textured
 @ref Shaders::Flat2D, written for OpenGL 3.3 without bothering about backwards
 compatibility. The shader takes 2D vertex position and 2D texture coordinates.
-Next to these two attributes it also needs uniform for base color and texture
-layer. We define both attributes with proper type (i.e., the same type we used
-for the mesh data earlier) and assign vertex position to location zero and
-texture coordinates to location one. For the color uniform we provide public
-setter function, texture layer uniform will be set to fixed value specified
-with `TextureLayer` constant. Good practice is to allow
-@ref method-chaining "method chaining" on uniform setters.
+We define both attributes with proper type (i.e., the same type we used for the
+mesh data earlier) and assign vertex position to location zero and
+texture coordinates to location one. Next to these two attributes it also needs
+uniform for base color and function for binding the texture. We will provide
+convenience public API for setting these two parameters. Good practice is to
+allow @ref method-chaining "method chaining" on them.
 @dontinclude textured-triangle/TexturedTriangleShader.h
 @skip class TexturedTriangleShader
 @until };

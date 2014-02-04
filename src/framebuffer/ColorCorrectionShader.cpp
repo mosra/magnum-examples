@@ -26,10 +26,19 @@
 #include "ColorCorrectionShader.h"
 
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/BufferTexture.h>
 #include <Magnum/Shader.h>
 #include <Magnum/Version.h>
+#include <Magnum/Texture.h>
 
 namespace Magnum { namespace Examples {
+
+namespace {
+    enum: Int {
+        TextureLayer = 0,
+        ColorCorrectionTextureLayer = 1
+    };
+}
 
 ColorCorrectionShader::ColorCorrectionShader() {
     Utility::Resource rs("shader");
@@ -50,6 +59,16 @@ ColorCorrectionShader::ColorCorrectionShader() {
 
     setUniform(uniformLocation("textureData"), TextureLayer);
     setUniform(uniformLocation("colorCorrectionTextureData"), ColorCorrectionTextureLayer);
+}
+
+ColorCorrectionShader& ColorCorrectionShader::setTexture(Texture2D& texture) {
+    texture.bind(TextureLayer);
+    return *this;
+}
+
+ColorCorrectionShader& ColorCorrectionShader::setColorCorrectionTexture(BufferTexture& texture) {
+    texture.bind(ColorCorrectionTextureLayer);
+    return *this;
 }
 
 }}

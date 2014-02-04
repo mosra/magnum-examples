@@ -106,23 +106,21 @@ void TextExample::viewportEvent(const Vector2i& size) {
 void TextExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    cache.texture().bind(Shaders::DistanceFieldVector2D::VectorTextureLayer);
+    shader.setVectorTexture(cache.texture());
 
     shader.setTransformationProjectionMatrix(projection*transformation)
         .setColor(Color3::fromHSV(Deg(15.0f), 0.9f, 0.4f))
         .setOutlineColor(Color3::fromHSV(Deg(0.0f), 0.5f, 0.75f))
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/transformation.uniformScaling())
-        .use();
-    text.draw();
+        .setSmoothness(0.025f/transformation.uniformScaling());
+    text.draw(shader);
 
     shader.setTransformationProjectionMatrix(projection*
         Matrix3::translation(1.0f/projection.rotationScaling().diagonal()))
         .setColor(Color4(1.0f, 0.0f))
         .setOutlineRange(0.5f, 1.0f)
-        .setSmoothness(0.075f)
-        .use();
-    text2->mesh().draw();
+        .setSmoothness(0.075f);
+    text2->mesh().draw(shader);
 
     swapBuffers();
 }

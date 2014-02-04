@@ -40,17 +40,16 @@ class ColorCorrectionShader: public AbstractShaderProgram {
             ColorCorrectedOutput = 2
         };
 
-        enum: Int {
-            TextureLayer = 0,
-            ColorCorrectionTextureLayer = 1
-        };
-
         ColorCorrectionShader();
 
         ColorCorrectionShader& setTransformationProjectionMatrix(const Matrix3& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }
+
+        ColorCorrectionShader& setTexture(Texture2D& texture);
+
+        ColorCorrectionShader& setColorCorrectionTexture(BufferTexture& texture);
 
     private:
         Int transformationProjectionMatrixUniform;

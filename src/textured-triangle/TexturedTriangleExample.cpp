@@ -87,13 +87,11 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 }
 
 void TexturedTriangleExample::drawEvent() {
-    defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.setColor({1.0f, 0.7f, 0.7f})
-        .use();
-    texture.bind(TexturedTriangleShader::TextureLayer);
-    mesh.draw();
+        .setTexture(texture);
+    mesh.draw(shader);
 
     swapBuffers();
 }
