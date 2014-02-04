@@ -60,21 +60,21 @@ void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{0, defaultFramebuffer.viewport().sizeY()/2}, {defaultFramebuffer.viewport().sizeX()/2, defaultFramebuffer.viewport().sizeY()}},
-        FramebufferBlit::ColorBuffer, FramebufferBlitFilter::Linear);
+        FramebufferBlit::Color, FramebufferBlitFilter::Linear);
 
     /* Grayscale at top right */
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Grayscale));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {defaultFramebuffer.viewport().size()/2, defaultFramebuffer.viewport().size()},
-        FramebufferBlit::ColorBuffer, FramebufferBlitFilter::Linear);
+        FramebufferBlit::Color, FramebufferBlitFilter::Linear);
 
     /* Color corrected at bottom */
     framebuffer.mapForRead(Framebuffer::ColorAttachment(Corrected));
     AbstractFramebuffer::blit(framebuffer, defaultFramebuffer,
         framebuffer.viewport(),
         {{defaultFramebuffer.viewport().sizeX()/4, 0}, {defaultFramebuffer.viewport().sizeX()*3/4, defaultFramebuffer.viewport().sizeY()/2}},
-        FramebufferBlit::ColorBuffer, FramebufferBlitFilter::Linear);
+        FramebufferBlit::Color, FramebufferBlitFilter::Linear);
 }
 
 void ColorCorrectionCamera::setViewport(const Vector2i& size) {
