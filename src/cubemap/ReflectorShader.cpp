@@ -26,10 +26,19 @@
 #include "ReflectorShader.h"
 
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/CubeMapTexture.h>
 #include <Magnum/Shader.h>
+#include <Magnum/Texture.h>
 #include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
+
+namespace {
+    enum: Int {
+        TextureLayer = 0,
+        TarnishTextureLayer = 1
+    };
+}
 
 ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
@@ -55,6 +64,16 @@ ReflectorShader::ReflectorShader() {
 
     setUniform(uniformLocation("textureData"), TextureLayer);
     setUniform(uniformLocation("tarnishTextureData"), TarnishTextureLayer);
+}
+
+ReflectorShader& ReflectorShader::setTexture(CubeMapTexture& texture) {
+    texture.bind(TextureLayer);
+    return *this;
+}
+
+ReflectorShader& ReflectorShader::setTarnishTexture(Texture2D& texture) {
+    texture.bind(TarnishTextureLayer);
+    return *this;
 }
 
 }}

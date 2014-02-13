@@ -97,12 +97,10 @@ void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCa
         .setReflectivity(2.0f)
         .setDiffuseColor(Color3(0.3f))
         .setCameraMatrix(static_cast<Object3D&>(camera.object()).absoluteTransformation().rotation())
-        .use();
+        .setTexture(*texture)
+        .setTarnishTexture(*tarnishTexture);
 
-    texture->bind(ReflectorShader::TextureLayer);
-    tarnishTexture->bind(ReflectorShader::TarnishTextureLayer);
-
-    sphere->draw();
+    sphere->draw(*shader);
 }
 
 }}

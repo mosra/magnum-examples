@@ -34,16 +34,14 @@ class CubeMapShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position;
 
-        enum: Int {
-            TextureLayer = 0
-        };
-
         CubeMapShader();
 
-        inline CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
+        CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
             return *this;
         }
+
+        CubeMapShader& setTexture(CubeMapTexture& texture);
 
     private:
         Int transformationProjectionMatrixUniform;

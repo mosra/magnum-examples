@@ -70,11 +70,9 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
 }
 
 void TriangleExample::drawEvent() {
-    defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    shader.use();
-    mesh.draw();
+    mesh.draw(shader);
 
     swapBuffers();
 }

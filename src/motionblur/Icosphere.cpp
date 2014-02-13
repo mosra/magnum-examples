@@ -42,10 +42,9 @@ void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCa
         .setLightPosition({3.0f, -3.0f, 3.0f})
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotationScaling())
-        .setProjectionMatrix(camera.projectionMatrix())
-        .use();
+        .setProjectionMatrix(camera.projectionMatrix());
 
-    mesh->draw();
+    mesh->draw(*shader);
 }
 
 }}
