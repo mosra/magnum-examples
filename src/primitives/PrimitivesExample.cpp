@@ -76,7 +76,6 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
 }
 
 void PrimitivesExample::drawEvent() {
-    defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     shader.setLightPosition({7.0f, 5.0f, 2.5f})
@@ -85,9 +84,8 @@ void PrimitivesExample::drawEvent() {
         .setAmbientColor(Color3::fromHSV(color.hue(), 1.0f, 0.3f))
         .setTransformationMatrix(transformation)
         .setNormalMatrix(transformation.rotationScaling()) /** @todo better solution? */
-        .setProjectionMatrix(projection)
-        .use();
-    mesh.draw();
+        .setProjectionMatrix(projection);
+    mesh.draw(shader);
 
     swapBuffers();
 }

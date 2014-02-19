@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/TextureFormat.h>
+#include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/FlipNormals.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
@@ -114,11 +115,9 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .use();
+        .setTexture(*texture);
 
-    texture->bind(CubeMapShader::TextureLayer);
-
-    cube->draw();
+    cube->draw(*shader);
 }
 
 }}

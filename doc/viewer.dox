@@ -207,8 +207,8 @@ and will be explained later.
 @until }
 @until }
 
-Drawing functions have nothing special, just shader preparation, texture
-binding and mesh drawing.
+Drawing functions have nothing special, just shader preparation and mesh
+drawing.
 @skip void ColoredObject::draw
 @until }
 @until }

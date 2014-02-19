@@ -66,12 +66,9 @@ class TextExample: public Platform::Application {
 
 TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), manager(MAGNUM_PLUGINS_FONT_DIR), cache(Vector2i(2048), Vector2i(512), 22) {
     /* Load FreeTypeFont plugin */
-    if(!(manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot open FreeTypeFont plugin";
+    if(!(manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded))
         std::exit(1);
-    }
     font = manager.instance("FreeTypeFont");
-    CORRADE_INTERNAL_ASSERT(font);
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
@@ -109,23 +106,21 @@ void TextExample::viewportEvent(const Vector2i& size) {
 void TextExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    cache.texture().bind(Shaders::DistanceFieldVector2D::VectorTextureLayer);
+    shader.setVectorTexture(cache.texture());
 
     shader.setTransformationProjectionMatrix(projection*transformation)
         .setColor(Color3::fromHSV(Deg(15.0f), 0.9f, 0.4f))
         .setOutlineColor(Color3::fromHSV(Deg(0.0f), 0.5f, 0.75f))
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/transformation.uniformScaling())
-        .use();
-    text.draw();
+        .setSmoothness(0.025f/transformation.uniformScaling());
+    text.draw(shader);
 
     shader.setTransformationProjectionMatrix(projection*
         Matrix3::translation(1.0f/projection.rotationScaling().diagonal()))
         .setColor(Color4(1.0f, 0.0f))
         .setOutlineRange(0.5f, 1.0f)
-        .setSmoothness(0.075f)
-        .use();
-    text2->mesh().draw();
+        .setSmoothness(0.075f);
+    text2->mesh().draw(shader);
 
     swapBuffers();
 }

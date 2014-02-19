@@ -37,42 +37,41 @@ class ReflectorShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
-        enum: Int {
-            TextureLayer = 0,
-            TarnishTextureLayer = 1
-        };
-
         ReflectorShader();
 
-        inline ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
+        ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);
             return *this;
         }
 
-        inline ReflectorShader& setNormalMatrix(const Matrix3& matrix) {
+        ReflectorShader& setNormalMatrix(const Matrix3& matrix) {
             setUniform(normalMatrixUniform, matrix);
             return *this;
         }
 
-        inline ReflectorShader& setProjectionMatrix(const Matrix4& matrix) {
+        ReflectorShader& setProjectionMatrix(const Matrix4& matrix) {
             setUniform(projectionMatrixUniform, matrix);
             return *this;
         }
 
-        inline ReflectorShader& setCameraMatrix(const Matrix3& matrix) {
+        ReflectorShader& setCameraMatrix(const Matrix3& matrix) {
             setUniform(cameraMatrixUniform, matrix);
             return *this;
         }
 
-        inline ReflectorShader& setReflectivity(Float reflectivity) {
+        ReflectorShader& setReflectivity(Float reflectivity) {
             setUniform(reflectivityUniform, reflectivity);
             return *this;
         }
 
-        inline ReflectorShader& setDiffuseColor(const Color3& color) {
+        ReflectorShader& setDiffuseColor(const Color3& color) {
             setUniform(diffuseColorUniform, color);
             return *this;
         }
+
+        ReflectorShader& setTexture(CubeMapTexture& texture);
+
+        ReflectorShader& setTarnishTexture(Texture2D& texture);
 
     private:
         Int transformationMatrixUniform,

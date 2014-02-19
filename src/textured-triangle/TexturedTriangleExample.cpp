@@ -66,12 +66,9 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded))
         std::exit(1);
-    }
     std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
-    CORRADE_INTERNAL_ASSERT(importer);
 
     /* Load the texture */
     Utility::Resource rs("data");
@@ -90,13 +87,11 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 }
 
 void TexturedTriangleExample::drawEvent() {
-    defaultFramebuffer.bind(FramebufferTarget::Draw);
     defaultFramebuffer.clear(FramebufferClear::Color);
 
     shader.setColor({1.0f, 0.7f, 0.7f})
-        .use();
-    texture.bind(TexturedTriangleShader::TextureLayer);
-    mesh.draw();
+        .setTexture(texture);
+    mesh.draw(shader);
 
     swapBuffers();
 }

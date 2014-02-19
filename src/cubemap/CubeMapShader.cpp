@@ -26,10 +26,15 @@
 #include "CubeMapShader.h"
 
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/CubeMapTexture.h>
 #include <Magnum/Shader.h>
 #include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
+
+namespace {
+    enum: Int { TextureLayer = 0 };
+}
 
 CubeMapShader::CubeMapShader() {
     Utility::Resource rs("data");
@@ -49,6 +54,11 @@ CubeMapShader::CubeMapShader() {
     transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
+}
+
+CubeMapShader& CubeMapShader::setTexture(CubeMapTexture& texture) {
+    texture.bind(TextureLayer);
+    return *this;
 }
 
 }}
