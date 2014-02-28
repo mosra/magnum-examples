@@ -31,6 +31,8 @@
 #include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Magnum/Platform/Sdl2Application.h>
+#elif defined(CORRADE_TARGET_ANDROID)
+#include <Magnum/Platform/AndroidApplication.h>
 #else
 #include <Magnum/Platform/GlutApplication.h>
 #endif
@@ -103,7 +105,9 @@ void PrimitivesExample::drawEvent() {
 }
 
 void PrimitivesExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
     if(event.button() != MouseEvent::Button::Left) return;
+    #endif
 
     previousMousePosition = event.position();
     event.setAccepted();
@@ -117,7 +121,9 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    #endif
 
     Vector2 delta = 3.0f*Vector2(event.position() - previousMousePosition)/Vector2(defaultFramebuffer.viewport().size());
     transformation =
