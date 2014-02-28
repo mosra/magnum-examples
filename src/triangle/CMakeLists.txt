@@ -33,6 +33,8 @@ if(CORRADE_TARGET_NACL)
     find_package(Magnum REQUIRED NaClApplication)
 elseif(CORRADE_TARGET_EMSCRIPTEN)
     find_package(Magnum REQUIRED Sdl2Application)
+elseif(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
 else()
     find_package(Magnum REQUIRED GlutApplication)
 endif()
@@ -40,7 +42,13 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
-add_executable(triangle TriangleExample.cpp)
+if(NOT CORRADE_TARGET_ANDROID)
+    add_executable(triangle TriangleExample.cpp)
+else()
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
+    add_library(triangle SHARED TriangleExample.cpp)
+endif()
 target_link_libraries(triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
