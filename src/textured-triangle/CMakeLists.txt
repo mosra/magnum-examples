@@ -28,7 +28,7 @@ project(MagnumTexturedTriangleExample)
 
 find_package(Magnum REQUIRED Shaders)
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED TgaImporter)
 endif()
 
@@ -36,6 +36,8 @@ if(CORRADE_TARGET_NACL)
     find_package(Magnum REQUIRED NaClApplication)
 elseif(CORRADE_TARGET_EMSCRIPTEN)
     find_package(Magnum REQUIRED Sdl2Application)
+elseif(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
 else()
     find_package(Magnum REQUIRED GlutApplication)
 endif()
@@ -50,15 +52,23 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TexturedTriangleData resources.conf)
 
-add_executable(textured-triangle
-    TexturedTriangleExample.cpp
-    ${TexturedTriangleData})
+if(NOT CORRADE_TARGET_ANDROID)
+    add_executable(textured-triangle
+        TexturedTriangleExample.cpp
+        ${TexturedTriangleData})
+else()
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
+    add_library(textured-triangle SHARED
+        TexturedTriangleExample.cpp
+        ${TexturedTriangleData})
+endif()
 target_link_libraries(textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     target_link_libraries(textured-triangle ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 

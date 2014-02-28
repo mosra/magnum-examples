@@ -34,6 +34,8 @@
 #include <Magnum/Platform/NaClApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Magnum/Platform/Sdl2Application.h>
+#elif defined(CORRADE_TARGET_ANDROID)
+#include <Magnum/Platform/AndroidApplication.h>
 #else
 #include <Magnum/Platform/GlutApplication.h>
 #endif
