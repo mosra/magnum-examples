@@ -162,10 +162,22 @@ if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
 endif()
 
+# Dependent libraries and includes
+set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
+    ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL
+    ${CORRADE_INCLUDE_DIR})
+set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
+    ${CORRADE_UTILITY_LIBRARIES}
+    ${CORRADE_PLUGINMANAGER_LIBRARIES})
 if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
     find_package(OpenGL REQUIRED)
-else()
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
+elseif(MAGNUM_TARGET_GLES2)
     find_package(OpenGLES2 REQUIRED)
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
+elseif(MAGNUM_TARGET_GLES3)
+    find_package(OpenGLES3 REQUIRED)
+    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES3_LIBRARY})
 endif()
 
 # On Windows and in static builds, *Application libraries need to have
@@ -240,6 +252,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     # Applications
     if(${component} MATCHES .+Application)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
+
+        # Android application dependencies
+        if(${component} STREQUAL AndroidApplication)
+            find_package(EGL)
+            if(EGL_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES android ${EGL_LIBRARY} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+                set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
 
         # GLUT application dependencies
         if(${component} STREQUAL GlutApplication)
@@ -356,19 +379,6 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
     HANDLE_COMPONENTS)
-
-# Dependent libraries and includes
-set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
-    ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL
-    ${CORRADE_INCLUDE_DIR})
-set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARY}
-    ${CORRADE_UTILITY_LIBRARIES}
-    ${CORRADE_PLUGINMANAGER_LIBRARIES})
-if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGL_gl_LIBRARY})
-else()
-    set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES2_LIBRARY})
-endif()
 
 # Installation dirs
 include(CorradeLibSuffix)
