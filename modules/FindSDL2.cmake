@@ -10,7 +10,8 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2010, 2011, 2012, 2013, 2014
+#             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -43,7 +44,14 @@ endif()
 
 # Include dir
 find_path(SDL2_INCLUDE_DIR
-    NAMES SDL.h SDL_scancode.h
+    # We must search file which is present only in SDL2 and not in SDL1.
+    # Apparently when both SDL.h and SDL_scancode.h are specified, CMake is
+    # happy enough that it found SDL.h and doesn't bother about the other.
+    #
+    # On OSX, where the includes are not in SDL2/SDL.h form (which would solve
+    # this issue), but rather SDL2.framework/Headers/SDL.h, CMake might find
+    # SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
+    NAMES SDL_scancode.h
     PATH_SUFFIXES ${PATH_SUFFIXES}
 )
 
