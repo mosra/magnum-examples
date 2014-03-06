@@ -25,6 +25,7 @@
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Magnum/Buffer.h>
 #include <Magnum/ColorFormat.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/TextureFormat.h>
@@ -32,8 +33,7 @@
 #include <Magnum/Renderer.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/Texture.h>
-#include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/GlutApplication.h>
 #include <Magnum/SceneGraph/Camera3D.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -354,37 +354,21 @@ void MeshLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
 
     std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
-    if(!data || !data->isIndexed() || !data->positionArrayCount() || !data->normalArrayCount() || data->primitive() != MeshPrimitive::Triangles) {
+    if(!data || !data->hasNormals() || data->primitive() != MeshPrimitive::Triangles) {
         setNotFound(key);
         return;
     }
 
-    /* Fill mesh data */
-    auto mesh = new Mesh;
-    auto buffer = new Buffer;
-    auto indexBuffer = new Buffer;
-    mesh->setPrimitive(data->primitive());
-    MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, data->indices());
-
-    /* Textured mesh */
-    if(data->textureCoords2DArrayCount()) {
-        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
-            data->positions(0), data->normals(0), data->textureCoords2D(0));
-        mesh->addVertexBuffer(*buffer, 0,
-            Shaders::Phong::Position(), Shaders::Phong::Normal(), Shaders::Phong::TextureCoordinates());
-
-    /* Non-textured mesh */
-    } else {
-        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw,
-            data->positions(0), data->normals(0));
-        mesh->addVertexBuffer(*buffer, 0,
-            Shaders::Phong::Position(), Shaders::Phong::Normal());
-    }
+    /* Compile the mesh */
+    std::optional<Mesh> mesh;
+    std::unique_ptr<Buffer> buffer, indexBuffer;
+    std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*data, BufferUsage::StaticDraw);
 
     /* Save things */
-    ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-vertices", buffer)
-        .set(importer->mesh3DName(id) + "-indices", indexBuffer);
-    set(key, mesh);
+    ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-vertices", buffer.release());
+    if(indexBuffer)
+        ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-indices", indexBuffer.release());
+    set(key, new Mesh(std::move(*mesh)));
 }
 
 void MaterialLoader::doLoad(const ResourceKey key) {
