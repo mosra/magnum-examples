@@ -69,7 +69,7 @@ class ViewerExample: public Platform::Application {
 
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
-        void addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId);
+        void addObject(Trade::AbstractImporter& importer, Object3D* parent, std::size_t objectId);
 
         ViewerResourceManager resourceManager;
 
@@ -211,7 +211,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
 
     /* Add all children */
     for(UnsignedInt objectId: sceneData->children3D())
-        addObject(importer, o, objectId);
+        addObject(*importer, o, objectId);
 
     /* Importer, materials and loaders are not needed anymore */
     resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
@@ -229,16 +229,16 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplicat
             << textureLoader->notFoundCount() << "textures weren't found.";
 }
 
-void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* parent, std::size_t objectId) {
-    Debug() << "Importing object" << importer->object3DName(objectId);
+void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, std::size_t objectId) {
+    Debug() << "Importing object" << importer.object3DName(objectId);
 
     Object3D* object = nullptr;
-    std::unique_ptr<Trade::ObjectData3D> objectData = importer->object3D(objectId);
+    std::unique_ptr<Trade::ObjectData3D> objectData = importer.object3D(objectId);
     CORRADE_INTERNAL_ASSERT(objectData);
 
     /* Only meshes for now */
     if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
-        const auto materialName = importer->materialName(static_cast<Trade::MeshObjectData3D*>(objectData.get())->material());
+        const auto materialName = importer.materialName(static_cast<Trade::MeshObjectData3D*>(objectData.get())->material());
         const ResourceKey materialKey(materialName);
 
         /* Decide what object to add based on material type */
@@ -246,12 +246,12 @@ void ViewerExample::addObject(Trade::AbstractImporter* importer, Object3D* paren
 
         /* Color-only material */
         if(!material->flags())
-            (object = new ColoredObject(importer->mesh3DName(objectData->instance()), materialKey, parent, &drawables))
+            (object = new ColoredObject(importer.mesh3DName(objectData->instance()), materialKey, parent, &drawables))
                 ->setTransformation(objectData->transformation());
 
         /* Diffuse texture material */
         else if(material->flags() == Trade::PhongMaterialData::Flag::DiffuseTexture)
-            (object = new TexturedObject(importer->mesh3DName(objectData->instance()), materialKey, importer->textureName(material->diffuseTexture()), parent, &drawables))
+            (object = new TexturedObject(importer.mesh3DName(objectData->instance()), materialKey, importer.textureName(material->diffuseTexture()), parent, &drawables))
                 ->setTransformation(objectData->transformation());
 
         /* No other material types are supported yet */
