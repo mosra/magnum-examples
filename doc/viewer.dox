@@ -235,8 +235,16 @@ The constructor just requests the importer resource and fills the key map.
 @until }
 @until }
 
-%Mesh loading is done similarly to the way explained in previous examples.
-Texture coordinates are added to the mesh, if available, to allow texturing.
+Because the models might or might not be textured, the mesh creation procedure
+would get fairly verbose. There is a convenience @ref MeshTools::compile()
+function which examines the data, adds everything available (normals, texture
+coordinates...), packs the indices (if available) and then configures the mesh
+for @ref Shaders::Generic shader, from which all other stock shaders are
+derived. This function is useful for exactly this complicated cases, but the
+original way involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices()
+is far more flexible if you want data packing, index optimization and other
+performance-related stuff.
+
 If the importing failed due to missing or unexpected data, we call
 @ref AbstractResourceLoader::setNotFound() and all the objects using this mesh
 will use the fallback one instead. After importing is done, we save our index
@@ -245,7 +253,6 @@ to save the actual mesh. The manager does some additional checking and keeps
 statistics on loaded resources, so we shouldn't save the type we are importing
 directly using @ref ResourceManager::set().
 @skip void MeshLoader::doLoad
-@until }
 @until }
 @until }
 

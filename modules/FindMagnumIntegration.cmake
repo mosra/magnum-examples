@@ -13,8 +13,17 @@
 #  MAGNUM_*INTEGRATION_FOUND    - Whether the component was found
 #  MAGNUM_*INTEGRATION_LIBRARIES - Component library and dependent libraries
 #
+# The package is found if either debug or release version of each requested
+# library is found. If both debug and release libraries are found, proper
+# version is chosen based on actual build configuration of the project (i.e.
+# Debug build is linked to debug libraries, Release build to release
+# libraries).
+#
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_*INTEGRATION_LIBRARY  - Component library (w/o dependencies)
+#  MAGNUM_*INTEGRATION_LIBRARY_DEBUG - Debug version of given library, if found
+#  MAGNUM_*INTEGRATION_LIBRARY_RELEASE - Release version of given library, if
+#   found
 #
 
 #
@@ -49,8 +58,20 @@ find_package(Magnum REQUIRED)
 foreach(component ${MagnumIntegration_FIND_COMPONENTS})
     string(TOUPPER ${component} _COMPONENT)
 
-    # Find the library
-    find_library(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY Magnum${component}Integration)
+    # Try to find both debug and release version of the library
+    find_library(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG Magnum${component}Integration-d)
+    find_library(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE Magnum${component}Integration)
+
+    # Set the _LIBRARY variable based on what was found
+    if(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG AND MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE)
+        set(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY
+            debug ${MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG}
+            optimized ${MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE})
+    elseif(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG)
+        set(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY ${MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG})
+    elseif(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE)
+        set(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY ${MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE})
+    endif()
 
     set(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX ${component}Integration)
 
@@ -85,6 +106,8 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
 
         # Don't expose variables w/o dependencies to end users
         mark_as_advanced(FORCE
+            MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_DEBUG
+            MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY_RELEASE
             MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY
             _MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIR)
     else()
