@@ -35,6 +35,6 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 add_executable(triangle TriangleExample.cpp)
 target_link_libraries(triangle
+    ${MAGNUM_APPLICATION_LIBRARIES}
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    ${MAGNUM_SHADERS_LIBRARIES})
