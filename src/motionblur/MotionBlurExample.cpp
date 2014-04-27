@@ -69,10 +69,20 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     Renderer::setFeature(Renderer::Feature::DepthTest, true);
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
-    Trade::MeshData3D data = Primitives::Icosphere::solid(3);
-    MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw, data.indices());
-    MeshTools::interleave(mesh, buffer, BufferUsage::StaticDraw, data.positions(0), data.normals(0));
-    mesh.addVertexBuffer(buffer, 0, Shaders::Phong::Position(), Shaders::Phong::Normal());
+    const Trade::MeshData3D data = Primitives::Icosphere::solid(3);
+
+    buffer.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
+
+    Containers::Array<char> indexData;
+    Mesh::IndexType indexType;
+    UnsignedInt indexStart, indexEnd;
+    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
+    indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+
+    mesh.setPrimitive(data.primitive())
+        .setCount(data.indices().size())
+        .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+        .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);

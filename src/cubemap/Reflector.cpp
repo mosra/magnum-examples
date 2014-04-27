@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/Buffer.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
@@ -47,15 +48,24 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
 
     /* Sphere mesh */
     if(!(sphere = resourceManager.get<Mesh>("sphere"))) {
-        Mesh* mesh = new Mesh;
-        Buffer* buffer = new Buffer;
-        Buffer* indexBuffer = new Buffer;
-
         Trade::MeshData3D sphereData = Primitives::UVSphere::solid(16, 32, Primitives::UVSphere::TextureCoords::Generate);
-        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw, sphereData.positions(0), sphereData.textureCoords2D(0));
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, sphereData.indices());
+
+        Buffer* buffer = new Buffer;
+        buffer->setData(MeshTools::interleave(sphereData.positions(0), sphereData.textureCoords2D(0)), BufferUsage::StaticDraw);
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(sphereData.indices());
+
+        Buffer* indexBuffer = new Buffer;
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+
+        Mesh* mesh = new Mesh;
         mesh->setPrimitive(sphereData.primitive())
-            .addVertexBuffer(*buffer, 0, ReflectorShader::Position(), ReflectorShader::TextureCoords());
+            .setCount(sphereData.indices().size())
+            .addVertexBuffer(*buffer, 0, ReflectorShader::Position{}, ReflectorShader::TextureCoords{})
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
         resourceManager.set("sphere-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
             .set("sphere-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)

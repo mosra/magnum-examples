@@ -53,7 +53,7 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0,
             Shaders::VertexColor3D::Position(),
             Shaders::VertexColor3D::Color());

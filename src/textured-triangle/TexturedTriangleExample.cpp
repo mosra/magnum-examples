@@ -61,7 +61,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
