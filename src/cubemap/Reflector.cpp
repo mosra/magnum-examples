@@ -25,7 +25,6 @@
 
 #include "Reflector.h"
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/CubeMapTexture.h>

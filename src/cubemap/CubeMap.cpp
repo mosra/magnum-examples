@@ -25,7 +25,6 @@
 
 #include "CubeMap.h"
 
-#include <fstream>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/TextureFormat.h>
