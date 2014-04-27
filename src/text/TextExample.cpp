@@ -26,7 +26,7 @@
 #include <iomanip>
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Math/Complex.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>

@@ -32,7 +32,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Texture.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera3D.h>

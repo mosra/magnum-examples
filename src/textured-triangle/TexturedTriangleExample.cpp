@@ -30,7 +30,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 

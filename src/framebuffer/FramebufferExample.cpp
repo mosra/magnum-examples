@@ -25,7 +25,7 @@
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Trade/AbstractImporter.h>
 

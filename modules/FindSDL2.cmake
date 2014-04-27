@@ -1,3 +1,12 @@
+# - Find SDL2
+#
+# This module defines:
+#
+#  SDL2_FOUND               - True if SDL2 library is found
+#  SDL2_LIBRARY             - SDL2 dynamic library
+#  SDL2_INCLUDE_DIR         - Include dir
+#
+
 #
 #   This file is part of Magnum.
 #
@@ -23,30 +32,31 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8)
-project(MagnumMotionblurExample)
+# In Emscripten SDL is linked automatically, thus no need to find the library.
+# Also the includes are in SDL subdirectory, not SDL2.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(PATH_SUFFIXES SDL)
+else()
+    find_library(SDL2_LIBRARY SDL2)
+    set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
+    set(PATH_SUFFIXES SDL2)
+endif()
 
-find_package(Magnum REQUIRED
-    MeshTools
-    Primitives
-    SceneGraph
-    Shaders
-    Sdl2Application)
+# Include dir
+find_path(SDL2_INCLUDE_DIR
+    # We must search file which is present only in SDL2 and not in SDL1.
+    # Apparently when both SDL.h and SDL_scancode.h are specified, CMake is
+    # happy enough that it found SDL.h and doesn't bother about the other.
+    #
+    # On OSX, where the includes are not in SDL2/SDL.h form (which would solve
+    # this issue), but rather SDL2.framework/Headers/SDL.h, CMake might find
+    # SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
+    NAMES SDL_scancode.h
+    PATH_SUFFIXES ${PATH_SUFFIXES}
+)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
-
-corrade_add_resource(MotionBlurShaders resources.conf)
-
-add_executable(motionblur
-    MotionBlurCamera.cpp
-    MotionBlurExample.cpp
-    Icosphere.cpp
-    ${MotionBlurShaders})
-target_link_libraries(motionblur
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args("SDL2" DEFAULT_MSG
+    ${SDL2_LIBRARY_NEEDED}
+    SDL2_INCLUDE_DIR
+)

@@ -34,7 +34,7 @@
 #include <Magnum/ResourceManager.h>
 #include <Magnum/Texture.h>
 #include <Magnum/MeshTools/Compile.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Camera3D.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -143,7 +143,7 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         Float shininess;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::GlutApplication(arguments, Configuration().setTitle("Magnum Viewer Example")) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer Example")) {
     Utility::Arguments args;
     args.addArgument("file").setHelpKey("file", "file.dae").setHelp("file", "file to load")
         .parse(arguments.argc, arguments.argv);
