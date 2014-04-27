@@ -24,6 +24,11 @@ http://mosra.cz/blog/magnum-doc/example-index.html.
 Each example has its own README, explaining the features and key/mouse
 controls, see `src/` subdirectories.
 
+To keep the examples as simple as possible they are coded for desktop only,
+the [ports branch](https://github.com/mosra/magnum-examples/tree/ports)
+contains minor modifications to some of them for NaCl, Emscripten and Android
+support.
+
 COMPILATION
 ===========
 

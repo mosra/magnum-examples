@@ -119,7 +119,7 @@ shader, so the attribute locations can be conveniently set
 @ref AbstractShaderProgram-attribute-location "directly in the shader source".
 With newer OpenGL versions we could also explicitly set uniform locations and
 texture layers itself, see @ref AbstractShaderProgram-uniform-location and
-@ref AbstractShaderProgram-texture-layer. However, in this example we will keep
+@ref AbstractShaderProgram-texture-units. However, in this example we will keep
 compatibility with OpenGL 3.3.
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
 @skip TexturedTriangleShader::TexturedTriangleShader

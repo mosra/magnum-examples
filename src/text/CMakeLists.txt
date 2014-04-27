@@ -37,10 +37,8 @@ endif()
 
 if(CORRADE_TARGET_NACL)
     find_package(Magnum REQUIRED NaClApplication)
-elseif(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(Magnum REQUIRED Sdl2Application)
 else()
-    find_package(Magnum REQUIRED GlutApplication)
+    find_package(Magnum REQUIRED Sdl2Application)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")

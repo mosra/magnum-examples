@@ -29,12 +29,10 @@
 #include <Magnum/Math/Vector3.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Magnum/Platform/Sdl2Application.h>
 #elif defined(CORRADE_TARGET_ANDROID)
 #include <Magnum/Platform/AndroidApplication.h>
 #else
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Shaders/VertexColor.h>
 
@@ -65,7 +63,7 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0,
             Shaders::VertexColor3D::Position(),
             Shaders::VertexColor3D::Color());

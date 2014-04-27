@@ -32,12 +32,10 @@
 #include <Magnum/TextureFormat.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Magnum/Platform/Sdl2Application.h>
 #elif defined(CORRADE_TARGET_ANDROID)
 #include <Magnum/Platform/AndroidApplication.h>
 #else
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Trade/AbstractImporter.h>
@@ -80,7 +78,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0, Shaders::Flat2D::Position(), Shaders::Flat2D::TextureCoordinates());
 
     /* Load TGA importer plugin */

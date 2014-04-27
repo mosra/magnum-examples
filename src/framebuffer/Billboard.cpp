@@ -35,10 +35,12 @@ namespace Magnum { namespace Examples {
 
 Billboard::Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D* group): Object2D(parent), SceneGraph::Drawable2D(*this, group) {
     Trade::MeshData2D square = Primitives::Square::solid();
+
     buffer.setData(square.positions(0), BufferUsage::StaticDraw);
+
     mesh.setPrimitive(square.primitive())
-        .setVertexCount(square.positions(0).size())
-        .addVertexBuffer(buffer, 0, ColorCorrectionShader::Position());
+        .setCount(square.positions(0).size())
+        .addVertexBuffer(buffer, 0, ColorCorrectionShader::Position{});
 
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)
         .setMagnificationFilter(Sampler::Filter::Linear)

@@ -28,10 +28,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Math/Complex.h>
 #include <Magnum/DefaultFramebuffer.h>

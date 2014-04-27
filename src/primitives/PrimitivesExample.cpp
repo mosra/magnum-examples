@@ -23,18 +23,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Magnum/Buffer.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #ifdef CORRADE_TARGET_NACL
 #include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <Magnum/Platform/Sdl2Application.h>
 #elif defined(CORRADE_TARGET_ANDROID)
 #include <Magnum/Platform/AndroidApplication.h>
 #else
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/Phong.h>
@@ -73,13 +72,18 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 
-    MeshTools::compressIndices(mesh, indexBuffer, BufferUsage::StaticDraw, cube.indices());
+    vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
 
-    MeshTools::interleave(mesh, vertexBuffer, BufferUsage::StaticDraw,
-        cube.positions(0), cube.normals(0));
+    Containers::Array<char> indexData;
+    Mesh::IndexType indexType;
+    UnsignedInt indexStart, indexEnd;
+    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
+    indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+
     mesh.setPrimitive(cube.primitive())
-        .addVertexBuffer(vertexBuffer, 0,
-            Shaders::Phong::Position(), Shaders::Phong::Normal());
+        .setCount(cube.indices().size())
+        .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+        .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 
     transformation = Matrix4::rotationX(Deg(30.0f))*
                      Matrix4::rotationY(Deg(40.0f));

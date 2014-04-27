@@ -25,8 +25,8 @@
 
 #include "CubeMap.h"
 
-#include <fstream>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/Buffer.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Math/Functions.h>
@@ -49,16 +49,25 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
     /* Cube mesh */
     if(!(cube = resourceManager.get<Mesh>("cube"))) {
-        Mesh* mesh = new Mesh;
-        Buffer* buffer = new Buffer;
-        Buffer* indexBuffer = new Buffer;
-
         Trade::MeshData3D cubeData = Primitives::Cube::solid();
         MeshTools::flipFaceWinding(cubeData.indices());
-        MeshTools::compressIndices(*mesh, *indexBuffer, BufferUsage::StaticDraw, cubeData.indices());
-        MeshTools::interleave(*mesh, *buffer, BufferUsage::StaticDraw, cubeData.positions(0));
+
+        Buffer* buffer = new Buffer;
+        buffer->setData(MeshTools::interleave(cubeData.positions(0)), BufferUsage::StaticDraw);
+
+        Containers::Array<char> indexData;
+        Mesh::IndexType indexType;
+        UnsignedInt indexStart, indexEnd;
+        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cubeData.indices());
+
+        Buffer* indexBuffer = new Buffer;
+        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+
+        Mesh* mesh = new Mesh;
         mesh->setPrimitive(cubeData.primitive())
-            .addVertexBuffer(*buffer, 0, CubeMapShader::Position());
+            .setCount(cubeData.indices().size())
+            .addVertexBuffer(*buffer, 0, CubeMapShader::Position{})
+            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
         resourceManager.set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
             .set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)

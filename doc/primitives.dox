@@ -62,32 +62,34 @@ rendered.
 @until Renderer::setFeature(Renderer::Feature::FaceCulling
 
 We now use pre-made @ref Primitives::Cube "cube primitive" and create mesh from
-it. Why do we need indexed mesh and what it actually is? In most meshes the
+it. The mesh is indexed and contains position and normal data. As said earlier,
+interleaving the data gives us best memory access performance. We can do it by
+hand as in previous example, but using @ref MeshTools::interleave() is much
+more convenient. We upload the interleaved data directly to vertex buffer.
+@skip Trade::MeshData3D
+@until vertexBuffer.setData(
+
+Why do we need indexed mesh and what it actually is? In most meshes the
 same vertex data are shared among more than one vertex, even a simple square
 consists of two triangles sharing two adjacent vertices. To save precious GPU
 memory, the mesh can be indexed, i.e. containing buffer with unique vertex data
 and index buffer telling which data belong to which vertex. The indices are by
 default just 32-bit integers. But most meshes don't need full 32-bit range to
 index vertex data -- our mesh has only 36 unique vertices, thus even the
-smallest possible 8-bit range is large enough and the additional 24 bits per
-vertex would waste memory.
+smallest possible 8-bit range is large enough. @ref MeshTools::compressIndices()
+again does all the boring work for us -- it checks index range and creates
+array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
+based on that.
+@skip Containers::Array<char>
+@until std::tie
 
-@ref MeshTools::compressIndices() does all the boring work for us -- checks
-vertex count and creates index array consisting of @ref UnsignedByte,
-@ref UnsignedShort or @ref UnsignedInt based on that. It then fills the buffer
-with the data, adds it to the mesh and configures index parameters, so we don't
-need to do anything else.
-@skip Trade::MeshData3D
-@until MeshTools::compressIndices
-
-To realistically render the cube, we need also normals. We will interleave them
-with vertex positions using @ref MeshTools::interleave(). The function takes
-list of arrays to interleave and then fills the buffer with them. However, it
-doesn't know anything about the purpose of the data, so it only sets vertex
-count and we then need to set mesh primitive and specify attribute bindings for
-the shader manually.
-@skip MeshTools::interleave
-@until Shaders::Phong
+Everything is now ready for configuring the mesh. We set primitive type, index
+count, add our vertex buffer and specify index buffer. The `indexStart` and
+`indexEnd` parameters are purely optional, but they might improve memory access
+performance on desktop GL as the GPU will know what subset of vertex data are
+used.
+@skip mesh.setPrimitive
+@until .setIndexBuffer
 
 We now specify initial transformation, color and projection. See
 @ref matrix-vector and @ref transformations for more thorough introduction to

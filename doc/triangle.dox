@@ -32,11 +32,11 @@ namespace Magnum {
 @image html triangle/triangle.png
 @image latex triangle/triangle.png
 
-For the first example we will use the simple GLUT toolkit, which is available
-on most platforms. Support for it is in @ref Platform::GlutApplication class.
-We subclass it and next to the constructor we implement the one required
-function which is needed for rendering into the window. You can read more about
-platform support and various portability tricks in @ref platform.
+For the examples we will use SDL 2, which is de-facto standard and most widely
+used toolkit. Support for it is in @ref Platform::Sdl2Application class. We
+subclass it and next to the constructor we implement the one required function
+which is needed for rendering into the window. You can read more about platform
+support and various portability tricks in @ref platform.
 
 We also need @ref Mesh encapsulating our triangle, @ref Buffer to store vertex
 data and @ref Shaders::Flat "shader" which will take care of rendering.
@@ -74,7 +74,7 @@ with no gaps in between.
     @ref method-chaining "method chaining" - so you don't have to write
     repeated code.
 
-Function @ref Platform::GlutApplication::drawEvent() "drawEvent()" will take
+Function @ref Platform::Sdl2Application::drawEvent() "drawEvent()" will take
 care of rendering the scene. We will clear color buffer of the default
 framebuffer (which is also the default rendering target) and then we draw the
 mesh using our shader. The context is double-buffered, so we need to swap the
@@ -85,14 +85,14 @@ buffers after drawing.
 -   @ref triangle/TriangleExample.cpp
 
 That's all, now we can compile the whole example using CMake. First we find
-required `%Magnum` package with `%Shaders` and `GlutApplication` component and
+required `%Magnum` package with `%Shaders` and `Sdl2Application` component and
 add include dirs for both core library and application to include path. It's
 recommended to use also Corrade's set of compiler flags to enable additional
 warnings. Then we collect our source files, create our executable and link to
 all %Magnum libraries we requested. See @ref cmake for more information.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
-@until MAGNUM_APPLICATION_LIBRARIES})
+@until ${MAGNUM_SHADERS_LIBRARIES})
 
 -   @ref triangle/CMakeLists.txt
 
