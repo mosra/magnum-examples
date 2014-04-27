@@ -30,7 +30,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 
@@ -61,7 +61,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */

@@ -27,7 +27,7 @@
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/Math/Vector3.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/VertexColor.h>
 
 namespace Magnum { namespace Examples {
@@ -53,7 +53,7 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
 
     buffer.setData(data, BufferUsage::StaticDraw);
     mesh.setPrimitive(MeshPrimitive::Triangles)
-        .setVertexCount(3)
+        .setCount(3)
         .addVertexBuffer(buffer, 0,
             Shaders::VertexColor3D::Position(),
             Shaders::VertexColor3D::Color());

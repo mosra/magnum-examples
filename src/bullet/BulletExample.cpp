@@ -36,7 +36,7 @@
 #include <Magnum/Shapes/Box.h>
 #include <Magnum/Shapes/Shape.h>
 #include <Magnum/Shapes/ShapeGroup.h>
-#include <Magnum/Platform/GlutApplication.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera3D.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
