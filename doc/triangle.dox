@@ -92,7 +92,7 @@ warnings. Then we collect our source files, create our executable and link to
 all %Magnum libraries we requested. See @ref cmake for more information.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
-@until MAGNUM_APPLICATION_LIBRARIES})
+@until ${MAGNUM_SHADERS_LIBRARIES})
 
 -   @ref triangle/CMakeLists.txt
 
