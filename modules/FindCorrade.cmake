@@ -19,6 +19,13 @@
 # chosen based on actual build configuration of the project (i.e. Debug build
 # is linked to debug libraries, Release build to release libraries).
 #
+# On multi-configuration build systems (such as Visual Studio or XCode) the
+# preprocessor variable CORRADE_IS_DEBUG_BUILD is defined if given build
+# configuration is Debug (not Corrade itself, but build configuration of the
+# project using it). Useful e.g. for selecting proper plugin directory. On
+# single-configuration build systems (such as Makefiles) this information is
+# not needed and thus the variable is not defined in any case.
+#
 # Corrade configures the compiler to use C++11 standard. Additionally you can
 # use CORRADE_CXX_FLAGS to enable additional pedantic set of warnings and
 # enable hidden visibility by default.
@@ -26,13 +33,12 @@
 # Features of found Corrade library are exposed in these variables:
 #  CORRADE_GCC47_COMPATIBILITY  - Defined if compiled with compatibility
 #   mode for GCC 4.7
-#  CORRADE_GCC46_COMPATIBILITY  - Defined if compiled with compatibility
-#   mode for GCC 4.6
 #  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, OS X)
+#  CORRADE_TARGET_APPLE         - Defined if compiled for OS X
 #  CORRADE_TARGET_WINDOWS       - Defined if compiled for Windows
 #  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome
 #   Native Client
@@ -196,10 +202,6 @@ string(FIND "${_corradeConfigure}" "#define CORRADE_GCC47_COMPATIBILITY" _GCC47_
 if(NOT _GCC47_COMPATIBILITY EQUAL -1)
     set(CORRADE_GCC47_COMPATIBILITY 1)
 endif()
-string(FIND "${_corradeConfigure}" "#define CORRADE_GCC46_COMPATIBILITY" _GCC46_COMPATIBILITY)
-if(NOT _GCC46_COMPATIBILITY EQUAL -1)
-    set(CORRADE_GCC46_COMPATIBILITY 1)
-endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_BUILD_DEPRECATED" _BUILD_DEPRECATED)
 if(NOT _BUILD_DEPRECATED EQUAL -1)
     set(CORRADE_BUILD_DEPRECATED 1)
@@ -211,6 +213,10 @@ endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_UNIX" _TARGET_UNIX)
 if(NOT _TARGET_UNIX EQUAL -1)
     set(CORRADE_TARGET_UNIX 1)
+endif()
+string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_APPLE" _TARGET_APPLE)
+if(NOT _TARGET_APPLE EQUAL -1)
+    set(CORRADE_TARGET_APPLE 1)
 endif()
 string(FIND "${_corradeConfigure}" "#define CORRADE_TARGET_WINDOWS" _TARGET_WINDOWS)
 if(NOT _TARGET_WINDOWS EQUAL -1)
