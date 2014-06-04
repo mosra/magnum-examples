@@ -161,13 +161,16 @@ to include current binary dir, because it will contain our generated
 contents:
 
 @dontinclude textured-triangle/configure.h.cmake
-@skipline #define
+@skip #ifdef CORRADE_IS_DEBUG_BUILD
+@until #endif
 
 -   @ref textured-triangle/configure.h.cmake
 
 We then process it with CMake, which will replace
-`${MAGNUM_PLUGINS_IMPORTER_DIR}` with path gathered when looking for %Magnum.
-Again, see @ref plugins for more detailed information about plugin directories.
+`${MAGNUM_PLUGINS_IMPORTER_DIR}` with path gathered when looking for %Magnum or
+with `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` if we need to use plugins built for
+debug configuration. Again, see @ref plugins for more detailed information
+about plugin directories.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip configure_file
