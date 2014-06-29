@@ -333,19 +333,19 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
 MeshLoader::MeshLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i)
-        keyMap.emplace(importer->mesh3DName(i), i);
+        keyMap.insert({importer->mesh3DName(i), i});
 }
 
 MaterialLoader::MaterialLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i)
-        keyMap.emplace(importer->materialName(i), i);
+        keyMap.insert({importer->materialName(i), i});
 }
 
 TextureLoader::TextureLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i)
-        keyMap.emplace(importer->textureName(i), i);
+        keyMap.insert({importer->textureName(i), i});
 }
 
 void MeshLoader::doLoad(const ResourceKey key) {
