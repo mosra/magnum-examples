@@ -112,6 +112,8 @@ void FramebufferExample::mousePressEvent(MouseEvent& event) {
 }
 
 void FramebufferExample::mouseMoveEvent(MouseMoveEvent& event) {
+    if(!event.buttons()) return;
+
     billboard->translate(camera->projectionSize()*Vector2(event.position()-previous)/Vector2(camera->viewport())*Vector2(2.0f, -2.0f));
     previous = event.position();
     redraw();
