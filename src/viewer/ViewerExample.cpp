@@ -396,7 +396,12 @@ void TextureLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
 
     std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
-    if(!image || (image->format() != ColorFormat::RGB && image->format() != ColorFormat::BGR)) {
+    if(!image || (image->format() != ColorFormat::RGB
+        #ifndef MAGNUM_TARGET_GLES
+        && image->format() != ColorFormat::BGR
+        #endif
+        ))
+    {
         setNotFound(key);
         return;
     }
