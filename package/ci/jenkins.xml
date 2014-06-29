@@ -107,7 +107,7 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE=${desktop_flag} \
     -DWITH_TEXT=${desktop_flag} \
     -DWITH_TRIANGLE=ON \
-    -DWITH_VIEWER=${desktop_flag} \
+    -DWITH_VIEWER=ON \
     -G Ninja
 
 ninja
