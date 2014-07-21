@@ -23,8 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED)
-
 if(WITH_BULLET)
     add_subdirectory(bullet)
 endif()
