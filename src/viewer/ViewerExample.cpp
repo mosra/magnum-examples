@@ -333,19 +333,19 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
 MeshLoader::MeshLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i)
-        keyMap.emplace(importer->mesh3DName(i), i);
+        keyMap.insert({importer->mesh3DName(i), i});
 }
 
 MaterialLoader::MaterialLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i)
-        keyMap.emplace(importer->materialName(i), i);
+        keyMap.insert({importer->materialName(i), i});
 }
 
 TextureLoader::TextureLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i)
-        keyMap.emplace(importer->textureName(i), i);
+        keyMap.insert({importer->textureName(i), i});
 }
 
 void MeshLoader::doLoad(const ResourceKey key) {
@@ -396,7 +396,12 @@ void TextureLoader::doLoad(const ResourceKey key) {
     Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
 
     std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
-    if(!image || (image->format() != ColorFormat::RGB && image->format() != ColorFormat::BGR)) {
+    if(!image || (image->format() != ColorFormat::RGB
+        #ifndef MAGNUM_TARGET_GLES
+        && image->format() != ColorFormat::BGR
+        #endif
+        ))
+    {
         setNotFound(key);
         return;
     }
