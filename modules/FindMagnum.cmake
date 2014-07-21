@@ -92,11 +92,12 @@
 #  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
+#  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #
-# If `MAGNUM_BUILD_DEPRECATED` is defined, the `MAGNUM_INCLUDE_DIR` variable
-# also contains path directly to Magnum directory (i.e. for includes without
-# `Magnum/` prefix) and `MAGNUM_PLUGINS_INCLUDE_DIR` contains include dir for
-# plugins (i.e. instead of `MagnumPlugins/` prefix).
+# If MAGNUM_BUILD_DEPRECATED is defined, the MAGNUM_INCLUDE_DIR variable also
+# contains path directly to Magnum directory (i.e. for includes without
+# Magnum/ prefix) and MAGNUM_PLUGINS_INCLUDE_DIR contains include dir for
+# plugins (i.e. for includes without MagnumPlugins/ prefix).
 #
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR           - Root include dir (w/o dependencies)
@@ -180,6 +181,15 @@ endif()
 find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum/Magnum.h)
 
+# We need to open configure.h file from MAGNUM_INCLUDE_DIR before we check for
+# the components. Bail out with proper error message if it wasn't found. The
+# complete check with all components is further below.
+if(NOT MAGNUM_INCLUDE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(Magnum
+        REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR)
+endif()
+
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
 
@@ -206,6 +216,10 @@ endif()
 string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
 if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
     set(MAGNUM_TARGET_DESKTOP_GLES 1)
+endif()
+string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_WEBGL" _TARGET_WEBGL)
+if(NOT _TARGET_WEBGL EQUAL -1)
+    set(MAGNUM_TARGET_WEBGL 1)
 endif()
 
 # Dependent libraries and includes
@@ -466,7 +480,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     endif()
 endforeach()
 
-include(FindPackageHandleStandardArgs)
+# Complete the check with also all components
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
     HANDLE_COMPONENTS)
