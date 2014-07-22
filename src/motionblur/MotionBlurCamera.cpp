@@ -78,13 +78,14 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     Utility::Resource rs("shaders");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("MotionBlurShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL330, Shader::Type::Fragment);
+
+    vert.addSource(rs.get("MotionBlurShader.vert"));
     frag.addSource(rs.get("MotionBlurShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShader(vert);
     attachShader(frag);
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());

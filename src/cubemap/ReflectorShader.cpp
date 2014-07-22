@@ -44,13 +44,14 @@ ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("ReflectorShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL330, Shader::Type::Fragment);
+
+    vert.addSource(rs.get("ReflectorShader.vert"));
     frag.addSource(rs.get("ReflectorShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShader(vert);
     attachShader(frag);
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
