@@ -55,8 +55,8 @@ class PrimitivesExample: public Platform::Application {
 };
 
 PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Primitives Example")) {
-    Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
+    Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::FaceCulling);
 
     Trade::MeshData3D cube = Primitives::Cube::solid();
 

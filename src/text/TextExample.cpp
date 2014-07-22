@@ -90,7 +90,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
     _text2.reset(new Text::Renderer2D(*_font, _cache, 0.035f, Text::Alignment::TopRight));
     _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
-    Renderer::setFeature(Renderer::Feature::Blending, true);
+    Renderer::enable(Renderer::Feature::Blending);
     Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
     Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
 

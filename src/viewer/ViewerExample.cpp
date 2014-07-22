@@ -197,8 +197,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
-    Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
+    Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::FaceCulling);
 
     /* Default object, parent of all (for manipulation) */
     _o = new Object3D(&_scene);

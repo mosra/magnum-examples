@@ -47,8 +47,7 @@ CubeMapShader::CubeMapShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    attachShader(vert);
-    attachShader(frag);
+    attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
