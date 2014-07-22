@@ -37,7 +37,7 @@ class ReflectorShader: public AbstractShaderProgram {
         typedef Attribute<0, Vector3> Position;
         typedef Attribute<1, Vector2> TextureCoords;
 
-        ReflectorShader();
+        explicit ReflectorShader();
 
         ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(transformationMatrixUniform, matrix);

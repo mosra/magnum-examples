@@ -47,7 +47,7 @@ namespace Magnum { namespace Examples {
 
 class CubeMapExample: public Platform::Application {
     public:
-        CubeMapExample(const Arguments& arguments);
+        explicit CubeMapExample(const Arguments& arguments);
 
     private:
         void viewportEvent(const Vector2i& size) override;

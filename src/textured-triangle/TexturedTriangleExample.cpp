@@ -41,7 +41,7 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangleExample: public Platform::Application {
     public:
-        TexturedTriangleExample(const Arguments& arguments);
+        explicit TexturedTriangleExample(const Arguments& arguments);
 
     private:
         void drawEvent() override;

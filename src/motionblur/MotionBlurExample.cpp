@@ -41,7 +41,7 @@ namespace Magnum { namespace Examples {
 
 class MotionBlurExample: public Platform::Application {
     public:
-        MotionBlurExample(const Arguments& arguments);
+        explicit MotionBlurExample(const Arguments& arguments);
 
     private:
         void viewportEvent(const Vector2i& size) override;

@@ -115,7 +115,7 @@ class TextureLoader: public AbstractResourceLoader<Texture2D> {
 
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
@@ -130,7 +130,7 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
 
 class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;

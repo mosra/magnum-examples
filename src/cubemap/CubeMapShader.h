@@ -34,7 +34,7 @@ class CubeMapShader: public AbstractShaderProgram {
     public:
         typedef Attribute<0, Vector3> Position;
 
-        CubeMapShader();
+        explicit CubeMapShader();
 
         CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
