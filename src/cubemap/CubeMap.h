@@ -40,10 +40,10 @@ class CubeMap: public Object3D, SceneGraph::Drawable3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
     private:
-        Resource<Buffer> buffer;
-        Resource<Mesh> cube;
-        Resource<AbstractShaderProgram, CubeMapShader> shader;
-        Resource<CubeMapTexture> texture;
+        Resource<Buffer> _buffer;
+        Resource<Mesh> _cube;
+        Resource<AbstractShaderProgram, CubeMapShader> _shader;
+        Resource<CubeMapTexture> _texture;
 };
 
 }}

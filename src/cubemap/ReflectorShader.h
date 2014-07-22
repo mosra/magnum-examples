@@ -40,32 +40,32 @@ class ReflectorShader: public AbstractShaderProgram {
         explicit ReflectorShader();
 
         ReflectorShader& setTransformationMatrix(const Matrix4& matrix) {
-            setUniform(transformationMatrixUniform, matrix);
+            setUniform(_transformationMatrixUniform, matrix);
             return *this;
         }
 
         ReflectorShader& setNormalMatrix(const Matrix3& matrix) {
-            setUniform(normalMatrixUniform, matrix);
+            setUniform(_normalMatrixUniform, matrix);
             return *this;
         }
 
         ReflectorShader& setProjectionMatrix(const Matrix4& matrix) {
-            setUniform(projectionMatrixUniform, matrix);
+            setUniform(_projectionMatrixUniform, matrix);
             return *this;
         }
 
         ReflectorShader& setCameraMatrix(const Matrix3& matrix) {
-            setUniform(cameraMatrixUniform, matrix);
+            setUniform(_cameraMatrixUniform, matrix);
             return *this;
         }
 
         ReflectorShader& setReflectivity(Float reflectivity) {
-            setUniform(reflectivityUniform, reflectivity);
+            setUniform(_reflectivityUniform, reflectivity);
             return *this;
         }
 
         ReflectorShader& setDiffuseColor(const Color3& color) {
-            setUniform(diffuseColorUniform, color);
+            setUniform(_diffuseColorUniform, color);
             return *this;
         }
 
@@ -74,12 +74,12 @@ class ReflectorShader: public AbstractShaderProgram {
         ReflectorShader& setTarnishTexture(Texture2D& texture);
 
     private:
-        Int transformationMatrixUniform,
-            normalMatrixUniform,
-            projectionMatrixUniform,
-            cameraMatrixUniform,
-            reflectivityUniform,
-            diffuseColorUniform;
+        Int _transformationMatrixUniform,
+            _normalMatrixUniform,
+            _projectionMatrixUniform,
+            _cameraMatrixUniform,
+            _reflectivityUniform,
+            _diffuseColorUniform;
 };
 
 }}

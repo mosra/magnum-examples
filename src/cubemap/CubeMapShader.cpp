@@ -52,7 +52,7 @@ CubeMapShader::CubeMapShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
 }

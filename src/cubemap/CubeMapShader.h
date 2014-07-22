@@ -37,14 +37,14 @@ class CubeMapShader: public AbstractShaderProgram {
         explicit CubeMapShader();
 
         CubeMapShader& setTransformationProjectionMatrix(const Matrix4& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
+            setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
         CubeMapShader& setTexture(CubeMapTexture& texture);
 
     private:
-        Int transformationProjectionMatrixUniform;
+        Int _transformationProjectionMatrixUniform;
 };
 
 }}
