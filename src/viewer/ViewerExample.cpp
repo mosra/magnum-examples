@@ -71,13 +71,13 @@ class ViewerExample: public Platform::Application {
 
         void addObject(Trade::AbstractImporter& importer, Object3D* parent, std::size_t objectId);
 
-        ViewerResourceManager resourceManager;
+        ViewerResourceManager _resourceManager;
 
-        Scene3D scene;
-        Object3D *o, *cameraObject;
-        SceneGraph::Camera3D* camera;
-        SceneGraph::DrawableGroup3D drawables;
-        Vector3 previousPosition;
+        Scene3D _scene;
+        Object3D *_o, *_cameraObject;
+        SceneGraph::Camera3D* _camera;
+        SceneGraph::DrawableGroup3D _drawables;
+        Vector3 _previousPosition;
 };
 
 class MeshLoader: public AbstractResourceLoader<Mesh> {
@@ -87,8 +87,8 @@ class MeshLoader: public AbstractResourceLoader<Mesh> {
     private:
         void doLoad(ResourceKey key) override;
 
-        Resource<Trade::AbstractImporter> importer;
-        std::unordered_map<ResourceKey, std::size_t> keyMap;
+        Resource<Trade::AbstractImporter> _importer;
+        std::unordered_map<ResourceKey, std::size_t> _keyMap;
 };
 
 class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
@@ -98,8 +98,8 @@ class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
     private:
         void doLoad(ResourceKey key) override;
 
-        Resource<Trade::AbstractImporter> importer;
-        std::unordered_map<ResourceKey, std::size_t> keyMap;
+        Resource<Trade::AbstractImporter> _importer;
+        std::unordered_map<ResourceKey, std::size_t> _keyMap;
 };
 
 class TextureLoader: public AbstractResourceLoader<Texture2D> {
@@ -109,8 +109,8 @@ class TextureLoader: public AbstractResourceLoader<Texture2D> {
     private:
         void doLoad(ResourceKey key) override;
 
-        Resource<Trade::AbstractImporter> importer;
-        std::unordered_map<ResourceKey, std::size_t> keyMap;
+        Resource<Trade::AbstractImporter> _importer;
+        std::unordered_map<ResourceKey, std::size_t> _keyMap;
 };
 
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
@@ -120,12 +120,12 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-        Resource<Mesh> mesh;
-        Resource<Shaders::Phong> shader;
-        Vector3 ambientColor,
-            diffuseColor,
-            specularColor;
-        Float shininess;
+        Resource<Mesh> _mesh;
+        Resource<Shaders::Phong> _shader;
+        Vector3 _ambientColor,
+            _diffuseColor,
+            _specularColor;
+        Float _shininess;
 };
 
 class TexturedObject: public Object3D, SceneGraph::Drawable3D {
@@ -135,12 +135,12 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
 
-        Resource<Mesh> mesh;
-        Resource<Texture2D> diffuseTexture;
-        Resource<Shaders::Phong> shader;
-        Vector3 ambientColor,
-            specularColor;
-        Float shininess;
+        Resource<Mesh> _mesh;
+        Resource<Texture2D> _diffuseTexture;
+        Resource<Shaders::Phong> _shader;
+        Vector3 _ambientColor,
+            _specularColor;
+        Float _shininess;
 };
 
 ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer Example")) {
@@ -163,37 +163,37 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
         std::exit(5);
 
     /* Save importer for later use */
-    resourceManager.set("importer", importer);
+    _resourceManager.set("importer", importer);
 
     /* Resource loaders */
     auto meshLoader = new MeshLoader;
     auto materialLoader = new MaterialLoader;
     auto textureLoader = new TextureLoader;
-    resourceManager.setLoader(meshLoader)
+    _resourceManager.setLoader(meshLoader)
         .setLoader(materialLoader)
         .setLoader(textureLoader);
 
     /* Phong shader instances */
-    resourceManager.set("color", new Shaders::Phong);
-    resourceManager.set("texture", new Shaders::Phong(Shaders::Phong::Flag::DiffuseTexture));
+    _resourceManager.set("color", new Shaders::Phong);
+    _resourceManager.set("texture", new Shaders::Phong(Shaders::Phong::Flag::DiffuseTexture));
 
     /* Fallback mesh for objects with no mesh */
-    resourceManager.setFallback(new Mesh);
+    _resourceManager.setFallback(new Mesh);
 
     /* Fallback material for objects with no material */
     auto material = new Trade::PhongMaterialData({}, 50.0f);
     material->ambientColor() = {0.0f, 0.0f, 0.0f};
     material->diffuseColor() = {0.9f, 0.9f, 0.9f};
     material->specularColor() = {1.0f, 1.0f, 1.0f};
-    resourceManager.setFallback(material);
+    _resourceManager.setFallback(material);
 
     /* Fallback texture for object without texture */
-    resourceManager.setFallback(new Texture2D);
+    _resourceManager.setFallback(new Texture2D);
 
     /* Every scene needs a camera */
-    (cameraObject = new Object3D(&scene))
+    (_cameraObject = new Object3D(&_scene))
         ->translate(Vector3::zAxis(5.0f));
-    (camera = new SceneGraph::Camera3D(*cameraObject))
+    (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
@@ -201,7 +201,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     Renderer::setFeature(Renderer::Feature::FaceCulling, true);
 
     /* Default object, parent of all (for manipulation) */
-    o = new Object3D(&scene);
+    _o = new Object3D(&_scene);
 
     Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
@@ -211,10 +211,10 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
 
     /* Add all children */
     for(UnsignedInt objectId: sceneData->children3D())
-        addObject(*importer, o, objectId);
+        addObject(*importer, _o, objectId);
 
     /* Importer, materials and loaders are not needed anymore */
-    resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
+    _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
         .setLoader<Mesh>(nullptr)
         .setLoader<Texture2D>(nullptr)
         .setLoader<Trade::PhongMaterialData>(nullptr)
@@ -242,16 +242,16 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* paren
         const ResourceKey materialKey(materialName);
 
         /* Decide what object to add based on material type */
-        Resource<Trade::PhongMaterialData> material = resourceManager.get<Trade::PhongMaterialData>(materialKey);
+        Resource<Trade::PhongMaterialData> material = _resourceManager.get<Trade::PhongMaterialData>(materialKey);
 
         /* Color-only material */
         if(!material->flags())
-            (object = new ColoredObject(importer.mesh3DName(objectData->instance()), materialKey, parent, &drawables))
+            (object = new ColoredObject(importer.mesh3DName(objectData->instance()), materialKey, parent, &_drawables))
                 ->setTransformation(objectData->transformation());
 
         /* Diffuse texture material */
         else if(material->flags() == Trade::PhongMaterialData::Flag::DiffuseTexture)
-            (object = new TexturedObject(importer.mesh3DName(objectData->instance()), materialKey, importer.textureName(material->diffuseTexture()), parent, &drawables))
+            (object = new TexturedObject(importer.mesh3DName(objectData->instance()), materialKey, importer.textureName(material->diffuseTexture()), parent, &_drawables))
                 ->setTransformation(objectData->transformation());
 
         /* No other material types are supported yet */
@@ -268,29 +268,29 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* paren
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
-    camera->setViewport(size);
+    _camera->setViewport(size);
 }
 
 void ViewerExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
-    camera->draw(drawables);
+    _camera->draw(_drawables);
     swapBuffers();
 }
 
 void ViewerExample::mousePressEvent(MouseEvent& event) {
     switch(event.button()) {
         case MouseEvent::Button::Left:
-            previousPosition = positionOnSphere(event.position());
+            _previousPosition = positionOnSphere(event.position());
             break;
 
         case MouseEvent::Button::WheelUp:
         case MouseEvent::Button::WheelDown: {
             /* Distance between origin and near camera clipping plane */
-            Float distance = cameraObject->transformation().translation().z()-0-camera->near();
+            Float distance = _cameraObject->transformation().translation().z()-0- _camera->near();
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
-            cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
+            _cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
 
             redraw();
             break;
@@ -302,7 +302,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
 
 void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::Left)
-        previousPosition = Vector3();
+        _previousPosition = Vector3();
 }
 
 void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
@@ -310,19 +310,19 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     Vector3 currentPosition = positionOnSphere(event.position());
 
-    Vector3 axis = Vector3::cross(previousPosition, currentPosition);
+    Vector3 axis = Vector3::cross(_previousPosition, currentPosition);
 
-    if(previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+    if(_previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-    o->rotate(Vector3::angle(previousPosition, currentPosition), axis.normalized());
+    _o->rotate(Vector3::angle(_previousPosition, currentPosition), axis.normalized());
 
-    previousPosition = currentPosition;
+    _previousPosition = currentPosition;
 
     redraw();
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
-    Vector2 position = Vector2(_position*2)/Vector2(camera->viewport()) - Vector2(1.0f);
+    Vector2 position = Vector2(_position*2)/Vector2(_camera->viewport()) - Vector2(1.0f);
 
     Float length = position.length();
     Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
@@ -330,30 +330,30 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
     return result.normalized();
 }
 
-MeshLoader::MeshLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
+MeshLoader::MeshLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
-    for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i)
-        keyMap.emplace(importer->mesh3DName(i), i);
+    for(UnsignedInt i = 0; i != _importer->mesh3DCount(); ++i)
+        _keyMap.emplace(_importer->mesh3DName(i), i);
 }
 
-MaterialLoader::MaterialLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
+MaterialLoader::MaterialLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
-    for(UnsignedInt i = 0; i != importer->materialCount(); ++i)
-        keyMap.emplace(importer->materialName(i), i);
+    for(UnsignedInt i = 0; i != _importer->materialCount(); ++i)
+        _keyMap.emplace(_importer->materialName(i), i);
 }
 
-TextureLoader::TextureLoader(): importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
+TextureLoader::TextureLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
     /* Fill key->name map */
-    for(UnsignedInt i = 0; i != importer->textureCount(); ++i)
-        keyMap.emplace(importer->textureName(i), i);
+    for(UnsignedInt i = 0; i != _importer->textureCount(); ++i)
+        _keyMap.emplace(_importer->textureName(i), i);
 }
 
 void MeshLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = keyMap.at(key);
+    const UnsignedInt id = _keyMap.at(key);
 
-    Debug() << "Importing mesh" << importer->mesh3DName(id) << "...";
+    Debug() << "Importing mesh" << _importer->mesh3DName(id) << "...";
 
-    std::optional<Trade::MeshData3D> data = importer->mesh3D(id);
+    std::optional<Trade::MeshData3D> data = _importer->mesh3D(id);
     if(!data || !data->hasNormals() || data->primitive() != MeshPrimitive::Triangles) {
         setNotFound(key);
         return;
@@ -365,37 +365,37 @@ void MeshLoader::doLoad(const ResourceKey key) {
     std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*data, BufferUsage::StaticDraw);
 
     /* Save things */
-    ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-vertices", buffer.release());
+    ViewerResourceManager::instance().set(_importer->mesh3DName(id) + "-vertices", buffer.release());
     if(indexBuffer)
-        ViewerResourceManager::instance().set(importer->mesh3DName(id) + "-indices", indexBuffer.release());
+        ViewerResourceManager::instance().set(_importer->mesh3DName(id) + "-indices", indexBuffer.release());
     set(key, new Mesh(std::move(*mesh)));
 }
 
 void MaterialLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = keyMap.at(key);
+    const UnsignedInt id = _keyMap.at(key);
 
-    Debug() << "Importing material" << importer->materialName(id);
+    Debug() << "Importing material" << _importer->materialName(id);
 
-    std::unique_ptr<Trade::AbstractMaterialData> material = importer->material(id);
+    std::unique_ptr<Trade::AbstractMaterialData> material = _importer->material(id);
     if(material && material->type() == Trade::MaterialType::Phong)
         set(key, static_cast<Trade::PhongMaterialData*>(material.release()), ResourceDataState::Final, ResourcePolicy::Manual);
     else setNotFound(key);
 }
 
 void TextureLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = keyMap.at(key);
+    const UnsignedInt id = _keyMap.at(key);
 
-    Debug() << "Importing texture" << importer->textureName(id);
+    Debug() << "Importing texture" << _importer->textureName(id);
 
-    std::optional<Trade::TextureData> data = importer->texture(id);
+    std::optional<Trade::TextureData> data = _importer->texture(id);
     if(!data || data->type() != Trade::TextureData::Type::Texture2D) {
         setNotFound(key);
         return;
     }
 
-    Debug() << "Importing image" << importer->image2DName(data->image()) << "...";
+    Debug() << "Importing image" << _importer->image2DName(data->image()) << "...";
 
-    std::optional<Trade::ImageData2D> image = importer->image2D(data->image());
+    std::optional<Trade::ImageData2D> image = _importer->image2D(data->image());
     if(!image || (image->format() != ColorFormat::RGB
         #ifndef MAGNUM_TARGET_GLES
         && image->format() != ColorFormat::BGR
@@ -418,47 +418,47 @@ void TextureLoader::doLoad(const ResourceKey key) {
     set(key, texture);
 }
 
-ColoredObject::ColoredObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), shader(ViewerResourceManager::instance().get<Shaders::Phong>("color")) {
+ColoredObject::ColoredObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), _shader(ViewerResourceManager::instance().get<Shaders::Phong>("color")) {
     Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialKey);
-    ambientColor = material->ambientColor();
-    diffuseColor = material->diffuseColor();
-    specularColor = material->specularColor();
-    shininess = material->shininess();
+    _ambientColor = material->ambientColor();
+    _diffuseColor = material->diffuseColor();
+    _specularColor = material->specularColor();
+    _shininess = material->shininess();
 }
 
-TexturedObject::TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), diffuseTexture(ViewerResourceManager::instance().get<Texture2D>(diffuseTextureKey)), shader(ViewerResourceManager::instance().get<Shaders::Phong>("texture")) {
+TexturedObject::TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), _diffuseTexture(ViewerResourceManager::instance().get<Texture2D>(diffuseTextureKey)), _shader(ViewerResourceManager::instance().get<Shaders::Phong>("texture")) {
     Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialKey);
-    ambientColor = material->ambientColor();
-    specularColor = material->specularColor();
-    shininess = material->shininess();
+    _ambientColor = material->ambientColor();
+    _specularColor = material->specularColor();
+    _shininess = material->shininess();
 }
 
 void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
-    shader->setAmbientColor(ambientColor)
-        .setDiffuseColor(diffuseColor)
-        .setSpecularColor(specularColor)
-        .setShininess(shininess)
+    _shader->setAmbientColor(_ambientColor)
+        .setDiffuseColor(_diffuseColor)
+        .setSpecularColor(_specularColor)
+        .setShininess(_shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
         /** @todo How to avoid the assertions here? */
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
 
-    mesh->draw(*shader);
+    _mesh->draw(*_shader);
 }
 
 void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
-    shader->setAmbientColor(ambientColor)
-        .setDiffuseTexture(*diffuseTexture)
-        .setSpecularColor(specularColor)
-        .setShininess(shininess)
+    _shader->setAmbientColor(_ambientColor)
+        .setDiffuseTexture(*_diffuseTexture)
+        .setSpecularColor(_specularColor)
+        .setShininess(_shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
         /** @todo How to avoid the assertions here? */
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
 
-    mesh->draw(*shader);
+    _mesh->draw(*_shader);
 }
 
 }}
