@@ -39,7 +39,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
         explicit TexturedTriangleShader();
 
         TexturedTriangleShader& setColor(const Color3& color) {
-            setUniform(colorUniform, color);
+            setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -51,7 +51,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
     private:
         enum: Int { TextureLayer = 0 };
 
-        Int colorUniform;
+        Int _colorUniform;
 };
 
 }}

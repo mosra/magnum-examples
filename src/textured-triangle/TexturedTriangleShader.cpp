@@ -50,7 +50,7 @@ TexturedTriangleShader::TexturedTriangleShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    colorUniform = uniformLocation("color");
+    _colorUniform = uniformLocation("color");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
 }
