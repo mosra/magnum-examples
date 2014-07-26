@@ -440,7 +440,6 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setShininess(_shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
-        /** @todo How to avoid the assertions here? */
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
 
@@ -454,7 +453,6 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
         .setShininess(_shininess)
         .setLightPosition({-3.0f, 10.0f, 10.0f})
         .setTransformationMatrix(transformationMatrix)
-        /** @todo How to avoid the assertions here? */
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
 
