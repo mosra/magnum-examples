@@ -40,18 +40,18 @@ CubeMapShader::CubeMapShader() {
     Utility::Resource rs("data");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("CubeMapShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL330, Shader::Type::Fragment);
+
+    vert.addSource(rs.get("CubeMapShader.vert"));
     frag.addSource(rs.get("CubeMapShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
 }

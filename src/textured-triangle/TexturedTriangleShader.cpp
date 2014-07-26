@@ -38,18 +38,18 @@ TexturedTriangleShader::TexturedTriangleShader() {
     Utility::Resource rs("data");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("TexturedTriangleShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL330, Shader::Type::Fragment);
+
+    vert.addSource(rs.get("TexturedTriangleShader.vert"));
     frag.addSource(rs.get("TexturedTriangleShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    colorUniform = uniformLocation("color");
+    _colorUniform = uniformLocation("color");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
 }

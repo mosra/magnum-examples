@@ -40,7 +40,7 @@ namespace Magnum { namespace Examples {
 
 class Billboard: public Object2D, SceneGraph::Drawable2D {
     public:
-        Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D* group);
+        explicit Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D* group);
 
         void draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D& camera) override;
 

@@ -41,15 +41,15 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangleExample: public Platform::Application {
     public:
-        TexturedTriangleExample(const Arguments& arguments);
+        explicit TexturedTriangleExample(const Arguments& arguments);
 
     private:
         void drawEvent() override;
 
-        Buffer buffer;
-        Mesh mesh;
-        TexturedTriangleShader shader;
-        Texture2D texture;
+        Buffer _buffer;
+        Mesh _mesh;
+        TexturedTriangleShader _shader;
+        Texture2D _texture;
 };
 
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Textured Triangle Example")) {
@@ -59,10 +59,10 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
         { 0.0f,  0.5f}, {0.5f, 1.0f}  /* Top vertex position and texture coordinate */
     };
 
-    buffer.setData(data, BufferUsage::StaticDraw);
-    mesh.setPrimitive(MeshPrimitive::Triangles)
+    _buffer.setData(data, BufferUsage::StaticDraw);
+    _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
+        .addVertexBuffer(_buffer, 0, TexturedTriangleShader::Position(), TexturedTriangleShader::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -80,7 +80,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     /* Set texture data and parameters */
     std::optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    texture.setWrapping(Sampler::Wrapping::ClampToEdge)
+    _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
         .setImage(0, TextureFormat::RGB8, *image);
@@ -89,9 +89,9 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    shader.setColor({1.0f, 0.7f, 0.7f})
-        .setTexture(texture);
-    mesh.draw(shader);
+    _shader.setColor({1.0f, 0.7f, 0.7f})
+        .setTexture(_texture);
+    _mesh.draw(_shader);
 
     swapBuffers();
 }

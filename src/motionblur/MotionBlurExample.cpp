@@ -41,7 +41,7 @@ namespace Magnum { namespace Examples {
 
 class MotionBlurExample: public Platform::Application {
     public:
-        MotionBlurExample(const Arguments& arguments);
+        explicit MotionBlurExample(const Arguments& arguments);
 
     private:
         void viewportEvent(const Vector2i& size) override;
@@ -66,8 +66,8 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
-    Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
+    Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::FaceCulling);
 
     const Trade::MeshData3D data = Primitives::Icosphere::solid(3);
 

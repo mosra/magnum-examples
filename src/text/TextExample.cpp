@@ -51,85 +51,87 @@ class TextExample: public Platform::Application {
 
         void updateText();
 
-        PluginManager::Manager<Text::AbstractFont> manager;
-        std::unique_ptr<Text::AbstractFont> font;
+        PluginManager::Manager<Text::AbstractFont> _manager;
+        std::unique_ptr<Text::AbstractFont> _font;
 
-        Text::DistanceFieldGlyphCache cache;
-        Mesh text;
-        Buffer vertices, indices;
-        std::unique_ptr<Text::Renderer2D> text2;
-        Shaders::DistanceFieldVector2D shader;
+        Text::DistanceFieldGlyphCache _cache;
+        Mesh _text;
+        Buffer _vertices, _indices;
+        std::unique_ptr<Text::Renderer2D> _text2;
+        Shaders::DistanceFieldVector2D _shader;
 
-        Matrix3 transformation;
-        Matrix3 projection;
+        Matrix3 _transformation;
+        Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), manager(MAGNUM_PLUGINS_FONT_DIR), cache(Vector2i(2048), Vector2i(512), 22) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _manager(MAGNUM_PLUGINS_FONT_DIR), _cache(Vector2i(2048), Vector2i(512), 22) {
     /* Load FreeTypeFont plugin */
-    if(!(manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded))
+    if(!(_manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded))
         std::exit(1);
-    font = manager.instance("FreeTypeFont");
+
+    _font = _manager.instance("FreeTypeFont");
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!font->openSingleData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
+    if(!_font->openSingleData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
         Error() << "Cannot open font file";
         std::exit(1);
     }
-    font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ");
-    std::tie(text, std::ignore) = Text::Renderer2D::render(*font, cache, 0.1295f,
-            "Hello, world!\n"
-            "Ahoj, světe!\n"
-            "Здравствуй, мир!\n"
-            "γεια σου, τον κόσμο!\n"
-            "Hej Världen!",
-            vertices, indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
-    text2.reset(new Text::Renderer2D(*font, cache, 0.035f, Text::Alignment::TopRight));
-    text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+    _font->fillGlyphCache(_cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ");
+    std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.1295f,
+        "Hello, world!\n"
+        "Ahoj, světe!\n"
+        "Здравствуй, мир!\n"
+        "γεια σου, τον κόσμο!\n"
+        "Hej Världen!",
+        _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
-    Renderer::setFeature(Renderer::Feature::Blending, true);
+    _text2.reset(new Text::Renderer2D(*_font, _cache, 0.035f, Text::Alignment::TopRight));
+    _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+
+    Renderer::enable(Renderer::Feature::Blending);
     Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
     Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
 
-    transformation = Matrix3::rotation(Deg(-10.0f));
-    projection = Matrix3::scaling(Vector2::yScale(Vector2(defaultFramebuffer.viewport().size()).aspectRatio()));
+    _transformation = Matrix3::rotation(Deg(-10.0f));
+    _projection = Matrix3::scaling(Vector2::yScale(Vector2(defaultFramebuffer.viewport().size()).aspectRatio()));
     updateText();
 }
 
 void TextExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
 
-    projection = Matrix3::scaling(Vector2::yScale(Vector2(size).aspectRatio()));
+    _projection = Matrix3::scaling(Vector2::yScale(Vector2(size).aspectRatio()));
 }
 
 void TextExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    shader.setVectorTexture(cache.texture());
+    _shader.setVectorTexture(_cache.texture());
 
-    shader.setTransformationProjectionMatrix(projection*transformation)
+    _shader.setTransformationProjectionMatrix(_projection * _transformation)
         .setColor(Color3::fromHSV(Deg(15.0f), 0.9f, 0.4f))
         .setOutlineColor(Color3::fromHSV(Deg(0.0f), 0.5f, 0.75f))
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/transformation.uniformScaling());
-    text.draw(shader);
+        .setSmoothness(0.025f/ _transformation.uniformScaling());
+    _text.draw(_shader);
 
-    shader.setTransformationProjectionMatrix(projection*
-        Matrix3::translation(1.0f/projection.rotationScaling().diagonal()))
+    _shader.setTransformationProjectionMatrix(_projection*
+        Matrix3::translation(1.0f/ _projection.rotationScaling().diagonal()))
         .setColor(Color4(1.0f, 0.0f))
         .setOutlineRange(0.5f, 1.0f)
         .setSmoothness(0.075f);
-    text2->mesh().draw(shader);
+    _text2->mesh().draw(_shader);
 
     swapBuffers();
 }
 
 void TextExample::mousePressEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::WheelUp)
-        transformation = Matrix3::rotation(Deg(1.0f))*Matrix3::scaling(Vector2(1.1f))*transformation;
+        _transformation = Matrix3::rotation(Deg(1.0f))*Matrix3::scaling(Vector2(1.1f))* _transformation;
     else if(event.button() == MouseEvent::Button::WheelDown)
-        transformation = Matrix3::rotation(Deg(-1.0f))*Matrix3::scaling(Vector2(1.0f/1.1f))*transformation;
+        _transformation = Matrix3::rotation(Deg(-1.0f))*Matrix3::scaling(Vector2(1.0f/1.1f))* _transformation;
     else return;
 
     updateText();
@@ -142,10 +144,10 @@ void TextExample::updateText() {
     std::ostringstream out;
     out << std::setprecision(2)
         << "Rotation: "
-        << Float(Deg(Complex::fromMatrix(transformation.rotation()).angle()))
+        << Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle()))
         << "°\nScale: "
-        << transformation.uniformScaling();
-    text2->render(out.str());
+        << _transformation.uniformScaling();
+    _text2->render(out.str());
 }
 
 }}

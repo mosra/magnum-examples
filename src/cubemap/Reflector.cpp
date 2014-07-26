@@ -47,7 +47,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
     CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
 
     /* Sphere mesh */
-    if(!(sphere = resourceManager.get<Mesh>("sphere"))) {
+    if(!(_sphere = resourceManager.get<Mesh>("sphere"))) {
         Trade::MeshData3D sphereData = Primitives::UVSphere::solid(16, 32, Primitives::UVSphere::TextureCoords::Generate);
 
         Buffer* buffer = new Buffer;
@@ -69,11 +69,11 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
 
         resourceManager.set("sphere-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
             .set("sphere-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set(sphere.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+            .set(_sphere.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Tarnish texture */
-    if(!(tarnishTexture = resourceManager.get<Texture2D>("tarnish-texture"))) {
+    if(!(_tarnishTexture = resourceManager.get<Texture2D>("tarnish-texture"))) {
         Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
         Utility::Resource rs("data");
         importer->openData(rs.getRaw("tarnish.jpg"));
@@ -88,28 +88,28 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
             .setSubImage(0, {}, *image)
             .generateMipmap();
 
-        resourceManager.set<Texture2D>(tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager.set<Texture2D>(_tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Reflector shader */
-    if(!(shader = resourceManager.get<AbstractShaderProgram, ReflectorShader>("reflector-shader")))
-        resourceManager.set<AbstractShaderProgram>(shader.key(), new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
+    if(!(_shader = resourceManager.get<AbstractShaderProgram, ReflectorShader>("reflector-shader")))
+        resourceManager.set<AbstractShaderProgram>(_shader.key(), new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
 
     /* Texture (created in CubeMap class) */
-    texture = resourceManager.get<CubeMapTexture>("texture");
+    _texture = resourceManager.get<CubeMapTexture>("texture");
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
-    shader->setTransformationMatrix(transformationMatrix)
+    _shader->setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix())
         .setReflectivity(2.0f)
         .setDiffuseColor(Color3(0.3f))
         .setCameraMatrix(static_cast<Object3D&>(camera.object()).absoluteTransformation().rotation())
-        .setTexture(*texture)
-        .setTarnishTexture(*tarnishTexture);
+        .setTexture(*_texture)
+        .setTarnishTexture(*_tarnishTexture);
 
-    sphere->draw(*shader);
+    _sphere->draw(*_shader);
 }
 
 }}

@@ -35,7 +35,7 @@ namespace Magnum { namespace Examples {
 
 class Icosphere: public Object3D, SceneGraph::Drawable3D {
     public:
-        Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         inline void advance(Rad angle) { rotate(angle, Vector3::zAxis()); }
 
