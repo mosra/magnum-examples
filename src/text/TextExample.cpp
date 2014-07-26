@@ -80,12 +80,12 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
 
     _font->fillGlyphCache(_cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ");
     std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.1295f,
-            "Hello, world!\n"
-            "Ahoj, světe!\n"
-            "Здравствуй, мир!\n"
-            "γεια σου, τον κόσμο!\n"
-            "Hej Världen!",
-                                   _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
+        "Hello, world!\n"
+        "Ahoj, světe!\n"
+        "Здравствуй, мир!\n"
+        "γεια σου, τον κόσμο!\n"
+        "Hej Världen!",
+        _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
     _text2.reset(new Text::Renderer2D(*_font, _cache, 0.035f, Text::Alignment::TopRight));
     _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
