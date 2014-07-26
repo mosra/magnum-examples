@@ -39,7 +39,7 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
     public:
         static const Int FrameCount = 7;
 
-        MotionBlurCamera(SceneGraph::AbstractObject3D& object);
+        explicit MotionBlurCamera(SceneGraph::AbstractObject3D& object);
 
         ~MotionBlurCamera();
 

@@ -47,30 +47,30 @@ namespace Magnum { namespace Examples {
 
 class CubeMapExample: public Platform::Application {
     public:
-        CubeMapExample(const Arguments& arguments);
+        explicit CubeMapExample(const Arguments& arguments);
 
     private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-        CubeMapResourceManager resourceManager;
-        Scene3D scene;
-        SceneGraph::DrawableGroup3D drawables;
-        Object3D* cameraObject;
-        SceneGraph::Camera3D* camera;
+        CubeMapResourceManager _resourceManager;
+        Scene3D _scene;
+        SceneGraph::DrawableGroup3D _drawables;
+        Object3D* _cameraObject;
+        SceneGraph::Camera3D* _camera;
 };
 
 CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::invalidate_subdata);
 
-    Renderer::setFeature(Renderer::Feature::DepthTest, true);
-    Renderer::setFeature(Renderer::Feature::FaceCulling, true);
+    Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::FaceCulling);
 
     /* Set up perspective camera */
-    (cameraObject = new Object3D(&scene))
+    (_cameraObject = new Object3D(&_scene))
         ->translate(Vector3::zAxis(3.0f));
-    (camera = new SceneGraph::Camera3D(*cameraObject))
+    (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setPerspective(Deg(55.0f), 1.0f, 0.001f, 100.0f)
         .setViewport(defaultFramebuffer.viewport().size());
@@ -79,49 +79,50 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
     if(!(manager.load("JpegImporter") & PluginManager::LoadState::Loaded))
         std::exit(1);
-    resourceManager.set<Trade::AbstractImporter>("jpeg-importer",
+
+    _resourceManager.set<Trade::AbstractImporter>("jpeg-importer",
         manager.instance("JpegImporter").release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &scene, &drawables))
+    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &_scene, &_drawables))
         ->scale(Vector3(20.0f));
 
-    (new Reflector(&scene, &drawables))
+    (new Reflector(&_scene, &_drawables))
         ->scale(Vector3(0.5f))
         .translate(Vector3::xAxis(-0.5f));
 
-    (new Reflector(&scene, &drawables))
+    (new Reflector(&_scene, &_drawables))
         ->scale(Vector3(0.3f))
         .rotate(Deg(37.0f), Vector3::xAxis())
         .translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
-    resourceManager.free<Trade::AbstractImporter>();
+    _resourceManager.free<Trade::AbstractImporter>();
 }
 
 void CubeMapExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
-    camera->setViewport(size);
+    _camera->setViewport(size);
 }
 
 void CubeMapExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Depth);
     defaultFramebuffer.invalidate({DefaultFramebuffer::InvalidationAttachment::Color});
 
-    camera->draw(drawables);
+    _camera->draw(_drawables);
     swapBuffers();
 }
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        cameraObject->rotate(Deg(-10.0f), cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(Deg(-10.0f), _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        cameraObject->rotate(Deg(10.0f), cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(Deg(10.0f), _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
-        Float translationY = cameraObject->transformation().translation().y();
-        cameraObject->translate(Vector3::yAxis(-translationY))
+        Float translationY = _cameraObject->transformation().translation().y();
+        _cameraObject->translate(Vector3::yAxis(-translationY))
             .rotateY(event.key() == KeyEvent::Key::Left ? Deg(10.0f) : Deg(-10.0f))
             .translate(Vector3::yAxis(translationY));
 

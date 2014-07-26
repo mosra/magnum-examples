@@ -23,8 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8)
-project(MagnumMotionblurExample)
+cmake_minimum_required(VERSION 2.8.8)
+project(MagnumMotionBlurExample)
 
 find_package(Magnum REQUIRED
     MeshTools

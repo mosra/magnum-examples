@@ -58,28 +58,28 @@ namespace Magnum { namespace Examples {
 
 class TexturedTriangleExample: public Platform::Application {
     public:
-        TexturedTriangleExample(const Arguments& arguments);
+        explicit TexturedTriangleExample(const Arguments& arguments);
 
     private:
         void drawEvent() override;
 
-        Buffer buffer;
-        Mesh mesh;
-        Shaders::Flat2D shader;
-        Texture2D texture;
+        Buffer _buffer;
+        Mesh _mesh;
+        Shaders::Flat2D _shader;
+        Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Textured Triangle Example")), shader(Shaders::Flat2D::Flag::Textured) {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Textured Triangle Example")), _shader(Shaders::Flat2D::Flag::Textured) {
     constexpr static Vector2 data[] = {
         {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
         { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
         { 0.0f,  0.5f}, {0.5f, 1.0f}  /* Top vertex position and texture coordinate */
     };
 
-    buffer.setData(data, BufferUsage::StaticDraw);
-    mesh.setPrimitive(MeshPrimitive::Triangles)
+    _buffer.setData(data, BufferUsage::StaticDraw);
+    _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(buffer, 0, Shaders::Flat2D::Position(), Shaders::Flat2D::TextureCoordinates());
+        .addVertexBuffer(_buffer, 0, Shaders::Flat2D::Position(), Shaders::Flat2D::TextureCoordinates());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
@@ -97,24 +97,24 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     /* Set texture data and parameters */
     std::optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    texture.setWrapping(Sampler::Wrapping::ClampToEdge)
+    _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear);
 
     #ifndef MAGNUM_TARGET_GLES
-    texture.setImage(0, TextureFormat::RGB8, *image);
+    _texture.setImage(0, TextureFormat::RGB8, *image);
     #else
-    texture.setImage(0, TextureFormat::RGB, *image);
+    _texture.setImage(0, TextureFormat::RGB, *image);
     #endif
 }
 
 void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    shader.setTransformationProjectionMatrix({})
+    _shader.setTransformationProjectionMatrix({})
         .setColor({1.0f, 0.7f, 0.7f})
-        .setTexture(texture);
-    mesh.draw(shader);
+        .setTexture(_texture);
+    _mesh.draw(_shader);
 
     swapBuffers();
 }

@@ -38,7 +38,7 @@ namespace Magnum { namespace Examples {
 
 class FramebufferExample: public Platform::Application {
     public:
-        FramebufferExample(const Arguments& arguments);
+        explicit FramebufferExample(const Arguments& arguments);
 
     private:
         void viewportEvent(const Vector2i& size) override;

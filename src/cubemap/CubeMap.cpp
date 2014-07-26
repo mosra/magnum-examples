@@ -48,7 +48,7 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
     CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
 
     /* Cube mesh */
-    if(!(cube = resourceManager.get<Mesh>("cube"))) {
+    if(!(_cube = resourceManager.get<Mesh>("cube"))) {
         Trade::MeshData3D cubeData = Primitives::Cube::solid();
         MeshTools::flipFaceWinding(cubeData.indices());
 
@@ -71,11 +71,11 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         resourceManager.set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
             .set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+            .set(_cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Cube map texture */
-    if(!(texture = resourceManager.get<CubeMapTexture>("texture"))) {
+    if(!(_texture = resourceManager.get<CubeMapTexture>("texture"))) {
         CubeMapTexture* cubeMap = new CubeMapTexture;
 
         cubeMap->setWrapping(Sampler::Wrapping::ClampToEdge)
@@ -114,19 +114,19 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         cubeMap->generateMipmap();
 
-        resourceManager.set(texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
+        resourceManager.set(_texture.key(), cubeMap, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Shader */
-    if(!(shader = resourceManager.get<AbstractShaderProgram, CubeMapShader>("shader")))
-        resourceManager.set<AbstractShaderProgram>(shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
+    if(!(_shader = resourceManager.get<AbstractShaderProgram, CubeMapShader>("shader")))
+        resourceManager.set<AbstractShaderProgram>(_shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
-    shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .setTexture(*texture);
+    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+        .setTexture(*_texture);
 
-    cube->draw(*shader);
+    _cube->draw(*_shader);
 }
 
 }}

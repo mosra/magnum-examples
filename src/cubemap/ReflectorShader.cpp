@@ -44,23 +44,23 @@ ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
 
     Shader vert(Version::GL330, Shader::Type::Vertex);
-    vert.addSource(rs.get("ReflectorShader.vert"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile());
-    attachShader(vert);
-
     Shader frag(Version::GL330, Shader::Type::Fragment);
+
+    vert.addSource(rs.get("ReflectorShader.vert"));
     frag.addSource(rs.get("ReflectorShader.frag"));
-    CORRADE_INTERNAL_ASSERT_OUTPUT(frag.compile());
-    attachShader(frag);
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+
+    attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    transformationMatrixUniform = uniformLocation("transformationMatrix");
-    normalMatrixUniform = uniformLocation("normalMatrix");
-    projectionMatrixUniform = uniformLocation("projectionMatrix");
-    cameraMatrixUniform = uniformLocation("cameraMatrix");
-    reflectivityUniform = uniformLocation("reflectivity");
-    diffuseColorUniform = uniformLocation("diffuseColor");
+    _transformationMatrixUniform = uniformLocation("transformationMatrix");
+    _normalMatrixUniform = uniformLocation("normalMatrix");
+    _projectionMatrixUniform = uniformLocation("projectionMatrix");
+    _cameraMatrixUniform = uniformLocation("cameraMatrix");
+    _reflectivityUniform = uniformLocation("reflectivity");
+    _diffuseColorUniform = uniformLocation("diffuseColor");
 
     setUniform(uniformLocation("textureData"), TextureLayer);
     setUniform(uniformLocation("tarnishTextureData"), TarnishTextureLayer);

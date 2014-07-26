@@ -40,7 +40,7 @@ class ColorCorrectionShader: public AbstractShaderProgram {
             ColorCorrectedOutput = 2
         };
 
-        ColorCorrectionShader();
+        explicit ColorCorrectionShader();
 
         ColorCorrectionShader& setTransformationProjectionMatrix(const Matrix3& matrix) {
             setUniform(transformationProjectionMatrixUniform, matrix);
