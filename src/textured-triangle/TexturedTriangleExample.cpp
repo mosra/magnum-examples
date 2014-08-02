@@ -69,7 +69,7 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Textured Triangle Example")), _shader(Shaders::Flat2D::Flag::Textured) {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")}, _shader{Shaders::Flat2D::Flag::Textured} {
     constexpr static Vector2 data[] = {
         {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
         { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
@@ -79,20 +79,18 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     _buffer.setData(data, BufferUsage::StaticDraw);
     _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(_buffer, 0, Shaders::Flat2D::Position(), Shaders::Flat2D::TextureCoordinates());
+        .addVertexBuffer(_buffer, 0, Shaders::Flat2D::Position{}, Shaders::Flat2D::TextureCoordinates{});
 
     /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
     if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded))
         std::exit(1);
     std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
 
     /* Load the texture */
-    Utility::Resource rs("data");
-    if(!importer->openData(rs.getRaw("stone.tga"))) {
-        Error() << "Cannot load texture";
+    const Utility::Resource rs{"textured-triangle-data"};
+    if(!importer->openData(rs.getRaw("stone.tga")))
         std::exit(2);
-    }
 
     /* Set texture data and parameters */
     std::optional<Trade::ImageData2D> image = importer->image2D(0);
