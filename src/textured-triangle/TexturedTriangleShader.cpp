@@ -35,10 +35,10 @@ namespace Magnum { namespace Examples {
 TexturedTriangleShader::TexturedTriangleShader() {
     MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 
-    Utility::Resource rs("data");
+    const Utility::Resource rs{"textured-triangle-data"};
 
-    Shader vert(Version::GL330, Shader::Type::Vertex);
-    Shader frag(Version::GL330, Shader::Type::Fragment);
+    Shader vert{Version::GL330, Shader::Type::Vertex};
+    Shader frag{Version::GL330, Shader::Type::Fragment};
 
     vert.addSource(rs.get("TexturedTriangleShader.vert"));
     frag.addSource(rs.get("TexturedTriangleShader.frag"));
