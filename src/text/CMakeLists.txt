@@ -31,7 +31,7 @@ find_package(Magnum REQUIRED
     Text
     TextureTools)
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+if(MAGNUM_BUILD_STATIC)
     find_package(Magnum REQUIRED TgaImporter MagnumFont)
 endif()
 
@@ -59,7 +59,7 @@ target_link_libraries(text
     ${MAGNUM_TEXTURETOOLS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
+if(MAGNUM_BUILD_STATIC)
     target_link_libraries(text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 
