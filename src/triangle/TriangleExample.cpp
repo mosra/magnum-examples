@@ -44,8 +44,8 @@ class TriangleExample: public Platform::Application {
         Shaders::VertexColor3D _shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Triangle Example")) {
-    constexpr static Vector3 data[] = {
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")} {
+    constexpr static const Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
         { 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
@@ -54,9 +54,7 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
     _buffer.setData(data, BufferUsage::StaticDraw);
     _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(_buffer, 0,
-            Shaders::VertexColor3D::Position(),
-            Shaders::VertexColor3D::Color());
+        .addVertexBuffer(_buffer, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{});
 }
 
 void TriangleExample::drawEvent() {

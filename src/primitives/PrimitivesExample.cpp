@@ -54,11 +54,11 @@ class PrimitivesExample: public Platform::Application {
         Color3 _color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Primitives Example")) {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")} {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
-    Trade::MeshData3D cube = Primitives::Cube::solid();
+    const Trade::MeshData3D cube = Primitives::Cube::solid();
 
     _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
 
@@ -73,23 +73,23 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
         .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
         .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
 
-    _transformation = Matrix4::rotationX(Deg(30.0f))*
-                     Matrix4::rotationY(Deg(40.0f));
-    _color = Color3::fromHSV(Deg(35.0f), 1.0f, 1.0f);
+    _transformation = Matrix4::rotationX(30.0_degf)*
+                      Matrix4::rotationY(40.0_degf);
+    _color = Color3::fromHSV(35.0_degf, 1.0f, 1.0f);
 
-    _projection = Matrix4::perspectiveProjection(Deg(35.0f), Vector2(defaultFramebuffer.viewport().size()).aspectRatio(), 0.01f, 100.0f)*
-                 Matrix4::translation(Vector3::zAxis(-10.0f));
+    _projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
+                  Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
 void PrimitivesExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     _shader.setLightPosition({7.0f, 5.0f, 2.5f})
-        .setLightColor(Color3(1.0f))
+        .setLightColor(Color3{1.0f})
         .setDiffuseColor(_color)
         .setAmbientColor(Color3::fromHSV(_color.hue(), 1.0f, 0.3f))
         .setTransformationMatrix(_transformation)
-        .setNormalMatrix(_transformation.rotationScaling()) /** @todo better solution? */
+        .setNormalMatrix(_transformation.rotationScaling())
         .setProjectionMatrix(_projection);
     _mesh.draw(_shader);
 
@@ -104,7 +104,7 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
-    _color = Color3::fromHSV(_color.hue() + Deg(50.0), 1.0f, 1.0f);
+    _color = Color3::fromHSV(_color.hue() + 50.0_degf, 1.0f, 1.0f);
 
     event.setAccepted();
     redraw();
@@ -113,11 +113,14 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    Vector2 delta = 3.0f*Vector2(event.position() - _previousMousePosition)/Vector2(defaultFramebuffer.viewport().size());
+    const Vector2 delta = 3.0f*
+        Vector2{event.position() - _previousMousePosition}/
+        Vector2{defaultFramebuffer.viewport().size()};
+
     _transformation =
-        Matrix4::rotationX(Rad(delta.y()))*
-        _transformation *
-        Matrix4::rotationY(Rad(delta.x()));
+        Matrix4::rotationX(Rad{delta.y()})*
+        _transformation*
+        Matrix4::rotationY(Rad{delta.x()});
 
     _previousMousePosition = event.position();
     event.setAccepted();

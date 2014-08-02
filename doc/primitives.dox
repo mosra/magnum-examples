@@ -59,7 +59,7 @@ cube rendered in proper Z-order. Enabling face culling is not needed for proper
 rendering, but it will speed things up as only front-facing faces will be
 rendered.
 @skip PrimitivesExample::PrimitivesExample
-@until Renderer::setFeature(Renderer::Feature::FaceCulling
+@until Renderer::enable(Renderer::Feature::FaceCulling
 
 We now use pre-made @ref Primitives::Cube "cube primitive" and create mesh from
 it. The mesh is indexed and contains position and normal data. As said earlier,
@@ -67,7 +67,7 @@ interleaving the data gives us best memory access performance. We can do it by
 hand as in previous example, but using @ref MeshTools::interleave() is much
 more convenient. We upload the interleaved data directly to vertex buffer.
 @skip Trade::MeshData3D
-@until vertexBuffer.setData(
+@until _vertexBuffer.setData(
 
 Why do we need indexed mesh and what it actually is? In most meshes the
 same vertex data are shared among more than one vertex, even a simple square
@@ -81,20 +81,21 @@ again does all the boring work for us -- it checks index range and creates
 array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
 based on that.
 @skip Containers::Array<char>
-@until std::tie
+@until _indexBuffer.
 
 Everything is now ready for configuring the mesh. We set primitive type, index
 count, add our vertex buffer and specify index buffer. The `indexStart` and
 `indexEnd` parameters are purely optional, but they might improve memory access
 performance on desktop GL as the GPU will know what subset of vertex data are
 used.
-@skip mesh.setPrimitive
+@skip _mesh.setPrimitive
 @until .setIndexBuffer
 
 We now specify initial transformation, color and projection. See
 @ref matrix-vector and @ref transformations for more thorough introduction to
 transformations.
-@skip transformation =
+@skip _transformation =
+@until }
 @until }
 
 @section examples-primitives-rendering Rendering
@@ -105,6 +106,7 @@ parameters and draw the mesh.
 @skip void PrimitivesExample::drawEvent
 @until }
 @until }
+@until }
 
 @section examples-primitives-events Mouse event handling
 
@@ -112,6 +114,10 @@ Event handling is also nothing complicated, on every click (press + release) we
 change color hue to some other and on mouse drag we rotate the object based on
 relative mouse position to previous event.
 @skip void PrimitivesExample::mousePressEvent
+@until }
+@until }
+@until }
+@until }
 @until }
 @until }
 @until }
