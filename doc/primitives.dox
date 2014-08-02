@@ -96,6 +96,7 @@ We now specify initial transformation, color and projection. See
 transformations.
 @skip _transformation =
 @until }
+@until }
 
 @section examples-primitives-rendering Rendering
 
@@ -105,6 +106,7 @@ parameters and draw the mesh.
 @skip void PrimitivesExample::drawEvent
 @until }
 @until }
+@until }
 
 @section examples-primitives-events Mouse event handling
 
@@ -112,6 +114,10 @@ Event handling is also nothing complicated, on every click (press + release) we
 change color hue to some other and on mouse drag we rotate the object based on
 relative mouse position to previous event.
 @skip void PrimitivesExample::mousePressEvent
+@until }
+@until }
+@until }
+@until }
 @until }
 @until }
 @until }
