@@ -152,8 +152,8 @@ which will be used in case some resource is missing in the file.
 
 Now we setup the camera and renderer features and add default object for
 convenient manipulation.
-@skip (cameraObject
-@until o = new Object3D
+@skip (_cameraObject
+@until _o = new Object3D
 
 Everything is now ready for importing the scene graph from the file, it is just
 matter of recursively adding the objects, starting from direct descendants of
@@ -273,13 +273,17 @@ to the manager.
 
 @section examples-viewer-compilation Compilation
 
-Compilation is easy as usual, we just need to provide also path to plugin dir.
+Compilation is easy as usual, we just need to provide also path to plugin dir,
+similarly to what we did in @ref examples-textured-triangle "Textured Triangle"
+example.
+
+@dontinclude viewer/configure.h.cmake
+@skip #ifdef CORRADE_IS_DEBUG_BUILD
+@until #endif
+
 @dontinclude viewer/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
 @until ${MAGNUM_APPLICATION_LIBRARIES})
-
-@dontinclude viewer/configure.h.cmake
-@skipline #define MAGNUM_PLUGINS_IMPORTER_DIR
 
 -   @ref viewer/configure.h.cmake
 -   @ref viewer/CMakeLists.txt
