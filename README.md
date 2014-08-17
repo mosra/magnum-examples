@@ -61,6 +61,11 @@ The examples can be built using these three commands:
     cmake ..
     make
 
+If you installed Magnum and its dependencies to non-standard location (other
+than `/usr`, e.g. `/home/xyz/projects`), set `CMAKE_PREFIX_PATH` to that
+directory to help CMake find it. You can enter more different dirs if you
+separate them with semicolon.
+
 Note that by default only *Triangle* example is built. Some examples depend on
 plugins and integration libraries from `magnum-plugins` and `magnum-integration`
 repositories. You have to enable the other examples with these CMake options
