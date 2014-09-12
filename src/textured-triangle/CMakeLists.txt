@@ -45,3 +45,5 @@ add_executable(textured-triangle
 target_link_libraries(textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

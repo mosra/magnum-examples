@@ -58,7 +58,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
     framebuffer.setData(ColorFormat::RGB, ColorType::UnsignedByte, size, nullptr, BufferUsage::DynamicDraw);
     delete texture;
 
-    Buffer::unbind(Buffer::Target::PixelPack);
+    //Buffer::unbind(Buffer::Target::PixelPack);
     for(Int i = 0; i != FrameCount; ++i)
         frames[i]->setImage(0, TextureFormat::RGB8, framebuffer);
 }
