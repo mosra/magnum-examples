@@ -1,0 +1,63 @@
+--- ./work/magnum-examples-9999/src/bullet/CMakeLists.txt.orig	2014-09-12 08:29:50.000000000 +0400
++++ ./work/magnum-examples-9999/src/bullet/CMakeLists.txt	2014-09-12 08:33:36.000000000 +0400
+@@ -49,3 +49,5 @@
+     ${MAGNUM_SHADERS_LIBRARIES}
+     ${MAGNUM_SHAPES_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/cubemap/CMakeLists.txt.orig	2014-09-12 08:29:16.000000000 +0400
++++ ./work/magnum-examples-9999/src/cubemap/CMakeLists.txt	2014-09-12 08:32:39.000000000 +0400
+@@ -56,3 +56,5 @@
+     ${MAGNUM_MESHTOOLS_LIBRARIES}
+     ${MAGNUM_SCENEGRAPH_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/framebuffer/CMakeLists.txt.orig	2014-09-12 08:30:47.000000000 +0400
++++ ./work/magnum-examples-9999/src/framebuffer/CMakeLists.txt	2014-09-12 08:35:38.000000000 +0400
+@@ -52,3 +52,5 @@
+     ${MAGNUM_PRIMITIVES_LIBRARIES}
+     ${MAGNUM_SCENEGRAPH_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS framebuffer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/motionblur/CMakeLists.txt.orig	2014-09-12 08:29:36.000000000 +0400
++++ ./work/magnum-examples-9999/src/motionblur/CMakeLists.txt	2014-09-12 08:33:08.000000000 +0400
+@@ -50,3 +50,5 @@
+     ${MAGNUM_SCENEGRAPH_LIBRARIES}
+     ${MAGNUM_SHADERS_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS motionblur DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/primitives/CMakeLists.txt.orig	2014-09-12 08:30:22.000000000 +0400
++++ ./work/magnum-examples-9999/src/primitives/CMakeLists.txt	2014-09-12 08:34:42.000000000 +0400
+@@ -42,3 +42,4 @@
+     ${MAGNUM_PRIMITIVES_LIBRARIES}
+     ${MAGNUM_SHADERS_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++install(TARGETS primitives DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/text/CMakeLists.txt.orig	2014-09-12 08:28:50.000000000 +0400
++++ ./work/magnum-examples-9999/src/text/CMakeLists.txt	2014-09-12 08:31:32.000000000 +0400
+@@ -47,3 +47,5 @@
+     ${MAGNUM_SHADERS_LIBRARIES}
+     ${MAGNUM_TEXT_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS text DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/textured-triangle/CMakeLists.txt.orig	2014-09-12 08:30:06.000000000 +0400
++++ ./work/magnum-examples-9999/src/textured-triangle/CMakeLists.txt	2014-09-12 08:34:14.000000000 +0400
+@@ -45,3 +45,5 @@
+ target_link_libraries(textured-triangle
+     ${MAGNUM_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+--- ./work/magnum-examples-9999/src/viewer/CMakeLists.txt.orig	2014-09-12 08:30:35.000000000 +0400
++++ ./work/magnum-examples-9999/src/viewer/CMakeLists.txt	2014-09-12 08:35:10.000000000 +0400
+@@ -47,3 +47,5 @@
+     ${MAGNUM_SHADERS_LIBRARIES}
+     ${MAGNUM_SCENEGRAPH_LIBRARIES}
+     ${MAGNUM_APPLICATION_LIBRARIES})
++
++install(TARGETS viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
