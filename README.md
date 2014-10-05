@@ -42,7 +42,7 @@ Minimal dependencies
     which are tested to have everything needed: **GCC** >= 4.6 and **Clang**
     >= 3.1. On Windows you can use **MinGW**. Most of the examples should also
     work on GCC 4.5, 4.4 and **MSVC** 2013.
-*   **CMake** >= 2.8.8
+*   **CMake** >= 2.8.9
 *   **Corrade**, **Magnum** -- The engine itself
 
 For some examples you might need also these (see below for more information):
