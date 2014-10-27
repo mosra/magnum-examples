@@ -125,7 +125,7 @@ relative mouse position to previous event.
 @section examples-primitives-compilation Compilation
 
 Compilation is pretty straigtforward. We now need some additional libraries,
-like `%MeshTools` and `%Primitives`, everything else is the same as previously:
+like `MeshTools` and `Primitives`, everything else is the same as previously:
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
 @until ${MAGNUM_APPLICATION_LIBRARIES})

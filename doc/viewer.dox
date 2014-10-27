@@ -73,7 +73,7 @@ attached to some object in the same scene. The object controls camera
 transformation and the camera feature itself controls projection and aspect
 ratio correction.
 
-%Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
+Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
 the same and differs only in obvious ways (e.g. perspective projection is
 not available in 2D).
 
@@ -261,7 +261,7 @@ directly to resource manager.
 @skip void MaterialLoader::doLoad
 @until }
 
-%Texture loading is also nothing new. We load texture parameters and the actual
+Texture loading is also nothing new. We load texture parameters and the actual
 image, check their formats, configure the texture, upload its data and save it
 to the manager.
 @skip void TextureLoader::doLoad

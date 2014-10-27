@@ -77,7 +77,7 @@ lose syntax highlighting and line numbering in case the GLSL compiler ends with
 an error. By storing them as separate files would be we would need to carry
 these along the executable which is also not exactly convenient. The resource
 data will be compiled into source file using CMake later. You can read more
-about compiled-in resources in %Corrade's
+about compiled-in resources in Corrade's
 @ref resource-management "resource management tutorial".
 
 In the constructor we load GLSL sources from compiled-in resources, compile and
@@ -171,7 +171,7 @@ for specifying plugin directory and one for compiling the resources.
 The `configure.h.cmake` file contains input for `configure.h` header which will
 contain proper value for `MAGNUM_PLUGINS_IMPORTER_DIR`. CMake will replace
 `${MAGNUM_PLUGINS_IMPORTER_DIR}` or `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` with
-path gathered when looking for %Magnum. Again, see @ref plugins for more
+path gathered when looking for Magnum. Again, see @ref plugins for more
 detailed information about plugin directories.
 
 @dontinclude textured-triangle/configure.h.cmake
@@ -184,14 +184,14 @@ The `resources.conf` file lists all resources which need to be compiled into
 the executable, that is our GLSL shader sources and the texture image. All
 resource groups need to have unique identifier by which they are accessed, we
 will use `textured-triangle-data` as above. As said above, the resource
-compilation process is explained thoroughly in %Corrade's
+compilation process is explained thoroughly in Corrade's
 @ref resource-management "resource management tutorial".
 
 @include textured-triangle/resources.conf
 
 -   @ref textured-triangle/resources.conf
 
-In the `CMakeLists.txt` file first we find required %Magnum package and use its
+In the `CMakeLists.txt` file first we find required Magnum package and use its
 include dir. We also need to include current binary dir, because it will
 contain our generated `configure.h`.
 

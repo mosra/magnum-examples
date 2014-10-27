@@ -31,7 +31,7 @@ The examples assume that you have at least basic knowledge about graphics
 (what are homogeneous coordinates, what is mesh, vertex, texture...), how
 OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
 (attributes, uniforms, vertex/fragment shaders...). Knowledge of OpenGL API
-itself is not required, as %Magnum wraps the functionality in its own classes.
+itself is not required, as Magnum wraps the functionality in its own classes.
 
  - @subpage examples-triangle -- @copybrief examples-triangle
  - @subpage examples-primitives -- @copybrief examples-primitives
