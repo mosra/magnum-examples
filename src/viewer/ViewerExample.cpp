@@ -290,7 +290,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
-            _cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
+            _cameraObject->translate(Vector3::zAxis(distance));
 
             redraw();
             break;
