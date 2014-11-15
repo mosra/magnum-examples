@@ -60,6 +60,10 @@
 #  WindowlessGlxApplication - Windowless GLX application
 #  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessWglApplication - Windowless WGL application
+#  CglContext       - CGL context
+#  EglContext       - EGL context
+#  GlxContext       - GLX context
+#  WglContext       - WGL context
 # Example usage with specifying additional components is:
 #  find_package(Magnum [REQUIRED|COMPONENTS]
 #               MeshTools Primitives GlutApplication)
@@ -71,7 +75,10 @@
 # component is requested and found, its libraries and include dirs are
 # available in convenience aliases MAGNUM_APPLICATION_LIBRARIES /
 # MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES and MAGNUM_APPLICATION_INCLUDE_DIRS
-# / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting.
+# / MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS to simplify porting. Similarly,
+# if exactly one *Context component is requested and found, its libraries and
+# include dirs are available in convenience aliases MAGNUM_CONTEXT_LIBRARIES
+# and MAGNUM_CONTEXT_INCLUDE_DIRS.
 #
 # The package is found if either debug or release version of each requested
 # library (or plugin) is found. If both debug and release libraries (or
@@ -120,8 +127,6 @@
 #   installation directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_INSTALL_DIR - Audio importer
 #   plugin installation directory
-#  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake Find*
-#   modules
 #  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR - Plugin header installation directory
 #
@@ -192,35 +197,20 @@ endif()
 
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
-
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
-if(NOT _BUILD_DEPRECATED EQUAL -1)
-    set(MAGNUM_BUILD_DEPRECATED 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
-if(NOT _BUILD_STATIC EQUAL -1)
-    set(MAGNUM_BUILD_STATIC 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
-if(NOT _TARGET_GLES EQUAL -1)
-    set(MAGNUM_TARGET_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES2" _TARGET_GLES2)
-if(NOT _TARGET_GLES2 EQUAL -1)
-    set(MAGNUM_TARGET_GLES2 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
-if(NOT _TARGET_GLES3 EQUAL -1)
-    set(MAGNUM_TARGET_GLES3 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
-if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
-    set(MAGNUM_TARGET_DESKTOP_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_WEBGL" _TARGET_WEBGL)
-if(NOT _TARGET_WEBGL EQUAL -1)
-    set(MAGNUM_TARGET_WEBGL 1)
-endif()
+set(_magnumFlags
+    BUILD_DEPRECATED
+    BUILD_STATIC
+    TARGET_GLES
+    TARGET_GLES2
+    TARGET_GLES3
+    TARGET_DESKTOP_GLES
+    TARGET_WEBGL)
+foreach(_magnumFlag ${_magnumFlags})
+    string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
+    if(NOT _magnum_${_magnumFlag} EQUAL -1)
+        set(MAGNUM_${_magnumFlag} 1)
+    endif()
+endforeach()
 
 # Dependent libraries and includes
 set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
@@ -357,20 +347,18 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # GLUT application dependencies
-        if(${component} STREQUAL GlutApplication)
+        elseif(${component} STREQUAL GlutApplication)
             find_package(GLUT)
             if(GLUT_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${GLUT_glut_LIBRARY})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # SDL2 application dependencies
-        if(${component} STREQUAL Sdl2Application)
+        elseif(${component} STREQUAL Sdl2Application)
             find_package(SDL2)
             if(SDL2_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${SDL2_LIBRARY})
@@ -378,25 +366,25 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
 
         # (Windowless) NaCl application dependencies
-        if(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
+        elseif(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
             set(_MAGNUM_${_COMPONENT}_LIBRARIES ppapi_cpp ppapi)
-        endif()
 
-        # GLX application dependencies
-        if(${component} STREQUAL GlxApplication OR ${component} STREQUAL WindowlessGlxApplication)
+        # (Windowless) GLX application dependencies
+        elseif(${component} STREQUAL GlxApplication OR ${component} STREQUAL WindowlessGlxApplication)
             find_package(X11)
             if(X11_FOUND)
                 set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
-        endif()
+
+        # Windowless CGL application has no additional dependencies
+        # Windowless WGL application has no additional dependencies
 
         # X/EGL application dependencies
-        if(${component} STREQUAL XEglApplication)
+        elseif(${component} STREQUAL XEglApplication)
             find_package(EGL)
             find_package(X11)
             if(EGL_FOUND AND X11_FOUND)
@@ -407,7 +395,37 @@ foreach(component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Common application dependencies
-        set(_MAGNUM_${_COMPONENT}_LIBRARIES ${_MAGNUM_${_COMPONENT}_LIBRARIES} ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+        set(_MAGNUM_${_COMPONENT}_LIBRARIES
+            ${_MAGNUM_${_COMPONENT}_LIBRARIES}
+            ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
+
+    # Context libraries
+    elseif(${component} MATCHES .+Context)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
+        set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
+
+        # GLX context dependencies
+        if(${component} STREQUAL GlxContext)
+            find_package(X11)
+            if(X11_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${X11_LIBRARIES})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
+        # EGL context dependencies
+        if(${component} STREQUAL EglContext)
+            find_package(EGL)
+            if(EGL_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARIES})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+        endif()
+
+        # No additional dependencies for CGL context
+        # No additional dependencies for WGL context
 
     # Audio library
     elseif(${component} STREQUAL Audio)
@@ -456,8 +474,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             MAGNUM_${_COMPONENT}_LIBRARY
             _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
 
-        # Global aliases for Windowless*Application and *Application components.
-        # If already set, unset them to avoid ambiguity.
+        # Global aliases for Windowless*Application and *Application
+        # components. If already set, unset them to avoid ambiguity.
         if(${component} MATCHES Windowless.+Application)
             if(NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
@@ -475,6 +493,18 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_APPLICATION_INCLUDE_DIRS)
             endif()
         endif()
+
+        # Global aliases for *Context components. If already set, unset them to
+        # avoid ambiguity.
+        if(${component} MATCHES .+Context)
+            if(NOT DEFINED MAGNUM_CONTEXT_LIBRARIES AND NOT DEFINED MAGNUM_CONTEXT_INCLUDE_DIRS)
+                set(MAGNUM_CONTEXT_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
+                set(MAGNUM_CONTEXT_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
+            else()
+                unset(MAGNUM_CONTEXT_LIBRARIES)
+                unset(MAGNUM_CONTEXT_INCLUDE_DIRS)
+            endif()
+        endif()
     else()
         set(Magnum_${component}_FOUND FALSE)
     endif()
@@ -486,7 +516,7 @@ find_package_handle_standard_args(Magnum
     HANDLE_COMPONENTS)
 
 # Installation dirs
-include(CorradeLibSuffix)
+include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_PLUGINS_DEBUG_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
@@ -501,7 +531,6 @@ set(MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR
 set(MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/audioimporters)
-set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 mark_as_advanced(FORCE
