@@ -411,7 +411,8 @@ void TextureLoader::doLoad(const ResourceKey key) {
     texture->setMagnificationFilter(data->magnificationFilter())
         .setMinificationFilter(data->minificationFilter(), data->mipmapFilter())
         .setWrapping(data->wrapping().xy())
-        .setImage(0, TextureFormat::RGB8, *image)
+        .setStorage(1, TextureFormat::RGB8, image->size())
+        .setSubImage(0, {}, *image)
         .generateMipmap();
 
     /* Save it */

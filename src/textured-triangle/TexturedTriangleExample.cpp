@@ -81,7 +81,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
-        .setImage(0, TextureFormat::RGB8, *image);
+        .setStorage(1, TextureFormat::RGB8, image->size())
+        .setSubImage(0, {}, *image);
 }
 
 void TexturedTriangleExample::drawEvent() {

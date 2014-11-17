@@ -45,7 +45,8 @@ Billboard::Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuf
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
-        .setImage(0, TextureFormat::RGBA8, image);
+        .setStorage(1, TextureFormat::RGBA8, image.size())
+        .setSubImage(0, {}, image);
 
     colorCorrectionTexture.setBuffer(BufferTextureFormat::R32F, *colorCorrectionBuffer);
 
