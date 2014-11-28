@@ -216,7 +216,8 @@ same as previously.
 
 -   @ref textured-triangle/CMakeLists.txt
 
-&nbsp;
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
 
 -   Next example: @ref examples-viewer
 

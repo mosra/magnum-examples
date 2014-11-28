@@ -136,6 +136,9 @@ like `MeshTools` and `Primitives`, everything else is the same as previously:
 You can now try using another primitive from @ref Primitives namespace or
 render the mesh with different shader from @ref Shaders namespace.
 
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
+
 -   Next example: @ref examples-textured-triangle
 
 */

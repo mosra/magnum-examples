@@ -33,6 +33,9 @@ OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
 (attributes, uniforms, vertex/fragment shaders...). Knowledge of OpenGL API
 itself is not required, as Magnum wraps the functionality in its own classes.
 
+Full source code for all examples is available also in the
+[GitHub repository](https://github.com/mosra/magnum-examples).
+
  - @subpage examples-triangle -- @copybrief examples-triangle
  - @subpage examples-primitives -- @copybrief examples-primitives
  - @subpage examples-textured-triangle -- @copybrief examples-textured-triangle

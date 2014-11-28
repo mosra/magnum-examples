@@ -288,5 +288,8 @@ example.
 -   @ref viewer/configure.h.cmake
 -   @ref viewer/CMakeLists.txt
 
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
+
 */
 }

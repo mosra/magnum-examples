@@ -100,6 +100,9 @@ all Magnum libraries we requested. See @ref cmake for more information.
 You can now try changing vertex count, positions or colors to see how the
 shader behaves.
 
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle).
+
 -   Next example: @ref examples-primitives
 
 */
