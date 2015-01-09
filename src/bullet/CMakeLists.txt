@@ -30,7 +30,6 @@ project(MagnumBulletExample)
 find_package(Magnum REQUIRED
     DebugTools
     SceneGraph
-    Shaders
     Shapes
     Sdl2Application)
 
@@ -46,6 +45,5 @@ target_link_libraries(bullet
     ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
     ${MAGNUM_DEBUGTOOLS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_SHAPES_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
