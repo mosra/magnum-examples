@@ -51,8 +51,39 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Dependencies
-find_package(Magnum REQUIRED)
+# Ensure that all inter-component dependencies are specified as well
+set(_MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS )
+foreach(component ${MagnumIntegration_FIND_COMPONENTS})
+    string(TOUPPER ${component} _COMPONENT)
+
+    # The dependencies need to be sorted by their dependency order as well
+    # (no inter-component dependencies yet)
+
+    list(APPEND _MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS ${_MAGNUM_${_COMPONENT}INTEGRATION_DEPENDENCIES})
+endforeach()
+
+# Join the lists, remove duplicate components
+if(_MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS)
+    list(INSERT MagnumIntegration_FIND_COMPONENTS 0 ${_MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS})
+endif()
+if(MagnumIntegration_FIND_COMPONENTS)
+    list(REMOVE_DUPLICATES MagnumIntegration_FIND_COMPONENTS)
+endif()
+
+# Magnum library dependencies
+set(_MAGNUMINTEGRATION_DEPENDENCIES )
+foreach(component ${MagnumIntegration_FIND_COMPONENTS})
+    string(TOUPPER ${component} _COMPONENT)
+
+    if(component STREQUAL Bullet)
+        # SceneGraph is implicit Shapes dependency, fugly hack to avoid having
+        # everything specified twice
+        set(_MAGNUM_${_COMPONENT}INTEGRATION_MAGNUM_DEPENDENCY Shapes)
+    endif()
+
+    set(_MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_DEPENDENCIES} ${_MAGNUM_${_COMPONENT}INTEGRATION_MAGNUM_DEPENDENCY})
+endforeach()
+find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
 
 # Additional components
 foreach(component ${MagnumIntegration_FIND_COMPONENTS})
@@ -92,6 +123,13 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
         find_path(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES}
             PATHS ${MAGNUM_INCLUDE_DIR}/Magnum/${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX})
+    endif()
+
+    # Add Magnum library dependency, if there is any
+    if(_MAGNUM_${_COMPONENT}INTEGRATION_MAGNUM_DEPENDENCY)
+        string(TOUPPER ${_MAGNUM_${_COMPONENT}INTEGRATION_MAGNUM_DEPENDENCY} _DEPENDENCY)
+        set(_MAGNUM_${_COMPONENT}INTEGRATION_LIBRARIES ${_MAGNUM_${_COMPONENT}INTEGRATION_LIBRARIES} ${MAGNUM_${_DEPENDENCY}_LIBRARIES})
+        set(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIRS ${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIRS} ${MAGNUM_${_DEPENDENCY}_INCLUDE_DIRS})
     endif()
 
     # Decide if the library was found
