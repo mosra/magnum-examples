@@ -1,5 +1,5 @@
-Here are various examples for Magnum C++11 OpenGL engine, demonstrating Magnum
-features, usage and capabilities. If you don't know what Magnum is, see
+Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
+Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum. The examples are explained in the
 documentation, which is also available online at
 http://mosra.cz/blog/magnum-doc/example-index.html.
