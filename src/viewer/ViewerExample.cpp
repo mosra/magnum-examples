@@ -310,11 +310,11 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     Vector3 currentPosition = positionOnSphere(event.position());
 
-    Vector3 axis = Vector3::cross(_previousPosition, currentPosition);
+    Vector3 axis = Math::cross(_previousPosition, currentPosition);
 
     if(_previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-    _o->rotate(Vector3::angle(_previousPosition, currentPosition), axis.normalized());
+    _o->rotate(Math::angle(_previousPosition, currentPosition), axis.normalized());
 
     _previousPosition = currentPosition;
 
