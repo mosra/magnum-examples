@@ -42,6 +42,5 @@ to nature of the cube map texture, to *move* around the scene.
 Image source
 ------------
 
-The cube map images are work of Emil Persson, aka Humus, http://www.humus.name.
-The images are licensed under a Creative Commons Attribution 3.0 Unported
-License, http://creativecommons.org/licenses/by/3.0/.
+The sample images provided in this example are work of Emil Persson, aka Humus --
+http://www.humus.name, licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).

@@ -100,6 +100,11 @@ idea? Feel free to visit my website or contact me at:
 *   E-mail -- mosra@centrum.cz
 *   Jabber -- mosra@jabbim.cz
 
+CREDITS
+=======
+
+See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
+
 LICENSE
 =======
 
