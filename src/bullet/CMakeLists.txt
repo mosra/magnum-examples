@@ -40,11 +40,14 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 # Bullet headers produce a lot of warnings in C++11 mode
 include_directories(SYSTEM ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
 
-add_executable(bullet BulletExample.cpp)
-target_link_libraries(bullet
+add_executable(magnum-bullet BulletExample.cpp)
+target_link_libraries(magnum-bullet
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
     ${MAGNUM_DEBUGTOOLS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_SHAPES_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-bullet.md)

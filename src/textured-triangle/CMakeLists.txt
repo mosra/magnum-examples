@@ -38,10 +38,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TexturedTriangleData resources.conf)
 
-add_executable(textured-triangle
+add_executable(magnum-textured-triangle
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
     ${TexturedTriangleData})
-target_link_libraries(textured-triangle
+target_link_libraries(magnum-textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-textured-triangle.md)

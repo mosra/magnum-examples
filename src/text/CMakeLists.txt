@@ -41,9 +41,12 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
-add_executable(text TextExample.cpp ${TextExample_RESOURCES})
-target_link_libraries(text
+add_executable(magnum-text TextExample.cpp ${TextExample_RESOURCES})
+target_link_libraries(magnum-text
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-text DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-text.md)

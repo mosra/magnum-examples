@@ -33,8 +33,11 @@ find_package(Magnum REQUIRED
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
-add_executable(triangle TriangleExample.cpp)
-target_link_libraries(triangle
+add_executable(magnum-triangle TriangleExample.cpp)
+target_link_libraries(magnum-triangle
     ${MAGNUM_APPLICATION_LIBRARIES}
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES})
+
+install(TARGETS magnum-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-triangle.md)

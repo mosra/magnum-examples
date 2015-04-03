@@ -13,6 +13,9 @@ The application loads and displays TGA image passed as parameter:
 
     ./framebuffer image.tga
 
+Sample image is supplied alonside the source. If you install the examples, the
+image is also copied into `<prefix>/share/magnum/examples/framebuffer/`.
+
 Mouse shortcuts
 ---------------
 
