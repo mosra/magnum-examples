@@ -439,7 +439,7 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setDiffuseColor(_diffuseColor)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
@@ -452,7 +452,7 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
         .setDiffuseTexture(*_diffuseTexture)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
