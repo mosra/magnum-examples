@@ -51,8 +51,8 @@ ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& objec
 
 void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     /* Draw original scene */
-    framebuffer.clear(FramebufferClear::Color);
-    framebuffer.bind(FramebufferTarget::Draw);
+    framebuffer.clear(FramebufferClear::Color)
+        .bind();
     SceneGraph::Camera2D::draw(group);
 
     /* Original image at top left */
