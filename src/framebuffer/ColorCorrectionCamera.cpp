@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,8 +51,8 @@ ColorCorrectionCamera::ColorCorrectionCamera(SceneGraph::AbstractObject2D& objec
 
 void ColorCorrectionCamera::draw(SceneGraph::DrawableGroup2D& group) {
     /* Draw original scene */
-    framebuffer.clear(FramebufferClear::Color);
-    framebuffer.bind(FramebufferTarget::Draw);
+    framebuffer.clear(FramebufferClear::Color)
+        .bind();
     SceneGraph::Camera2D::draw(group);
 
     /* Original image at top left */

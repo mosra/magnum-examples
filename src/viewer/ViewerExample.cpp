@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -290,7 +290,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
-            _cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
+            _cameraObject->translate(Vector3::zAxis(distance));
 
             redraw();
             break;
@@ -310,11 +310,11 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     Vector3 currentPosition = positionOnSphere(event.position());
 
-    Vector3 axis = Vector3::cross(_previousPosition, currentPosition);
+    Vector3 axis = Math::cross(_previousPosition, currentPosition);
 
     if(_previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-    _o->rotate(Vector3::angle(_previousPosition, currentPosition), axis.normalized());
+    _o->rotate(Math::angle(_previousPosition, currentPosition), axis.normalized());
 
     _previousPosition = currentPosition;
 
@@ -411,7 +411,8 @@ void TextureLoader::doLoad(const ResourceKey key) {
     texture->setMagnificationFilter(data->magnificationFilter())
         .setMinificationFilter(data->minificationFilter(), data->mipmapFilter())
         .setWrapping(data->wrapping().xy())
-        .setImage(0, TextureFormat::RGB8, *image)
+        .setStorage(1, TextureFormat::RGB8, image->size())
+        .setSubImage(0, {}, *image)
         .generateMipmap();
 
     /* Save it */
@@ -438,7 +439,7 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setDiffuseColor(_diffuseColor)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
@@ -451,7 +452,7 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
         .setDiffuseTexture(*_diffuseTexture)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());

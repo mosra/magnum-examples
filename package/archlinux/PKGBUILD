@@ -1,0 +1,39 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=magnum-examples
+pkgver=dev
+pkgrel=1
+pkgdesc="Examples for Magnum OpenGL graphics engine"
+arch=('i686' 'x86_64')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('magnum' 'magnum-plugins' 'magnum-integration' 'bullet')
+makedepends=('cmake' 'ninja')
+options=(!strip)
+provides=('magnum-examples-git')
+
+_rootdir=$startdir/../../
+
+build() {
+    mkdir -p "$_rootdir/build"
+    cd "$_rootdir/build"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_BULLET=ON \
+        -DWITH_CUBEMAP=ON \
+        -DWITH_FRAMEBUFFER=ON \
+        -DWITH_MOTIONBLUR=ON \
+        -DWITH_PRIMITIVES=ON \
+        -DWITH_TEXT=ON \
+        -DWITH_TEXTUREDTRIANGLE=ON \
+        -DWITH_TRIANGLE=ON \
+        -DWITH_VIEWER=ON \
+        -G Ninja
+    ninja
+}
+
+package() {
+  cd "$_rootdir/build"
+  DESTDIR="$pkgdir/" ninja install
+}

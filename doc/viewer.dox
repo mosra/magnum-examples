@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -73,7 +73,7 @@ attached to some object in the same scene. The object controls camera
 transformation and the camera feature itself controls projection and aspect
 ratio correction.
 
-%Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
+Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
 the same and differs only in obvious ways (e.g. perspective projection is
 not available in 2D).
 
@@ -261,7 +261,7 @@ directly to resource manager.
 @skip void MaterialLoader::doLoad
 @until }
 
-%Texture loading is also nothing new. We load texture parameters and the actual
+Texture loading is also nothing new. We load texture parameters and the actual
 image, check their formats, configure the texture, upload its data and save it
 to the manager.
 @skip void TextureLoader::doLoad
@@ -287,6 +287,9 @@ example.
 
 -   @ref viewer/configure.h.cmake
 -   @ref viewer/CMakeLists.txt
+
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
 
 */
 }

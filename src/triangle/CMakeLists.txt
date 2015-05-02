@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumTriangleExample)
 
 find_package(Magnum REQUIRED
@@ -33,8 +33,11 @@ find_package(Magnum REQUIRED
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
-add_executable(triangle TriangleExample.cpp)
-target_link_libraries(triangle
+add_executable(magnum-triangle TriangleExample.cpp)
+target_link_libraries(magnum-triangle
     ${MAGNUM_APPLICATION_LIBRARIES}
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES})
+
+install(TARGETS magnum-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-triangle.md)

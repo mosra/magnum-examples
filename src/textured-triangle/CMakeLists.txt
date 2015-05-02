@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumTexturedTriangleExample)
 
 find_package(Magnum REQUIRED Sdl2Application)
@@ -38,10 +38,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TexturedTriangleData resources.conf)
 
-add_executable(textured-triangle
+add_executable(magnum-textured-triangle
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
     ${TexturedTriangleData})
-target_link_libraries(textured-triangle
+target_link_libraries(magnum-textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-textured-triangle.md)

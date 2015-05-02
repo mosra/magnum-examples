@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumFramebufferExample)
 
 find_package(Magnum REQUIRED
@@ -41,14 +41,18 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(ColorCorrectionShader resources.conf)
 
-add_executable(framebuffer
+add_executable(magnum-framebuffer
     FramebufferExample.cpp
     ColorCorrectionCamera.cpp
     ColorCorrectionShader.cpp
     Billboard.cpp
     ${ColorCorrectionShader})
-target_link_libraries(framebuffer
+target_link_libraries(magnum-framebuffer
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-framebuffer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-framebuffer.md)
+install(FILES image.tga DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/framebuffer)

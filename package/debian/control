@@ -1,0 +1,18 @@
+Source: magnum-examples
+Priority: optional
+Maintainer: Vladimír Vondruš <mosra@centrum.cz>
+Build-Depends: debhelper (>= 9), cmake (>= 2.8.9), magnum-dev, magnum-plugins-dev, magnum-integration-dev, libbullet-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://mosra.cz/blog/magnum.php
+Vcs-Git: git://github.com/mosra/magnum-examples.git
+Vcs-Browser: https://github.com/mosra/magnum-examples
+
+Package: magnum-examples
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, magnum, magnum-plugins, magnum-integration, libbulletcollision2.81
+Description: Examples for Magnum OpenGL graphics engine
+ Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL. Its goal
+ is to simplify low-level graphics development and interaction with OpenGL
+ using recent C++11 features and to abstract away platform-specific issues.
