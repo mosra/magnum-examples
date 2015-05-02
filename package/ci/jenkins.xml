@@ -97,6 +97,7 @@ fi
 mkdir -p build-${compiler}-${libraries}-${compatibility}-${gl}
 cd build-${compiler}-${libraries}-${compatibility}-${gl}
 
+# MagnumIntegration doesn't have compatibility branch yet, so disable Bullet
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_FIND_ROOT_PATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility};${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}" \
@@ -104,7 +105,7 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
-    -DWITH_BULLET=ON \
+    -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=${desktop_flag} \
     -DWITH_FRAMEBUFFER=${desktop_flag} \
     -DWITH_MOTIONBLUR=${desktop_flag} \
