@@ -104,12 +104,13 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
+    -DWITH_BULLET=ON \
     -DWITH_CUBEMAP=${desktop_flag} \
     -DWITH_FRAMEBUFFER=${desktop_flag} \
     -DWITH_MOTIONBLUR=${desktop_flag} \
     -DWITH_PRIMITIVES=ON \
-    -DWITH_TEXTUREDTRIANGLE=${desktop_flag} \
     -DWITH_TEXT=${desktop_flag} \
+    -DWITH_TEXTUREDTRIANGLE=${desktop_flag} \
     -DWITH_TRIANGLE=ON \
     -DWITH_VIEWER=ON \
     -G Ninja
