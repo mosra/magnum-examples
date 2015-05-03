@@ -43,12 +43,19 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_resource(CubeMapData resources.conf)
 
 add_executable(magnum-cubemap
-    CubeMapExample.cpp
     CubeMap.cpp
+    CubeMapExample.cpp
     CubeMapShader.cpp
     Reflector.cpp
     ReflectorShader.cpp
     Types.cpp
+
+    CubeMap.h
+    CubeMapShader.h
+    Reflector.h
+    ReflectorShader.h
+    Types.h
+
     ${CubeMapData})
 target_link_libraries(magnum-cubemap
     ${MAGNUM_LIBRARIES}
