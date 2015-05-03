@@ -1,20 +1,21 @@
-This is simply an viewer for COLLADA files. It can load scenes with one or
-more objects and display them. COLLADA support is currently aimed at opening
-files exported from Blender 2.6. Only triangle meshes with Phong shading
-without textures are currently supported.
+This is simply an viewer for 3D scene files, such as OpenGEX or COLLADA ones.
+Only triangle meshes with Phong shading with optional diffuse texture are
+currently supported.
 
 ![Viewer](viewer.png)
 
 Usage
 -----
 
-Pass path to COLLADA file as parameter:
+Pass path to scene file as parameter:
 
-    ./viewer ~/models/scene.dae
+    ./viewer ~/models/scene.ogex
 
-The application opens the file and displays the scene. Load progress is written
-to console output. **Mouse drag** rotates the camera around the scene,
-**mouse wheel** zooms in and out.
+The application opens the file using `AnySceneImporter` which detects the file
+type, delegates the import to plugin dedicated for given format (such as
+`OpenGexImporter` or `ColladaImporter`) and then displays the scene. Loading
+progress is written to console output. **Mouse drag** rotates the camera around
+the scene, **mouse wheel** zooms in and out.
 
 Documentation
 -------------
