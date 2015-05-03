@@ -240,8 +240,8 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         _o = new Object3D{&_scene};
 
         /* Recursively add all children */
-        for(UnsignedInt objectId: sceneData->children3D())
-            addObject(*importer, _o, objectId);
+        for(auto it = sceneData->children3D().begin(); it != sceneData->children3D().end(); ++it)
+            addObject(*importer, _o, *it);
     }
 
     /* Materials were consumed by objects and they are not needed anymore */
@@ -298,8 +298,8 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* paren
     if(!object && !objectData->children().empty()) object = new Object3D(parent);
 
     /* Recursively add children */
-    for(std::size_t id: objectData->children())
-        addObject(importer, object, id);
+    for(auto it = objectData->children().begin(); it != objectData->children().end(); ++it)
+        addObject(importer, object, *it);
 }
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
