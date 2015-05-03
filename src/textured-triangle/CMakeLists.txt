@@ -41,6 +41,9 @@ corrade_add_resource(TexturedTriangleData resources.conf)
 add_executable(magnum-textured-triangle
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
+
+    TexturedTriangleShader.h
+
     ${TexturedTriangleData})
 target_link_libraries(magnum-textured-triangle
     ${MAGNUM_LIBRARIES}

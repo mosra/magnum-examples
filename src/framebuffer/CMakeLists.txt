@@ -42,10 +42,16 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_resource(ColorCorrectionShader resources.conf)
 
 add_executable(magnum-framebuffer
-    FramebufferExample.cpp
+    Billboard.cpp
     ColorCorrectionCamera.cpp
     ColorCorrectionShader.cpp
-    Billboard.cpp
+    FramebufferExample.cpp
+
+    Billboard.h
+    ColorCorrectionCamera.h
+    ColorCorrectionShader.h
+    Types.h
+
     ${ColorCorrectionShader})
 target_link_libraries(magnum-framebuffer
     ${MAGNUM_LIBRARIES}
