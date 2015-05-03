@@ -221,9 +221,20 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 
         /* Save things */
         _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)});
-        _resourceManager.set(std::to_string(i) + "-vertices", buffer.release());
-        if(indexBuffer)
-            _resourceManager.set(std::to_string(i) + "-indices", indexBuffer.release());
+        _resourceManager.set(
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            std::to_string(i) +
+            #else
+            std::to_string(static_cast<unsigned long long int>(i)) +
+            #endif
+            "-vertices", buffer.release());
+        if(indexBuffer) _resourceManager.set(
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            std::to_string(i) +
+            #else
+            std::to_string(static_cast<unsigned long long int>(i)) +
+            #endif
+            "-indices", indexBuffer.release());
     }
 
     /* Load the scene */
