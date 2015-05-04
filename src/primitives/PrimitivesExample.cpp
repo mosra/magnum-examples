@@ -64,7 +64,7 @@ class PrimitivesExample: public Platform::Application {
         Color3 _color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")}, _indexBuffer{Buffer::Target::ElementArray} {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")}, _indexBuffer{Buffer::TargetHint::ElementArray} {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
