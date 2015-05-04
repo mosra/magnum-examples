@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -52,7 +52,7 @@
 
 namespace Magnum { namespace Examples {
 
-typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::AbstractImporter, Trade::PhongMaterialData> ViewerResourceManager;
+typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -69,7 +69,7 @@ class ViewerExample: public Platform::Application {
 
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
-        void addObject(Trade::AbstractImporter& importer, Object3D* parent, std::size_t objectId);
+        void addObject(Trade::AbstractImporter& importer, Object3D* parent, UnsignedInt i);
 
         ViewerResourceManager _resourceManager;
 
@@ -80,42 +80,9 @@ class ViewerExample: public Platform::Application {
         Vector3 _previousPosition;
 };
 
-class MeshLoader: public AbstractResourceLoader<Mesh> {
-    public:
-        explicit MeshLoader();
-
-    private:
-        void doLoad(ResourceKey key) override;
-
-        Resource<Trade::AbstractImporter> _importer;
-        std::unordered_map<ResourceKey, std::size_t> _keyMap;
-};
-
-class MaterialLoader: public AbstractResourceLoader<Trade::PhongMaterialData> {
-    public:
-        explicit MaterialLoader();
-
-    private:
-        void doLoad(ResourceKey key) override;
-
-        Resource<Trade::AbstractImporter> _importer;
-        std::unordered_map<ResourceKey, std::size_t> _keyMap;
-};
-
-class TextureLoader: public AbstractResourceLoader<Texture2D> {
-    public:
-        explicit TextureLoader();
-
-    private:
-        void doLoad(ResourceKey key) override;
-
-        Resource<Trade::AbstractImporter> _importer;
-        std::unordered_map<ResourceKey, std::size_t> _keyMap;
-};
-
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit ColoredObject(ResourceKey meshKey, ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit ColoredObject(ResourceKey meshId, ResourceKey materialId, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
@@ -130,7 +97,7 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
 
 class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit TexturedObject(ResourceKey meshId, ResourceKey materialId, ResourceKey diffuseTextureId, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
@@ -143,16 +110,17 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         Float _shininess;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Viewer Example")) {
+ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")} {
     Utility::Arguments args;
-    args.addArgument("file").setHelpKey("file", "file.dae").setHelp("file", "file to load")
+    args.addArgument("file").setHelp("file", "file to load")
+        .setHelp("Loads and displays 3D scene file (such as OpenGEX or COLLADA one) provided on command-line.")
         .parse(arguments.argc, arguments.argv);
 
-    /* Instance ColladaImporter plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(!(manager.load("ColladaImporter") & PluginManager::LoadState::Loaded))
+    /* Load scene importer plugin */
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
+    if(!importer)
         std::exit(1);
-    Trade::AbstractImporter* importer = manager.instance("ColladaImporter").release();
 
     Debug() << "Opening file" << args.value("file");
 
@@ -162,108 +130,187 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application(
     if(!importer->sceneCount() || importer->defaultScene() == -1)
         std::exit(5);
 
-    /* Save importer for later use */
-    _resourceManager.set("importer", importer);
-
-    /* Resource loaders */
-    auto meshLoader = new MeshLoader;
-    auto materialLoader = new MaterialLoader;
-    auto textureLoader = new TextureLoader;
-    _resourceManager.setLoader(meshLoader)
-        .setLoader(materialLoader)
-        .setLoader(textureLoader);
-
     /* Phong shader instances */
-    _resourceManager.set("color", new Shaders::Phong);
-    _resourceManager.set("texture", new Shaders::Phong(Shaders::Phong::Flag::DiffuseTexture));
+    _resourceManager.set("color", new Shaders::Phong)
+        .set("texture", new Shaders::Phong{Shaders::Phong::Flag::DiffuseTexture});
 
-    /* Fallback mesh for objects with no mesh */
-    _resourceManager.setFallback(new Mesh);
-
-    /* Fallback material for objects with no material */
-    auto material = new Trade::PhongMaterialData({}, 50.0f);
+    /* Fallback material, texture and mesh in case the data are not present or
+       cannot be loaded */
+    auto material = new Trade::PhongMaterialData{{}, 50.0f};
     material->ambientColor() = {0.0f, 0.0f, 0.0f};
     material->diffuseColor() = {0.9f, 0.9f, 0.9f};
     material->specularColor() = {1.0f, 1.0f, 1.0f};
-    _resourceManager.setFallback(material);
-
-    /* Fallback texture for object without texture */
-    _resourceManager.setFallback(new Texture2D);
+    _resourceManager.setFallback(material)
+        .setFallback(new Texture2D)
+        .setFallback(new Mesh);
 
     /* Every scene needs a camera */
-    (_cameraObject = new Object3D(&_scene))
+    (_cameraObject = new Object3D{&_scene})
         ->translate(Vector3::zAxis(5.0f));
-    (_camera = new SceneGraph::Camera3D(*_cameraObject))
+    (_camera = new SceneGraph::Camera3D{*_cameraObject})
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
-    /* Default object, parent of all (for manipulation) */
-    _o = new Object3D(&_scene);
+    /* Load all materials */
+    for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+        Debug() << "Importing material" << i << importer->materialName(i);
 
-    Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
+        std::unique_ptr<Trade::AbstractMaterialData> materialData = importer->material(i);
+        if(!materialData || materialData->type() != Trade::MaterialType::Phong) {
+            Warning() << "Cannot load material, skipping";
+            continue;
+        }
+
+        /* Save the material */
+        _resourceManager.set(ResourceKey{i}, static_cast<Trade::PhongMaterialData*>(materialData.release()));
+    }
+
+    /* Load all textures */
+    for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+        Debug() << "Importing texture" << i << importer->textureName(i);
+
+        std::optional<Trade::TextureData> textureData = importer->texture(i);
+        if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D) {
+            Warning() << "Cannot load texture, skipping";
+            continue;
+        }
+
+        Debug() << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
+
+        std::optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
+        if(!imageData || (imageData->format() != ColorFormat::RGB
+            #ifndef MAGNUM_TARGET_GLES
+            && imageData->format() != ColorFormat::BGR
+            #endif
+            ))
+        {
+            Warning() << "Cannot load texture image, skipping";
+            continue;
+        }
+
+        /* Configure texture */
+        auto texture = new Texture2D;
+        texture->setMagnificationFilter(textureData->magnificationFilter())
+            .setMinificationFilter(textureData->minificationFilter(), textureData->mipmapFilter())
+            .setWrapping(textureData->wrapping().xy())
+            .setStorage(1, TextureFormat::RGB8, imageData->size())
+            .setSubImage(0, {}, *imageData)
+            .generateMipmap();
+
+        /* Save it */
+        _resourceManager.set(ResourceKey{i}, texture);
+    }
+
+    /* Load all meshes */
+    for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
+        Debug() << "Importing mesh" << i << importer->mesh3DName(i);
+
+        std::optional<Trade::MeshData3D> meshData = importer->mesh3D(i);
+        if(!meshData || !meshData->hasNormals() || meshData->primitive() != MeshPrimitive::Triangles) {
+            Warning() << "Cannot load mesh, skipping";
+            continue;
+        }
+
+        /* Compile the mesh */
+        std::optional<Mesh> mesh;
+        std::unique_ptr<Buffer> buffer, indexBuffer;
+        std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, BufferUsage::StaticDraw);
+
+        /* Save things */
+        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)});
+        _resourceManager.set(
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            std::to_string(i) +
+            #else
+            std::to_string(static_cast<unsigned long long int>(i)) +
+            #endif
+            "-vertices", buffer.release());
+        if(indexBuffer) _resourceManager.set(
+            #ifndef CORRADE_GCC44_COMPATIBILITY
+            std::to_string(i) +
+            #else
+            std::to_string(static_cast<unsigned long long int>(i)) +
+            #endif
+            "-indices", indexBuffer.release());
+    }
 
     /* Load the scene */
-    std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
-    CORRADE_INTERNAL_ASSERT(sceneData);
+    {
+        Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
-    /* Add all children */
-    for(UnsignedInt objectId: sceneData->children3D())
-        addObject(*importer, _o, objectId);
+        std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
+        if(!sceneData) {
+            Error() << "Cannot load scene, exiting";
+            return;
+        }
 
-    /* Importer, materials and loaders are not needed anymore */
+        /* Default object, parent of all (for manipulation) */
+        _o = new Object3D{&_scene};
+
+        /* Recursively add all children */
+        for(auto it = sceneData->children3D().begin(); it != sceneData->children3D().end(); ++it)
+            addObject(*importer, _o, *it);
+    }
+
+    /* Materials were consumed by objects and they are not needed anymore */
     _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
-        .setLoader<Mesh>(nullptr)
-        .setLoader<Texture2D>(nullptr)
-        .setLoader<Trade::PhongMaterialData>(nullptr)
-        .clear<Trade::PhongMaterialData>()
-        .clear<Trade::AbstractImporter>();
-
-    Debug() << "Imported" << meshLoader->loadedCount() << "meshes,"
-            << materialLoader->loadedCount() << "materials and"
-            << textureLoader->loadedCount() << "textures,"
-            << meshLoader->notFoundCount() << "meshes,"
-            << materialLoader->notFoundCount() << "materials and"
-            << textureLoader->notFoundCount() << "textures weren't found.";
+        .clear<Trade::PhongMaterialData>();
 }
 
-void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, std::size_t objectId) {
-    Debug() << "Importing object" << importer.object3DName(objectId);
+void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, UnsignedInt i) {
+    Debug() << "Importing object" << i << importer.object3DName(i);
 
     Object3D* object = nullptr;
-    std::unique_ptr<Trade::ObjectData3D> objectData = importer.object3D(objectId);
-    CORRADE_INTERNAL_ASSERT(objectData);
+    std::unique_ptr<Trade::ObjectData3D> objectData = importer.object3D(i);
+    if(!objectData) {
+        Error() << "Cannot import object, skipping";
+        return;
+    }
 
     /* Only meshes for now */
     if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
-        const auto materialName = importer.materialName(static_cast<Trade::MeshObjectData3D*>(objectData.get())->material());
-        const ResourceKey materialKey(materialName);
+        Int materialId = static_cast<Trade::MeshObjectData3D*>(objectData.get())->material();
 
         /* Decide what object to add based on material type */
-        Resource<Trade::PhongMaterialData> material = _resourceManager.get<Trade::PhongMaterialData>(materialKey);
+        auto materialData = _resourceManager.get<Trade::PhongMaterialData>(ResourceKey(materialId));
 
         /* Color-only material */
-        if(!material->flags())
-            (object = new ColoredObject(importer.mesh3DName(objectData->instance()), materialKey, parent, &_drawables))
-                ->setTransformation(objectData->transformation());
+        if(!materialData->flags()) {
+            object = new ColoredObject(ResourceKey(objectData->instance()),
+                                       ResourceKey(materialId),
+                                       parent, &_drawables);
+            object->setTransformation(objectData->transformation());
 
         /* Diffuse texture material */
-        else if(material->flags() == Trade::PhongMaterialData::Flag::DiffuseTexture)
-            (object = new TexturedObject(importer.mesh3DName(objectData->instance()), materialKey, importer.textureName(material->diffuseTexture()), parent, &_drawables))
-                ->setTransformation(objectData->transformation());
+        } else if(materialData->flags() == Trade::PhongMaterialData::Flag::DiffuseTexture) {
+            object = new TexturedObject(ResourceKey(objectData->instance()),
+                                        ResourceKey(materialId),
+                                        ResourceKey(materialData->diffuseTexture()),
+                                        parent, &_drawables);
+            object->setTransformation(objectData->transformation());
 
         /* No other material types are supported yet */
-        else Error() << "Texture combination of material" << materialName << "is not supported";
+        } else {
+            Warning() << "Texture combination of material"
+                      << materialId << importer.materialName(materialId)
+                      << "is not supported, using default material instead";
+
+            object = new ColoredObject(ResourceKey(objectData->instance()),
+                                       ResourceKey(-1),
+                                       parent, &_drawables);
+            object->setTransformation(objectData->transformation());
+        }
     }
 
     /* Create parent object for children, if it doesn't already exist */
-    if(!object) object = new Object3D(parent);
+    if(!object && !objectData->children().empty()) object = new Object3D(parent);
 
     /* Recursively add children */
-    for(std::size_t id: objectData->children())
-        addObject(importer, object, id);
+    for(auto it = objectData->children().begin(); it != objectData->children().end(); ++it)
+        addObject(importer, object, *it);
 }
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
@@ -290,7 +337,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
-            _cameraObject->translate(Vector3::zAxis(distance), SceneGraph::TransformationType::Global);
+            _cameraObject->translate(Vector3::zAxis(distance));
 
             redraw();
             break;
@@ -305,129 +352,47 @@ void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
         _previousPosition = Vector3();
 }
 
+Vector3 ViewerExample::positionOnSphere(const Vector2i& position) const {
+    Vector2 positionNormalized = Vector2(position*2)/Vector2(_camera->viewport()) - Vector2(1.0f);
+
+    Float length = positionNormalized.length();
+    Vector3 result(length > 1.0f ? Vector3(positionNormalized, 0.0f) : Vector3(positionNormalized, 1.0f - length));
+    result.y() *= -1.0f;
+    return result.normalized();
+}
+
 void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
     Vector3 currentPosition = positionOnSphere(event.position());
 
-    Vector3 axis = Vector3::cross(_previousPosition, currentPosition);
+    Vector3 axis = Math::cross(_previousPosition, currentPosition);
 
     if(_previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
 
-    _o->rotate(Vector3::angle(_previousPosition, currentPosition), axis.normalized());
+    _o->rotate(Math::angle(_previousPosition, currentPosition), axis.normalized());
 
     _previousPosition = currentPosition;
 
     redraw();
 }
 
-Vector3 ViewerExample::positionOnSphere(const Vector2i& _position) const {
-    Vector2 position = Vector2(_position*2)/Vector2(_camera->viewport()) - Vector2(1.0f);
-
-    Float length = position.length();
-    Vector3 result(length > 1.0f ? Vector3(position, 0.0f) : Vector3(position, 1.0f - length));
-    result.y() *= -1.0f;
-    return result.normalized();
-}
-
-MeshLoader::MeshLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
-    /* Fill key->name map */
-    for(UnsignedInt i = 0; i != _importer->mesh3DCount(); ++i)
-        _keyMap.insert({_importer->mesh3DName(i), i});
-}
-
-MaterialLoader::MaterialLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
-    /* Fill key->name map */
-    for(UnsignedInt i = 0; i != _importer->materialCount(); ++i)
-        _keyMap.insert({_importer->materialName(i), i});
-}
-
-TextureLoader::TextureLoader(): _importer(ViewerResourceManager::instance().get<Trade::AbstractImporter>("importer")) {
-    /* Fill key->name map */
-    for(UnsignedInt i = 0; i != _importer->textureCount(); ++i)
-        _keyMap.insert({_importer->textureName(i), i});
-}
-
-void MeshLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = _keyMap.at(key);
-
-    Debug() << "Importing mesh" << _importer->mesh3DName(id) << "...";
-
-    std::optional<Trade::MeshData3D> data = _importer->mesh3D(id);
-    if(!data || !data->hasNormals() || data->primitive() != MeshPrimitive::Triangles) {
-        setNotFound(key);
-        return;
-    }
-
-    /* Compile the mesh */
-    std::optional<Mesh> mesh;
-    std::unique_ptr<Buffer> buffer, indexBuffer;
-    std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*data, BufferUsage::StaticDraw);
-
-    /* Save things */
-    ViewerResourceManager::instance().set(_importer->mesh3DName(id) + "-vertices", buffer.release());
-    if(indexBuffer)
-        ViewerResourceManager::instance().set(_importer->mesh3DName(id) + "-indices", indexBuffer.release());
-    set(key, new Mesh(std::move(*mesh)));
-}
-
-void MaterialLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = _keyMap.at(key);
-
-    Debug() << "Importing material" << _importer->materialName(id);
-
-    std::unique_ptr<Trade::AbstractMaterialData> material = _importer->material(id);
-    if(material && material->type() == Trade::MaterialType::Phong)
-        set(key, static_cast<Trade::PhongMaterialData*>(material.release()), ResourceDataState::Final, ResourcePolicy::Manual);
-    else setNotFound(key);
-}
-
-void TextureLoader::doLoad(const ResourceKey key) {
-    const UnsignedInt id = _keyMap.at(key);
-
-    Debug() << "Importing texture" << _importer->textureName(id);
-
-    std::optional<Trade::TextureData> data = _importer->texture(id);
-    if(!data || data->type() != Trade::TextureData::Type::Texture2D) {
-        setNotFound(key);
-        return;
-    }
-
-    Debug() << "Importing image" << _importer->image2DName(data->image()) << "...";
-
-    std::optional<Trade::ImageData2D> image = _importer->image2D(data->image());
-    if(!image || (image->format() != ColorFormat::RGB
-        #ifndef MAGNUM_TARGET_GLES
-        && image->format() != ColorFormat::BGR
-        #endif
-        ))
-    {
-        setNotFound(key);
-        return;
-    }
-
-    /* Configure texture */
-    auto texture = new Texture2D;
-    texture->setMagnificationFilter(data->magnificationFilter())
-        .setMinificationFilter(data->minificationFilter(), data->mipmapFilter())
-        .setWrapping(data->wrapping().xy())
-        .setImage(0, TextureFormat::RGB8, *image)
-        .generateMipmap();
-
-    /* Save it */
-    set(key, texture);
-}
-
-ColoredObject::ColoredObject(const ResourceKey meshKey, const ResourceKey materialKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), _shader(ViewerResourceManager::instance().get<Shaders::Phong>("color")) {
-    Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialKey);
+ColoredObject::ColoredObject(ResourceKey meshId, ResourceKey materialId, Object3D* parent, SceneGraph::DrawableGroup3D* group):
+    Object3D{parent}, SceneGraph::Drawable3D{*this, group},
+    _mesh{ViewerResourceManager::instance().get<Mesh>(meshId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")}
+{
+    auto material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialId);
     _ambientColor = material->ambientColor();
     _diffuseColor = material->diffuseColor();
     _specularColor = material->specularColor();
     _shininess = material->shininess();
 }
 
-TexturedObject::TexturedObject(ResourceKey meshKey, ResourceKey materialKey, ResourceKey diffuseTextureKey, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(ViewerResourceManager::instance().get<Mesh>(meshKey)), _diffuseTexture(ViewerResourceManager::instance().get<Texture2D>(diffuseTextureKey)), _shader(ViewerResourceManager::instance().get<Shaders::Phong>("texture")) {
-    Resource<Trade::PhongMaterialData> material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialKey);
+TexturedObject::TexturedObject(ResourceKey meshId, ResourceKey materialId, ResourceKey diffuseTextureId, Object3D* parent, SceneGraph::DrawableGroup3D* group):
+    Object3D{parent}, SceneGraph::Drawable3D{*this, group},
+    _mesh{ViewerResourceManager::instance().get<Mesh>(meshId)}, _diffuseTexture{ViewerResourceManager::instance().get<Texture2D>(diffuseTextureId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")}
+{
+    auto material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialId);
     _ambientColor = material->ambientColor();
     _specularColor = material->specularColor();
     _shininess = material->shininess();
@@ -438,7 +403,7 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
         .setDiffuseColor(_diffuseColor)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());
@@ -451,7 +416,7 @@ void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstr
         .setDiffuseTexture(*_diffuseTexture)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-        .setLightPosition({-3.0f, 10.0f, 10.0f})
+        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix());

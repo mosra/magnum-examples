@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,7 +31,10 @@ The examples assume that you have at least basic knowledge about graphics
 (what are homogeneous coordinates, what is mesh, vertex, texture...), how
 OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
 (attributes, uniforms, vertex/fragment shaders...). Knowledge of OpenGL API
-itself is not required, as %Magnum wraps the functionality in its own classes.
+itself is not required, as Magnum wraps the functionality in its own classes.
+
+Full source code for all examples is available also in the
+[GitHub repository](https://github.com/mosra/magnum-examples).
 
  - @subpage examples-triangle -- @copybrief examples-triangle
  - @subpage examples-primitives -- @copybrief examples-primitives

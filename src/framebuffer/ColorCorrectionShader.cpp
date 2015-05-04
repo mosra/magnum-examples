@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -49,9 +49,10 @@ ColorCorrectionShader::ColorCorrectionShader() {
     vert.addSource(rs.get("ColorCorrectionShader.vert"));
     frag.addSource(rs.get("ColorCorrectionShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
 
-    attachShaders({vert, frag});
+    attachShaders({std::ref(vert), std::ref(frag)});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 

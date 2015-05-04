@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumTextExample)
 
 find_package(Magnum REQUIRED
@@ -51,8 +51,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
-add_executable(text TextExample.cpp ${TextExample_RESOURCES})
-target_link_libraries(text
+add_executable(magnum-text TextExample.cpp ${TextExample_RESOURCES})
+target_link_libraries(magnum-text
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES}
@@ -60,7 +60,7 @@ target_link_libraries(text
     ${MAGNUM_APPLICATION_LIBRARIES})
 
 if(MAGNUM_BUILD_STATIC)
-    target_link_libraries(text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
+    target_link_libraries(magnum-text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 
 # Installation for NaCl
@@ -69,11 +69,15 @@ if(CORRADE_TARGET_NACL)
         message(FATAL_ERROR "Only newlib NaCl target is supported")
     endif()
     install(FILES text-nacl.html text-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS text DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
+    install(TARGETS magnum-text DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES text-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS text DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-text DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-text DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-text.md)
 endif()

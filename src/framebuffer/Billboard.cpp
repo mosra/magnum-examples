@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,7 +45,8 @@ Billboard::Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuf
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
-        .setImage(0, TextureFormat::RGBA8, image);
+        .setStorage(1, TextureFormat::RGBA8, image.size())
+        .setSubImage(0, {}, image);
 
     colorCorrectionTexture.setBuffer(BufferTextureFormat::R32F, *colorCorrectionBuffer);
 

@@ -29,15 +29,18 @@ example
 The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
 etc. as cube map texture.
 
+Sample cube map files are supplied alonside the source. If you install the
+examples, the images are also copied into
+`<prefix>/share/magnum/examples/cubemap/`.
+
 Key shortcuts
 -------------
 
 **Arrow keys** *rotate* the camera around the spheres. It is not possible, due
 to nature of the cube map texture, to *move* around the scene.
 
-Image Source
+Image source
 ------------
 
-The cube map images are work of Emil Persson, aka Humus, http://www.humus.name.
-The images are licensed under a Creative Commons Attribution 3.0 Unported
-License, http://creativecommons.org/licenses/by/3.0/.
+The sample images provided in this example are work of Emil Persson, aka Humus --
+http://www.humus.name, licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).

@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumPrimitivesExample)
 
 find_package(Magnum REQUIRED
@@ -43,13 +43,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 if(NOT CORRADE_TARGET_ANDROID)
-    add_executable(primitives PrimitivesExample.cpp)
+    add_executable(magnum-primitives PrimitivesExample.cpp)
 else()
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
-    add_library(primitives SHARED PrimitivesExample.cpp)
+    add_library(magnum-primitives SHARED PrimitivesExample.cpp)
 endif()
-target_link_libraries(primitives
+target_link_libraries(magnum-primitives
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
@@ -62,11 +62,15 @@ if(CORRADE_TARGET_NACL)
         message(FATAL_ERROR "Only newlib NaCl target is supported")
     endif()
     install(FILES primitives-nacl.html primitives-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
+    install(TARGETS magnum-primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES primitives-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-primitives DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-primitives.md)
 endif()

@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumTexturedTriangleExample)
 
 find_package(Magnum REQUIRED Shaders)
@@ -51,23 +51,23 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_resource(TexturedTriangleData resources.conf)
 
 if(NOT CORRADE_TARGET_ANDROID)
-    add_executable(textured-triangle
+    add_executable(magnum-textured-triangle
         TexturedTriangleExample.cpp
         ${TexturedTriangleData})
 else()
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
-    add_library(textured-triangle SHARED
+    add_library(magnum-textured-triangle SHARED
         TexturedTriangleExample.cpp
         ${TexturedTriangleData})
 endif()
-target_link_libraries(textured-triangle
+target_link_libraries(magnum-textured-triangle
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
 if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    target_link_libraries(textured-triangle ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_LIBRARIES})
+    target_link_libraries(magnum-textured-triangle ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 
 # Installation for NaCl
@@ -76,11 +76,16 @@ if(CORRADE_TARGET_NACL)
         message(FATAL_ERROR "Only newlib NaCl target is supported")
     endif()
     install(FILES textured-triangle-nacl.html textured-triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES textured-triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-textured-triangle.md)
 endif()

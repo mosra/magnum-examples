@@ -1,0 +1,113 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page building-examples Downloading and building examples
+@brief Guide how to download and build examples for Magnum engine.
+
+@tableofcontents
+
+Examples demonstrate Magnum features, usage and capabilities. They are not
+needed for essential usage, but are useful for learning purposes in addition to
+the documentation itself.
+
+The source is available on GitHub: https://github.com/mosra/magnum-examples.
+Building integration libraries is very similar to building Magnum itself. See
+@ref building for additonal information about building, crosscompiling and
+platform-specific issues.
+
+By default only *Triangle* example is built. Some examples depend on plugins
+and integration libraries, see @ref building-plugins and @ref building-integration
+for more information.
+
+-   `WITH_BULLET` -- Build Bullet example. Requires @ref BulletIntegration
+    library.
+-   `WITH_CUBEMAP` -- Build Cube Map example. Requires
+    @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL ES.
+-   `WITH_FRAMEBUFFER` -- Build Framebuffer example. Requires
+    @ref Trade::TgaImporter "TgaImporter" plugin, not available in OpenGL ES.
+-   `WITH_MOTIONBLUR` -- Build Motion Blur example. Not available on OpenGL
+    ES.
+-   `WITH_PRIMITIVES` -- Build @ref examples-primitives "Primitives" example.
+-   `WITH_TEXT` -- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
+    plugin.
+-   `WITH_TEXTUREDTRIANGLE` -- Build @ref examples-textured-triangle "Textured Triangle"
+    example. Requires @ref Trade::JpegImporter "JpegImporter" plugin, not
+    available in OpenGL ES.
+-   `WITH_TRIANGLE` -- Build @ref examples-triangle "Triangle" example.
+-   `WITH_VIEWER` -- Build @ref examples-viewer "Viewer" example. Requires
+    @ref Trade::ColladaImporter "ColladaImporter" plugin.
+
+@section building-examples-arch Building ArchLinux packages
+
+In `package/archlinux` directory is currently one package for Git development
+build. The package is also in AUR under the same name.
+
+There are also a few development PKGBUILDs in `package/archlinux`, which allow
+you to build and install the package directly from source tree without
+downloading anything.
+
+@section building-examples-gentoo Gentoo ebuilds
+
+Gentoo Git ebuild is available in `package/gentoo` directory.
+
+@section building-examples-deb Building DEB packages
+
+There is also `package/debian/` directory with all files needed for building
+Debian packages. You need to have `corrade-dev` DEB packages installed and in
+addition also `dpkg-dev` package. Building is easy, just change directory to
+package root, copy `package/debian` directory there and run `dpkg-buildpackage`:
+
+    cp -r package/debian .
+    dpkg-buildpackage
+
+This will compile binary and development packages, which will then appear in
+parent directory. If you need to modify CMake flags (enabling/disabling some
+examples, for example), modify the last entry in `debian/rules`.
+
+@section building-examples-ci-jenkins Jenkins Continuous Integration
+
+In `package/ci/` there is `jenkins.xml` file containing job configuration.
+Setup your Jenkins server, enable the **Git** and **Text-finder** plugin and
+download the CLI application from here (replace `localhost:8080` with your
+server name):
+
+    http://localhost:8080/cli
+
+Then add new job or update existing one (update path to the `*.jar` file,
+replace `localhost:8080` with your server name, replace `update-job` with
+`create-job` if the job doesn't exist yet).
+
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples < package/ci/jenkins.xml
+
+Build is done using **Ninja** build system and everything possible is enabled,
+thus you need also **Bullet** libraries. It expects that **GCC** >= 4.8.1, 4.7
+and **Clang** are installed and there are **OpenGL**, **OpenGL ES 2.0**
+and **OpenGL ES 3.0** librares as it tries to compile the library with every
+combination of them. You can add/remove the axes in `axes/hudson.matrix.TextAxis`
+or via the web interface later.
+
+*/
+}

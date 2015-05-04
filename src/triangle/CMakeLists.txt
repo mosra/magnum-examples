@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MagnumTriangleExample)
 
 find_package(Magnum REQUIRED
@@ -41,16 +41,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 if(NOT CORRADE_TARGET_ANDROID)
-    add_executable(triangle TriangleExample.cpp)
+    add_executable(magnum-triangle TriangleExample.cpp)
 else()
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
-    add_library(triangle SHARED TriangleExample.cpp)
+    add_library(magnum-triangle SHARED TriangleExample.cpp)
 endif()
-target_link_libraries(triangle
+target_link_libraries(magnum-triangle
+    ${MAGNUM_APPLICATION_LIBRARIES}
     ${MAGNUM_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    ${MAGNUM_SHADERS_LIBRARIES})
 
 # Installation for NaCl
 if(CORRADE_TARGET_NACL)
@@ -58,11 +58,15 @@ if(CORRADE_TARGET_NACL)
         message(FATAL_ERROR "Only newlib NaCl target is supported")
     endif()
     install(FILES triangle-nacl.html triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
+    install(TARGETS magnum-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-triangle.md)
 endif()

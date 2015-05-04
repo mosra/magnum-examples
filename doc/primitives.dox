@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -125,7 +125,7 @@ relative mouse position to previous event.
 @section examples-primitives-compilation Compilation
 
 Compilation is pretty straigtforward. We now need some additional libraries,
-like `%MeshTools` and `%Primitives`, everything else is the same as previously:
+like `MeshTools` and `Primitives`, everything else is the same as previously:
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
 @until ${MAGNUM_APPLICATION_LIBRARIES})
@@ -135,6 +135,9 @@ like `%MeshTools` and `%Primitives`, everything else is the same as previously:
 
 You can now try using another primitive from @ref Primitives namespace or
 render the mesh with different shader from @ref Shaders namespace.
+
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
 
 -   Next example: @ref examples-textured-triangle
 

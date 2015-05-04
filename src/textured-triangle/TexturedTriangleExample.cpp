@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -97,13 +97,13 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     CORRADE_INTERNAL_ASSERT(image);
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear);
-
-    #ifndef MAGNUM_TARGET_GLES
-    _texture.setImage(0, TextureFormat::RGB8, *image);
-    #else
-    _texture.setImage(0, TextureFormat::RGB, *image);
-    #endif
+        .setMinificationFilter(Sampler::Filter::Linear)
+        #ifndef MAGNUM_TARGET_GLES
+        .setStorage(1, TextureFormat::RGB8, image->size())
+        #else
+        .setStorage(1, TextureFormat::RGB, image->size())
+        #endif
+        .setSubImage(0, {}, *image);
 }
 
 void TexturedTriangleExample::drawEvent() {

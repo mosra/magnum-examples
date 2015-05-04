@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -53,7 +53,7 @@ are in one continuous place in memory. We will cheat a bit here and use
 @ref Vector3 for both 3D positions and RGB colors, so we can interleave them
 easily in place. In the next tutorial we will learn how to interleave them
 programatically. See @ref types for more information about scalar and vector
-types used in %Magnum.
+types used in Magnum.
 @skip data
 @until };
 
@@ -71,7 +71,7 @@ with no gaps in between.
 @skip _mesh.
 @until }
 @until }
-@note Setters in most %Magnum classes are implemented in a way which allows
+@note Setters in most Magnum classes are implemented in a way which allows
     @ref method-chaining "method chaining" - so you don't have to write
     repeated code.
 
@@ -86,11 +86,11 @@ buffers after drawing.
 -   @ref triangle/TriangleExample.cpp
 
 That's all, now we can compile the whole example using CMake. First we find
-required `%Magnum` package with `%Shaders` and `Sdl2Application` component and
+required `Magnum` package with `Shaders` and `Sdl2Application` component and
 add include dirs for both core library and application to include path. It's
 recommended to use also Corrade's set of compiler flags to enable additional
 warnings. Then we collect our source files, create our executable and link to
-all %Magnum libraries we requested. See @ref cmake for more information.
+all Magnum libraries we requested. See @ref cmake for more information.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
 @until ${MAGNUM_SHADERS_LIBRARIES})
@@ -99,6 +99,9 @@ all %Magnum libraries we requested. See @ref cmake for more information.
 
 You can now try changing vertex count, positions or colors to see how the
 shader behaves.
+
+Full source code is also available in the
+[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle).
 
 -   Next example: @ref examples-primitives
 
