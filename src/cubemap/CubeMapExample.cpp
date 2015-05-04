@@ -25,6 +25,7 @@
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/Buffer.h>
 #include <Magnum/Context.h>
 #include <Magnum/CubeMapTexture.h>
 #include <Magnum/DefaultFramebuffer.h>

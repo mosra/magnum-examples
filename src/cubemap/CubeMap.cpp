@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Buffer.h>
 #include <Magnum/CubeMapTexture.h>
+#include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/FlipNormals.h>
