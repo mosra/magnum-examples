@@ -144,7 +144,11 @@ void TextExample::updateText() {
     std::ostringstream out;
     out << std::setprecision(2)
         << "Rotation: "
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         << Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle()))
+        #else
+        << Deg(Complex::fromMatrix(_transformation.rotation()).angle()).toUnderlyingType()
+        #endif
         << "°\nScale: "
         << _transformation.uniformScaling();
     _text2->render(out.str());
