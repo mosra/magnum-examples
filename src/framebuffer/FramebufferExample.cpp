@@ -79,7 +79,7 @@ FramebufferExample::FramebufferExample(const Arguments& arguments): Platform::Ap
     /* Create color correction texture */
     Float texture[1024];
     for(std::size_t i = 0; i != 1024; ++i) {
-        Float x = i*2/1023.0-1;
+        Float x = i*2/1023.0f-1;
         texture[i] = (std::sin(x*Constants::pi())/3.7f+x+1)/2;
     }
     colorCorrectionBuffer.setData(texture, BufferUsage::StaticDraw);
