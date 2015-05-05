@@ -24,7 +24,6 @@
 */
 
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/Arguments.h>
 #include <Magnum/Buffer.h>
 #include <Magnum/ColorFormat.h>
 #include <Magnum/DefaultFramebuffer.h>
@@ -49,6 +48,18 @@
 #include <Magnum/Trade/TextureData.h>
 
 #include "configure.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+/* Import shader resources in static build */
+#include <Magnum/Shaders/resourceImport.hpp>
+
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(AnyImageImporter)
+    CORRADE_PLUGIN_IMPORT(OpenGexImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
 
 namespace Magnum { namespace Examples {
 
@@ -111,21 +122,17 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
 };
 
 ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")} {
-    Utility::Arguments args;
-    args.addArgument("file").setHelp("file", "file to load")
-        .setHelp("Loads and displays 3D scene file (such as OpenGEX or COLLADA one) provided on command-line.")
-        .parse(arguments.argc, arguments.argv);
-
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
     if(!importer)
         std::exit(1);
 
-    Debug() << "Opening file" << args.value("file");
+    Debug() << "Opening file scene.ogex";
 
     /* Load file */
-    if(!importer->openFile(args.value("file")))
+    Utility::Resource rs("viewer-data");
+    if(!importer->openData(rs.getRaw("scene.ogex")))
         std::exit(4);
     if(!importer->sceneCount() || importer->defaultScene() == -1)
         std::exit(5);

@@ -32,6 +32,12 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(MagnumPlugins REQUIRED
+        AnyImageImporter
+        OpenGexImporter)
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
@@ -40,13 +46,28 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-add_executable(magnum-viewer ViewerExample.cpp)
+corrade_add_resource(ViewerData resources.conf)
+
+add_executable(magnum-viewer
+    ViewerExample.cpp
+    ${ViewerData})
 target_link_libraries(magnum-viewer
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    ${MAGNUM_APPLICATION_LIBRARIES}
+    ${MAGNUMPLUGINS_ANYIMAGEIMPORTER_LIBRARIES}
+    ${MAGNUMPLUGINS_OPENGEXIMPORTER_LIBRARIES})
 
-install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-viewer.md)
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES viewer-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-viewer DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-viewer.md)
+endif()
