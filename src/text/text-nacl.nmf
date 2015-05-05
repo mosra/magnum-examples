@@ -1,6 +1,6 @@
 {
     "program": {
-        "x86-32": {"url": "text-x86-32.nexe"},
-        "x86-64": {"url": "text-x86-64.nexe"}
+        "x86-32": {"url": "magnum-text-x86-32.nexe"},
+        "x86-64": {"url": "magnum-text-x86-64.nexe"}
     }
 }
