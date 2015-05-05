@@ -83,6 +83,7 @@ endif()
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES textured-triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Installation for desktop
 else()

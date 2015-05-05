@@ -64,6 +64,7 @@ if(CORRADE_TARGET_NACL)
 elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Installation for desktop
 else()
