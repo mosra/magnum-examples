@@ -132,8 +132,8 @@ void TextExample::drawEvent() {
     _shader.setVectorTexture(_cache->texture());
 
     _shader.setTransformationProjectionMatrix(_projection * _transformation)
-        .setColor(Color3::fromHSV(Deg(15.0f), 0.9f, 0.4f))
-        .setOutlineColor(Color3::fromHSV(Deg(0.0f), 0.5f, 0.75f))
+        .setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+        .setOutlineColor(Color3{0.95f})
         .setOutlineRange(0.45f, 0.35f)
         .setSmoothness(0.025f/ _transformation.uniformScaling());
     _text.draw(_shader);

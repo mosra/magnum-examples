@@ -9,13 +9,16 @@ Usage
 
 Pass path to scene file as parameter:
 
-    ./viewer ~/models/scene.ogex
+    ./viewer scene.ogex
 
 The application opens the file using `AnySceneImporter` which detects the file
 type, delegates the import to plugin dedicated for given format (such as
 `OpenGexImporter` or `ColladaImporter`) and then displays the scene. Loading
 progress is written to console output. **Mouse drag** rotates the camera around
 the scene, **mouse wheel** zooms in and out.
+
+Sample OpenGEX scene is supplied alonside the source. If you install the
+examples, the scene is also copied into `<prefix>/share/magnum/examples/viewer/`.
 
 Documentation
 -------------
