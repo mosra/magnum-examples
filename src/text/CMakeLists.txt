@@ -28,8 +28,7 @@ project(MagnumTextExample)
 
 find_package(Magnum REQUIRED
     Shaders
-    Text
-    TextureTools)
+    Text)
 
 if(MAGNUM_BUILD_STATIC)
     find_package(Magnum REQUIRED TgaImporter MagnumFont)
@@ -56,7 +55,6 @@ target_link_libraries(magnum-text
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_TEXT_LIBRARIES}
-    ${MAGNUM_TEXTURETOOLS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
 if(MAGNUM_BUILD_STATIC)
