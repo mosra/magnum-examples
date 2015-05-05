@@ -1,0 +1,44 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=emscripten-magnum-examples
+pkgver=dev
+pkgrel=1
+pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('emscripten-magnum')
+makedepends=('cmake' 'emscripten' 'corrade')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
+
+build() {
+    # Not using ninja because it cannot handle the relink step
+    if [ ! -d "$_rootdir/build-emscripten" ] ; then
+        mkdir "$_rootdir/build-emscripten"
+        cd "$_rootdir/build-emscripten"
+
+        cmake .. \
+            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system
+    fi
+
+    cd "$_rootdir/build-emscripten"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten \
+        -DWITH_PRIMITIVES=ON \
+        -DWITH_TEXT=ON \
+        -DWITH_TEXTUREDTRIANGLE=ON \
+        -DWITH_TRIANGLE=ON \
+        -DWITH_VIEWER=ON
+    make -j
+}
+
+package() {
+  cd "$_rootdir/build-emscripten"
+  # Yes, I *am* installing the files into final destination
+  make install
+}
