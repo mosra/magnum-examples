@@ -23,6 +23,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# On MSVC remove /W3, as we are replacing it with /W4
+if(MSVC)
+    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
+
 if(WITH_BULLET)
     add_subdirectory(bullet)
 endif()
