@@ -116,20 +116,6 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         .setHelp("Loads and displays 3D scene file (such as OpenGEX or COLLADA one) provided on command-line.")
         .parse(arguments.argc, arguments.argv);
 
-    /* Load scene importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
-    if(!importer)
-        std::exit(1);
-
-    Debug() << "Opening file" << args.value("file");
-
-    /* Load file */
-    if(!importer->openFile(args.value("file")))
-        std::exit(4);
-    if(!importer->sceneCount() || importer->defaultScene() == -1)
-        std::exit(5);
-
     /* Phong shader instances */
     _resourceManager.set("color", new Shaders::Phong)
         .set("texture", new Shaders::Phong{Shaders::Phong::Flag::DiffuseTexture});
@@ -153,6 +139,18 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
+
+    /* Load scene importer plugin */
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
+    if(!importer)
+        std::exit(1);
+
+    Debug() << "Opening file" << args.value("file");
+
+    /* Load file */
+    if(!importer->openFile(args.value("file")))
+        std::exit(4);
 
     /* Load all materials */
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
@@ -201,7 +199,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
             .generateMipmap();
 
         /* Save it */
-        _resourceManager.set(ResourceKey{i}, texture);
+        _resourceManager.set(ResourceKey{i}, texture, ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Load all meshes */
@@ -220,14 +218,17 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, BufferUsage::StaticDraw);
 
         /* Save things */
-        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)});
-        _resourceManager.set(std::to_string(i) + "-vertices", buffer.release());
+        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
+        _resourceManager.set(std::to_string(i) + "-vertices", buffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
         if(indexBuffer)
-            _resourceManager.set(std::to_string(i) + "-indices", indexBuffer.release());
+            _resourceManager.set(std::to_string(i) + "-indices", indexBuffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
+    /* Default object, parent of all (for manipulation) */
+    _o = new Object3D{&_scene};
+
     /* Load the scene */
-    {
+    if(importer->defaultScene() != -1) {
         Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
         std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
@@ -236,17 +237,21 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
             return;
         }
 
-        /* Default object, parent of all (for manipulation) */
-        _o = new Object3D{&_scene};
-
         /* Recursively add all children */
         for(UnsignedInt objectId: sceneData->children3D())
             addObject(*importer, _o, objectId);
-    }
 
-    /* Materials were consumed by objects and they are not needed anymore */
+    /* The format has no scene support, display just the first loaded mesh with
+       default material and be done with it */
+    } else if(_resourceManager.state<Mesh>(ResourceKey{0}) == ResourceState::Final)
+        new ColoredObject(ResourceKey{0}, ResourceKey(-1), _o, &_drawables);
+
+    /* Materials were consumed by objects and they are not needed anymore. Also
+       free all texture/mesh data that weren't referenced by any object. */
     _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
-        .clear<Trade::PhongMaterialData>();
+        .clear<Trade::PhongMaterialData>()
+        .free<Texture2D>()
+        .free<Mesh>();
 }
 
 void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, UnsignedInt i) {
@@ -322,7 +327,7 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
         case MouseEvent::Button::WheelUp:
         case MouseEvent::Button::WheelDown: {
             /* Distance between origin and near camera clipping plane */
-            Float distance = _cameraObject->transformation().translation().z()-0- _camera->near();
+            Float distance = _cameraObject->transformation().translation().z() - _camera->near();
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
