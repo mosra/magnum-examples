@@ -109,5 +109,11 @@ and **OpenGL ES 3.0** librares as it tries to compile the library with every
 combination of them. You can add/remove the axes in `axes/hudson.matrix.TextAxis`
 or via the web interface later.
 
+There is also MinGW-w64 configuration, add or update it with the commands
+below. See @ref building-crosscompiling for more information about setting up
+the crosscompilers and `toolchains/` submodule.
+
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples-MinGW-w64 < package/ci/jenkins-mingw-w64.xml
+
 */
 }
