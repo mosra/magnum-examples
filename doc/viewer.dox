@@ -34,11 +34,12 @@ namespace Magnum {
 
 @tableofcontents
 
-In this example we will import 3D scene from COLLADA file and display it to the
-user. This example includes these new features:
--   Using SceneGraph for managing objects, their relations and transformations.
--   Employing ResourceManager for convenient resource management.
--   Importing scenes, meshes, materials and textures via Trade::AbstractImporter.
+In this example we will import 3D scene file and display it interactively on
+the screen. It covers these new features:
+-   Using @ref SceneGraph for managing objects, their relations and
+    transformations.
+-   Employing @ref ResourceManager for convenient resource management.
+-   Importing scenes, meshes, materials and textures via @ref Trade::AbstractImporter.
 
 @section examples-viewer-scenegraph Scene graph
 
@@ -66,7 +67,7 @@ transformation relative to some arbitrary object in the same scene.
 
 Features are added to objects to make them do something useful. The most common
 feature, which will be also used in this example, is @ref SceneGraph::Drawable "Drawable".
-When implemented, it allows the object to be drawn on screen. Each Drawable is
+When implemented, it allows the object to be drawn on screen. Each drawable is
 part of some @ref SceneGraph::DrawableGroup "DrawableGroup". This group can be
 then rendered in one shot using @ref SceneGraph::Camera3D "Camera" feature,
 attached to some object in the same scene. The object controls camera
@@ -82,7 +83,7 @@ See also @ref scenegraph for more information.
 @section examples-viewer-resourcemanager Resource manager
 
 In most scenes it is common that one resource (e.g. mesh, shader or texture) is
-shared by more than one object. One possible approach might be to load all
+shared by more than one object. One possible approach might be to manage all
 available resources in main class and then explicitly pass references to them
 to relevant objects. Sooner or later it would get out of hand and you end up
 having the main class unnecessarily large and doing much more work than it
@@ -91,7 +92,7 @@ only part of the time, would be also rather difficult.
 
 @ref ResourceManager allows storing of data of defined set of types under
 specific keys and retrieving them later. The key is stored as 32- or 64-bit
-integer and in most cases is hashed from some string. The data can be either
+integer and in many cases is hashed from some string. The data can be either
 persistent during whole lifetime of resource manager or have limited lifetime,
 managed either by manual freeing of unused data or automatic reference
 counting.
@@ -100,18 +101,15 @@ When an resource is requested from the manager using @ref ResourceManager::get()
 it is wrapped in @ref Resource class. The wrapper takes care of reference
 counting (so the resource isn't removed while it is still in use) and updates
 the resource if the manager has new version. The resources can be added to the
-manager either manually using @ref ResourceManager::set() or automatically
-using resource loader. The loader is subclass of @ref AbstractResourceLoader
-and after attaching to manager it is notified about all not-yet-loaded
-resources of given type and takes care of the loading, either synchronously or
-in different thread.
+manager using @ref ResourceManager::set() and you can specify unique storage
+policies for each single resource.
 
 @section examples-viewer-setup Setting up, initializing resource manager and scene graph
 
 Our resource manager will store vertex and index buffers, meshes, textures and
 shaders for whole lifetime of our application. During loading we would need to
-access also the importer and material data, but these will be deleted after
-everything is loaded. We `typedef` the manager with all the types for easier
+access also material data, but these will be deleted after everything is
+loaded. We `typedef` the manager with all the types for easier
 usage later.
 @dontinclude viewer/ViewerExample.cpp
 @skipline typedef ResourceManager
@@ -130,45 +128,128 @@ drawables, object holding the camera and the camera feature.
 @skip class ViewerExample
 @until };
 
-In the constructor we first try to load the plugin and open the file passed as
-parameter on command line. If that fails or the file is empty, the program
-exits. We won't use `std::unique_ptr` for the loader plugin, but will pass it
-later to resource manager instead, which will manage its lifetime.
+In the constructor we first parse command-line arguments using
+@ref Corrade::Utility::Arguments, which also provides help message.
 @skip ViewerExample::ViewerExample
-@until std::exit(5);
+@until .parse(
 
-If opening succeeds, we can start populating our resource manager. We save the
-importer to have it available elsewhere and attach loaders for given data types
-as described earlier. The loaders will be described later in the tutorial, now
-we can assume that they just work and return proper mesh, material on texture
-on request.
-@skip resourceManager.set("importer"
-@until .setLoader(textureLoader);
+Then we populate our resource manager with shaders and fallback empty data for
+materials, textures or meshes that weren't present in the file or couldn't be
+loaded for some reason.
+@skip _resourceManager.set("color"
+@until .setFallback(new Mesh);
 
-We add our two shader flavors and add also fallback mesh, material and texture
-which will be used in case some resource is missing in the file.
-@skip resourceManager.set("color
-@until resourceManager.setFallback(new Texture2D);
-
-Now we setup the camera and renderer features and add default object for
-convenient manipulation.
+Next we setup the camera and renderer features.
 @skip (_cameraObject
-@until _o = new Object3D
+@until Renderer::enable
+@until Renderer::enable
 
-Everything is now ready for importing the scene graph from the file, it is just
-matter of recursively adding the objects, starting from direct descendants of
-default scene. After everything is imported, we can remove now unused data from
-the manager.
-@skip Debug()
+@section examples-viewer-import Importing the data
+
+For scene import we are using the @ref Trade::AnySceneImporter "AnySceneImporter"
+plugin, which detects format based or file extension and then redirects the
+actual loading to plugin dedicated for given format. So, for example, if you
+open `scene.ogex`, the opening is done through @ref Trade::OpenGexImporter "OpenGexImporter",
+file named `mesh.obj` is opened using @ref Trade::ObjImporter etc. One thing to
+note is that each file format has slightly different feature set and thus to
+support greater range of formats, the viewer application must not rely on
+higher-level features that might not available in each format (such as material
+support, string data identifiers, scene hierarchy etc.).
+
+We try load and instantiate the plugin and open the file. If any operation
+fails, the application simply exits. The manager and importer prints message on
+any error, so it's not needed to repeat it in application code.
+@skip PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+@until std::exit(4);
+
+First we import all materials, as that's the least involved operation. We check
+that the material has proper type and put it into the manager with material ID
+as the key. The manager stores the keys in unique map for each type, so there
+won't be any conflicts with other types. We also print some progress
+information about the import to output.
+@skip for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+@until }
+@until }
 @until }
 
-The actual function which adds the objects is pretty simple. It recursively
-populates scene graph until there are no child objects left and for each mesh
-object adds special type of object which is able to draw something on the
-screen.
+Next we load all textures. Most scene importers internally use
+@ref Trade::AnyImageImporter "AnyImageImporter" for loading images from
+external files. It is similar to @ref Trade::AnySceneImporter "AnySceneImporter",
+but specialized for image loading, e.g. if the textures references `image.png`
+file, it is opened through @ref Trade::PngImporter "PngImporter", `texture.jpg`
+through @ref Trade::JpegImporter "JpegImporter" etc. The plugins also have
+aliases, so for example on platforms that don't have `libPNG` available,
+dependency-less @ref Trade::StbImageImporter "StbImageImporter" can be
+transparently used in place of `PngImporter` without changing anything in the
+loading code. The ultimate goal is that you can deploy different set of plugins
+for each platform but still use them in platform-independent way, without
+worrying about which plugin might be available on what system.
+
+The textures and images are also checked for proper format and then put into
+resource manager with their ID as a key. We'll use @ref ResourcePolicy::Manual
+for these so we can free unused ones later when importing is done.
+@skip for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+@until }
+@until }
+@until }
+@until }
+@until }
+
+Next thing is loading meshes. Because the models might or might not be
+textured, the mesh might or might not be indexed etc., the mesh creation
+procedure would get fairly long-winded. There is a convenience
+@ref MeshTools::compile() function which examines the data, adds all available
+vertex attributes to the buffer (normals, texture coordinates...), packs the
+indices (if available) and then configures the mesh for @ref Shaders::Generic
+shader, from which all other stock shaders are derived. This function is useful
+for exactly this case of importing general meshes, but the lower-level way
+involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices() as
+explained in the earlier @ref examples-primitives "Primitives example" is far
+more flexible if you want data packing, index optimization and other
+performance-related stuff. The only case that the following code does not
+handle are meshes without normals (as is common with files in Stanford/PLY
+format), they would need to be generated to have the mesh displayed with proper
+lighting.
+
+We put the compiled mesh and buffers into the
+manager, using string keys for the buffers, because in most cases we need to
+save two of them for each mesh ID.
+@skip for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
+@until }
+@until }
+@until }
+
+Last reamining part is to populate the actual scene. We create helper object
+for easier interaction with the scene, which will be parent of all others:
+@skipline _o = new Object3D{&_scene};
+
+If the format supports scene hierarchy, we recursively import all objects
+in the scene, if it doesn't (such as OBJ files), we just add a single object
+with the first imported mesh and put default color-only material on it.
+@skip if(importer->defaultScene() != -1) {
+@until new ColoredObject
+
+The actual function which adds objects into the scene isn't very complex. It
+just decides about object type based on material features, sets object
+transformation and then recursively calls itself for child objects. To make the
+example short enough, only fully colored or diffuse textured objects are
+supported, but adding support for specular textures etc. is fairly trivial.
 @skip void ViewerExample::addObject
 @until }
 @until }
+@until }
+@until }
+@until }
+@until }
+
+When the import is done, we clear all material data (as they were copied into
+object instances) and free all unreferenced data by calling
+@ref ResourceManager::free().
+@dontinclude viewer/ViewerExample.cpp
+@skip _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
+@until .free<Mesh>();
+
+@section examples-viewer-interactivity Event handling
 
 Viewport and draw events delegate everything to our camera. The camera does
 proper aspect ratio correction based on viewport size and draws all objects
@@ -178,7 +259,8 @@ added to drawable group.
 @until }
 @until }
 
-Lastly there is mouse handling, nothing new to talk about.
+Lastly there is mouse handling to rotate and zoom the scene around, nothing new
+to talk about.
 @skip void ViewerExample::mousePressEvent
 @until }
 @until }
@@ -190,20 +272,22 @@ Lastly there is mouse handling, nothing new to talk about.
 @section examples-viewer-objects Drawable objects
 
 As explained above, all objects that want to draw something on the screen must
-have Drawable feature attached. The most convenient way is to use multiple
-inheritance, see @ref scenegraph-features for more information. Our objects
-will need mesh and shader resource along with some material definition. The
-textured object has additional texture resource.
+have @ref SceneGraph::Drawable feature attached. The most convenient way is to
+use multiple inheritance, see @ref scenegraph-features for more information.
+Our objects will need mesh and shader resource along with some material
+definition. The textured object has additional texture resource.
 @dontinclude viewer/ViewerExample.cpp
 @skip class ColoredObject
 @until };
 @until };
 
-In constructor two classes setup parent/children hierarchy and attach drawable
-to drawable group. They then acquire the resources from the manager. Again we
-don't deal with the actual resource loading here, it is done in the background
-and will be explained later.
+In constructor, these two classes setup parent/children hierarchy and attach
+drawable to drawable group. They then acquire the resources from the manager.
 @skip ColoredObject::ColoredObject
+@until }
+@until }
+@until }
+@until }
 @until }
 @until }
 
@@ -215,66 +299,12 @@ drawing.
 @until }
 @until }
 
-@section examples-viewer-loaders Resource loaders
-
-Last thing in this example are the actual resource loaders. Each loader needs
-access to the importer (which is provided by resource manager) and needs to map
-resource keys from the manager to data IDs in the importer. After every call to
-@ref ResourceManager::get() the manager checks if the resource is loaded and if not,
-calls function `doLoad()` on particular loader. The loader should then load the
-data. For simplicity we will load the data synchronously.
-@dontinclude viewer/ViewerExample.cpp
-@skip class MeshLoader
-@until };
-@until };
-@until };
-
-The constructor just requests the importer resource and fills the key map.
-@skip MeshLoader::MeshLoader
-@until }
-@until }
-@until }
-
-Because the models might or might not be textured, the mesh creation procedure
-would get fairly verbose. There is a convenience @ref MeshTools::compile()
-function which examines the data, adds everything available (normals, texture
-coordinates...), packs the indices (if available) and then configures the mesh
-for @ref Shaders::Generic shader, from which all other stock shaders are
-derived. This function is useful for exactly this complicated cases, but the
-original way involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices()
-is far more flexible if you want data packing, index optimization and other
-performance-related stuff.
-
-If the importing failed due to missing or unexpected data, we call
-@ref AbstractResourceLoader::setNotFound() and all the objects using this mesh
-will use the fallback one instead. After importing is done, we save our index
-and vertex buffer to the manager (directly) and call @ref AbstractResourceLoader::set()
-to save the actual mesh. The manager does some additional checking and keeps
-statistics on loaded resources, so we shouldn't save the type we are importing
-directly using @ref ResourceManager::set().
-@skip void MeshLoader::doLoad
-@until }
-@until }
-
-Material loader is the simplest one, it just puts the data from importer
-directly to resource manager.
-@skip void MaterialLoader::doLoad
-@until }
-
-Texture loading is also nothing new. We load texture parameters and the actual
-image, check their formats, configure the texture, upload its data and save it
-to the manager.
-@skip void TextureLoader::doLoad
-@until }
-@until }
-@until }
-
 -   @ref viewer/ViewerExample.cpp
 
 @section examples-viewer-compilation Compilation
 
 Compilation is easy as usual, we just need to provide also path to plugin dir,
-similarly to what we did in @ref examples-textured-triangle "Textured Triangle"
+similarly to what we did in the @ref examples-textured-triangle "Textured Triangle"
 example.
 
 @dontinclude viewer/configure.h.cmake
