@@ -42,11 +42,10 @@
     <hudson.matrix.TextAxis>
       <name>gl</name>
       <values>
-        <!-- ES2/ES3 disabled because SDL2 is using GLX -->
         <string>desktop</string>
-        <!--<string>es2</string>-->
+        <string>es2</string>
         <string>es2desktop</string>
-        <!--<string>es3</string>-->
+        <string>es3</string>
         <string>es3desktop</string>
       </values>
     </hudson.matrix.TextAxis>
