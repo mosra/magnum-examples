@@ -50,9 +50,6 @@
 #include "configure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
-/* Import shader resources in static build */
-#include <Magnum/Shaders/resourceImport.hpp>
-
 /* Import plugins in static build */
 static int importStaticPlugins() {
     CORRADE_PLUGIN_IMPORT(AnyImageImporter)

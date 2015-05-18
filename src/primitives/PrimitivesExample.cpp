@@ -39,10 +39,6 @@
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
 
-#ifdef MAGNUM_BUILD_STATIC
-#include <Magnum/Shaders/resourceImport.hpp>
-#endif
-
 namespace Magnum { namespace Examples {
 
 class PrimitivesExample: public Platform::Application {

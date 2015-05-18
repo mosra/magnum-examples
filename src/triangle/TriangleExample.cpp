@@ -36,10 +36,6 @@
 #endif
 #include <Magnum/Shaders/VertexColor.h>
 
-#ifdef MAGNUM_BUILD_STATIC
-#include <Magnum/Shaders/resourceImport.hpp>
-#endif
-
 namespace Magnum { namespace Examples {
 
 class TriangleExample: public Platform::Application {
