@@ -34,7 +34,7 @@ build() {
         -DWITH_TEXTUREDTRIANGLE=ON \
         -DWITH_TRIANGLE=ON \
         -DWITH_VIEWER=ON
-    make -j
+    make
 }
 
 package() {
