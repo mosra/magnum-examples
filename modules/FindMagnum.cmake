@@ -223,6 +223,11 @@ elseif(MAGNUM_TARGET_GLES3)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES3_LIBRARY})
 endif()
 
+# Emscripten needs special flag to use WebGL 2
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT MAGNUM_TARGET_GLES2 AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "USE_WEBGL2")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
+endif()
+
 # Ensure that all inter-component dependencies are specified as well
 set(_MAGNUM_ADDITIONAL_COMPONENTS )
 foreach(component ${Magnum_FIND_COMPONENTS})
@@ -387,6 +392,16 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
             else()
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
+
+            # Find also EGL library, if on ES
+            if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+                find_package(EGL)
+                if(EGL_FOUND)
+                    list(APPEND _MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY})
+                else()
+                    unset(MAGNUM_${_COMPONENT}_LIBRARY)
+                endif()
             endif()
 
         # (Windowless) NaCl application dependencies
