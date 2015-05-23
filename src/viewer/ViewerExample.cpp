@@ -198,7 +198,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         texture->setMagnificationFilter(textureData->magnificationFilter())
             .setMinificationFilter(textureData->minificationFilter(), textureData->mipmapFilter())
             .setWrapping(textureData->wrapping().xy())
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             .setStorage(1, TextureFormat::RGB8, imageData->size())
+            #else
+            .setStorage(1, TextureFormat::RGB, imageData->size())
+            #endif
             .setSubImage(0, {}, *imageData)
             .generateMipmap();
 
