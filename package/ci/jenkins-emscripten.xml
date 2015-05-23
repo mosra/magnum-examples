@@ -60,16 +60,16 @@ else
     deprecated_build_flag=OFF
 fi
 
-mkdir -p build-emscripten-${compatibility}
-cd build-emscripten-${compatibility}
+mkdir -p build-emscripten-${compatibility}-${gl}
+cd build-emscripten-${compatibility}-${gl}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MODULE_PATH="${WORKSPACE}/toolchains/modules" \
     -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
-    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
-    -DCMAKE_PREFIX_PATH=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
+    -DCMAKE_PREFIX_PATH="${JENKINS_HOME}/filesystem/emscripten-${compatibility};${JENKINS_HOME}/filesystem/emscripten-${compatibility}-${gl}" \
+    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/emscripten-${compatibility}-${gl} \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=OFF \
@@ -82,7 +82,7 @@ cmake .. \
     -DWITH_VIEWER=ON
 
 make -j
-make install
+make -j install
 ]]>
     </command>
     </hudson.tasks.Shell>
