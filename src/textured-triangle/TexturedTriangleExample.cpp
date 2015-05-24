@@ -95,7 +95,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
     _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear)
-        #ifndef MAGNUM_TARGET_GLES
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         .setStorage(1, TextureFormat::RGB8, image->size())
         #else
         .setStorage(1, TextureFormat::RGB, image->size())
