@@ -68,7 +68,7 @@ if(CORRADE_TARGET_NACL)
 elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES primitives-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-primitives DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
 
 # Installation for desktop
 else()

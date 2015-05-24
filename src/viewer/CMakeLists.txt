@@ -62,7 +62,7 @@ target_link_libraries(magnum-viewer
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES viewer-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-viewer DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
 
 # Installation for desktop
 else()
