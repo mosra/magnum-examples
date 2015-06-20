@@ -38,7 +38,7 @@ class Reflector: public Object3D, SceneGraph::Drawable3D {
     public:
         explicit Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
     private:
         Resource<Buffer> _buffer;

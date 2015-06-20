@@ -42,7 +42,7 @@ class Billboard: public Object2D, SceneGraph::Drawable2D {
     public:
         explicit Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D* group);
 
-        void draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D& camera) override;
+        void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) override;
 
     private:
         Buffer buffer;

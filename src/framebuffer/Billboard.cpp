@@ -28,7 +28,7 @@
 #include <Magnum/Buffer.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Primitives/Square.h>
-#include <Magnum/SceneGraph/Camera2D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/MeshData2D.h>
 
 namespace Magnum { namespace Examples {
@@ -53,7 +53,7 @@ Billboard::Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuf
     scale(Vector2::yScale(Float(image.size()[1])/image.size()[0]));
 }
 
-void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D& camera) {
+void Billboard::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) {
     shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
         .setTexture(texture)
         .setColorCorrectionTexture(colorCorrectionTexture);

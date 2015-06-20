@@ -35,7 +35,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -85,7 +85,7 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
         explicit ColoredObject(ResourceKey meshId, ResourceKey materialId, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
         Resource<Mesh> _mesh;
         Resource<Shaders::Phong> _shader;
@@ -100,7 +100,7 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         explicit TexturedObject(ResourceKey meshId, ResourceKey materialId, ResourceKey diffuseTextureId, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
     private:
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
         Resource<Mesh> _mesh;
         Resource<Texture2D> _diffuseTexture;
@@ -135,7 +135,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         ->translate(Vector3::zAxis(5.0f));
     (_camera = new SceneGraph::Camera3D{*_cameraObject})
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100))
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
@@ -326,8 +326,8 @@ void ViewerExample::mousePressEvent(MouseEvent& event) {
 
         case MouseEvent::Button::WheelUp:
         case MouseEvent::Button::WheelDown: {
-            /* Distance between origin and near camera clipping plane */
-            Float distance = _cameraObject->transformation().translation().z() - _camera->near();
+            /* Distance to origin */
+            Float distance = _cameraObject->transformation().translation().z();
 
             /* Move 15% of the distance back or forward */
             distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
@@ -392,7 +392,7 @@ TexturedObject::TexturedObject(ResourceKey meshId, ResourceKey materialId, Resou
     _shininess = material->shininess();
 }
 
-void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setAmbientColor(_ambientColor)
         .setDiffuseColor(_diffuseColor)
         .setSpecularColor(_specularColor)
@@ -405,7 +405,7 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Abstra
     _mesh->draw(*_shader);
 }
 
-void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setAmbientColor(_ambientColor)
         .setDiffuseTexture(*_diffuseTexture)
         .setSpecularColor(_specularColor)

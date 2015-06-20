@@ -63,7 +63,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100))
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     Renderer::enable(Renderer::Feature::DepthTest);
