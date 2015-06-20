@@ -28,7 +28,7 @@
 #include "CubeDrawable.h"
 
 #include <Magnum/Mesh.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Shaders/Phong.h>
 
 namespace Magnum { namespace Examples {
@@ -36,7 +36,7 @@ namespace Magnum { namespace Examples {
 CubeDrawable::CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(mesh), _shader(shader), _color(color) {
 }
 
-void CubeDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void CubeDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setDiffuseColor(_color)
         .setSpecularColor(Color3(1.0f))
         .setShininess(20)

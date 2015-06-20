@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/LibOvrIntegration/LibOvrIntegration.h>
 
 #include "Types.h"

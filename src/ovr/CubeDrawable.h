@@ -39,7 +39,7 @@ class CubeDrawable: public Object3D, SceneGraph::Drawable3D {
     public:
         explicit CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
         void setColor(Color3 color);
         Color3 getColor(void);

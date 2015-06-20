@@ -44,7 +44,7 @@
 #include <Magnum/Math/Quaternion.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/Renderbuffer.h>
 #include <Magnum/Texture.h>
@@ -127,7 +127,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    _hmd->setEnabledCaps(HmdCapability::LowPersistence | HmdCapability::DynamicPrediction);
+    _hmd->setEnabledCaps(HmdCapability::LowPersistence | HmdCapability::DynamicPrediction | HmdCapability::NoVSync);
     _hmd->configureTracking(HmdTrackingCapability::Orientation | HmdTrackingCapability::MagYawCorrection |
                             HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
