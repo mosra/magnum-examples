@@ -28,6 +28,7 @@
 #include "HmdCamera.h"
 
 #include <Magnum/Math/Vector.h>
+#include <Magnum/Math/Matrix4.h>
 #include <Magnum/Texture.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/TextureFormat.h>
@@ -52,16 +53,14 @@ HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): S
 
     const Float near = 0.001f;
     const Float far = 100.0f;
-    setPerspective(_hmd.defaultEyeFov(eye) * near, near, far);
+    setProjectionMatrix(_hmd.projectionMatrix(eye, near, far));
 }
 
 void HmdCamera::createEyeRenderTexture() {
     _textureSet =_hmd.createSwapTextureSet(TextureFormat::RGBA, _textureSize);
 
-    /*
-     * create the framebuffer which will be used to render to the current texture
-     * of the texture set later.
-     */
+    /* create the framebuffer which will be used to render to the current texture
+     * of the texture set later. */
     _framebuffer.reset(new Framebuffer({{}, _textureSize}));
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
