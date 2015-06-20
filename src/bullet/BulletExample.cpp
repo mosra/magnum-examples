@@ -130,7 +130,9 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         }
     }
 
-    _timeline.setMinimalFrameTime(1/120.0f);
+    /* Loop at 60 Hz max */
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16);
     _timeline.start();
 
     redraw();
