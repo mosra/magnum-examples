@@ -3,6 +3,8 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2015
+#             Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -23,22 +25,38 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.9)
-project(MagnumExamples CXX)
+cmake_minimum_required(VERSION 3.2)
+project(MagnumOvrExample LANGUAGES CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+    SceneGraph
+    Sdl2Application)
 
-include(CMakeDependentOption)
-option(WITH_BULLET "Build Bullet integration example (requires BulletIntegration library)" OFF)
-cmake_dependent_option(WITH_CUBEMAP "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_FRAMEBUFFER "Build Framebuffer example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_MOTIONBLUR "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_OVR "Build OVR example" OFF)
-option(WITH_PRIMITIVES "Build Primitives example" OFF)
-option(WITH_TEXT "Build Text example (requires FreeTypeFont plugin)" OFF)
-cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_TRIANGLE "Build Triangle example" ON)
-option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
+find_package(MagnumIntegration REQUIRED LibOvr)
 
-add_subdirectory(src)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_LIBOVRINTEGRATION_INCLUDE_DIR})
+
+add_executable(magnum-ovr
+    OvrExample.cpp
+    HmdCamera.cpp
+    HmdCamera.h
+    CubeDrawable.cpp
+    CubeDrawable.h
+    Types.h)
+
+message(STATUS ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
+
+target_link_libraries(magnum-ovr
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES}
+    ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
+
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-ovr.md)

@@ -44,6 +44,10 @@ if(WITH_MOTIONBLUR)
     add_subdirectory(motionblur)
 endif()
 
+if(WITH_OVR)
+    add_subdirectory(ovr)
+endif()
+
 if(WITH_PRIMITIVES)
     add_subdirectory(primitives)
 endif()
