@@ -78,7 +78,7 @@ public:
 private:
     void drawEvent() override;
 
-    LibOvrContext _ovrContext;
+    LibOvrIntegration::Context _ovrContext;
     std::unique_ptr<Hmd> _hmd;
 
     std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
@@ -106,7 +106,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 {
 
     /* connect to an Hmd, or create a debug hmd with DK2 type in case none is connected. */
-    _hmd = LibOvrContext::get().createHmd(0, HmdType::DK2);
+    _hmd = LibOvrIntegration::Context::get().createHmd(0, HmdType::DK2);
 
     /* get the hmd display resolution */
     Vector2i resolution = _hmd->resolution() / 2;
@@ -187,7 +187,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     _cubeDrawables[3] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {0.0f, 1.0f, 1.0f}, _cubes[3].get(), &_drawables));
 
     /* setup compositor layers */
-    _layer = &LibOvrContext::get().compositor().addLayerEyeFov();
+    _layer = &LibOvrIntegration::Context::get().compositor().addLayerEyeFov();
     _layer->setFov(*_hmd.get());
     _layer->setHighQuality(true);
 
@@ -210,12 +210,12 @@ OvrExample::~OvrExample() {
 
 void OvrExample::drawEvent() {
     /* get orientation and position of the hmd. */
-    std::unique_ptr<DualQuaternion> poses = _hmd->pollEyePoses().getEyePoses();
+    std::array<DualQuaternion, 2> poses = _hmd->pollEyePoses().eyePoses();
 
     /* draw the scene for both cameras */
     for(int eye = 0; eye < 2; ++eye) {
         /* set the transformation according to rift trackers */
-        _eyes[eye].setTransformation(poses.get()[eye].toMatrix());
+        _eyes[eye].setTransformation(poses[eye].toMatrix());
         /* render each eye. */
         _cameras[eye]->draw(_drawables);
     }
@@ -224,7 +224,7 @@ void OvrExample::drawEvent() {
     _layer->setRenderPoses(*_hmd.get());
 
     /* let the libOVR sdk compositor do its magic! */
-    LibOvrContext::get().compositor().submitFrame(*_hmd.get());
+    LibOvrIntegration::Context::get().compositor().submitFrame(*_hmd.get());
 
     /* blit mirror texture to defaultFramebuffer. */
     const Vector2i size = _mirrorTexture->imageSize(0);

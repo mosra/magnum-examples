@@ -45,7 +45,7 @@ namespace Magnum { namespace Examples {
 using namespace LibOvrIntegration;
 
 HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), _hmd(hmd) {
-    _textureSize = _hmd.getFovTextureSize(eye);
+    _textureSize = _hmd.fovTextureSize(eye);
 
     createEyeRenderTexture();
 
@@ -68,7 +68,7 @@ void HmdCamera::createEyeRenderTexture() {
     ColorType type = ColorType::UnsignedInt;
     TextureFormat format = TextureFormat::DepthComponent24;
 
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
+    if(Magnum::Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
         format = TextureFormat::DepthComponent32F;
         type = ColorType::Float;
     }
@@ -90,7 +90,7 @@ void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {
     /* switch to eye render target and bind render textures */
     _framebuffer->bind();
 
-    _framebuffer->attachTexture(Framebuffer::ColorAttachment(0), _textureSet->getActiveTexture(), 0)
+    _framebuffer->attachTexture(Framebuffer::ColorAttachment(0), _textureSet->activeTexture(), 0)
                 .attachTexture(Framebuffer::BufferAttachment::Depth, *_depth, 0)
     /* clear with the standard grey so that at least that will be visible in case the scene is not
      * correctly set up. */
