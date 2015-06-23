@@ -36,10 +36,6 @@ if(WITH_CUBEMAP)
     add_subdirectory(cubemap)
 endif()
 
-if(WITH_FRAMEBUFFER)
-    add_subdirectory(framebuffer)
-endif()
-
 if(WITH_MOTIONBLUR)
     add_subdirectory(motionblur)
 endif()

@@ -107,7 +107,6 @@ cmake .. \
     "${compiler_flags[@]}" \
     -DWITH_BULLET=ON \
     -DWITH_CUBEMAP=${desktop_flag} \
-    -DWITH_FRAMEBUFFER=${desktop_flag} \
     -DWITH_MOTIONBLUR=${desktop_flag} \
     -DWITH_PICKING=ON \
     -DWITH_PRIMITIVES=ON \

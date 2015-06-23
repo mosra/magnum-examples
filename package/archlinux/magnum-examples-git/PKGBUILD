@@ -27,7 +27,6 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_BULLET=ON \
         -DWITH_CUBEMAP=ON \
-        -DWITH_FRAMEBUFFER=ON \
         -DWITH_MOTIONBLUR=ON \
         -DWITH_PRIMITIVES=ON \
         -DWITH_PICKING=ON \
