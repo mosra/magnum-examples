@@ -25,8 +25,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.2)
-project(MagnumOvrExample LANGUAGES CXX)
+cmake_minimum_required(VERSION 2.8.9)
+project(MagnumOvrExample)
 
 find_package(Magnum REQUIRED
     MeshTools
