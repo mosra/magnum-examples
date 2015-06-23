@@ -24,7 +24,7 @@
 #
 
 cmake_minimum_required(VERSION 2.8.9)
-project(MagnumTextExample CXX)
+project(MagnumTextExample)
 
 find_package(Magnum REQUIRED
     Shaders

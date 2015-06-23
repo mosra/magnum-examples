@@ -24,7 +24,7 @@
 #
 
 cmake_minimum_required(VERSION 2.8.9)
-project(MagnumTexturedTriangleExample CXX)
+project(MagnumTexturedTriangleExample)
 
 find_package(Magnum REQUIRED Sdl2Application)
 

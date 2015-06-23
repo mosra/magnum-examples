@@ -24,7 +24,7 @@
 #
 
 cmake_minimum_required(VERSION 2.8.9)
-project(MagnumViewerExample CXX)
+project(MagnumViewerExample)
 
 find_package(Magnum REQUIRED
     MeshTools
