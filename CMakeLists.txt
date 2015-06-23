@@ -35,6 +35,7 @@ cmake_dependent_option(WITH_CUBEMAP "Build CubeMap example (requires JpegImporte
 cmake_dependent_option(WITH_FRAMEBUFFER "Build Framebuffer example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 cmake_dependent_option(WITH_MOTIONBLUR "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 option(WITH_OVR "Build OVR example" OFF)
+option(WITH_PICKING "Build Picking example" OFF)
 option(WITH_PRIMITIVES "Build Primitives example" OFF)
 option(WITH_TEXT "Build Text example (requires FreeTypeFont plugin)" OFF)
 cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)

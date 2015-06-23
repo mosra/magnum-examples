@@ -30,6 +30,7 @@ build() {
         -DWITH_FRAMEBUFFER=ON \
         -DWITH_MOTIONBLUR=ON \
         -DWITH_PRIMITIVES=ON \
+        -DWITH_PICKING=ON \
         -DWITH_TEXT=ON \
         -DWITH_TEXTUREDTRIANGLE=ON \
         -DWITH_TRIANGLE=ON \

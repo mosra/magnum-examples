@@ -109,6 +109,7 @@ cmake .. \
     -DWITH_CUBEMAP=${desktop_flag} \
     -DWITH_FRAMEBUFFER=${desktop_flag} \
     -DWITH_MOTIONBLUR=${desktop_flag} \
+    -DWITH_PICKING=ON \
     -DWITH_PRIMITIVES=ON \
     -DWITH_TEXT=${desktop_flag} \
     -DWITH_TEXTUREDTRIANGLE=${desktop_flag} \

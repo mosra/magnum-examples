@@ -23,51 +23,29 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# On MSVC remove /W3, as we are replacing it with /W4
-if(MSVC)
-    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-endif()
+cmake_minimum_required(VERSION 2.8.9)
+project(MagnumPickingExample)
 
-if(WITH_BULLET)
-    add_subdirectory(bullet)
-endif()
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    SceneGraph
+    Sdl2Application)
 
-if(WITH_CUBEMAP)
-    add_subdirectory(cubemap)
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
-if(WITH_FRAMEBUFFER)
-    add_subdirectory(framebuffer)
-endif()
+corrade_add_resource(PickingData resources.conf)
 
-if(WITH_MOTIONBLUR)
-    add_subdirectory(motionblur)
-endif()
+add_executable(magnum-picking
+    PickingExample.cpp
+    ${PickingData})
+target_link_libraries(magnum-picking
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
 
-if(WITH_OVR)
-    add_subdirectory(ovr)
-endif()
-
-if(WITH_PICKING)
-    add_subdirectory(picking)
-endif()
-
-if(WITH_PRIMITIVES)
-    add_subdirectory(primitives)
-endif()
-
-if(WITH_TEXT)
-    add_subdirectory(text)
-endif()
-
-if(WITH_TEXTUREDTRIANGLE)
-    add_subdirectory(textured-triangle)
-endif()
-
-if(WITH_TRIANGLE)
-    add_subdirectory(triangle)
-endif()
-
-if(WITH_VIEWER)
-    add_subdirectory(viewer)
-endif()
+install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-picking.md)
