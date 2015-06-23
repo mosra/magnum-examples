@@ -199,7 +199,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
         /* projection matrix is set in the camera, since it requires some hmd-specific fov etc. */
         _cameras[eye].reset(new HmdCamera(*_hmd, eye, _eyes[eye]));
 
-        _layer->setColorTexture(eye, _cameras[eye]->getTextureSet());
+        _layer->setColorTexture(eye, _cameras[eye]->textureSet());
         _layer->setViewport(eye, {{}, _cameras[eye]->viewport()});
     }
 

@@ -51,7 +51,7 @@ class HmdCamera: public SceneGraph::Camera3D {
         /**
          * @return Reference to the texture set used for rendering.
          */
-        LibOvrIntegration::SwapTextureSet& getTextureSet() const {
+        LibOvrIntegration::SwapTextureSet& textureSet() const {
             return *_textureSet;
         }
 
