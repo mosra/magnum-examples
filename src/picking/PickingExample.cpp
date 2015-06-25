@@ -48,7 +48,7 @@
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 
 using namespace Magnum;
