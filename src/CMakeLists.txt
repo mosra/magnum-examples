@@ -36,12 +36,16 @@ if(WITH_CUBEMAP)
     add_subdirectory(cubemap)
 endif()
 
-if(WITH_FRAMEBUFFER)
-    add_subdirectory(framebuffer)
-endif()
-
 if(WITH_MOTIONBLUR)
     add_subdirectory(motionblur)
+endif()
+
+if(WITH_OVR)
+    add_subdirectory(ovr)
+endif()
+
+if(WITH_PICKING)
+    add_subdirectory(picking)
 endif()
 
 if(WITH_PRIMITIVES)

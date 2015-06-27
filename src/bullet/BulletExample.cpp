@@ -38,7 +38,7 @@
 #include <Magnum/Shapes/ShapeGroup.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Renderer.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Timeline.h>
@@ -89,7 +89,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         ->translate({0.f, 0.f, 20.f});
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100.0f)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100.0f))
         .setViewport(defaultFramebuffer.viewport().size());
 
     /* Debug draw setup */
@@ -130,7 +130,9 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         }
     }
 
-    _timeline.setMinimalFrameTime(1/120.0f);
+    /* Loop at 60 Hz max */
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16);
     _timeline.start();
 
     redraw();

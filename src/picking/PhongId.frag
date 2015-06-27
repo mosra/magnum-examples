@@ -23,13 +23,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-uniform mat3 transformationProjectionMatrix;
+uniform lowp vec3 ambientColor;
+uniform lowp vec3 color;
+uniform lowp int objectId;
 
-layout(location = 0) in vec2 vertex;
+in mediump vec3 transformedNormal;
+in highp vec3 lightDirection;
+in highp vec3 cameraDirection;
 
-out vec2 textureCoords;
+layout(location = 0) out lowp vec4 fragmentColor;
+layout(location = 1) out lowp int fragmentObjectId;
 
 void main() {
-    textureCoords = vertex/2+vec2(0.5);
-    gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(vertex, 1.0), 0.0);
+    mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
+    highp vec3 normalizedLightDirection = normalize(lightDirection);
+
+    /* Add ambient color */
+    fragmentColor.rgb = ambientColor;
+
+    /* Add diffuse color */
+    lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
+    fragmentColor.rgb += color*intensity;
+
+    /* Add specular color, if needed */
+    if(intensity > 0.001) {
+        highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
+        mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), 80.0);
+        fragmentColor.rgb += vec3(1.0)*specularity;
+    }
+
+    /* Force alpha to 1 */
+    fragmentColor.a = 1.0;
+    fragmentObjectId = objectId;
 }

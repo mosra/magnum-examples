@@ -36,7 +36,7 @@
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData3D.h>
@@ -123,7 +123,7 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         resourceManager.set<AbstractShaderProgram>(_shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
         .setTexture(*_texture);
 

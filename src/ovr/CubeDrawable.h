@@ -1,10 +1,12 @@
-#ifndef Magnum_Examples_Billboard_h
-#define Magnum_Examples_Billboard_h
+#ifndef Magnum_Examples_CubeDrawable_h
+#define Magnum_Examples_CubeDrawable_h
 /*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2015
+              Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,31 +27,27 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Buffer.h>
-#include <Magnum/BufferTexture.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Texture.h>
-#include <Magnum/SceneGraph/Object.h>
+#include <Magnum/Color.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Trade/ImageData.h>
+#include <Magnum/Shaders/Shaders.h>
 
-#include "ColorCorrectionShader.h"
 #include "Types.h"
 
 namespace Magnum { namespace Examples {
 
-class Billboard: public Object2D, SceneGraph::Drawable2D {
+class CubeDrawable: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit Billboard(const Trade::ImageData2D& image, Buffer* colorCorrectionBuffer, Object2D* parent, SceneGraph::DrawableGroup2D* group);
+        explicit CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        void draw(const Matrix3& transformationMatrix, SceneGraph::AbstractCamera2D& camera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
+
+        void setColor(Color3 color);
+        Color3 getColor(void);
 
     private:
-        Buffer buffer;
-        Mesh mesh;
-        Texture2D texture;
-        BufferTexture colorCorrectionTexture;
-        ColorCorrectionShader shader;
+        Mesh* _mesh;
+        Shaders::Phong* _shader;
+        Color3 _color;
 };
 
 }}

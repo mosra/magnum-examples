@@ -46,10 +46,9 @@ for more information.
     library.
 -   `WITH_CUBEMAP` -- Build Cube Map example. Requires
     @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL ES.
--   `WITH_FRAMEBUFFER` -- Build Framebuffer example. Requires
-    @ref Trade::TgaImporter "TgaImporter" plugin, not available in OpenGL ES.
 -   `WITH_MOTIONBLUR` -- Build Motion Blur example. Not available on OpenGL
     ES.
+-   `WITH_PICKING` -- Build Object Picking example.
 -   `WITH_PRIMITIVES` -- Build @ref examples-primitives "Primitives" example.
 -   `WITH_TEXT` -- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
     plugin.

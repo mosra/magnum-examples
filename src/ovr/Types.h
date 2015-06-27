@@ -1,10 +1,12 @@
-#ifndef Magnum_Examples_ColorCorrectionShader_h
-#define Magnum_Examples_ColorCorrectionShader_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2015
+              Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,35 +27,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Math/Matrix3.h>
+#include <Magnum/SceneGraph/MatrixTransformation3D.h>
 
 namespace Magnum { namespace Examples {
 
-class ColorCorrectionShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector2> Position;
-
-        enum: UnsignedInt {
-            OriginalColorOutput = 0,
-            GrayscaleOutput = 1,
-            ColorCorrectedOutput = 2
-        };
-
-        explicit ColorCorrectionShader();
-
-        ColorCorrectionShader& setTransformationProjectionMatrix(const Matrix3& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
-
-        ColorCorrectionShader& setTexture(Texture2D& texture);
-
-        ColorCorrectionShader& setColorCorrectionTexture(BufferTexture& texture);
-
-    private:
-        Int transformationProjectionMatrixUniform;
-};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 }}
 

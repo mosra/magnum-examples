@@ -36,7 +36,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/AbstractImporter.h>
 
 #include "CubeMap.h"
@@ -71,7 +71,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         ->translate(Vector3::zAxis(3.0f));
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(Deg(55.0f), 1.0f, 0.001f, 100.0f)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(55.0f), 1.0f, 0.001f, 100.0f))
         .setViewport(defaultFramebuffer.viewport().size());
 
     /* Load TGA importer plugin */

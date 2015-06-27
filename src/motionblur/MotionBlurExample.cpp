@@ -63,7 +63,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setPerspective(Deg(35.0f), 1.0f, 0.001f, 100)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100))
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     Renderer::enable(Renderer::Feature::DepthTest);
@@ -116,6 +116,9 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
         .rotateZ(Deg(240.0f));
+
+    setSwapInterval(16);
+    setMinimalLoopPeriod(40);
 }
 
 void MotionBlurExample::viewportEvent(const Vector2i& size) {
@@ -128,11 +131,10 @@ void MotionBlurExample::drawEvent() {
     camera->draw(drawables);
     swapBuffers();
 
-    cameraObject->rotateX(Deg(1.0f));
-    spheres[0]->rotateZ(Deg(-2.0f));
-    spheres[1]->rotateZ(Deg(1.0f));
-    spheres[2]->rotateZ(Deg(-0.5f));
-    Utility::sleep(40);
+    cameraObject->rotateX(Deg(0.5f));
+    spheres[0]->rotateZ(Deg(-1.0f));
+    spheres[1]->rotateZ(Deg(0.5f));
+    spheres[2]->rotateZ(Deg(-0.25f));
     redraw();
 }
 
