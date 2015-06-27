@@ -34,7 +34,7 @@
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData3D.h>
@@ -99,7 +99,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
     _texture = resourceManager.get<CubeMapTexture>("texture");
 }
 
-void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
         .setProjectionMatrix(camera.projectionMatrix())

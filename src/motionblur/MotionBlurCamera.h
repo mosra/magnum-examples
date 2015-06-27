@@ -29,7 +29,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Mesh.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 
 #include "Types.h"
 

@@ -3,6 +3,8 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2015
+#             Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -23,47 +25,38 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# On MSVC remove /W3, as we are replacing it with /W4
-if(MSVC)
-    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-endif()
+cmake_minimum_required(VERSION 2.8.9)
+project(MagnumOvrExample)
 
-if(WITH_BULLET)
-    add_subdirectory(bullet)
-endif()
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+    SceneGraph
+    Sdl2Application)
 
-if(WITH_CUBEMAP)
-    add_subdirectory(cubemap)
-endif()
+find_package(MagnumIntegration REQUIRED LibOvr)
 
-if(WITH_MOTIONBLUR)
-    add_subdirectory(motionblur)
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_LIBOVRINTEGRATION_INCLUDE_DIR})
 
-if(WITH_OVR)
-    add_subdirectory(ovr)
-endif()
+add_executable(magnum-ovr
+    OvrExample.cpp
+    HmdCamera.cpp
+    HmdCamera.h
+    CubeDrawable.cpp
+    CubeDrawable.h
+    Types.h)
 
-if(WITH_PICKING)
-    add_subdirectory(picking)
-endif()
+message(STATUS ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
 
-if(WITH_PRIMITIVES)
-    add_subdirectory(primitives)
-endif()
+target_link_libraries(magnum-ovr
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES}
+    ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
 
-if(WITH_TEXT)
-    add_subdirectory(text)
-endif()
-
-if(WITH_TEXTUREDTRIANGLE)
-    add_subdirectory(textured-triangle)
-endif()
-
-if(WITH_TRIANGLE)
-    add_subdirectory(triangle)
-endif()
-
-if(WITH_VIEWER)
-    add_subdirectory(viewer)
-endif()
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-ovr.md)

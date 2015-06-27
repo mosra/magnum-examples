@@ -7,8 +7,8 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DWITH_BULLET=ON \
 		-DWITH_CUBEMAP=ON \
-		-DWITH_FRAMEBUFFER=ON \
 		-DWITH_MOTIONBLUR=ON \
+		-DWITH_PICKING=ON \
 		-DWITH_PRIMITIVES=ON \
 		-DWITH_TEXT=ON \
 		-DWITH_TEXTUREDTRIANGLE=ON \

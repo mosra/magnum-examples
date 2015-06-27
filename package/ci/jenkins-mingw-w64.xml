@@ -83,8 +83,8 @@ cmake .. \
     ${static_build_flag} \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=ON \
-    -DWITH_FRAMEBUFFER=ON \
     -DWITH_MOTIONBLUR=ON \
+    -DWITH_PICKING=ON \
     -DWITH_PRIMITIVES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTUREDTRIANGLE=ON \

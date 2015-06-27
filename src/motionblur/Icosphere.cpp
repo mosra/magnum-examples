@@ -26,7 +26,7 @@
 #include "Icosphere.h"
 
 #include <Magnum/Mesh.h>
-#include <Magnum/SceneGraph/Camera3D.h>
+#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Shaders/Phong.h>
 
 namespace Magnum { namespace Examples {
@@ -35,7 +35,7 @@ Icosphere::Icosphere(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, O
     scale(Vector3(0.1f));
 }
 
-void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::AbstractCamera3D& camera) {
+void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     shader->setDiffuseColor(color)
         .setSpecularColor(Color3(1.0f))
         .setShininess(20)
