@@ -80,6 +80,7 @@ cmake .. \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=OFF \
     -DWITH_MOTIONBLUR=OFF \
+    -DWITH_PICKING=${webgl2_build_flag} \
     -DWITH_PRIMITIVES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTUREDTRIANGLE=ON \
