@@ -116,8 +116,13 @@ class PhongIdShader: public AbstractShaderProgram {
 PhongIdShader::PhongIdShader() {
     Utility::Resource rs("picking-data");
 
+    #ifndef MAGNUM_TARGET_GLES
     Shader vert{Version::GL330, Shader::Type::Vertex},
         frag{Version::GL330, Shader::Type::Fragment};
+    #else
+    Shader vert{Version::GLES300, Shader::Type::Vertex},
+        frag{Version::GLES300, Shader::Type::Fragment};
+    #endif
     vert.addSource(rs.get("PhongId.vert"));
     frag.addSource(rs.get("PhongId.frag"));
     CORRADE_INTERNAL_ASSERT(Shader::compile({vert, frag}));
@@ -189,8 +194,14 @@ class PickingExample: public Platform::Application {
         Vector2i _previousMousePosition, _mousePressPosition;
 };
 
-PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")}, _framebuffer{defaultFramebuffer.viewport()} {
+PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")},
+    _cubeVertices{Buffer::TargetHint::Array}, _cubeIndices{Buffer::TargetHint::ElementArray},
+    _sphereVertices{Buffer::TargetHint::Array}, _sphereIndices{Buffer::TargetHint::ElementArray},
+    _planeVertices{Buffer::TargetHint::Array}, _framebuffer{defaultFramebuffer.viewport()}
+{
+    #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+    #endif
 
     /* Global renderer configuration */
     Renderer::enable(Renderer::Feature::DepthTest);

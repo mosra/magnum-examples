@@ -47,5 +47,14 @@ target_link_libraries(magnum-picking
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
-install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-picking.md)
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES picking-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS magnum-picking DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-picking.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-picking.md)
+endif()
