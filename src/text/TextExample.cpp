@@ -87,7 +87,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!_font->openData(std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>{
+    if(!_font->openData(std::vector<std::pair<std::string, Containers::ArrayView<const char>>>{
         {"DejaVuSans.conf", rs.getRaw("DejaVuSans.conf")},
         {"DejaVuSans.tga", rs.getRaw("DejaVuSans.tga")}}, 0.0f))
     {
