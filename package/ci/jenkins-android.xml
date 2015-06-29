@@ -61,12 +61,6 @@
 git submodule init
 git submodule update
 
-if [ "${compatibility}" = "deprecated" ] ; then
-    deprecated_build_flag=ON
-else
-    deprecated_build_flag=OFF
-fi
-
 mkdir -p build-android-${toolchain}-${compatibility}
 cd build-android-${toolchain}-${compatibility}
 
@@ -76,10 +70,8 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-${toolchain}.cmake \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
-    -DBUILD_DEPRECATED=${deprecated_build_flag} \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=OFF \
-    -DWITH_FRAMEBUFFER=OFF \
     -DWITH_MOTIONBLUR=OFF \
     -DWITH_PRIMITIVES=OFF \
     -DWITH_TEXT=OFF \

@@ -61,12 +61,6 @@
 git submodule init
 git submodule update
 
-if [ "${compatibility}" = "deprecated" ] ; then
-    deprecated_build_flag=ON
-else
-    deprecated_build_flag=OFF
-fi
-
 mkdir -p build-nacl-${toolchain}-${compatibility}
 cd build-nacl-${toolchain}-${compatibility}
 
@@ -77,10 +71,8 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/nacl-${toolchain}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/nacl-${toolchain}-${compatibility} \
     -DCMAKE_PREFIX_PATH=${JENKINS_HOME}/filesystem/nacl-${toolchain}-${compatibility} \
-    -DBUILD_DEPRECATED=${deprecated_build_flag} \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=OFF \
-    -DWITH_FRAMEBUFFER=OFF \
     -DWITH_MOTIONBLUR=OFF \
     -DWITH_PRIMITIVES=ON \
     -DWITH_TEXT=ON \
