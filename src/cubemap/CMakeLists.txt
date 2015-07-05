@@ -40,7 +40,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(CubeMapData resources.conf)
 
-add_executable(magnum-cubemap
+add_executable(magnum-cubemap WIN32
     CubeMap.cpp
     CubeMapExample.cpp
     CubeMapShader.cpp

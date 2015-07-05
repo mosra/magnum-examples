@@ -40,7 +40,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 # Bullet headers produce a lot of warnings in C++11 mode
 include_directories(SYSTEM ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
 
-add_executable(magnum-bullet BulletExample.cpp)
+add_executable(magnum-bullet WIN32 BulletExample.cpp)
 target_link_libraries(magnum-bullet
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
