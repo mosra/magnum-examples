@@ -213,12 +213,12 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         }
 
         /* Compile the mesh */
-        std::optional<Mesh> mesh;
+        Mesh mesh{NoCreate};
         std::unique_ptr<Buffer> buffer, indexBuffer;
         std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, BufferUsage::StaticDraw);
 
         /* Save things */
-        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
+        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
         _resourceManager.set(std::to_string(i) + "-vertices", buffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
         if(indexBuffer)
             _resourceManager.set(std::to_string(i) + "-indices", indexBuffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
