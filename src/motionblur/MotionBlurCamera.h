@@ -37,7 +37,7 @@ namespace Magnum { namespace Examples {
 
 class MotionBlurCamera: public SceneGraph::Camera3D {
     public:
-        static const Int FrameCount = 7;
+        enum: Int { FrameCount = 7 };
 
         explicit MotionBlurCamera(SceneGraph::AbstractObject3D& object);
 

@@ -64,7 +64,7 @@ class TextExample: public Platform::Application {
         Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _manager(MAGNUM_PLUGINS_FONT_DIR), _cache(Vector2i(2048), Vector2i(512), 22) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _manager(MAGNUM_PLUGINS_FONT_DIR), _cache(Vector2i(2048), Vector2i(512), 22), _text{NoCreate} {
     /* Load FreeTypeFont plugin */
     if(!(_manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded))
         std::exit(1);

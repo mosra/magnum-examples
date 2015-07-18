@@ -39,7 +39,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
-add_executable(magnum-text TextExample.cpp ${TextExample_RESOURCES})
+add_executable(magnum-text WIN32 TextExample.cpp ${TextExample_RESOURCES})
 target_link_libraries(magnum-text
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_SHADERS_LIBRARIES}

@@ -36,7 +36,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(TexturedTriangleData resources.conf)
 
-add_executable(magnum-textured-triangle
+add_executable(magnum-textured-triangle WIN32
     TexturedTriangleExample.cpp
     TexturedTriangleShader.cpp
 

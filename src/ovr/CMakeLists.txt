@@ -40,7 +40,7 @@ find_package(MagnumIntegration REQUIRED LibOvr)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_LIBOVRINTEGRATION_INCLUDE_DIR})
 
-add_executable(magnum-ovr
+add_executable(magnum-ovr WIN32
     OvrExample.cpp
     HmdCamera.cpp
     HmdCamera.h
