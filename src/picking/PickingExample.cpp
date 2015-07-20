@@ -232,22 +232,22 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     }
 
     /* Set up objects */
-    (*(_objects[0] = new PickableObject{1, _shader, Color3::fromHSV(25.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
-        .rotate(34.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[0] = new PickableObject{1, _shader, Color3::fromHSV(Deg{25.0f}, 0.9f, 0.9f), _cube, _scene, _drawables}))
+        .rotate(Deg{34.0f}, Vector3(1.0f).normalized())
         .translate({1.0f, 0.3f, -1.2f});
-    (*(_objects[1] = new PickableObject{2, _shader, Color3::fromHSV(54.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[1] = new PickableObject{2, _shader, Color3::fromHSV(Deg{54.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({-1.2f, -0.3f, -0.2f});
-    (*(_objects[2] = new PickableObject{3, _shader, Color3::fromHSV(105.0_degf, 0.9f, 0.9f), _plane, _scene, _drawables}))
-        .rotate(254.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[2] = new PickableObject{3, _shader, Color3::fromHSV(Deg{105.0f}, 0.9f, 0.9f), _plane, _scene, _drawables}))
+        .rotate(Deg{254.0f}, Vector3(1.0f).normalized())
         .scale(Vector3(0.45f))
         .translate({0.5f, 1.3f, 1.5f});
-    (*(_objects[3] = new PickableObject{4, _shader, Color3::fromHSV(162.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[3] = new PickableObject{4, _shader, Color3::fromHSV(Deg{162.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({-0.2f, -1.7f, -2.7f});
-    (*(_objects[4] = new PickableObject{5, _shader, Color3::fromHSV(210.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[4] = new PickableObject{5, _shader, Color3::fromHSV(Deg{210.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({0.7f, 0.6f, 2.2f})
         .scale(Vector3(0.75f));
-    (*(_objects[5] = new PickableObject{6, _shader, Color3::fromHSV(280.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
-        .rotate(-92.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[5] = new PickableObject{6, _shader, Color3::fromHSV(Deg{280.0f}, 0.9f, 0.9f), _cube, _scene, _drawables}))
+        .rotate(Deg{-92.0f}, Vector3(1.0f).normalized())
         .scale(Vector3(0.25f))
         .translate({-0.5f, -0.3f, 1.8f});
 
@@ -256,7 +256,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _cameraObject->translate(Vector3::zAxis(8.0f));
     _camera = new SceneGraph::Camera3D{*_cameraObject};
     _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 4.0f/3.0f, 0.001f, 100.0f))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg{35.0f}, 4.0f/3.0f, 0.001f, 100.0f))
         .setViewport(defaultFramebuffer.viewport().size());
 }
 
