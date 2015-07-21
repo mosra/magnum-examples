@@ -35,7 +35,7 @@ find_package(Magnum REQUIRED
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
-add_executable(magnum-primitives WIN32 PrimitivesExample.cpp)
+add_executable(magnum-primitives PrimitivesExample.cpp)
 target_link_libraries(magnum-primitives
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}

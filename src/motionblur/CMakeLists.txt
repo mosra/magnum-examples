@@ -38,7 +38,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 corrade_add_resource(MotionBlurShaders resources.conf)
 
-add_executable(magnum-motionblur WIN32
+add_executable(magnum-motionblur
     Icosphere.cpp
     MotionBlurCamera.cpp
     MotionBlurExample.cpp
