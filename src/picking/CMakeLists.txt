@@ -37,7 +37,7 @@ include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 corrade_add_resource(PickingData resources.conf)
 
-add_executable(magnum-picking WIN32
+add_executable(magnum-picking
     PickingExample.cpp
     ${PickingData})
 target_link_libraries(magnum-picking
