@@ -61,7 +61,7 @@ void HmdCamera::createEyeRenderTexture() {
 
     /* create the framebuffer which will be used to render to the current texture
      * of the texture set later. */
-    _framebuffer.reset(new Framebuffer({{}, _textureSize}));
+    _framebuffer.reset(new Framebuffer(Range2Di{{}, _textureSize}));
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
     /* setup depth attachment */
