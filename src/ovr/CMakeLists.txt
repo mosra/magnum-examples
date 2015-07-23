@@ -48,8 +48,6 @@ add_executable(magnum-ovr
     CubeDrawable.h
     Types.h)
 
-message(STATUS ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
-
 target_link_libraries(magnum-ovr
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
