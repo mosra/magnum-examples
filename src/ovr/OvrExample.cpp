@@ -127,7 +127,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    _hmd->setEnabledCaps(HmdCapability::LowPersistence | HmdCapability::DynamicPrediction | HmdCapability::NoVSync);
+    _hmd->setEnabledCaps(HmdCapability::LowPersistence | HmdCapability::DynamicPrediction );
     _hmd->configureTracking(HmdTrackingCapability::Orientation | HmdTrackingCapability::MagYawCorrection |
                             HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
