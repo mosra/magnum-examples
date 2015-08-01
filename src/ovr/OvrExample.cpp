@@ -60,44 +60,42 @@
 #include <Magnum/LibOvrIntegration/Hmd.h>
 #include <Magnum/LibOvrIntegration/HmdEnum.h>
 
-namespace Magnum {
-
-namespace Examples {
+namespace Magnum { namespace Examples {
 
 using namespace LibOvrIntegration;
 
 /**
- * @brief The Application class of OVRExample.
+ * @brief The Application class of OvrExample.
  * @author Jonathan Hale (Squareys)
  */
 class OvrExample: public Platform::Application {
-public:
-    explicit OvrExample(const Arguments& arguments);
-    virtual ~OvrExample();
+    public:
+        explicit OvrExample(const Arguments& arguments);
+        virtual ~OvrExample();
 
-private:
-    void drawEvent() override;
+    private:
+        void drawEvent() override;
 
-    LibOvrIntegration::Context _ovrContext;
-    std::unique_ptr<Hmd> _hmd;
+        LibOvrIntegration::Context _ovrContext;
+        std::unique_ptr<Hmd> _hmd;
 
-    std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
-    std::unique_ptr<Mesh> _mesh;
-    std::unique_ptr<Shaders::Phong> _shader;
+        std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
+        std::unique_ptr<Mesh> _mesh;
+        std::unique_ptr<Shaders::Phong> _shader;
 
-    Scene3D _scene;
-    Object3D _cameraObject;
-    Object3D _eyes[2];
-    SceneGraph::DrawableGroup3D _drawables;
-    std::unique_ptr<HmdCamera> _cameras[2];
+        Scene3D _scene;
+        Object3D _cameraObject;
+        Object3D _eyes[2];
+        SceneGraph::DrawableGroup3D _drawables;
+        std::unique_ptr<HmdCamera> _cameras[2];
 
-    std::unique_ptr<Object3D> _cubes[4];
-    std::unique_ptr<CubeDrawable> _cubeDrawables[4];
+        std::unique_ptr<Object3D> _cubes[4];
+        std::unique_ptr<CubeDrawable> _cubeDrawables[4];
 
-    std::unique_ptr<Framebuffer> _mirrorFramebuffer;
-    Texture2D* _mirrorTexture;
+        std::unique_ptr<Framebuffer> _mirrorFramebuffer;
+        Texture2D* _mirrorTexture;
 
-    LayerEyeFov* _layer;
+        LayerEyeFov* _layer;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
@@ -243,7 +241,6 @@ void OvrExample::drawEvent() {
     redraw();
 }
 
-}
-}
+}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::OvrExample)
