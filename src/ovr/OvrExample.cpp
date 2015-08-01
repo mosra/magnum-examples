@@ -265,6 +265,8 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
         if(!_hmd->isDebugHmd()) {
             _hmd->setPerformanceHudMode(_curPerfHudMode);
         }
+    } else if(event.key() == KeyEvent::Key::Esc) {
+        exit();
     }
 }
 
