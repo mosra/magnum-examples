@@ -25,59 +25,51 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory.h>
+#include <memory>
 #include <Corrade/Containers/Array.h>
-#include <Magnum/Magnum.h>
-#include <Magnum/Math/Vector2.h>
-#include <Magnum/Math/Vector3.h>
-#include <Magnum/Mesh.h>
 #include <Corrade/Utility/utilities.h>
 #include <Magnum/Buffer.h>
+#include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Primitives/Cube.h>
-#include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
-#include <Magnum/Math/Quaternion.h>
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Framebuffer.h>
+#include <Magnum/Magnum.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/Renderer.h>
 #include <Magnum/Renderbuffer.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
-#include <Magnum/Context.h>
-
-#include "Types.h"
-#include "HmdCamera.h"
-#include "CubeDrawable.h"
-
+#include <Magnum/Math/Quaternion.h>
+#include <Magnum/Math/Vector2.h>
+#include <Magnum/Math/Vector3.h>
+#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Primitives/Cube.h>
+#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/Camera.h>
+#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/LibOvrIntegration/LibOvrIntegration.h>
 #include <Magnum/LibOvrIntegration/Context.h>
 #include <Magnum/LibOvrIntegration/Hmd.h>
 #include <Magnum/LibOvrIntegration/HmdEnum.h>
 
+#include "Types.h"
+#include "HmdCamera.h"
+#include "CubeDrawable.h"
+
 namespace Magnum { namespace Examples {
 
 using namespace LibOvrIntegration;
 
-/**
- * @brief The Application class of OvrExample.
- * @author Jonathan Hale (Squareys)
- */
 class OvrExample: public Platform::Application {
     public:
         explicit OvrExample(const Arguments& arguments);
-        virtual ~OvrExample();
-
-    protected:
-        virtual void keyPressEvent(KeyEvent& event) override;
 
     private:
         void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 
         LibOvrIntegration::Context _ovrContext;
         std::unique_ptr<Hmd> _hmd;
@@ -107,26 +99,25 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
     _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(PerformanceHudMode::Off)
 {
-
-    /* connect to an Hmd, or create a debug hmd with DK2 type in case none is connected. */
-    _hmd = LibOvrIntegration::Context::get().createHmd(0, HmdType::DK2);
+    /* connect to an HMD, or create a debug HMD with DK2 type in case none is
+       connected */
+    _hmd = _ovrContext.createHmd(0, HmdType::DK2);
 
     /* get the hmd display resolution */
     Vector2i resolution = _hmd->resolution() / 2;
 
-    /* create a context with the hmd display resolution */
+    /* create a context with the HMD display resolution */
     Configuration conf;
     conf.setTitle("Magnum OculusVR Example")
         .setSize(resolution)
         .setSampleCount(16);
-
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
 
     /* the oculus sdk compositor does some "magic" to reduce latency. For
-     * that to work, vsync needs to be turned off. */
+       that to work, VSync needs to be turned off. */
     if(!setSwapInterval(0))
-        Error() << "Could not turn off vsync.";
+        Error() << "Could not turn off VSync.";
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
@@ -135,14 +126,14 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
                             HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
 
-    /* setup mirroring of oculus sdk compositor results to a texture which can later be blitted
-     * onto the defaultFramebuffer. */
+    /* setup mirroring of oculus sdk compositor results to a texture which can
+       later be blitted onto the default framebuffer. */
     _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::RGBA, resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
                       .mapForRead(Framebuffer::ColorAttachment(0));
 
-    /* Setup cube mesh. */
+    /* setup cube mesh. */
     const Trade::MeshData3D cube = Primitives::Cube::solid();
 
     _vertexBuffer.reset(new Buffer());
@@ -190,7 +181,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     _cubeDrawables[3] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {0.0f, 1.0f, 1.0f}, _cubes[3].get(), &_drawables));
 
     /* setup compositor layers */
-    _layer = &LibOvrIntegration::Context::get().compositor().addLayerEyeFov();
+    _layer = &_ovrContext.compositor().addLayerEyeFov();
     _layer->setFov(*_hmd.get());
     _layer->setHighQuality(true);
 
@@ -205,10 +196,6 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
         _layer->setColorTexture(eye, _cameras[eye]->textureSet());
         _layer->setViewport(eye, {{}, _cameras[eye]->viewport()});
     }
-
-}
-
-OvrExample::~OvrExample() {
 }
 
 void OvrExample::drawEvent() {
@@ -227,7 +214,7 @@ void OvrExample::drawEvent() {
     _layer->setRenderPoses(*_hmd.get());
 
     /* let the libOVR sdk compositor do its magic! */
-    LibOvrIntegration::Context::get().compositor().submitFrame(*_hmd.get());
+    _ovrContext.compositor().submitFrame(*_hmd.get());
 
     /* blit mirror texture to defaultFramebuffer. */
     const Vector2i size = _mirrorTexture->imageSize(0);
@@ -261,7 +248,7 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 break;
         }
 
-        /** libovr has a bug where performance hud will block the app when using a debug hmd */
+        /* libovr has a bug where performance hud will block the app when using a debug hmd */
         if(!_hmd->isDebugHmd()) {
             _hmd->setPerformanceHudMode(_curPerfHudMode);
         }
