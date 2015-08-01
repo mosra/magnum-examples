@@ -7,6 +7,8 @@ Third-party components
 Contributors to Magnum examples
 -------------------------------
 
+*   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Oculus VR
+    example
 *   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
 
