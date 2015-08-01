@@ -73,6 +73,9 @@ class OvrExample: public Platform::Application {
         explicit OvrExample(const Arguments& arguments);
         virtual ~OvrExample();
 
+    protected:
+        virtual void keyPressEvent(KeyEvent& event) override;
+
     private:
         void drawEvent() override;
 
@@ -96,11 +99,13 @@ class OvrExample: public Platform::Application {
         Texture2D* _mirrorTexture;
 
         LayerEyeFov* _layer;
+
+        PerformanceHudMode _curPerfHudMode;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
-    _shader(nullptr), _scene(), _cameraObject(&_scene)
+    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(PerformanceHudMode::Off)
 {
 
     /* connect to an Hmd, or create a debug hmd with DK2 type in case none is connected. */
@@ -239,6 +244,28 @@ void OvrExample::drawEvent() {
 
     swapBuffers();
     redraw();
+}
+
+void OvrExample::keyPressEvent(KeyEvent& event) {
+    if(event.key() == KeyEvent::Key::F11) {
+        /* toggle through the performance hud modes */
+        switch(_curPerfHudMode) {
+            case PerformanceHudMode::Off:
+                _curPerfHudMode = PerformanceHudMode::LatencyTiming;
+                break;
+            case PerformanceHudMode::LatencyTiming:
+                _curPerfHudMode = PerformanceHudMode::RenderTiming;
+                break;
+            case PerformanceHudMode::RenderTiming:
+                _curPerfHudMode = PerformanceHudMode::Off;
+                break;
+        }
+
+        /** libovr has a bug where performance hud will block the app when using a debug hmd */
+        if(!_hmd->isDebugHmd()) {
+            _hmd->setPerformanceHudMode(_curPerfHudMode);
+        }
+    }
 }
 
 }}
