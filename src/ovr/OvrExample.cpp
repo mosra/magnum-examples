@@ -61,8 +61,6 @@
 
 namespace Magnum { namespace Examples {
 
-using namespace LibOvrIntegration;
-
 class OvrExample: public Platform::Application {
     public:
         explicit OvrExample(const Arguments& arguments);
@@ -72,7 +70,7 @@ class OvrExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
 
         LibOvrIntegration::Context _ovrContext;
-        std::unique_ptr<Hmd> _hmd;
+        std::unique_ptr<LibOvrIntegration::Hmd> _hmd;
 
         std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
         std::unique_ptr<Mesh> _mesh;
@@ -90,18 +88,17 @@ class OvrExample: public Platform::Application {
         std::unique_ptr<Framebuffer> _mirrorFramebuffer;
         Texture2D* _mirrorTexture;
 
-        LayerEyeFov* _layer;
-
-        PerformanceHudMode _curPerfHudMode;
+        LibOvrIntegration::LayerEyeFov* _layer;
+        LibOvrIntegration::PerformanceHudMode _curPerfHudMode;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
-    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(PerformanceHudMode::Off)
+    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(LibOvrIntegration::PerformanceHudMode::Off)
 {
     /* connect to an HMD, or create a debug HMD with DK2 type in case none is
        connected */
-    _hmd = _ovrContext.createHmd(0, HmdType::DK2);
+    _hmd = _ovrContext.createHmd(0, LibOvrIntegration::HmdType::DK2);
 
     /* get the hmd display resolution */
     Vector2i resolution = _hmd->resolution() / 2;
@@ -121,9 +118,11 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    _hmd->setEnabledCaps(HmdCapability::LowPersistence | HmdCapability::DynamicPrediction );
-    _hmd->configureTracking(HmdTrackingCapability::Orientation | HmdTrackingCapability::MagYawCorrection |
-                            HmdTrackingCapability::Position, {});
+    _hmd->setEnabledCaps(LibOvrIntegration::HmdCapability::LowPersistence|
+                         LibOvrIntegration::HmdCapability::DynamicPrediction);
+    _hmd->configureTracking(LibOvrIntegration::HmdTrackingCapability::Orientation|
+                            LibOvrIntegration::HmdTrackingCapability::MagYawCorrection|
+                            LibOvrIntegration::HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
@@ -237,14 +236,14 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::F11) {
         /* toggle through the performance hud modes */
         switch(_curPerfHudMode) {
-            case PerformanceHudMode::Off:
-                _curPerfHudMode = PerformanceHudMode::LatencyTiming;
+            case LibOvrIntegration::PerformanceHudMode::Off:
+                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::LatencyTiming;
                 break;
-            case PerformanceHudMode::LatencyTiming:
-                _curPerfHudMode = PerformanceHudMode::RenderTiming;
+            case LibOvrIntegration::PerformanceHudMode::LatencyTiming:
+                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::RenderTiming;
                 break;
-            case PerformanceHudMode::RenderTiming:
-                _curPerfHudMode = PerformanceHudMode::Off;
+            case LibOvrIntegration::PerformanceHudMode::RenderTiming:
+                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::Off;
                 break;
         }
 
