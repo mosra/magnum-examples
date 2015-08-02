@@ -1,0 +1,58 @@
+version: '{branch}-{build}'
+branches:
+  only:
+  - master
+skip_tags: true
+os: Visual Studio 2015
+shallow_clone: true
+clone_depth: 1
+environment:
+  matrix:
+  - BUILD_STATIC: OFF
+install:
+- cinst ninja
+build_script:
+- set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
+- call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+- appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
+- 7z x SDL2-devel-2.0.3-VC.zip
+- ren SDL2-2.0.3 SDL
+- appveyor DownloadFile http://static.oculus.com/sdk-downloads/0.6.0.1/Public/1435190862/ovr_sdk_win_0.6.0.1.zip
+- 7z x ovr_sdk_win_0.6.0.1.zip
+- git clone --depth 1 git://github.com/mosra/corrade.git
+- cd corrade
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+- git clone --depth 1 git://github.com/mosra/magnum.git
+- cd magnum
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/SDL -DSDL2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/SDL/lib/x86/SDL2.lib -DWITH_AUDIO=OFF -DWITH_DEBUGTOOLS=OFF -DWITH_SHAPES=OFF -DWITH_SDL2APPLICATION=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+- git clone --depth 1 git://github.com/mosra/magnum-integration.git
+- cd magnum-integration
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_OVR=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/Deploy -DCMAKE_PREFIX_PATH="C:/Sys;%APPVEYOR_BUILD_FOLDER%/SDL" -DSDL2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/SDL/lib/x86/SDL2.lib -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_BULLET=OFF -DWITH_CUBEMAP=ON -DWITH_MOTIONBLUR=ON -DWITH_OVR=ON -DWITH_PICKING=ON -DWITH_PRIMITIVES=ON -DWITH_TEXT=ON -DWITH_TEXTUREDTRIANGLE=ON -DWITH_TRIANGLE=ON -DWITH_VIEWER=ON -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ../Deploy
+- 7z a ../magnum-examples.zip *
+test_script:
+- cd %APPVEYOR_BUILD_FOLDER%
+- appveyor PushArtifact magnum-examples.zip
