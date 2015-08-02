@@ -2,8 +2,8 @@ version: '{branch}-{build}'
 branches:
   only:
   - master
+  - compatibility
 skip_tags: true
-os: Visual Studio 2015
 shallow_clone: true
 clone_depth: 1
 environment:
@@ -13,13 +13,13 @@ install:
 - cinst ninja
 build_script:
 - set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
-- call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+- call "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat"
 - appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
 - 7z x SDL2-devel-2.0.3-VC.zip
 - ren SDL2-2.0.3 SDL
 - appveyor DownloadFile http://static.oculus.com/sdk-downloads/0.6.0.1/Public/1435190862/ovr_sdk_win_0.6.0.1.zip
 - 7z x ovr_sdk_win_0.6.0.1.zip
-- git clone --depth 1 git://github.com/mosra/corrade.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/corrade.git
 - cd corrade
 - mkdir build
 - cd build
@@ -28,7 +28,7 @@ build_script:
 - cmake --build . --target install
 - cd ..
 - cd ..
-- git clone --depth 1 git://github.com/mosra/magnum.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum.git
 - cd magnum
 - mkdir build
 - cd build
@@ -37,7 +37,7 @@ build_script:
 - cmake --build . --target install
 - cd ..
 - cd ..
-- git clone --depth 1 git://github.com/mosra/magnum-integration.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum-integration.git
 - cd magnum-integration
 - mkdir build
 - cd build
@@ -52,7 +52,7 @@ build_script:
 - cmake --build .
 - cmake --build . --target install
 - cd ../Deploy
-- 7z a ../magnum-examples.zip *
+- 7z a ../magnum-examples-compatibility.zip *
 test_script:
 - cd %APPVEYOR_BUILD_FOLDER%
-- appveyor PushArtifact magnum-examples.zip
+- appveyor PushArtifact magnum-examples-compatibility.zip
