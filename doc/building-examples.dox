@@ -86,7 +86,14 @@ This will compile binary and development packages, which will then appear in
 parent directory. If you need to modify CMake flags (enabling/disabling some
 examples, for example), modify the last entry in `debian/rules`.
 
-@section building-examples-ci-jenkins Jenkins Continuous Integration
+@section building-examples-ci Continuous Integration
+
+@subsection building-examples-ci-appveyor AppVeyor
+
+In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
+Online at https://ci.appveyor.com/project/mosra/magnum-examples.
+
+@subsection building-examples-ci-jenkins Jenkins
 
 In `package/ci/` there is `jenkins.xml` file containing job configuration.
 Setup your Jenkins server, enable the **Git** and **Text-finder** plugin and
