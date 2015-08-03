@@ -26,7 +26,6 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Buffer.h>
-#include <Magnum/Color.h>
 #include <Magnum/ColorFormat.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
@@ -39,6 +38,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Version.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
