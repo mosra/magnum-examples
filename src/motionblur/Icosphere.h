@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Color.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/Shaders/Shaders.h>
 

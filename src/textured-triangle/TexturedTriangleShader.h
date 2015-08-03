@@ -26,8 +26,8 @@
 */
 
 #include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Color.h>
 #include <Magnum/Texture.h>
+#include <Magnum/Math/Color.h>
 
 namespace Magnum { namespace Examples {
 
