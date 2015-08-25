@@ -224,7 +224,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     _sourceFrontObject.translate({0.5, 0.3});
 
     /* set initial sound source position to match the visualization */
-    _source.setPosition(Vector3i{5, 3, 3});
+    _source.setPosition(Vector3{5.f, 3.f, 3.f});
 }
 
 void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
@@ -249,7 +249,7 @@ void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
     _sourceFrontObject.setTransformation(Matrix3::translation(newFront));
 
     /* Update sound source position to new input */
-    _source.setPosition(Vector3i{Int(newTop.x()*10), Int(newFront.y()*10), Int(newTop.y()*10)});
+    _source.setPosition(Vector3{newTop.x() * 10.0f, newFront.y() * 10.0f, newTop.y() * 10.0f});
 }
 
 void AudioExample::drawEvent() {
