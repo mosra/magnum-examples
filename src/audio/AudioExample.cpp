@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/PluginManager/PluginManager.h>
+
 #include <Magnum/Buffer.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
@@ -32,30 +34,36 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/ImageData.h>
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/SceneGraph/Camera.h>
+#include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Math/Range.h>
 
+
+#include "configure.h"
 #include "Types.h"
+#include "TexturedDrawable2D.h"
 
 namespace Magnum {namespace Primitives { namespace Plane2D {
 
-Trade::MeshData2D solid(const Plane::TextureCoords textureCoords) {
-    std::vector<std::vector<Vector2>> coords;
-    if(textureCoords == Plane::TextureCoords::Generate) coords.push_back({
-        {1.0f, 0.0f},
-        {1.0f, 1.0f},
-        {0.0f, 0.0f},
-        {0.0f, 1.0f}
-    });
-
+Trade::MeshData2D solid() {
     return Trade::MeshData2D(MeshPrimitive::TriangleStrip, {}, {{
         {1.0f, -1.0f},
         {1.0f, 1.0f},
         {-1.0f, -1.0f},
         {-1.0f, 1.0f}
-    }}, std::move(coords));
+    }}, {{
+        {1.0f, 0.0f},
+        {1.0f, 1.0f},
+        {0.0f, 0.0f},
+        {0.0f, 1.0f}
+    }});
 }
 
 }}}
@@ -70,50 +78,169 @@ class AudioExample: public Platform::Application {
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
+        void updateSourceTranslation(const Vector2i& mousePos);
 
-        Buffer _indexBuffer, _vertexBuffer;
+        Buffer _vertexBuffer;
         Mesh _mesh;
         Shaders::Flat2D _shader;
 
         Scene2D _scene;
         SceneGraph::Camera2D _camera;
-        SceneGraph::DrawableGroup2D _drawables;
+        Object2D _sourceTopObject;
+        Object2D _sourceFrontObject;
 
-        Vector2i _previousMousePosition;
+        SceneGraph::DrawableGroup2D _drawablesFront;
+        SceneGraph::DrawableGroup2D _drawablesTop;
+
+        TexturedDrawable2D* _listenerFront;
+        TexturedDrawable2D* _listenerTop;
+        TexturedDrawable2D* _sourceFront;
+        TexturedDrawable2D* _sourceTop;
+
+        Texture2D _textureListenerTop;
+        Texture2D _textureListenerFront;
+        Texture2D _textureSource;
+
+        Range2Di _leftViewport;
+        Range2Di _rightViewport;
 };
 
 AudioExample::AudioExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Audio Example")},
+    _shader(Shaders::Flat2D::Flag::Textured),
     _scene(),
-    _camera(_scene)
+    _camera(_scene),
+    _sourceTopObject(&_scene),
+    _sourceFrontObject(&_scene),
+    _sourceObject(&_scene)
 {
+    const Trade::MeshData2D plane = Primitives::Plane2D::solid();
+    _vertexBuffer.setData(MeshTools::interleave(plane.positions(0), plane.textureCoords2D(0)), BufferUsage::StaticDraw);
 
-    const Trade::MeshData2D plane = Primitives::Plane2D::solid(Primitives::Plane::TextureCoords::Generate);
-
-    _vertexBuffer.setData(plane.positions(0), BufferUsage::StaticDraw);
     _mesh.setPrimitive(plane.primitive())
-        .addVertexBuffer(_vertexBuffer, 0, Shaders::Flat2D::Position{});
+        .setCount(4)
+        .addVertexBuffer(_vertexBuffer, 0, Shaders::Flat2D::Position{}, Shaders::Flat2D::TextureCoordinates{});
 
-    _camera.setProjectionMatrix(Matrix3::projection(Vector2{defaultFramebuffer.viewport().size()}));
+    const Vector2i halfViewport = defaultFramebuffer.viewport().size()*Vector2::xScale(0.5f);
+    _camera.setProjectionMatrix(Matrix3::projection({1.0f, 1.f/Vector2{halfViewport}.aspectRatio()}));
+
+    _leftViewport = Range2Di::fromSize({}, halfViewport);
+    _rightViewport = Range2Di::fromSize({halfViewport.x(), 0}, halfViewport);
+
+    /* Load TGA importer plugin */
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded))
+        std::exit(1);
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
+
+    /* Load the textures */
+    const Utility::Resource rs{"audio-data"};
+    if(!importer->openData(rs.getRaw("source.tga")))
+        std::exit(2);
+
+    std::optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
+    _textureSource.setWrapping(Sampler::Wrapping::ClampToEdge)
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setMinificationFilter(Sampler::Filter::Linear)
+        .setStorage(1, TextureFormat::RGBA8, image->size())
+        .setSubImage(0, {}, *image);
+
+    if(!importer->openData(rs.getRaw("listener_top.tga")))
+        std::exit(2);
+
+    image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
+    _textureListenerTop.setWrapping(Sampler::Wrapping::ClampToEdge)
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setMinificationFilter(Sampler::Filter::Linear)
+        .setStorage(1, TextureFormat::RGBA8, image->size())
+        .setSubImage(0, {}, *image);
+
+    if(!importer->openData(rs.getRaw("listener_front.tga")))
+        std::exit(2);
+
+   image = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(image);
+    _textureListenerFront.setWrapping(Sampler::Wrapping::ClampToEdge)
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setMinificationFilter(Sampler::Filter::Linear)
+        .setStorage(1, TextureFormat::RGBA8, image->size())
+        .setSubImage(0, {}, *image);
+
+    /* Add drawables */
+    _source = new TexturedDrawable2D(&_mesh, &_shader, &_textureSource, &_sourceObject, &_drawables); // TODO memleak
+    _listenerFront = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerFront, &_listenerFrontObject, &_drawables); // TODO memleak
+    _listenerTop = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerTop, &_listenerTopObject, &_drawables); // TODO memleak
+
+    _sourceObject.translate({0.5, 0.5});
+
+    /* Add drawables */
+    _sourceFront = new TexturedDrawable2D(&_mesh, &_shader, &_textureSource, &_sourceFrontObject, &_drawablesFront); // TODO memleak
+    _sourceTop = new TexturedDrawable2D(&_mesh, &_shader, &_textureSource, &_sourceTopObject, &_drawablesTop); // TODO memleak
+    _listenerFront = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerFront, &_scene, &_drawablesFront); // TODO memleak
+    _listenerTop = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerTop, &_scene, &_drawablesTop); // TODO memleak
+
+    Renderer::disable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::Blending);
+
+    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::One);
+
+    Renderer::setClearColor({0.6, 0.6, 0.6, 0.0});
+
+    _sourceFront->scale({0.1, 0.1});
+    _sourceTop->scale({0.1, 0.1});
+    _sourceTopObject.translate({0.5, 0.3});
+    _sourceFrontObject.translate({0.5, 0.3});
+    _listenerFront->scale({0.1, 0.1});
+    _listenerTop->scale({0.1, 0.05});
+}
+
+void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
+    Vector2 normalized = Vector2{mousePos}/Vector2{_leftViewport.size()} - Vector2{0.5f};
+    Vector2 position = normalized*Vector2::yScale(-1.0f)*_camera.projectionSize();
+
+    Vector2 newTop = {position.x(), _sourceTopObject.transformation().translation().y()};
+    Vector2 newFront = {position.x(), _sourceFrontObject.transformation().translation().y()};
+
+    if (normalized.x() > 0.5f) {
+        /* clicked on the right viewport/"top view" */
+        newTop.y() = position.y();
+
+        newFront.x() -= 1.0f;
+        newTop.x() -= 1.0f;
+    } else {
+        /* clicked on the left viewport/"front view" */
+        newFront.y() = position.y();
+    }
+
+    _sourceTopObject.setTransformation(Matrix3::translation(newTop));
+    _sourceFrontObject.setTransformation(Matrix3::translation(newFront));
 }
 
 void AudioExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    _camera.draw(_drawables);
+    defaultFramebuffer.setViewport(_leftViewport);
+    _camera.draw(_drawablesFront);
+
+    defaultFramebuffer.setViewport(_rightViewport);
+    _camera.draw(_drawablesTop);
 
     swapBuffers();
 }
 
 void AudioExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
+    updateSourceTranslation(event.position());
 
-    _previousMousePosition = event.position();
     event.setAccepted();
+    redraw();
 }
 
 void AudioExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    updateSourceTranslation(event.position());
 
     event.setAccepted();
     redraw();

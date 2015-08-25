@@ -29,6 +29,7 @@ project(MagnumAudioExample)
 
 find_package(Magnum REQUIRED
     Audio
+    TgaImporter
     MeshTools
     Primitives
     SceneGraph
@@ -37,9 +38,12 @@ find_package(Magnum REQUIRED
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
-corrade_add_resource(AudioData resources.conf)
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+corrade_add_resource(AudioData resources.conf)
 
 add_executable(magnum-audio
     AudioExample.cpp
