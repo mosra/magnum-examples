@@ -201,19 +201,19 @@ AudioExample::AudioExample(const Arguments& arguments):
     _source.play();
 
     /* Create and add drawables to scene */
-    _sourceFront.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceFrontObject, _drawablesFront));
-    _sourceTop.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceTopObject, _drawablesTop));
     _listenerFront.reset(new TexturedDrawable2D(_mesh, _shader, _textureListenerFront, _scene, _drawablesFront));
     _listenerTop.reset(new TexturedDrawable2D(_mesh, _shader, _textureListenerTop, _scene, _drawablesTop));
+    _sourceFront.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceFrontObject, _drawablesFront));
+    _sourceTop.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceTopObject, _drawablesTop));
 
     /* We do not need depth test, drawing order is fine. */
     Renderer::disable(Renderer::Feature::DepthTest);
 
     /* Enable blending for alpha channel in textures. */
     Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::One);
+    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
 
-    Renderer::setClearColor({0.6, 0.6, 0.6, 0.0});
+    Renderer::setClearColor({0.6, 0.6, 0.6, 1.0});
 
     /* setup image scaling since the plane is currently larger than the screen. */
     _sourceFront->scale({0.1, 0.1});
