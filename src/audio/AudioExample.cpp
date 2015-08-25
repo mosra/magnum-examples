@@ -143,13 +143,13 @@ AudioExample::AudioExample(const Arguments& arguments):
     PluginManager::Manager<Trade::AbstractImporter> imageManager{MAGNUM_PLUGINS_IMPORTER_DIR};
     PluginManager::Manager<Audio::AbstractImporter> audioManager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR};
 
-    if(!(imageManager.load("TgaImporter") & PluginManager::LoadState::Loaded))
+    std::unique_ptr<Trade::AbstractImporter> importer = imageManager.loadAndInstantiate("TgaImporter");
+    if(!importer)
         std::exit(1);
-    std::unique_ptr<Trade::AbstractImporter> importer = imageManager.instance("TgaImporter");
 
-    if(!(audioManager.load("WavAudioImporter") & PluginManager::LoadState::Loaded))
+    std::unique_ptr<Audio::AbstractImporter> wavImporter = audioManager.loadAndInstantiate("WavAudioImporter");
+    if(!wavImporter)
         std::exit(1);
-    std::unique_ptr<Audio::AbstractImporter> wavImporter = audioManager.instance("WavAudioImporter");
 
     /* Load the textures from compiled resources */
     const Utility::Resource rs{"audio-data"};
