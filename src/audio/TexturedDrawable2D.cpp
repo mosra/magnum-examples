@@ -34,9 +34,9 @@
 
 namespace Magnum { namespace Examples {
 
-TexturedDrawable2D::TexturedDrawable2D(Mesh* mesh, Shaders::Flat2D* shader, Texture2D* texture, Object2D* parent, SceneGraph::DrawableGroup2D* group):
-    Object2D(parent),
-    SceneGraph::Drawable2D(*this, group),
+TexturedDrawable2D::TexturedDrawable2D(Mesh& mesh, Shaders::Flat2D& shader, Texture2D& texture, Object2D& parent, SceneGraph::DrawableGroup2D& group):
+    Object2D(&parent),
+    SceneGraph::Drawable2D(*this, &group),
     _mesh(mesh),
     _shader(shader),
     _texture(texture)
@@ -44,10 +44,10 @@ TexturedDrawable2D::TexturedDrawable2D(Mesh* mesh, Shaders::Flat2D* shader, Text
 }
 
 void TexturedDrawable2D::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) {
-    _shader->setTransformationProjectionMatrix(camera.projectionMatrix() * transformationMatrix)
-            .setTexture(*_texture);
+    _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+           .setTexture(_texture);
 
-    _mesh->draw(*_shader);
+    _mesh.draw(_shader);
 }
 
 }}

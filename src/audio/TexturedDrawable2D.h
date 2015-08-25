@@ -26,8 +26,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Magnum/Mesh.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Shaders.h>
+#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Texture.h>
 
 #include "Types.h"
 
@@ -35,14 +37,14 @@ namespace Magnum { namespace Examples {
 
 class TexturedDrawable2D: public Object2D, SceneGraph::Drawable2D {
     public:
-        explicit TexturedDrawable2D(Mesh* mesh, Shaders::Flat2D* shader, Texture2D* texture, Object2D* parent, SceneGraph::DrawableGroup2D* group);
+        explicit TexturedDrawable2D(Mesh& mesh, Shaders::Flat2D& shader, Texture2D& texture, Object2D& parent, SceneGraph::DrawableGroup2D& group);
 
         void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) override;
 
     private:
-        Mesh* _mesh;
-        Shaders::Flat2D* _shader;
-        Texture2D* _texture;
+        Mesh& _mesh;
+        Shaders::Flat2D& _shader;
+        Texture2D& _texture;
 };
 
 }}
