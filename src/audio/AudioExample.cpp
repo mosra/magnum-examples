@@ -240,6 +240,8 @@ void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
 
     _sourceTopObject.setTransformation(Matrix3::translation(newTop));
     _sourceFrontObject.setTransformation(Matrix3::translation(newFront));
+
+    _source.setPosition(Vector3i{newTop.x()*10, newFront.y()*10, newTop.y()*10});
 }
 
 void AudioExample::drawEvent() {
