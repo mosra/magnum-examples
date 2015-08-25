@@ -213,8 +213,6 @@ AudioExample::AudioExample(const Arguments& arguments):
     Renderer::enable(Renderer::Feature::Blending);
     Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
 
-    Renderer::setClearColor({0.6, 0.6, 0.6, 1.0});
-
     /* setup image scaling since the plane is currently larger than the screen. */
     _sourceFront->scale({0.1, 0.1});
     _sourceTop->scale({0.1, 0.1});
