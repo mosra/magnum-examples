@@ -45,6 +45,11 @@
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Math/Range.h>
 
+#include <Magnum/Audio/AbstractImporter.h>
+#include <Magnum/Audio/Buffer.h>
+#include <Magnum/Audio/Source.h>
+#include <Magnum/Audio/Renderer.h>
+#include <Magnum/Audio/Context.h>
 
 #include "configure.h"
 #include "Types.h"
@@ -103,6 +108,11 @@ class AudioExample: public Platform::Application {
 
         Range2Di _leftViewport;
         Range2Di _rightViewport;
+
+        Audio::Context _context;
+        Audio::Buffer _testBuffer;
+        Audio::Source _source;
+        Corrade::Containers::Array<char> _bufferData;
 };
 
 AudioExample::AudioExample(const Arguments& arguments):
@@ -112,7 +122,11 @@ AudioExample::AudioExample(const Arguments& arguments):
     _camera(_scene),
     _sourceTopObject(&_scene),
     _sourceFrontObject(&_scene),
-    _sourceObject(&_scene)
+    _leftViewport(),
+    _rightViewport(),
+    _context(),
+    _testBuffer(),
+    _source()
 {
     const Trade::MeshData2D plane = Primitives::Plane2D::solid();
     _vertexBuffer.setData(MeshTools::interleave(plane.positions(0), plane.textureCoords2D(0)), BufferUsage::StaticDraw);
@@ -128,10 +142,16 @@ AudioExample::AudioExample(const Arguments& arguments):
     _rightViewport = Range2Di::fromSize({halfViewport.x(), 0}, halfViewport);
 
     /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
-    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded))
+    PluginManager::Manager<Trade::AbstractImporter> imageManager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Audio::AbstractImporter> audioManager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR};
+
+    if(!(imageManager.load("TgaImporter") & PluginManager::LoadState::Loaded))
         std::exit(1);
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = imageManager.instance("TgaImporter");
+
+    if(!(audioManager.load("WavAudioImporter") & PluginManager::LoadState::Loaded))
+        std::exit(1);
+    std::unique_ptr<Audio::AbstractImporter> wavImporter = audioManager.instance("WavAudioImporter");
 
     /* Load the textures */
     const Utility::Resource rs{"audio-data"};
@@ -168,12 +188,16 @@ AudioExample::AudioExample(const Arguments& arguments):
         .setStorage(1, TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    /* Add drawables */
-    _source = new TexturedDrawable2D(&_mesh, &_shader, &_textureSource, &_sourceObject, &_drawables); // TODO memleak
-    _listenerFront = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerFront, &_listenerFrontObject, &_drawables); // TODO memleak
-    _listenerTop = new TexturedDrawable2D(&_mesh, &_shader, &_textureListenerTop, &_listenerTopObject, &_drawables); // TODO memleak
+    /* load audio file */
+    if(!wavImporter->openData(rs.getRaw("test.wav")))
+        std::exit(2);
 
-    _sourceObject.translate({0.5, 0.5});
+    _bufferData = wavImporter->data();
+
+    _testBuffer.setData(wavImporter->format(), _bufferData, wavImporter->frequency());
+    _source.setLooping(true);
+    _source.setBuffer(&_testBuffer);
+    _source.play();
 
     /* Add drawables */
     _sourceFront = new TexturedDrawable2D(&_mesh, &_shader, &_textureSource, &_sourceFrontObject, &_drawablesFront); // TODO memleak
