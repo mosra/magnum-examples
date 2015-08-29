@@ -90,11 +90,13 @@ class OvrExample: public Platform::Application {
 
         OvrIntegration::LayerEyeFov* _layer;
         OvrIntegration::PerformanceHudMode _curPerfHudMode;
+        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
-    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off)
+    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
+    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off)
 {
     /* connect to an HMD, or create a debug HMD with DK2 type in case none is
        connected */
@@ -241,14 +243,35 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::RenderTiming;
                 break;
             case OvrIntegration::PerformanceHudMode::RenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfHeadroom;
+                break;
+            case OvrIntegration::PerformanceHudMode::PerfHeadroom:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::VersionInfo;
+                break;
+            case OvrIntegration::PerformanceHudMode::VersionInfo:
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::Off;
                 break;
         }
 
-        /* libovr has a bug where performance hud will block the app when using a debug hmd */
-        if(!_hmd->isDebugHmd()) {
-            _hmd->setPerformanceHudMode(_curPerfHudMode);
+        _hmd->setPerformanceHudMode(_curPerfHudMode);
+    } else if(event.key() == KeyEvent::Key::F12) {
+        /* toggle through the debug hud stereo modes */
+        switch(_curDebugHudStereoMode) {
+            case OvrIntegration::DebugHudStereoMode::Off:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::Quad;
+                break;
+            case OvrIntegration::DebugHudStereoMode::Quad:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::QuadWithCrosshair;
+                break;
+            case OvrIntegration::DebugHudStereoMode::QuadWithCrosshair:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::CrosshairAtInfinity;
+                break;
+            case OvrIntegration::DebugHudStereoMode::CrosshairAtInfinity:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::Off;
+                break;
         }
+
+        _hmd->setDebugHudStereoMode(_curDebugHudStereoMode);
     } else if(event.key() == KeyEvent::Key::Esc) {
         exit();
     }
