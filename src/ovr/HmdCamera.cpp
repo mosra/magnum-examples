@@ -38,11 +38,11 @@
 #include <Magnum/Image.h>
 #include <Magnum/DefaultFramebuffer.h>
 
-#include <Magnum/LibOvrIntegration/Hmd.h>
+#include <Magnum/OvrIntegration/Hmd.h>
 
 namespace Magnum { namespace Examples {
 
-using namespace LibOvrIntegration;
+using namespace OvrIntegration;
 
 HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), _hmd(hmd) {
     _textureSize = _hmd.fovTextureSize(eye);
