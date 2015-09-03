@@ -28,6 +28,10 @@ if(MSVC)
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 endif()
 
+if(WITH_AUDIO)
+    add_subdirectory(audio)
+endif()
+
 if(WITH_BULLET)
     add_subdirectory(bullet)
 endif()

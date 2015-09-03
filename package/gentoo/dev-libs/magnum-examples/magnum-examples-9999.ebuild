@@ -20,6 +20,7 @@ RDEPEND="
 	dev-libs/magnum
 	dev-libs/magnum-integration
 	dev-libs/magnum-plugins
+	media-libs/openal
 	sci-physics/bullet
 "
 DEPEND="${RDEPEND}"
@@ -29,6 +30,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
 		-DCMAKE_BUILD_TYPE=Debug
+		-DWITH_AUDIO=ON
 		-DWITH_BULLET=ON
 		-DWITH_CUBEMAP=ON
 		-DWITH_MOTIONBLUR=ON

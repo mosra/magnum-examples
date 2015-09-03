@@ -6,7 +6,7 @@
 #  MAGNUMINTEGRATION_FOUND      - Whether the library was found
 # This command alone is useless without specifying the components:
 #  Bullet                       - Bullet Physics integration library
-#  LibOvr                       - LibOVR integration library
+#  Ovr                          - Oculus SDK integration library
 # Example usage with specifying additional components is:
 #  find_package(MagnumIntegration [REQUIRED|COMPONENTS]
 #               Bullet)
@@ -118,12 +118,12 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
             unset(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY)
         endif()
 
-    # LibOVR integration library
-    elseif(${component} STREQUAL LibOvr)
+    # Oculus SDK integration library
+    elseif(${component} STREQUAL Ovr)
         find_package(OVR)
         if(OVR_FOUND)
             set(_MAGNUM_${_COMPONENT}INTEGRATION_LIBRARIES ${OVR_LIBRARY})
-            set(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES LibOvrIntegration.h)
+            set(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES OvrIntegration.h)
             set(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIRS ${OVR_INCLUDE_DIR})
         else()
             unset(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARY)

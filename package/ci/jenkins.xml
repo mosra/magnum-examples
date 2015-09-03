@@ -109,7 +109,8 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}/lib;${JENKINS_HOME}/filesystem/compatibility-${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
-    -DWITH_BULLET=OFF \
+    -DWITH_AUDIO=ON \
+    -DWITH_BULLET=ON \
     -DWITH_CUBEMAP=${desktop_flag} \
     -DWITH_MOTIONBLUR=${desktop_flag} \
     -DWITH_PICKING=ON \

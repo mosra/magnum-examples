@@ -50,10 +50,10 @@
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
-#include <Magnum/LibOvrIntegration/LibOvrIntegration.h>
-#include <Magnum/LibOvrIntegration/Context.h>
-#include <Magnum/LibOvrIntegration/Hmd.h>
-#include <Magnum/LibOvrIntegration/HmdEnum.h>
+#include <Magnum/OvrIntegration/OvrIntegration.h>
+#include <Magnum/OvrIntegration/Context.h>
+#include <Magnum/OvrIntegration/Hmd.h>
+#include <Magnum/OvrIntegration/HmdEnum.h>
 
 #include "Types.h"
 #include "HmdCamera.h"
@@ -69,8 +69,8 @@ class OvrExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-        LibOvrIntegration::Context _ovrContext;
-        std::unique_ptr<LibOvrIntegration::Hmd> _hmd;
+        OvrIntegration::Context _ovrContext;
+        std::unique_ptr<OvrIntegration::Hmd> _hmd;
 
         std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
         std::unique_ptr<Mesh> _mesh;
@@ -88,17 +88,19 @@ class OvrExample: public Platform::Application {
         std::unique_ptr<Framebuffer> _mirrorFramebuffer;
         Texture2D* _mirrorTexture;
 
-        LibOvrIntegration::LayerEyeFov* _layer;
-        LibOvrIntegration::PerformanceHudMode _curPerfHudMode;
+        OvrIntegration::LayerEyeFov* _layer;
+        OvrIntegration::PerformanceHudMode _curPerfHudMode;
+        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
-    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(LibOvrIntegration::PerformanceHudMode::Off)
+    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
+    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off)
 {
     /* connect to an HMD, or create a debug HMD with DK2 type in case none is
        connected */
-    _hmd = _ovrContext.createHmd(0, LibOvrIntegration::HmdType::DK2);
+    _hmd = _ovrContext.createHmd();
 
     /* get the hmd display resolution */
     Vector2i resolution = _hmd->resolution() / 2;
@@ -118,11 +120,9 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    _hmd->setEnabledCaps(LibOvrIntegration::HmdCapability::LowPersistence|
-                         LibOvrIntegration::HmdCapability::DynamicPrediction);
-    _hmd->configureTracking(LibOvrIntegration::HmdTrackingCapability::Orientation|
-                            LibOvrIntegration::HmdTrackingCapability::MagYawCorrection|
-                            LibOvrIntegration::HmdTrackingCapability::Position, {});
+    _hmd->configureTracking(OvrIntegration::HmdTrackingCapability::Orientation|
+                            OvrIntegration::HmdTrackingCapability::MagYawCorrection|
+                            OvrIntegration::HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
@@ -236,21 +236,42 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::F11) {
         /* toggle through the performance hud modes */
         switch(_curPerfHudMode) {
-            case LibOvrIntegration::PerformanceHudMode::Off:
-                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::LatencyTiming;
+            case OvrIntegration::PerformanceHudMode::Off:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::LatencyTiming;
                 break;
-            case LibOvrIntegration::PerformanceHudMode::LatencyTiming:
-                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::RenderTiming;
+            case OvrIntegration::PerformanceHudMode::LatencyTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::RenderTiming;
                 break;
-            case LibOvrIntegration::PerformanceHudMode::RenderTiming:
-                _curPerfHudMode = LibOvrIntegration::PerformanceHudMode::Off;
+            case OvrIntegration::PerformanceHudMode::RenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfHeadroom;
+                break;
+            case OvrIntegration::PerformanceHudMode::PerfHeadroom:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::VersionInfo;
+                break;
+            case OvrIntegration::PerformanceHudMode::VersionInfo:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::Off;
                 break;
         }
 
-        /* libovr has a bug where performance hud will block the app when using a debug hmd */
-        if(!_hmd->isDebugHmd()) {
-            _hmd->setPerformanceHudMode(_curPerfHudMode);
+        _hmd->setPerformanceHudMode(_curPerfHudMode);
+    } else if(event.key() == KeyEvent::Key::F12) {
+        /* toggle through the debug hud stereo modes */
+        switch(_curDebugHudStereoMode) {
+            case OvrIntegration::DebugHudStereoMode::Off:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::Quad;
+                break;
+            case OvrIntegration::DebugHudStereoMode::Quad:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::QuadWithCrosshair;
+                break;
+            case OvrIntegration::DebugHudStereoMode::QuadWithCrosshair:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::CrosshairAtInfinity;
+                break;
+            case OvrIntegration::DebugHudStereoMode::CrosshairAtInfinity:
+                _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::Off;
+                break;
         }
+
+        _hmd->setDebugHudStereoMode(_curDebugHudStereoMode);
     } else if(event.key() == KeyEvent::Key::Esc) {
         exit();
     }

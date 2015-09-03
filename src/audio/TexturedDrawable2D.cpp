@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_HmdCamera_h
-#define Magnum_Examples_HmdCamera_h
 /*
     This file is part of Magnum.
 
@@ -27,47 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
+#include "TexturedDrawable2D.h"
 
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/OvrIntegration/OvrIntegration.h>
-
-#include "Types.h"
+#include <Magnum/Shaders/Flat.h>
 
 namespace Magnum { namespace Examples {
 
-class HmdCamera: public SceneGraph::Camera3D {
-    public:
-        /**
-         * @brief Constructor.
-         * @param hmd Hmd which this camera belongs to.
-         * @param eye Eye index associated with this camera. (0 for left, 1 for right eye)
-         * @param object Object holding this feature.
-         */
-        explicit HmdCamera(OvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
+TexturedDrawable2D::TexturedDrawable2D(Mesh& mesh, Shaders::Flat2D& shader, Texture2D& texture, Object2D& parent, SceneGraph::DrawableGroup2D& group):
+    Object2D(&parent),
+    SceneGraph::Drawable2D(*this, &group),
+    _mesh(mesh),
+    _shader(shader),
+    _texture(texture)
+{
+}
 
-        void draw(SceneGraph::DrawableGroup3D& group) override;
+void TexturedDrawable2D::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) {
+    _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+           .setTexture(_texture);
 
-        /**
-         * @return Reference to the texture set used for rendering.
-         */
-        OvrIntegration::SwapTextureSet& textureSet() const {
-            return *_textureSet;
-        }
-
-    private:
-
-        void createEyeRenderTexture();
-
-        std::unique_ptr<Texture2D> _depth;
-
-        OvrIntegration::Hmd& _hmd;
-        std::unique_ptr<OvrIntegration::SwapTextureSet> _textureSet;
-
-        Vector2i _textureSize;
-        std::unique_ptr<Framebuffer> _framebuffer;
-};
+    _mesh.draw(_shader);
+}
 
 }}
-
-#endif

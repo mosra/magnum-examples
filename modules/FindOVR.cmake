@@ -52,9 +52,9 @@ if(WIN32)
         # linking against the MSVC dll with MinGW does not work directly. Instead, you need to
         # link against a specific version. This will cause problems with newer oculus runtimes,
         # though. (FIXME!)
-        # The clean way to link against libOVR with mingw would be to compile the linux version,
-        # 0.6.0.0-beta is not available for Linux, though.
-        find_library(OVR_LIBRARY NAMES LibOVRRT32_0_6.dll HINTS "C:/Windows/SysWOW64")
+        # The clean way to link against libOVR, which seems to require the Windows DDK
+        find_library(OVR_LIBRARY NAMES LibOVRRT32_0_7.dll HINTS "C:/Windows/SysWOW64")
+        #find_library(OVR_LIBRARY NAMES LibOVR HINTS ${LIBOVR_ROOT}/Lib/Windows/Win32/Release/VS2012)
     endif()
 endif()
 

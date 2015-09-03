@@ -1,12 +1,11 @@
-#ifndef Magnum_Examples_HmdCamera_h
-#define Magnum_Examples_HmdCamera_h
+#ifndef Magnum_Examples_Types_h
+#define Magnum_Examples_Types_h
 /*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2015
-              Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -27,46 +26,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
-
-#include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/OvrIntegration/OvrIntegration.h>
-
-#include "Types.h"
+#include <Magnum/SceneGraph/MatrixTransformation2D.h>
 
 namespace Magnum { namespace Examples {
 
-class HmdCamera: public SceneGraph::Camera3D {
-    public:
-        /**
-         * @brief Constructor.
-         * @param hmd Hmd which this camera belongs to.
-         * @param eye Eye index associated with this camera. (0 for left, 1 for right eye)
-         * @param object Object holding this feature.
-         */
-        explicit HmdCamera(OvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
-
-        void draw(SceneGraph::DrawableGroup3D& group) override;
-
-        /**
-         * @return Reference to the texture set used for rendering.
-         */
-        OvrIntegration::SwapTextureSet& textureSet() const {
-            return *_textureSet;
-        }
-
-    private:
-
-        void createEyeRenderTexture();
-
-        std::unique_ptr<Texture2D> _depth;
-
-        OvrIntegration::Hmd& _hmd;
-        std::unique_ptr<OvrIntegration::SwapTextureSet> _textureSet;
-
-        Vector2i _textureSize;
-        std::unique_ptr<Framebuffer> _framebuffer;
-};
+typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
+typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;
 
 }}
 
