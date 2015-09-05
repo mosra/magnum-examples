@@ -26,11 +26,11 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Buffer.h>
-#include <Magnum/ColorFormat.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Renderbuffer.h>
 #include <Magnum/RenderbufferFormat.h>
 #include <Magnum/Renderer.h>
@@ -304,7 +304,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     _framebuffer.mapForRead(Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
-        {ColorFormat::RedInteger, ColorType::UnsignedByte});
+        {PixelFormat::RedInteger, PixelType::UnsignedByte});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);

@@ -26,10 +26,10 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/Buffer.h>
-#include <Magnum/ColorFormat.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Mesh.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/Texture.h>
@@ -179,9 +179,9 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         Debug() << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
 
         std::optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
-        if(!imageData || (imageData->format() != ColorFormat::RGB
+        if(!imageData || (imageData->format() != PixelFormat::RGB
             #ifndef MAGNUM_TARGET_GLES
-            && imageData->format() != ColorFormat::BGR
+            && imageData->format() != PixelFormat::BGR
             #endif
             ))
         {

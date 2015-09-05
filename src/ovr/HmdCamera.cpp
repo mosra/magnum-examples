@@ -32,7 +32,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/TextureFormat.h>
-#include <Magnum/ColorFormat.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Extensions.h>
 #include <Magnum/Context.h>
 #include <Magnum/Image.h>
@@ -65,15 +65,15 @@ void HmdCamera::createEyeRenderTexture() {
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
     /* setup depth attachment */
-    ColorType type = ColorType::UnsignedInt;
+    PixelType type = PixelType::UnsignedInt;
     TextureFormat format = TextureFormat::DepthComponent24;
 
     if(Magnum::Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
         format = TextureFormat::DepthComponent32F;
-        type = ColorType::Float;
+        type = PixelType::Float;
     }
 
-    Image2D image(ColorFormat::DepthComponent, type, _textureSize, nullptr);
+    Image2D image(PixelFormat::DepthComponent, type, _textureSize, nullptr);
 
     _depth.reset(new Texture2D());
     _depth->setMinificationFilter(Sampler::Filter::Linear)
