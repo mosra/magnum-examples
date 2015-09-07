@@ -73,14 +73,11 @@ void HmdCamera::createEyeRenderTexture() {
         type = PixelType::Float;
     }
 
-    Image2D image(PixelFormat::DepthComponent, type, _textureSize, nullptr);
-
     _depth.reset(new Texture2D());
     _depth->setMinificationFilter(Sampler::Filter::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToEdge)
-           .setStorage(1, format, _textureSize)
-           .subImage(0, {{}, _textureSize}, image);
+           .setStorage(1, format, _textureSize);
 }
 
 void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {
