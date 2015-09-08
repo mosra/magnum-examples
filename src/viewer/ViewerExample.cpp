@@ -143,8 +143,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
-    if(!importer)
-        std::exit(1);
+    if(!importer) std::exit(1);
 
     Debug() << "Opening file" << args.value("file");
 
