@@ -78,7 +78,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     /* Try 16x MSAA */
     Configuration conf;
     conf.setTitle("Magnum Bullet Integration Example")
-        .setSampleCount(16);
+        .setSampleCount(8);
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
 
