@@ -66,10 +66,8 @@ class TextExample: public Platform::Application {
 
 TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _manager(MAGNUM_PLUGINS_FONT_DIR), _cache(Vector2i(2048), Vector2i(512), 22), _text{NoCreate} {
     /* Load FreeTypeFont plugin */
-    if(!(_manager.load("FreeTypeFont") & PluginManager::LoadState::Loaded))
-        std::exit(1);
-
-    _font = _manager.instance("FreeTypeFont");
+    _font = _manager.loadAndInstantiate("FreeTypeFont");
+    if(!_font) std::exit(1);
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");

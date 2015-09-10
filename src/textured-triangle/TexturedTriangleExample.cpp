@@ -53,7 +53,7 @@ class TexturedTriangleExample: public Platform::Application {
 };
 
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")} {
-    constexpr static Vector2 data[] = {
+    static const Vector2 data[] = {
         {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
         { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
         { 0.0f,  0.5f}, {0.5f, 1.0f}  /* Top vertex position and texture coordinate */
@@ -66,9 +66,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
-    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded))
-        std::exit(1);
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.instance("TgaImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
+    if(!importer) std::exit(1);
 
     /* Load the texture */
     const Utility::Resource rs{"textured-triangle-data"};

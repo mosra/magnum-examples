@@ -42,4 +42,13 @@ cmake_dependent_option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (re
 option(WITH_TRIANGLE "Build Triangle example" ON)
 option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
 
+# Check compiler compatibility
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7.0")
+    message(FATAL_ERROR "Compatibility branch of Magnum Examples is needed for use with GCC < 4.7. See the documentation for more information.")
+elseif(MSVC)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
+        message(FATAL_ERROR "Compatibility branch of Magnum Examples is needed for use with MSVC < 2015. See the documentation for more information.")
+    endif()
+endif()
+
 add_subdirectory(src)

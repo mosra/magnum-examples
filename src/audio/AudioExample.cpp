@@ -137,7 +137,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     _rightViewport = Range2Di::fromSize({halfViewport.x(), 0}, halfViewport);
 
     /* Setup camera to scale down pixel measure to -1.0;1.0 on x and y according to aspect ratio for both viewports */
-    _camera.setProjectionMatrix(Matrix3::projection({1.0f, 1.f/Vector2{halfViewport}.aspectRatio()}));
+    _camera.setProjectionMatrix(Matrix3::projection({1.0f, 1.0f/Vector2{halfViewport}.aspectRatio()}));
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> imageManager{MAGNUM_PLUGINS_IMPORTER_DIR};
@@ -214,17 +214,17 @@ AudioExample::AudioExample(const Arguments& arguments):
     Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
 
     /* setup image scaling since the plane is currently larger than the screen. */
-    _sourceFront->scale({0.1, 0.1});
-    _sourceTop->scale({0.1, 0.1});
-    _listenerFront->scale({0.1, 0.1});
-    _listenerTop->scale({0.1, 0.05});
+    _sourceFront->scale({0.1f, 0.1f});
+    _sourceTop->scale({0.1f, 0.1f});
+    _listenerFront->scale({0.1f, 0.1f});
+    _listenerTop->scale({0.1f, 0.05f});
 
     /* initial positioning of sound source */
-    _sourceTopObject.translate({0.5, 0.3});
-    _sourceFrontObject.translate({0.5, 0.3});
+    _sourceTopObject.translate({0.5f, 0.3f});
+    _sourceFrontObject.translate({0.5f, 0.3f});
 
     /* set initial sound source position to match the visualization */
-    _source.setPosition(Vector3{5.f, 3.f, 3.f});
+    _source.setPosition(Vector3{5.0f, 3.0f, 3.0f});
 }
 
 void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
@@ -249,7 +249,7 @@ void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
     _sourceFrontObject.setTransformation(Matrix3::translation(newFront));
 
     /* Update sound source position to new input */
-    _source.setPosition(Vector3{newTop.x() * 10.0f, newFront.y() * 10.0f, newTop.y() * 10.0f});
+    _source.setPosition(Vector3{newTop.x()*10.0f, newFront.y()*10.0f, newTop.y()*10.0f});
 }
 
 void AudioExample::drawEvent() {

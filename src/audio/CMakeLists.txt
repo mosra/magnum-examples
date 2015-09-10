@@ -29,7 +29,6 @@ project(MagnumAudioExample)
 
 find_package(Magnum REQUIRED
     Audio
-    TgaImporter
     MeshTools
     Primitives
     SceneGraph
