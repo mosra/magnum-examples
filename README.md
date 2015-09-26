@@ -2,7 +2,7 @@ Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
 Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+[![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
 
 INSTALLATION
 ============
