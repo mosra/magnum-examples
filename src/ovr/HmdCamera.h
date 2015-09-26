@@ -30,7 +30,7 @@
 #include <memory>
 
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/LibOvrIntegration/LibOvrIntegration.h>
+#include <Magnum/OvrIntegration/OvrIntegration.h>
 
 #include "Types.h"
 
@@ -44,14 +44,14 @@ class HmdCamera: public SceneGraph::Camera3D {
          * @param eye Eye index associated with this camera. (0 for left, 1 for right eye)
          * @param object Object holding this feature.
          */
-        explicit HmdCamera(LibOvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
+        explicit HmdCamera(OvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
 
         void draw(SceneGraph::DrawableGroup3D& group) override;
 
         /**
          * @return Reference to the texture set used for rendering.
          */
-        LibOvrIntegration::SwapTextureSet& textureSet() const {
+        OvrIntegration::SwapTextureSet& textureSet() const {
             return *_textureSet;
         }
 
@@ -61,8 +61,8 @@ class HmdCamera: public SceneGraph::Camera3D {
 
         std::unique_ptr<Texture2D> _depth;
 
-        LibOvrIntegration::Hmd& _hmd;
-        std::unique_ptr<LibOvrIntegration::SwapTextureSet> _textureSet;
+        OvrIntegration::Hmd& _hmd;
+        std::unique_ptr<OvrIntegration::SwapTextureSet> _textureSet;
 
         Vector2i _textureSize;
         std::unique_ptr<Framebuffer> _framebuffer;

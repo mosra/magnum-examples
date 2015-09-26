@@ -81,6 +81,7 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/mingw-w64-${arch}-${libraries}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/mingw-w64-${arch}-${libraries}-${compatibility} \
     ${static_build_flag} \
+    -DWITH_AUDIO=ON \
     -DWITH_BULLET=OFF \
     -DWITH_CUBEMAP=ON \
     -DWITH_MOTIONBLUR=ON \

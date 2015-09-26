@@ -35,11 +35,18 @@
 # In Emscripten SDL is linked automatically, thus no need to find the library.
 # Also the includes are in SDL subdirectory, not SDL2.
 if(CORRADE_TARGET_EMSCRIPTEN)
-    set(PATH_SUFFIXES SDL)
+    set(_SDL2_PATH_SUFFIXES SDL)
 else()
-    find_library(SDL2_LIBRARY SDL2)
+    find_library(SDL2_LIBRARY
+        # Compiling SDL2 from scratch on OSX creates dead libSDL2.so symlink
+        # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
+        # the dylib first so it is preferred.
+        NAMES SDL2-2.0 SDL2
+
+        # Precompiled libraries for Windows are in x86/x64 subdirectories
+        PATH_SUFFIXES lib/x86 lib/x64)
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
-    set(PATH_SUFFIXES SDL2)
+    set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
 
 # Include dir
@@ -52,11 +59,9 @@ find_path(SDL2_INCLUDE_DIR
     # this issue), but rather SDL2.framework/Headers/SDL.h, CMake might find
     # SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
     NAMES SDL_scancode.h
-    PATH_SUFFIXES ${PATH_SUFFIXES}
-)
+    PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("SDL2" DEFAULT_MSG
     ${SDL2_LIBRARY_NEEDED}
-    SDL2_INCLUDE_DIR
-)
+    SDL2_INCLUDE_DIR)

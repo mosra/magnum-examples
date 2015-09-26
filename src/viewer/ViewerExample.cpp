@@ -25,10 +25,10 @@
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Buffer.h>
-#include <Magnum/ColorFormat.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Mesh.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/Texture.h>
@@ -146,8 +146,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
-    if(!importer)
-        std::exit(1);
+    if(!importer) std::exit(1);
 
     Debug() << "Opening file scene.ogex";
 
@@ -183,9 +182,9 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         Debug() << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
 
         std::optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
-        if(!imageData || (imageData->format() != ColorFormat::RGB
+        if(!imageData || (imageData->format() != PixelFormat::RGB
             #ifndef MAGNUM_TARGET_GLES
-            && imageData->format() != ColorFormat::BGR
+            && imageData->format() != PixelFormat::BGR
             #endif
             ))
         {
@@ -221,12 +220,12 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
         }
 
         /* Compile the mesh */
-        std::optional<Mesh> mesh;
+        Mesh mesh{NoCreate};
         std::unique_ptr<Buffer> buffer, indexBuffer;
         std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, BufferUsage::StaticDraw);
 
         /* Save things */
-        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(*mesh)});
+        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
         _resourceManager.set(
             #ifndef CORRADE_GCC44_COMPATIBILITY
             std::to_string(i) +

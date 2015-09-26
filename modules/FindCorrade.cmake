@@ -42,6 +42,8 @@
 #   mode for GCC 4.4
 #  CORRADE_MSVC2013_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2013
+#  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
+#   mode for MSVC 2015
 #  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries
@@ -203,6 +205,7 @@ set(_corradeFlags
     GCC45_COMPATIBILITY
     GCC44_COMPATIBILITY
     MSVC2013_COMPATIBILITY
+    MSVC2015_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
     TARGET_UNIX

@@ -1,4 +1,4 @@
-#
+﻿#
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
@@ -35,10 +35,10 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
-find_package(MagnumIntegration REQUIRED LibOvr)
+find_package(MagnumIntegration REQUIRED Ovr)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_LIBOVRINTEGRATION_INCLUDE_DIR})
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_OVRINTEGRATION_INCLUDE_DIRS})
 
 add_executable(magnum-ovr
     OvrExample.cpp
@@ -48,8 +48,6 @@ add_executable(magnum-ovr
     CubeDrawable.h
     Types.h)
 
-message(STATUS ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
-
 target_link_libraries(magnum-ovr
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_MESHTOOLS_LIBRARIES}
@@ -57,6 +55,6 @@ target_link_libraries(magnum-ovr
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES}
-    ${MAGNUM_LIBOVRINTEGRATION_LIBRARIES})
+    ${MAGNUM_OVRINTEGRATION_LIBRARIES})
 
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-ovr.md)

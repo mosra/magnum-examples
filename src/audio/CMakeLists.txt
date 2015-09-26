@@ -3,6 +3,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -24,22 +25,39 @@
 #
 
 cmake_minimum_required(VERSION 2.8.9)
-project(MagnumExamples)
+project(MagnumAudioExample)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED
+    Audio
+    MeshTools
+    Primitives
+    SceneGraph
+    Shaders
+    Sdl2Application)
 
-include(CMakeDependentOption)
-option(WITH_AUDIO "Build audio example (requires Magnum Audio library)" OFF)
-option(WITH_BULLET "Build Bullet integration example (requires BulletIntegration library)" OFF)
-cmake_dependent_option(WITH_CUBEMAP "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_MOTIONBLUR "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_OVR "Build OVR example" OFF)
-option(WITH_PICKING "Build Picking example" OFF)
-option(WITH_PRIMITIVES "Build Primitives example" OFF)
-option(WITH_TEXT "Build Text example (requires FreeTypeFont plugin)" OFF)
-option(WITH_TEXTUREDTRIANGLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF)
-option(WITH_TRIANGLE "Build Triangle example" ON)
-option(WITH_VIEWER "Build Viewer example (requires ColladaImporter plugin)" OFF)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 
-add_subdirectory(src)
+include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_AUDIO_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+corrade_add_resource(AudioData resources.conf)
+
+add_executable(magnum-audio
+    AudioExample.cpp
+    TexturedDrawable2D.cpp
+
+    ${AudioData})
+
+target_link_libraries(magnum-audio
+    ${MAGNUM_LIBRARIES}
+    ${MAGNUM_AUDIO_LIBRARIES}
+    ${MAGNUM_MESHTOOLS_LIBRARIES}
+    ${MAGNUM_PRIMITIVES_LIBRARIES}
+    ${MAGNUM_SCENEGRAPH_LIBRARIES}
+    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_APPLICATION_LIBRARIES})
+
+install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)

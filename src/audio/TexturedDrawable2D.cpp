@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_CubeDrawable_h
-#define Magnum_Examples_CubeDrawable_h
 /*
     This file is part of Magnum.
 
@@ -27,29 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Math/Color.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Shaders.h>
+#include "TexturedDrawable2D.h"
 
-#include "Types.h"
+#include <Magnum/Mesh.h>
+#include <Magnum/Texture.h>
+#include <Magnum/SceneGraph/Camera.h>
+#include <Magnum/Shaders/Flat.h>
 
 namespace Magnum { namespace Examples {
 
-class CubeDrawable: public Object3D, SceneGraph::Drawable3D {
-    public:
-        explicit CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+TexturedDrawable2D::TexturedDrawable2D(Mesh& mesh, Shaders::Flat2D& shader, Texture2D& texture, Object2D& parent, SceneGraph::DrawableGroup2D& group):
+    Object2D(&parent),
+    SceneGraph::Drawable2D(*this, &group),
+    _mesh(mesh),
+    _shader(shader),
+    _texture(texture)
+{
+}
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
+void TexturedDrawable2D::draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) {
+    _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+           .setTexture(_texture);
 
-        void setColor(Color3 color);
-        Color3 getColor(void);
-
-    private:
-        Mesh* _mesh;
-        Shaders::Phong* _shader;
-        Color3 _color;
-};
+    _mesh.draw(_shader);
+}
 
 }}
-
-#endif

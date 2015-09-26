@@ -1,0 +1,82 @@
+# kate: indent-width 2;
+
+version: '{branch}-{build}'
+
+branches:
+  only:
+  - master
+  - compatibility
+skip_tags: true
+shallow_clone: true
+clone_depth: 1
+
+environment:
+  matrix:
+  - BUILD_STATIC: OFF
+
+install:
+- call "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/vcvarsall.bat"
+- set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
+
+# Ninja
+- cinst ninja
+
+# OpenAL
+- appveyor DownloadFile http://kcat.strangesoft.net/openal-soft-1.16.0-bin.zip
+- 7z x openal-soft-1.16.0-bin.zip
+- ren openal-soft-1.16.0-bin openal
+
+# SDL2
+- appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
+- 7z x SDL2-devel-2.0.3-VC.zip
+- ren SDL2-2.0.3 SDL
+
+# OVR SDK
+- appveyor DownloadFile http://static.oculus.com/sdk-downloads/0.7.0.0/Public/1440610361/ovr_sdk_win_0.7.0.0.zip
+- 7z x ovr_sdk_win_0.7.0.0.zip
+
+# Corrade
+- git clone --branch compatibility --depth 1 git://github.com/mosra/corrade.git
+- cd corrade
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+
+# Magnum
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum.git
+- cd magnum
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO=ON -DWITH_DEBUGTOOLS=OFF -DWITH_SHAPES=OFF -DWITH_SDL2APPLICATION=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+
+# Magnum Integration
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum-integration.git
+- cd magnum-integration
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_OVR=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+
+build_script:
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/Deploy -DCMAKE_PREFIX_PATH="C:/Sys;%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_AUDIO=ON -DWITH_BULLET=OFF -DWITH_CUBEMAP=ON -DWITH_MOTIONBLUR=ON -DWITH_OVR=ON -DWITH_PICKING=ON -DWITH_PRIMITIVES=ON -DWITH_TEXT=ON -DWITH_TEXTUREDTRIANGLE=ON -DWITH_TRIANGLE=ON -DWITH_VIEWER=ON -G Ninja
+- cmake --build .
+- cmake --build . --target install
+- cd ../Deploy
+- 7z a ../magnum-examples-compatibility.zip *
+
+test_script:
+- cd %APPVEYOR_BUILD_FOLDER%
+- appveyor PushArtifact magnum-examples-compatibility.zip

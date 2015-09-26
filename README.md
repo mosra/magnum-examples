@@ -2,6 +2,8 @@ Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
 Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum.
 
+[![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+
 INSTALLATION
 ============
 
@@ -13,10 +15,10 @@ for more comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
-*   C++ compiler with good C++11 support. Currently there are two compilers
-    which are tested to have everything needed: **GCC** >= 4.7 and **Clang**
-    >= 3.1. On Windows you can use **MinGW**. GCC 4.6, 4.5, 4.4 and **MSVC**
-    2013 support involves some ugly workarounds and thus is available only in
+-   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
+    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
+    support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
 *   **CMake** >= 2.8.9
 *   **Corrade**, **Magnum** -- The engine itself

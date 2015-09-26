@@ -32,17 +32,17 @@
 #include <Magnum/Texture.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/TextureFormat.h>
-#include <Magnum/ColorFormat.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Extensions.h>
 #include <Magnum/Context.h>
 #include <Magnum/Image.h>
 #include <Magnum/DefaultFramebuffer.h>
 
-#include <Magnum/LibOvrIntegration/Hmd.h>
+#include <Magnum/OvrIntegration/Hmd.h>
 
 namespace Magnum { namespace Examples {
 
-using namespace LibOvrIntegration;
+using namespace OvrIntegration;
 
 HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), _hmd(hmd) {
     _textureSize = _hmd.fovTextureSize(eye);
@@ -61,26 +61,23 @@ void HmdCamera::createEyeRenderTexture() {
 
     /* create the framebuffer which will be used to render to the current texture
      * of the texture set later. */
-    _framebuffer.reset(new Framebuffer({{}, _textureSize}));
+    _framebuffer.reset(new Framebuffer(Range2Di{{}, _textureSize}));
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
     /* setup depth attachment */
-    ColorType type = ColorType::UnsignedInt;
+    PixelType type = PixelType::UnsignedInt;
     TextureFormat format = TextureFormat::DepthComponent24;
 
     if(Magnum::Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
         format = TextureFormat::DepthComponent32F;
-        type = ColorType::Float;
+        type = PixelType::Float;
     }
-
-    Image2D image(ColorFormat::DepthComponent, type, _textureSize, nullptr);
 
     _depth.reset(new Texture2D());
     _depth->setMinificationFilter(Sampler::Filter::Linear)
            .setMagnificationFilter(Sampler::Filter::Linear)
            .setWrapping(Sampler::Wrapping::ClampToEdge)
-           .setStorage(1, format, _textureSize)
-           .subImage(0, {{}, _textureSize}, image);
+           .setStorage(1, format, _textureSize);
 }
 
 void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {

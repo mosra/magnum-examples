@@ -27,15 +27,15 @@
 
 #include <sstream>
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/ColorFormat.h>
 #include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Shader.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Version.h>
 
 namespace Magnum { namespace Examples {
 
-MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), framebuffer(ColorFormat::RGB, ColorType::UnsignedByte), currentFrame(0), canvas(frames) {
+MotionBlurCamera::MotionBlurCamera(SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), framebuffer(PixelFormat::RGB, PixelType::UnsignedByte), currentFrame(0), canvas(frames) {
     for(Int i = 0; i != FrameCount; ++i) {
         (frames[i] = new Texture2D)
             ->setWrapping(Sampler::Wrapping::ClampToEdge)
@@ -54,9 +54,8 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
-    UnsignedByte* texture = new UnsignedByte[textureSize]();
-    framebuffer.setData(ColorFormat::RGB, ColorType::UnsignedByte, size, nullptr, BufferUsage::DynamicDraw);
-    delete texture;
+    Containers::Array<UnsignedByte> texture{Containers::ValueInit, textureSize};
+    framebuffer.setData(PixelFormat::RGB, PixelType::UnsignedByte, size, texture, BufferUsage::DynamicDraw);
 
     for(Int i = 0; i != FrameCount; ++i)
         frames[i]->setImage(0, TextureFormat::RGB8, framebuffer);

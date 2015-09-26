@@ -79,11 +79,10 @@ class TextExample: public Platform::Application {
         Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), _manager(MAGNUM_PLUGINS_FONT_DIR), _vertices(Buffer::TargetHint::Array), _indices(Buffer::TargetHint::ElementArray) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), _manager(MAGNUM_PLUGINS_FONT_DIR), _text{NoCreate}, _vertices(Buffer::TargetHint::Array), _indices(Buffer::TargetHint::ElementArray) {
     /* Load MagnumFont plugin */
-    if(!(_manager.load("MagnumFont") & PluginManager::LoadState::Loaded))
-        std::exit(1);
-    _font = _manager.instance("MagnumFont");
+    _font = _manager.loadAndInstantiate("MagnumFont");
+    if(!_font) std::exit(1);
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");

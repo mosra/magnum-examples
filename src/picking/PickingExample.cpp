@@ -26,12 +26,11 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Buffer.h>
-#include <Magnum/Color.h>
-#include <Magnum/ColorFormat.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Renderbuffer.h>
 #include <Magnum/RenderbufferFormat.h>
 #include <Magnum/Renderer.h>
@@ -39,6 +38,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Version.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -140,7 +140,7 @@ PhongIdShader::PhongIdShader() {
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader{shader}, _color{color}, _mesh{mesh} {}
+        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -243,22 +243,22 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     }
 
     /* Set up objects */
-    (*(_objects[0] = new PickableObject{1, _shader, Color3::fromHSV(25.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
-        .rotate(34.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[0] = new PickableObject{1, _shader, Color3::fromHSV(Deg{25.0f}, 0.9f, 0.9f), _cube, _scene, _drawables}))
+        .rotate(Deg{34.0f}, Vector3(1.0f).normalized())
         .translate({1.0f, 0.3f, -1.2f});
-    (*(_objects[1] = new PickableObject{2, _shader, Color3::fromHSV(54.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[1] = new PickableObject{2, _shader, Color3::fromHSV(Deg{54.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({-1.2f, -0.3f, -0.2f});
-    (*(_objects[2] = new PickableObject{3, _shader, Color3::fromHSV(105.0_degf, 0.9f, 0.9f), _plane, _scene, _drawables}))
-        .rotate(254.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[2] = new PickableObject{3, _shader, Color3::fromHSV(Deg{105.0f}, 0.9f, 0.9f), _plane, _scene, _drawables}))
+        .rotate(Deg{254.0f}, Vector3(1.0f).normalized())
         .scale(Vector3(0.45f))
         .translate({0.5f, 1.3f, 1.5f});
-    (*(_objects[3] = new PickableObject{4, _shader, Color3::fromHSV(162.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[3] = new PickableObject{4, _shader, Color3::fromHSV(Deg{162.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({-0.2f, -1.7f, -2.7f});
-    (*(_objects[4] = new PickableObject{5, _shader, Color3::fromHSV(210.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[4] = new PickableObject{5, _shader, Color3::fromHSV(Deg{210.0f}, 0.9f, 0.9f), _sphere, _scene, _drawables}))
         .translate({0.7f, 0.6f, 2.2f})
         .scale(Vector3(0.75f));
-    (*(_objects[5] = new PickableObject{6, _shader, Color3::fromHSV(280.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
-        .rotate(-92.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[5] = new PickableObject{6, _shader, Color3::fromHSV(Deg{280.0f}, 0.9f, 0.9f), _cube, _scene, _drawables}))
+        .rotate(Deg{-92.0f}, Vector3(1.0f).normalized())
         .scale(Vector3(0.25f))
         .translate({-0.5f, -0.3f, 1.8f});
 
@@ -267,7 +267,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _cameraObject->translate(Vector3::zAxis(8.0f));
     _camera = new SceneGraph::Camera3D{*_cameraObject};
     _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 4.0f/3.0f, 0.001f, 100.0f))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg{35.0f}, 4.0f/3.0f, 0.001f, 100.0f))
         .setViewport(defaultFramebuffer.viewport().size());
 }
 
@@ -315,10 +315,10 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     _framebuffer.mapForRead(Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
-        {ColorFormat::RedInteger, ColorType::UnsignedByte});
+        {PixelFormat::RedInteger, PixelType::UnsignedByte});
 
     /* Highlight object under mouse and deselect all other */
-    for(auto* o: _objects) o->setSelected(false);
+    for(auto it = _objects; it != _objects + ObjectCount; ++it) (*it)->setSelected(false);
     UnsignedByte id = data.data<UnsignedByte>()[0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);

@@ -137,7 +137,8 @@ plugin. If the plugin cannot be loaded, we exit immediately. You can read more
 about plugin directory locations and plugin loading in @ref plugins.
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip PluginManager::Manager
-@until manager.instance
+@until manager.loadAndInstantiate
+@until exit
 
 Now we need to load the texture. Similarly to shader sources, the texture is
 also stored as resource in the executable.
