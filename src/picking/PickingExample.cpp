@@ -135,7 +135,7 @@ PhongIdShader::PhongIdShader() {
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader{shader}, _color{color}, _mesh{mesh} {}
+        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
