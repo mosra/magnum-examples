@@ -92,6 +92,11 @@ examples, for example), modify the last entry in `debian/rules`.
 
 @section building-examples-ci Continuous Integration
 
+@subsection building-examples-ci-travis Travis
+
+In `package/ci/` there is `travis.yml` file with Linux GCC 4.7 and OSX Clang
+configuration. Online at https://travis-ci.org/mosra/magnum-examples.
+
 @subsection building-examples-ci-appveyor AppVeyor
 
 In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
