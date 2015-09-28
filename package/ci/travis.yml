@@ -3,10 +3,10 @@
 branches:
   only:
   - master
+  - compatibility
 
 os:
 - linux
-- osx
 
 addons:
   apt:
@@ -14,7 +14,6 @@ addons:
     - ubuntu-toolchain-r-test
     - kalakris-cmake
     packages:
-    - g++-4.7
     - cmake
     # Not yet (https://github.com/travis-ci/apt-package-whitelist/issues/1190)
     #- libbullet-dev
@@ -28,14 +27,13 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install bullet; fi
 
 # SDL (cached)
 - if [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # Corrade
-- git clone --depth 1 git://github.com/mosra/corrade.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/corrade.git
 - cd corrade
 - mkdir build
 - cd build
@@ -46,7 +44,7 @@ install:
 - cd ..
 
 # Magnum
-- git clone --depth 1 git://github.com/mosra/magnum.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum.git
 - cd magnum
 - mkdir build
 - cd build
@@ -59,7 +57,7 @@ install:
 # Magnum Integration (disable Bullet on Linux as there is no package yet)
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export WITH_BULLET=OFF; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export WITH_BULLET=ON; fi
-- git clone --depth 1 git://github.com/mosra/magnum-integration.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum-integration.git
 - cd magnum-integration
 - mkdir build
 - cd build
