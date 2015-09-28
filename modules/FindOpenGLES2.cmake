@@ -37,18 +37,16 @@
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
     find_library(OPENGLES2_LIBRARY NAMES
         GLESv2
+        libGLESv2 # ANGLE (CMake doesn't search for lib prefix on Windows)
         ppapi_gles2) # NaCl
     set(OPENGLES2_LIBRARY_NEEDED OPENGLES2_LIBRARY)
 endif()
 
 # Include dir
 find_path(OPENGLES2_INCLUDE_DIR
-    NAMES gl2.h
-    PATH_SUFFIXES GLES2
-)
+    NAMES GLES2/gl2.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("OpenGLES2" DEFAULT_MSG
     ${OPENGLES2_LIBRARY_NEEDED}
-    OPENGLES2_INCLUDE_DIR
-)
+    OPENGLES2_INCLUDE_DIR)
