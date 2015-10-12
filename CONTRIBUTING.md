@@ -40,6 +40,8 @@ Contact
 
 *   Website -- http://mosra.cz/blog/magnum.php
 *   GitHub -- https://github.com/mosra/magnum-examples
+*   Gitter -- https://gitter.im/mosra/magnum
+*   IRC -- join `#magnum-engine` channel on freenode
 *   Google Groups -- https://groups.google.com/forum/#!forum/magnum-engine
 *   Twitter -- https://twitter.com/czmosra
 *   E-mail -- mosra@centrum.cz
