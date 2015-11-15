@@ -50,7 +50,6 @@ add_executable(magnum-audio
 target_link_libraries(magnum-audio
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_AUDIO_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_DEBUGTOOLS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
