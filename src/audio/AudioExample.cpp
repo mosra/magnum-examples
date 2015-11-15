@@ -53,7 +53,6 @@
 #include <Magnum/SceneGraph/DualQuaternionTransformation.h>
 
 #include "configure.h"
-#include "Types.h"
 
 using namespace Magnum::SceneGraph;
 
