@@ -57,7 +57,7 @@ HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): S
 }
 
 void HmdCamera::createEyeRenderTexture() {
-    _textureSet =_hmd.createSwapTextureSet(TextureFormat::RGBA, _textureSize);
+    _textureSet =_hmd.createSwapTextureSet(TextureFormat::SRGB8Alpha8, _textureSize);
 
     /* create the framebuffer which will be used to render to the current texture
      * of the texture set later. */
