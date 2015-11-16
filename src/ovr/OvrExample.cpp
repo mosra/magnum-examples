@@ -120,9 +120,6 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    _hmd->configureTracking(OvrIntegration::HmdTrackingCapability::Orientation|
-                            OvrIntegration::HmdTrackingCapability::MagYawCorrection|
-                            OvrIntegration::HmdTrackingCapability::Position, {});
     _hmd->configureRendering();
 
     /* setup mirroring of oculus sdk compositor results to a texture which can

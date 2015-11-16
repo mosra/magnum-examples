@@ -65,12 +65,10 @@ void HmdCamera::createEyeRenderTexture() {
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
     /* setup depth attachment */
-    PixelType type = PixelType::UnsignedInt;
     TextureFormat format = TextureFormat::DepthComponent24;
 
     if(Magnum::Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
         format = TextureFormat::DepthComponent32F;
-        type = PixelType::Float;
     }
 
     _depth.reset(new Texture2D());
