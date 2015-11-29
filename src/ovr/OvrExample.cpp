@@ -127,7 +127,8 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer. */
-    _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::RGBA, resolution);
+    Renderer::enable(Renderer::Feature::FramebufferSRGB);
+    _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::SRGB8, resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
                       .mapForRead(Framebuffer::ColorAttachment(0));
