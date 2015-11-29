@@ -123,12 +123,12 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
         Error() << "Could not turn off VSync.";
 
     Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::enable(Renderer::Feature::FramebufferSRGB);
 
     _hmd->configureRendering();
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer. */
-    Renderer::enable(Renderer::Feature::FramebufferSRGB);
     _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::SRGB8, resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
