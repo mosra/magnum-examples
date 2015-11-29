@@ -112,7 +112,8 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     Configuration conf;
     conf.setTitle("Magnum OculusVR Example")
         .setSize(resolution)
-        .setSampleCount(16);
+        .setSampleCount(16)
+        .setSRGBCapable(true);
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
 
