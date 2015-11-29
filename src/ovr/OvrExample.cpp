@@ -91,12 +91,15 @@ class OvrExample: public Platform::Application {
         OvrIntegration::LayerEyeFov* _layer;
         OvrIntegration::PerformanceHudMode _curPerfHudMode;
         OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode;
+
+        bool _enableMirroring;
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
     _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
     _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
-    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off)
+    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off),
+    _enableMirroring(true)
 {
     /* connect to an HMD, or create a debug HMD with DK2 type in case none is
        connected */
@@ -212,20 +215,23 @@ void OvrExample::drawEvent() {
     /* let the libOVR sdk compositor do its magic! */
     _ovrContext.compositor().submitFrame(*_hmd.get());
 
-    /* blit mirror texture to defaultFramebuffer. */
-    const Vector2i size = _mirrorTexture->imageSize(0);
-    Framebuffer::blit(*_mirrorFramebuffer,
-                      defaultFramebuffer,
-                      {{0, size.y()}, {size.x(), 0}},
-                      {{}, size},
-                      FramebufferBlit::Color, FramebufferBlitFilter::Nearest);
+    if(_enableMirroring) {
+        /* blit mirror texture to defaultFramebuffer. */
+        const Vector2i size = _mirrorTexture->imageSize(0);
+        Framebuffer::blit(*_mirrorFramebuffer,
+                          defaultFramebuffer,
+                          {{0, size.y()}, {size.x(), 0}},
+                          {{}, size},
+                          FramebufferBlit::Color, FramebufferBlitFilter::Nearest);
+
+        swapBuffers();
+    }
 
     if(_hmd->isDebugHmd()) {
         /* provide some rotation, but only without real devices to avoid vr sickness ;) */
         _cameraObject.rotateY(Deg(0.1f));
     }
 
-    swapBuffers();
     redraw();
 }
 
@@ -269,6 +275,9 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
         }
 
         _hmd->setDebugHudStereoMode(_curDebugHudStereoMode);
+    } else if(event.key() == KeyEvent::Key::M) {
+        /* toggle mirroring */
+        _enableMirroring = !_enableMirroring;
     } else if(event.key() == KeyEvent::Key::Esc) {
         exit();
     }
