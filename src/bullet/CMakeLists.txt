@@ -36,7 +36,9 @@ find_package(Magnum REQUIRED
 find_package(MagnumIntegration REQUIRED Bullet)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+include_directories(${MAGNUM_INCLUDE_DIRS}
+    ${MAGNUMINTEGRATION_INCLUDE_DIRS}
+    ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 # Bullet headers produce a lot of warnings in C++11 mode
 include_directories(SYSTEM ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
 
