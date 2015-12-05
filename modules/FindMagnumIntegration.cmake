@@ -4,6 +4,8 @@
 #  find_package(MagnumIntegration [REQUIRED])
 # This command tries to find Magnum integration library and then defines:
 #  MAGNUMINTEGRATION_FOUND      - Whether the library was found
+#  MAGNUMINTEGRATION_INCLUDE_DIRS - Magnum integration include dir and include
+#   dirs of global dependencies
 # This command alone is useless without specifying the components:
 #  Bullet                       - Bullet Physics integration library
 #  Ovr                          - Oculus SDK integration library
@@ -13,6 +15,7 @@
 # For each component is then defined:
 #  MAGNUM_*INTEGRATION_FOUND    - Whether the component was found
 #  MAGNUM_*INTEGRATION_LIBRARIES - Component library and dependent libraries
+#  MAGNUM_*INTEGRATION_INCLUDE_DIRS - Include dirs of dependencies
 #
 # The package is found if either debug or release version of each requested
 # library is found. If both debug and release libraries are found, proper
@@ -21,6 +24,8 @@
 # libraries).
 #
 # Additionally these variables are defined for internal usage:
+#  MAGNUMINTEGRATION_INCLUDE_DIR - Magnum integration include dir (w/o
+#   dependencies)
 #  MAGNUM_*INTEGRATION_LIBRARY  - Component library (w/o dependencies)
 #  MAGNUM_*INTEGRATION_LIBRARY_DEBUG - Debug version of given library, if found
 #  MAGNUM_*INTEGRATION_LIBRARY_RELEASE - Release version of given library, if
@@ -86,6 +91,12 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
 endforeach()
 find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
 
+find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum
+    HINTS ${MAGNUM_INCLUDE_DIR})
+
+# Global integration include dir
+set(MAGNUMINTEGRATION_INCLUDE_DIRS ${MAGNUMINTEGRATION_INCLUDE_DIR})
+
 # Additional components
 foreach(component ${MagnumIntegration_FIND_COMPONENTS})
     string(TOUPPER ${component} _COMPONENT)
@@ -134,7 +145,7 @@ foreach(component ${MagnumIntegration_FIND_COMPONENTS})
     if(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES)
         find_path(_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_NAMES}
-            PATHS ${MAGNUM_INCLUDE_DIR}/Magnum/${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX})
+            HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_MAGNUM_${_COMPONENT}INTEGRATION_INCLUDE_PATH_SUFFIX})
     endif()
 
     # Add Magnum library dependency, if there is any
@@ -167,5 +178,7 @@ endforeach()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(MagnumIntegration
-    REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
+    REQUIRED_VARS MAGNUMINTEGRATION_INCLUDE_DIR
     HANDLE_COMPONENTS)
+
+mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
