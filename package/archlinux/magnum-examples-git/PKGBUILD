@@ -1,6 +1,6 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-examples-git
-pkgver=snapshot.2015.05.r64.gc7ff155
+pkgver=snapshot.2015.05.r126.g3d70af7
 pkgrel=1
 pkgdesc="Examples for Magnum OpenGL graphics engine (Git version)"
 arch=('i686' 'x86_64')
