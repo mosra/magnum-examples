@@ -42,26 +42,26 @@ By default only *Triangle* example is built. Some examples depend on plugins
 and integration libraries, see @ref building-plugins and @ref building-integration
 for more information.
 
--   `WITH_AUDIO` -- Build Audio example. Requires @ref Audio library and
-    @ref Audio::WavImporter "WavAudioImporter" plugin.
--   `WITH_BULLET` -- Build Bullet example. Requires @ref BulletIntegration
+-   `WITH_AUDIO_EXAMPLE` -- Build Audio example. Requires @ref Audio library
+    and @ref Audio::WavImporter "WavAudioImporter" plugin.
+-   `WITH_BULLET_EXAMPLE` -- Build Bullet example. Requires @ref BulletIntegration
     library.
--   `WITH_CUBEMAP` -- Build Cube Map example. Requires
+-   `WITH_CUBEMAP_EXAMPLE` -- Build Cube Map example. Requires
     @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL ES.
--   `WITH_MOTIONBLUR` -- Build Motion Blur example. Not available on OpenGL
-    ES.
--   `WITH_OVR` -- Build Oculus VR example. Requires @ref OvrIntegration
+-   `WITH_MOTIONBLUR_EXAMPLE` -- Build Motion Blur example. Not available on
+    OpenGL ES.
+-   `WITH_OVR_EXAMPLE` -- Build Oculus VR example. Requires @ref OvrIntegration
     library.
--   `WITH_PICKING` -- Build Object Picking example.
--   `WITH_PRIMITIVES` -- Build @ref examples-primitives "Primitives" example.
--   `WITH_TEXT` -- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
+-   `WITH_PICKING_EXAMPLE` -- Build Object Picking example.
+-   `WITH_PRIMITIVES_EXAMPLE` -- Build @ref examples-primitives "Primitives" example.
+-   `WITH_TEXT_EXAMPLE` -- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
     plugin.
--   `WITH_TEXTUREDTRIANGLE` -- Build @ref examples-textured-triangle "Textured Triangle"
+-   `WITH_TEXTUREDTRIANGLE_EXAMPLE` -- Build @ref examples-textured-triangle "Textured Triangle"
     example. Requires @ref Trade::JpegImporter "JpegImporter" plugin, not
     available in OpenGL ES.
--   `WITH_TRIANGLE` -- Build @ref examples-triangle "Triangle" example.
--   `WITH_VIEWER` -- Build @ref examples-viewer "Viewer" example. Requires
-    @ref Trade::ColladaImporter "ColladaImporter" plugin.
+-   `WITH_TRIANGLE_EXAMPLE` -- Build @ref examples-triangle "Triangle" example.
+-   `WITH_VIEWER_EXAMPLE` -- Build @ref examples-viewer "Viewer" example.
+    Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 
 @section building-examples-arch Building ArchLinux packages
 

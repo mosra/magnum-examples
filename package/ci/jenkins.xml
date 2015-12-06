@@ -105,16 +105,16 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH="${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}/lib;${JENKINS_HOME}/filesystem/${compiler}-${libraries}-${compatibility}-${gl}/lib" \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
-    -DWITH_AUDIO=ON \
-    -DWITH_BULLET=ON \
-    -DWITH_CUBEMAP=${desktop_flag} \
-    -DWITH_MOTIONBLUR=${desktop_flag} \
-    -DWITH_PICKING=ON \
-    -DWITH_PRIMITIVES=ON \
-    -DWITH_TEXT=${desktop_flag} \
-    -DWITH_TEXTUREDTRIANGLE=${desktop_flag} \
-    -DWITH_TRIANGLE=ON \
-    -DWITH_VIEWER=ON \
+    -DWITH_AUDIO_EXAMPLE=ON \
+    -DWITH_BULLET_EXAMPLE=ON \
+    -DWITH_CUBEMAP_EXAMPLE=${desktop_flag} \
+    -DWITH_MOTIONBLUR_EXAMPLE=${desktop_flag} \
+    -DWITH_PICKING_EXAMPLE=ON \
+    -DWITH_PRIMITIVES_EXAMPLE=ON \
+    -DWITH_TEXT_EXAMPLE=${desktop_flag} \
+    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=${desktop_flag} \
+    -DWITH_TRIANGLE_EXAMPLE=ON \
+    -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
 
 ninja
