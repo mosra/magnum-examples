@@ -26,6 +26,11 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(MagnumExamples)
 
+# CMake policies: enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Magnum REQUIRED)
 
