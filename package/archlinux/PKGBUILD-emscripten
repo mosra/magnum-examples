@@ -29,11 +29,11 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten \
-        -DWITH_PRIMITIVES=ON \
-        -DWITH_TEXT=ON \
-        -DWITH_TEXTUREDTRIANGLE=ON \
-        -DWITH_TRIANGLE=ON \
-        -DWITH_VIEWER=ON
+        -DWITH_PRIMITIVES_EXAMPLE=ON \
+        -DWITH_TEXT_EXAMPLE=ON \
+        -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+        -DWITH_TRIANGLE_EXAMPLE=ON \
+        -DWITH_VIEWER_EXAMPLE=ON
     make
 }
 
