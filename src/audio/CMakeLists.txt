@@ -29,10 +29,8 @@ project(MagnumAudioExample)
 
 find_package(Magnum REQUIRED
     Audio
-    MeshTools
-    Primitives
+    DebugTools
     SceneGraph
-    Shaders
     Sdl2Application)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
@@ -46,17 +44,14 @@ corrade_add_resource(AudioData resources.conf)
 
 add_executable(magnum-audio
     AudioExample.cpp
-    TexturedDrawable2D.cpp
 
     ${AudioData})
 
 target_link_libraries(magnum-audio
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_AUDIO_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
+    ${MAGNUM_DEBUGTOOLS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
 install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

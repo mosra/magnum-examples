@@ -3,10 +3,10 @@
 branches:
   only:
   - master
+  - compatibility
 
 os:
 - linux
-- osx
 
 addons:
   apt:
@@ -14,11 +14,18 @@ addons:
     - ubuntu-toolchain-r-test
     - kalakris-cmake
     packages:
-    - g++-4.7
     - cmake
     # Not yet (https://github.com/travis-ci/apt-package-whitelist/issues/1190)
     #- libbullet-dev
     - libopenal-dev
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/00ec7a9066bb0fec98f3
+    on_success: change
+    on_failure: always
+    on_start: never
 
 cache:
   directories:
@@ -28,29 +35,28 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install bullet; fi
 
 # SDL (cached)
 - if [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # Corrade
-- git clone --depth 1 git://github.com/mosra/corrade.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/corrade.git
 - cd corrade
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_MACOSX_RPATH=ON -DCMAKE_BUILD_TYPE=Release
+- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_BUILD_TYPE=Release
 - cmake --build .
 - cmake --build . --target install
 - cd ..
 - cd ..
 
 # Magnum
-- git clone --depth 1 git://github.com/mosra/magnum.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum.git
 - cd magnum
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_PREFIX_PATH=$HOME/sdl2 -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_MACOSX_RPATH=ON -DWITH_AUDIO=ON -DWITH_DEBUGTOOLS=ON -DWITH_PRIMITIVES=ON -DWITH_SCENEGRAPH=ON -DWITH_SHADERS=ON -DWITH_SHAPES=ON -DWITH_TEXT=ON -DWITH_TEXTURETOOLS=OFF -DWITH_SDL2APPLICATION=ON -DCMAKE_BUILD_TYPE=Release
+- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_PREFIX_PATH=$HOME/sdl2 -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DWITH_AUDIO=ON -DWITH_DEBUGTOOLS=ON -DWITH_PRIMITIVES=ON -DWITH_SCENEGRAPH=ON -DWITH_SHADERS=ON -DWITH_SHAPES=ON -DWITH_TEXT=ON -DWITH_TEXTURETOOLS=OFF -DWITH_SDL2APPLICATION=ON -DCMAKE_BUILD_TYPE=Release
 - cmake --build .
 - cmake --build . --target install
 - cd ..
@@ -59,11 +65,11 @@ install:
 # Magnum Integration (disable Bullet on Linux as there is no package yet)
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export WITH_BULLET=OFF; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export WITH_BULLET=ON; fi
-- git clone --depth 1 git://github.com/mosra/magnum-integration.git
+- git clone --branch compatibility --depth 1 git://github.com/mosra/magnum-integration.git
 - cd magnum-integration
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_MACOSX_RPATH=ON -DWITH_BULLET=$WITH_BULLET -DWITH_OVR=OFF -DCMAKE_BUILD_TYPE=Release
+- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DWITH_BULLET=$WITH_BULLET -DWITH_OVR=OFF -DCMAKE_BUILD_TYPE=Release
 - cmake --build .
 - cmake --build . --target install
 - cd ..
@@ -71,5 +77,5 @@ install:
 
 script:
 - mkdir build && cd build
-- cmake .. -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2" -DWITH_AUDIO=ON -DWITH_BULLET=$WITH_BULLET -DWITH_CUBEMAP=ON -DWITH_MOTIONBLUR=ON -DWITH_OVR=OFF -DWITH_PICKING=ON -DWITH_PRIMITIVES=ON -DWITH_TEXT=ON -DWITH_TEXTUREDTRIANGLE=ON -DWITH_TRIANGLE=ON -DWITH_VIEWER=ON -DCMAKE_BUILD_TYPE=Release
+- cmake .. -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2" -DWITH_AUDIO_EXAMPLE=ON -DWITH_BULLET_EXAMPLE=$WITH_BULLET -DWITH_CUBEMAP_EXAMPLE=ON -DWITH_MOTIONBLUR_EXAMPLE=ON -DWITH_OVR_EXAMPLE=OFF -DWITH_PICKING_EXAMPLE=ON -DWITH_PRIMITIVES_EXAMPLE=ON -DWITH_TEXT_EXAMPLE=ON -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON -DWITH_TRIANGLE_EXAMPLE=ON -DWITH_VIEWER_EXAMPLE=ON -DCMAKE_BUILD_TYPE=Release
 - cmake --build .

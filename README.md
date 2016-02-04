@@ -2,7 +2,7 @@ Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
 Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum.
 
-[![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=compatibility)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/compatibility?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/compatibility)
 
 INSTALLATION
 ============
@@ -41,6 +41,7 @@ idea? Feel free to visit my website or contact me at:
 
 *   Website -- http://mosra.cz/blog/magnum.php
 *   GitHub -- https://github.com/mosra/magnum-examples
+*   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
 *   Google Groups -- https://groups.google.com/forum/#!forum/magnum-engine
 *   Twitter -- https://twitter.com/czmosra

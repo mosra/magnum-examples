@@ -40,13 +40,22 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
 
         # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
         # support is provided in ES2 lib
-        GLESv2)
+        GLESv2
+
+        # ANGLE (CMake doesn't search for lib prefix on Windows)
+        libGLESv2
+
+        # iOS
+        OpenGLES)
     set(OPENGLES3_LIBRARY_NEEDED OPENGLES3_LIBRARY)
 endif()
 
 # Include dir
-find_path(OPENGLES3_INCLUDE_DIR
-    NAMES GLES3/gl3.h)
+find_path(OPENGLES3_INCLUDE_DIR NAMES
+    GLES3/gl3.h
+
+    # iOS
+    ES3/gl.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG

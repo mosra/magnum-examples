@@ -24,35 +24,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/PluginManager.h>
 
 #include <Magnum/Audio/AbstractImporter.h>
 #include <Magnum/Audio/Buffer.h>
 #include <Magnum/Audio/Context.h>
+#include <Magnum/Audio/Listener.h>
+#include <Magnum/Audio/Playable.h>
+#include <Magnum/Audio/PlayableGroup.h>
 #include <Magnum/Audio/Renderer.h>
 #include <Magnum/Audio/Source.h>
-#include <Magnum/Buffer.h>
+
+#include <Magnum/Shapes/Shape.h>
+#include <Magnum/Shapes/ShapeGroup.h>
+#include <Magnum/Shapes/Sphere.h>
+#include <Magnum/Shapes/Box.h>
+#include <Magnum/DebugTools/ResourceManager.h>
+#include <Magnum/DebugTools/ShapeRenderer.h>
+
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Math/Range.h>
-#include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
-#include <Magnum/Trade/AbstractImporter.h>
-#include <Magnum/Trade/ImageData.h>
+#include <Magnum/SceneGraph/DualQuaternionTransformation.h>
 
 #include "configure.h"
-#include "TexturedDrawable2D.h"
-#include "Types.h"
+
+using namespace Magnum::SceneGraph;
 
 namespace Magnum {namespace Examples {
+
+typedef Scene<DualQuaternionTransformation> Scene3D;
+typedef Object<DualQuaternionTransformation> Object3D;
 
 class AudioExample: public Platform::Application {
     public:
@@ -60,133 +67,65 @@ class AudioExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void updateSourceTranslation(const Vector2i& mousePos);
 
-        Buffer _vertexBuffer;
-        Mesh _mesh;
-        Shaders::Flat2D _shader;
+        void keyPressEvent(KeyEvent& event);
 
-        /* Scene objects */
-        Scene2D _scene;
-        SceneGraph::Camera2D _camera;
-        Object2D _sourceTopObject;
-        Object2D _sourceFrontObject;
-
-        /* Drawable groups, separated per viewport */
-        SceneGraph::DrawableGroup2D _drawablesFront;
-        SceneGraph::DrawableGroup2D _drawablesTop;
-
-        /* Drawables */
-        std::unique_ptr<TexturedDrawable2D> _listenerFront;
-        std::unique_ptr<TexturedDrawable2D> _listenerTop;
-        std::unique_ptr<TexturedDrawable2D> _sourceFront;
-        std::unique_ptr<TexturedDrawable2D> _sourceTop;
-
-        /* Textures */
-        Texture2D _textureListenerTop;
-        Texture2D _textureListenerFront;
-        Texture2D _textureSource;
-
-        /* Viewports ranges */
-        Range2Di _leftViewport;
-        Range2Di _rightViewport;
+        DebugTools::ResourceManager _manager;
 
         /* Audio related members */
         Audio::Context _context;
         Audio::Buffer _testBuffer;
         Audio::Source _source;
         Corrade::Containers::Array<char> _bufferData;
+
+        /* Scene objects */
+        Scene3D _scene;
+        Object3D _sourceRig;
+        Object3D _sourceObject;
+        Object3D _cameraObject;
+        SceneGraph::Camera3D _camera;
+        SceneGraph::DrawableGroup3D _drawables;
+
+        Audio::PlayableGroup3D _playables;
+        Audio::Playable3D _playable;
+        Audio::Listener3D _listener;
+
+        Shapes::ShapeGroup3D _shapes;
 };
 
 AudioExample::AudioExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Audio Example")},
-    _shader(Shaders::Flat2D::Flag::Textured),
-    _scene(),
-    _camera(_scene),
-    _sourceTopObject(&_scene),
-    _sourceFrontObject(&_scene),
-    _leftViewport(),
-    _rightViewport(),
-    _context(), /* Create the audio context. Without this, sound will not be initialized. */
-    _testBuffer(),
-    _source()
+    Platform::Application{arguments, nullptr},
+    /* Create the audio context. Without this, sound will not be initialized:
+       Needs to be done before Playables and Sources are initialized. */
+    _context(Audio::Context::Configuration().setHrtf(Audio::Context::Configuration::Hrtf::Enabled)),
+    _sourceRig(&_scene),
+    _sourceObject(&_sourceRig),
+    _cameraObject(&_scene),
+    _camera(_cameraObject),
+    _playable(_sourceObject, &_playables),
+    _listener(_scene)
 {
-    /* Create a 2D plane for rendering all the sprites. */
-    _vertexBuffer.setData(MeshTools::interleave(std::vector<Vector2>{
-                 {1.0f, -1.0f},
-                 {1.0f, 1.0f},
-                 {-1.0f, -1.0f},
-                 {-1.0f, 1.0f}
-             }, std::vector<Vector2>{
-                 {1.0f, 0.0f},
-                 {1.0f, 1.0f},
-                 {0.0f, 0.0f},
-                 {0.0f, 1.0f}
-             }), BufferUsage::StaticDraw);
+    /* Try 16x MSAA */
+    Configuration conf;
+    conf.setTitle("Magnum Audio Example")
+        .setSampleCount(16);
+    if(!tryCreateContext(conf))
+        createContext(conf.setSampleCount(0));
 
-    _mesh.setPrimitive(MeshPrimitive::TriangleStrip)
-        .setCount(4)
-        .addVertexBuffer(_vertexBuffer, 0, Shaders::Flat2D::Position{}, Shaders::Flat2D::TextureCoordinates{});
+    /* Setup the camera */
+    _camera.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+           .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(90.0f), 1.0f, 0.001f, 100.0f))
+           .setViewport(defaultFramebuffer.viewport().size());
 
-    /* Prepare viewports for top view (on the right) and front view (on the left) */
-    const Vector2i halfViewport = defaultFramebuffer.viewport().size()*Vector2::xScale(0.5f);
-
-    _leftViewport = Range2Di::fromSize({}, halfViewport);
-    _rightViewport = Range2Di::fromSize({halfViewport.x(), 0}, halfViewport);
-
-    /* Setup camera to scale down pixel measure to -1.0;1.0 on x and y according to aspect ratio for both viewports */
-    _camera.setProjectionMatrix(Matrix3::projection({1.0f, 1.0f/Vector2{halfViewport}.aspectRatio()}));
-
-    /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> imageManager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    /* Load WAV importer plugin */
     PluginManager::Manager<Audio::AbstractImporter> audioManager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR};
-
-    std::unique_ptr<Trade::AbstractImporter> importer = imageManager.loadAndInstantiate("TgaImporter");
-    if(!importer)
-        std::exit(1);
 
     std::unique_ptr<Audio::AbstractImporter> wavImporter = audioManager.loadAndInstantiate("WavAudioImporter");
     if(!wavImporter)
         std::exit(1);
 
-    /* Load the textures from compiled resources */
+    /* Load wav file  from compiled resources */
     const Utility::Resource rs{"audio-data"};
-    if(!importer->openData(rs.getRaw("source.tga")))
-        std::exit(2);
-
-    std::optional<Trade::ImageData2D> image = importer->image2D(0);
-    CORRADE_INTERNAL_ASSERT(image);
-    _textureSource.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RGBA8, image->size())
-        .setSubImage(0, {}, *image);
-
-    if(!importer->openData(rs.getRaw("listener_top.tga")))
-        std::exit(2);
-
-    image = importer->image2D(0);
-    CORRADE_INTERNAL_ASSERT(image);
-    _textureListenerTop.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RGBA8, image->size())
-        .setSubImage(0, {}, *image);
-
-    if(!importer->openData(rs.getRaw("listener_front.tga")))
-        std::exit(2);
-
-   image = importer->image2D(0);
-    CORRADE_INTERNAL_ASSERT(image);
-    _textureListenerFront.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RGBA8, image->size())
-        .setSubImage(0, {}, *image);
-
-    /* Load wav file */
     if(!wavImporter->openData(rs.getRaw("test.wav")))
         std::exit(2);
 
@@ -195,91 +134,74 @@ AudioExample::AudioExample(const Arguments& arguments):
     _testBuffer.setData(wavImporter->format(), _bufferData, wavImporter->frequency());
 
     /* Make our sound source play the buffer again and again... */
-    _source.setBuffer(&_testBuffer);
-    _source.setLooping(true);
+    _playable.source().setBuffer(&_testBuffer);
+    _playable.source().setLooping(true);
+    _playable.source().play();
 
-    _source.play();
+    /* Initial offset of the sound source */
+    _sourceObject.translate({0.0f, 0.0f, -5.0f});
 
-    /* Create and add drawables to scene */
-    _listenerFront.reset(new TexturedDrawable2D(_mesh, _shader, _textureListenerFront, _scene, _drawablesFront));
-    _listenerTop.reset(new TexturedDrawable2D(_mesh, _shader, _textureListenerTop, _scene, _drawablesTop));
-    _sourceFront.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceFrontObject, _drawablesFront));
-    _sourceTop.reset(new TexturedDrawable2D(_mesh, _shader, _textureSource, _sourceTopObject, _drawablesTop));
+    /* Camera placement */
+    _cameraObject.rotateX(-45.0_degf).rotateY(45.0_degf);
+    _cameraObject.translate({8.0f, 10.0f, 8.0f});
 
-    /* We do not need depth test, drawing order is fine. */
-    Renderer::disable(Renderer::Feature::DepthTest);
+    /* Setup simple shape rendering for listener and source */
+    _manager.set("pink", DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 1.0f}));
+    Shapes::Shape<Shapes::Sphere3D>* sphere = new Shapes::Shape<Shapes::Sphere3D>(_sourceObject, {{}, 0.5f}, &_shapes);
+    new DebugTools::ShapeRenderer3D(*sphere, ResourceKey("pink"), &_drawables);
 
-    /* Enable blending for alpha channel in textures. */
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
+    _manager.set("white", DebugTools::ShapeRendererOptions().setColor({1.0f, 1.0f, 1.0f}));
+    Shapes::Shape<Shapes::Box3D>* box = new Shapes::Shape<Shapes::Box3D>(_scene, {Matrix4{}}, &_shapes);
+    new DebugTools::ShapeRenderer3D(*box, ResourceKey("white"), &_drawables);
 
-    /* setup image scaling since the plane is currently larger than the screen. */
-    _sourceFront->scale({0.1f, 0.1f});
-    _sourceTop->scale({0.1f, 0.1f});
-    _listenerFront->scale({0.1f, 0.1f});
-    _listenerTop->scale({0.1f, 0.05f});
+    /* Enable depth testing for correct overlap of shapes */
+    Renderer::enable(Renderer::Feature::DepthTest);
 
-    /* initial positioning of sound source */
-    _sourceTopObject.translate({0.5f, 0.3f});
-    _sourceFrontObject.translate({0.5f, 0.3f});
+    /* Print hrft status information */
+    Debug() << "Hrtf status:" << _context.hrtfStatus();
+    Debug() << "Hrtf enabled:" << _context.isHrtfEnabled();
+    Debug() << "Hrtf specifier:" << _context.hrtfSpecifier();
 
-    /* set initial sound source position to match the visualization */
-    _source.setPosition(Vector3{5.0f, 3.0f, 3.0f});
-}
-
-void AudioExample::updateSourceTranslation(const Vector2i& mousePos) {
-    const Vector2 normalized = Vector2{mousePos}/Vector2{_leftViewport.size()} - Vector2{0.5f};
-    const Vector2 position = normalized*Vector2::yScale(-1.0f)*_camera.projectionSize();
-
-    Vector2 newTop = {position.x(), _sourceTopObject.transformation().translation().y()};
-    Vector2 newFront = {position.x(), _sourceFrontObject.transformation().translation().y()};
-
-    if (normalized.x() > 0.5f) {
-        /* clicked on the right viewport/"top view" */
-        newTop.y() = position.y();
-
-        newFront.x() -= 1.0f;
-        newTop.x() -= 1.0f;
-    } else {
-        /* clicked on the left viewport/"front view" */
-        newFront.y() = position.y();
-    }
-
-    _sourceTopObject.setTransformation(Matrix3::translation(newTop));
-    _sourceFrontObject.setTransformation(Matrix3::translation(newFront));
-
-    /* Update sound source position to new input */
-    _source.setPosition(Vector3{newTop.x()*10.0f, newFront.y()*10.0f, newTop.y()*10.0f});
+    /* Loop at 60 Hz max */
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16);
 }
 
 void AudioExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    defaultFramebuffer.clear(FramebufferClear::Color | FramebufferClear::Depth);
 
-    defaultFramebuffer.setViewport(_leftViewport);
-    _camera.draw(_drawablesFront);
+    _shapes.setClean();
 
-    defaultFramebuffer.setViewport(_rightViewport);
-    _camera.draw(_drawablesTop);
+    /* Update listener and sound source positions */
+    _listener.update({_playables});
+
+    _camera.draw(_drawables);
 
     swapBuffers();
-}
-
-void AudioExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left) return;
-
-    updateSourceTranslation(event.position());
-
-    event.setAccepted();
     redraw();
 }
 
-void AudioExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
-
-    updateSourceTranslation(event.position());
+void AudioExample::keyPressEvent(KeyEvent& event) {
+    if(event.key() == KeyEvent::Key::Down) {
+        _sourceRig.rotateXLocal(Deg(-5.0f));
+        _sourceRig.normalizeRotation();
+    } else if(event.key() == KeyEvent::Key::Up) {
+        _sourceRig.rotateXLocal(Deg(5.0f));
+        _sourceRig.normalizeRotation();
+    } else if(event.key() == KeyEvent::Key::Left) {
+        _sourceRig.rotateY(Deg(5.0f));
+        _sourceRig.normalizeRotation();
+    } else if(event.key() == KeyEvent::Key::Right) {
+        _sourceRig.rotateY(Deg(-5.0f));
+        _sourceRig.normalizeRotation();
+    } else if(event.key() == KeyEvent::Key::PageUp)
+        _sourceObject.translate({0.0f, 0.0f, -.25f});
+    else if(event.key() == KeyEvent::Key::PageDown && _sourceObject.transformation().translation().z() > 0.0f)
+        _sourceObject.translate({0.0f, 0.0f, .25f});
+    else if(event.key() == KeyEvent::Key::Esc)
+        this->exit();
 
     event.setAccepted();
-    redraw();
 }
 
 }}
