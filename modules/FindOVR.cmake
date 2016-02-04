@@ -12,8 +12,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
-#   Copyright © 2015
-#             Jonathan Hale <squareys@googlemail.com>
+#   Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -53,7 +52,7 @@ if(WIN32)
         # link against a specific version. This will cause problems with newer oculus runtimes,
         # though. (FIXME!)
         # The clean way to link against libOVR, which seems to require the Windows DDK
-        find_library(OVR_LIBRARY NAMES LibOVRRT32_0_7.dll HINTS "C:/Windows/SysWOW64")
+        find_library(OVR_LIBRARY NAMES LibOVRRT32_0_8.dll HINTS "C:/Windows/SysWOW64")
         #find_library(OVR_LIBRARY NAMES LibOVR HINTS ${LIBOVR_ROOT}/Lib/Windows/Win32/Release/VS2012)
     endif()
 endif()

@@ -81,16 +81,16 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/mingw-w64-${arch}-${libraries}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/mingw-w64-${arch}-${libraries}-${compatibility} \
     ${static_build_flag} \
-    -DWITH_AUDIO=ON \
-    -DWITH_BULLET=OFF \
-    -DWITH_CUBEMAP=ON \
-    -DWITH_MOTIONBLUR=ON \
-    -DWITH_PICKING=ON \
-    -DWITH_PRIMITIVES=ON \
-    -DWITH_TEXT=ON \
-    -DWITH_TEXTUREDTRIANGLE=ON \
-    -DWITH_TRIANGLE=ON \
-    -DWITH_VIEWER=ON \
+    -DWITH_AUDIO_EXAMPLE=ON \
+    -DWITH_BULLET_EXAMPLE=OFF \
+    -DWITH_CUBEMAP_EXAMPLE=ON \
+    -DWITH_MOTIONBLUR_EXAMPLE=ON \
+    -DWITH_PICKING_EXAMPLE=ON \
+    -DWITH_PRIMITIVES_EXAMPLE=ON \
+    -DWITH_TEXT_EXAMPLE=ON \
+    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+    -DWITH_TRIANGLE_EXAMPLE=ON \
+    -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
 
 ninja

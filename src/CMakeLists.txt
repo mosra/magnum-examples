@@ -28,46 +28,46 @@ if(MSVC)
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 endif()
 
-if(WITH_AUDIO)
+if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
 
-if(WITH_BULLET)
+if(WITH_BULLET_EXAMPLE)
     add_subdirectory(bullet)
 endif()
 
-if(WITH_CUBEMAP)
+if(WITH_CUBEMAP_EXAMPLE)
     add_subdirectory(cubemap)
 endif()
 
-if(WITH_MOTIONBLUR)
+if(WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()
 
-if(WITH_OVR)
+if(WITH_OVR_EXAMPLE)
     add_subdirectory(ovr)
 endif()
 
-if(WITH_PICKING)
+if(WITH_PICKING_EXAMPLE)
     add_subdirectory(picking)
 endif()
 
-if(WITH_PRIMITIVES)
+if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
 
-if(WITH_TEXT)
+if(WITH_TEXT_EXAMPLE)
     add_subdirectory(text)
 endif()
 
-if(WITH_TEXTUREDTRIANGLE)
+if(WITH_TEXTUREDTRIANGLE_EXAMPLE)
     add_subdirectory(textured-triangle)
 endif()
 
-if(WITH_TRIANGLE)
+if(WITH_TRIANGLE_EXAMPLE)
     add_subdirectory(triangle)
 endif()
 
-if(WITH_VIEWER)
+if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()
