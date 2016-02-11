@@ -62,12 +62,16 @@ class CubeMapExample: public Platform::Application {
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
 
         CubeMapResourceManager _resourceManager;
         Scene3D _scene;
         SceneGraph::DrawableGroup3D _drawables;
         Object3D* _cameraObject;
         SceneGraph::Camera3D* _camera;
+
+        Vector2i _previousMousePosition;
 };
 
 CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example").setWindowFlags(Configuration::WindowFlag::Resizable
@@ -140,6 +144,36 @@ void CubeMapExample::keyPressEvent(KeyEvent& event) {
 
     } else return;
 
+    redraw();
+}
+
+void CubeMapExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
+    if(event.button() != MouseEvent::Button::Left) return;
+    #endif
+
+    _previousMousePosition = event.position();
+    event.setAccepted();
+}
+
+void CubeMapExample::mouseMoveEvent(MouseMoveEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
+    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    #endif
+
+    const Vector2 delta = 3.0f*
+        Vector2{event.position() - _previousMousePosition}/
+        Vector2{defaultFramebuffer.viewport().size()};
+
+    (*_cameraObject).rotate(Rad{delta.y()}, _cameraObject->transformation().right().normalized());
+
+    Float translationY = _cameraObject->transformation().translation().y();
+    _cameraObject->translate(Vector3::yAxis(-translationY))
+        .rotateY(Rad{delta.x()})
+        .translate(Vector3::yAxis(translationY));
+
+    _previousMousePosition = event.position();
+    event.setAccepted();
     redraw();
 }
 
