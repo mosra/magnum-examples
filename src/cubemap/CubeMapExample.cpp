@@ -44,6 +44,14 @@
 #include "Types.h"
 #include "configure.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(StbImageImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
+
 namespace Magnum { namespace Examples {
 
 class CubeMapExample: public Platform::Application {
@@ -62,7 +70,12 @@ class CubeMapExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
 };
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
+CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example").setWindowFlags(Configuration::WindowFlag::Resizable
+    #ifdef CORRADE_TARGET_IOS
+    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    #endif
+    ))
+{
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
@@ -76,7 +89,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("StbImageImporter");
     if(!importer) std::exit(1);
 
     _resourceManager.set<Trade::AbstractImporter>("jpeg-importer",

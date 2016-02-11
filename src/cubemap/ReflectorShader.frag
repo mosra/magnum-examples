@@ -23,15 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-uniform vec3 diffuseColor;
-uniform samplerCube textureData;
-uniform sampler2D tarnishTextureData;
+uniform lowp vec3 diffuseColor;
+uniform lowp samplerCube textureData;
+uniform lowp sampler2D tarnishTextureData;
 
-in vec3 cubeMapTextureCoords;
-in vec2 tarnishTextureCoords;
-in float factor;
+in mediump vec3 cubeMapTextureCoords;
+in mediump vec2 tarnishTextureCoords;
+in lowp float factor;
 
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 
 void main(void) {
     /* Combine diffuse color and reflection based on refection factor,

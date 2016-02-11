@@ -23,30 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-uniform mat4 transformationMatrix;
-uniform mat3 normalMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 cameraMatrix;
-uniform float reflectivity;
+uniform mediump mat4 transformationMatrix;
+uniform mediump mat3 normalMatrix;
+uniform mediump mat4 projectionMatrix;
+uniform mediump mat3 cameraMatrix;
+uniform lowp float reflectivity;
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec2 textureCoords;
+layout(location = 0) in mediump vec4 position;
+layout(location = 1) in mediump vec2 textureCoords;
 
-out float factor;
-out vec3 cubeMapTextureCoords;
-out vec2 tarnishTextureCoords;
+out lowp float factor;
+out mediump vec3 cubeMapTextureCoords;
+out mediump vec2 tarnishTextureCoords;
 
 void main(void) {
-    vec4 transformedVertex = transformationMatrix*position;
-    vec3 transformedNormal = normalize(normalMatrix*position.xyz);
+    mediump vec4 transformedVertex = transformationMatrix*position;
+    mediump vec3 transformedNormal = normalize(normalMatrix*position.xyz);
 
     /* Reflection vector */
-    vec3 reflection = reflect(normalize(transformedVertex.xyz), transformedNormal);
+    mediump vec3 reflection = reflect(normalize(transformedVertex.xyz), transformedNormal);
     cubeMapTextureCoords = cameraMatrix*reflection;
 
     /* Factor of reflectivity - normals perpendicular to viewer are not reflective */
-    factor = pow(1 - max(0.0, dot(transformedNormal,
-        cameraMatrix*normalMatrix*vec3(0, 0, 1))),
+    factor = pow(1.0 - max(0.0, dot(transformedNormal,
+        cameraMatrix*normalMatrix*vec3(0.0, 0.0, 1.0))),
         reflectivity);
 
     tarnishTextureCoords = textureCoords;

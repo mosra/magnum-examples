@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-uniform mat4 transformationProjectionMatrix;
+uniform highp mat4 transformationProjectionMatrix;
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in highp vec4 position;
 
-out vec3 textureCoords;
+out mediump vec3 textureCoords;
 
 void main(void) {
     textureCoords = position.xyz;

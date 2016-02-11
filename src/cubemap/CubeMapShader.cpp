@@ -39,8 +39,20 @@ namespace {
 CubeMapShader::CubeMapShader() {
     Utility::Resource rs("data");
 
-    Shader vert(Version::GL330, Shader::Type::Vertex);
-    Shader frag(Version::GL330, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL330,
+        #else
+        Version::GLES300,
+        #endif
+        Shader::Type::Vertex);
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL330,
+        #else
+        Version::GLES300,
+        #endif
+        Shader::Type::Fragment);
 
     vert.addSource(rs.get("CubeMapShader.vert"));
     frag.addSource(rs.get("CubeMapShader.frag"));

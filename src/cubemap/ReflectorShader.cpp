@@ -43,8 +43,20 @@ namespace {
 ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
 
-    Shader vert(Version::GL330, Shader::Type::Vertex);
-    Shader frag(Version::GL330, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL330,
+        #else
+        Version::GLES300,
+        #endif
+        Shader::Type::Vertex);
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL330,
+        #else
+        Version::GLES300,
+        #endif
+        Shader::Type::Fragment);
 
     vert.addSource(rs.get("ReflectorShader.vert"));
     frag.addSource(rs.get("ReflectorShader.frag"));

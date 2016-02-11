@@ -32,29 +32,49 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
+if(CORRADE_TARGET_IOS)
+    find_package(MagnumPlugins REQUIRED StbImageImporter)
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(CubeMapData resources.conf)
+corrade_add_resource(CubeMap_RESOURCES resources.conf)
 
-add_executable(magnum-cubemap
+set(CubeMap_SRCS
     CubeMap.cpp
     CubeMapExample.cpp
     CubeMapShader.cpp
     Reflector.cpp
     ReflectorShader.cpp
-    Types.cpp
-
+    Types.cpp)
+set(CubeMap_HEADERS
     CubeMap.h
     CubeMapShader.h
     Reflector.h
     ReflectorShader.h
-    Types.h
+    Types.h)
 
-    ${CubeMapData})
+if(CORRADE_TARGET_IOS)
+    set(CubeMap_BUNDLE
+        +x.jpg
+        +y.jpg
+        +z.jpg
+        -x.jpg
+        -y.jpg
+        -z.jpg)
+    set_source_files_properties(${CubeMap_BUNDLE} PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources)
+    list(APPEND CubeMap_SRCS ${CubeMap_BUNDLE})
+endif()
+
+add_executable(magnum-cubemap
+    ${CubeMap_SRCS}
+    ${CubeMap_HEADERS}
+    ${CubeMap_RESOURCES})
 target_link_libraries(magnum-cubemap
     ${MAGNUM_LIBRARIES}
     ${MAGNUM_PRIMITIVES_LIBRARIES}
@@ -62,6 +82,18 @@ target_link_libraries(magnum-cubemap
     ${MAGNUM_SCENEGRAPH_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
-install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-cubemap.md)
-install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/cubemap)
+# iOS-specific
+if(CORRADE_TARGET_IOS)
+    target_link_libraries(magnum-cubemap ${MAGNUMPLUGINS_STBIMAGEIMPORTER_LIBRARIES})
+    set_target_properties(magnum-cubemap PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+endif()
+
+# Installation for desktop
+if(NOT CORRADE_TARGET_IOS)
+    install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-cubemap.md)
+    install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/cubemap)
+endif()

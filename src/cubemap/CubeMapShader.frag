@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-uniform samplerCube textureData;
+uniform lowp samplerCube textureData;
 
-in vec3 textureCoords;
+in mediump vec3 textureCoords;
 
-out vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 
 void main(void) {
     fragmentColor = texture(textureData, textureCoords);
