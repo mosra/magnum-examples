@@ -43,6 +43,7 @@ class TriangleExample: public Platform::Application {
         explicit TriangleExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
 
         Buffer _buffer;
@@ -50,7 +51,12 @@ class TriangleExample: public Platform::Application {
         Shaders::VertexColor3D _shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")} {
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setWindowFlags(Configuration::WindowFlag::Resizable
+    #ifdef CORRADE_TARGET_IOS
+    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    #endif
+    )}
+{
     constexpr static Vector3 data[] = {
         {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
         { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
@@ -61,6 +67,10 @@ TriangleExample::TriangleExample(const Arguments& arguments): Platform::Applicat
     _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
         .addVertexBuffer(_buffer, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{});
+}
+
+void TriangleExample::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TriangleExample::drawEvent() {
