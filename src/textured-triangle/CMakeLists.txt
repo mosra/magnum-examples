@@ -28,7 +28,7 @@ project(MagnumTexturedTriangleExample)
 
 find_package(Magnum REQUIRED Shaders)
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     find_package(Magnum REQUIRED TgaImporter)
 endif()
 
@@ -64,7 +64,15 @@ target_link_libraries(magnum-textured-triangle
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+# iOS-specifics
+if(CORRADE_TARGET_IOS)
+    set_target_properties(magnum-textured-triangle PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+endif()
+
+if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     target_link_libraries(magnum-textured-triangle ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 
@@ -83,7 +91,7 @@ elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
 
 # Installation for desktop
-else()
+elseif(NOT CORRADE_TARGET_IOS)
     install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
     install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-textured-triangle.md)
 endif()

@@ -58,6 +58,7 @@ class TexturedTriangleExample: public Platform::Application {
         explicit TexturedTriangleExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
 
         Buffer _buffer;
@@ -66,7 +67,12 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")}, _shader{Shaders::Flat2D::Flag::Textured} {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example").setWindowFlags(Configuration::WindowFlag::Resizable
+    #ifdef CORRADE_TARGET_IOS
+    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    #endif
+    )}, _shader{Shaders::Flat2D::Flag::Textured}
+{
     static const Vector2 data[] = {
         {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
         { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
@@ -100,6 +106,10 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
         .setStorage(1, TextureFormat::RGB, image->size())
         #endif
         .setSubImage(0, {}, *image);
+}
+
+void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
 }
 
 void TexturedTriangleExample::drawEvent() {
