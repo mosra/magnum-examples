@@ -47,6 +47,7 @@ class PrimitivesExample: public Platform::Application {
 
     private:
         void drawEvent() override;
+        void viewportEvent(const Vector2i& size) override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
@@ -60,7 +61,11 @@ class PrimitivesExample: public Platform::Application {
         Color3 _color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")}, _indexBuffer{Buffer::TargetHint::ElementArray} {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example").setWindowFlags(Configuration::WindowFlag::Resizable
+    #ifdef CORRADE_TARGET_IOS
+    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    #endif
+)}, _indexBuffer{Buffer::TargetHint::ElementArray} {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
@@ -100,6 +105,13 @@ void PrimitivesExample::drawEvent() {
     _mesh.draw(_shader);
 
     swapBuffers();
+}
+
+void PrimitivesExample::viewportEvent(const Vector2i& size) {
+    defaultFramebuffer.setViewport({{}, size});
+
+    _projection = Matrix4::perspectiveProjection(Deg{35.0f}, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
+                  Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
 void PrimitivesExample::mousePressEvent(MouseEvent& event) {

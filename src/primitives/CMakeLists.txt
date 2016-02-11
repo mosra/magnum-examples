@@ -56,6 +56,14 @@ target_link_libraries(magnum-primitives
     ${MAGNUM_SHADERS_LIBRARIES}
     ${MAGNUM_APPLICATION_LIBRARIES})
 
+# iOS-specific
+if(CORRADE_TARGET_IOS)
+    set_target_properties(magnum-primitives PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+endif()
+
 # Installation for NaCl
 if(CORRADE_TARGET_NACL)
     if(NOT CORRADE_TARGET_NACL_NEWLIB)
@@ -71,7 +79,7 @@ elseif(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
 
 # Installation for desktop
-else()
+elseif(NOT CORRADE_TARGET_IOS)
     install(TARGETS magnum-primitives DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
     install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-primitives.md)
 endif()
