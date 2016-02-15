@@ -95,9 +95,10 @@ examples, for example), modify the last entry in `debian/rules`.
 @subsection building-examples-brew Homebrew formulas
 
 OS X Homebrew formulas are in `package/homebrew` directory. Download the `*.rb`
-file and install it using the following command:
+file, put it into your Formulas directory and install it using the following
+command:
 
-    brew install --HEAD magnum-examples.rb
+    brew install --HEAD magnum-examples
 
 @section building-examples-ci Continuous Integration
 
