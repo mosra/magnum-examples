@@ -117,7 +117,7 @@ void TextExample::drawEvent() {
 
     _shader.setTransformationProjectionMatrix(_projection*
         Matrix3::translation(1.0f/ _projection.rotationScaling().diagonal()))
-        .setColor(Color4(1.0f, 0.0f))
+        .setColor(Color3{1.0f})
         .setOutlineRange(0.5f, 1.0f)
         .setSmoothness(0.075f);
     _text2->mesh().draw(_shader);
