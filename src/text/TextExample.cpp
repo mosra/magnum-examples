@@ -89,7 +89,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
     _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
 
     Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
+    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
     Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
 
     _transformation = Matrix3::rotation(Deg(-10.0f));
