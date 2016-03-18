@@ -30,14 +30,13 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-triangle TriangleExample.cpp)
 target_link_libraries(magnum-triangle
-    ${MAGNUM_APPLICATION_LIBRARIES}
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES})
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::Shaders)
 
 install(TARGETS magnum-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-triangle.md)

@@ -32,24 +32,19 @@ find_package(Magnum REQUIRED
     SceneGraph
     Shapes
     Sdl2Application)
+find_package(MagnumIntegration REQUIRED
+    Bullet)
 
-find_package(MagnumIntegration REQUIRED Bullet)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS}
-    ${MAGNUMINTEGRATION_INCLUDE_DIRS}
-    ${MAGNUM_APPLICATION_INCLUDE_DIRS})
-# Bullet headers produce a lot of warnings in C++11 mode
-include_directories(SYSTEM ${MAGNUM_BULLETINTEGRATION_INCLUDE_DIRS})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-bullet BulletExample.cpp)
 target_link_libraries(magnum-bullet
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_BULLETINTEGRATION_LIBRARIES}
-    ${MAGNUM_DEBUGTOOLS_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_SHAPES_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Application
+    Magnum::DebugTools
+    Magnum::Magnum
+    Magnum::SceneGraph
+    Magnum::Shapes
+    MagnumIntegration::Bullet)
 
 install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-bullet.md)

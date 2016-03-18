@@ -32,13 +32,12 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(CubeMapData resources.conf)
+corrade_add_resource(CubeMap_RESOURCES resources.conf)
 
 add_executable(magnum-cubemap
     CubeMap.cpp
@@ -54,13 +53,14 @@ add_executable(magnum-cubemap
     ReflectorShader.h
     Types.h
 
-    ${CubeMapData})
+    ${CubeMap_RESOURCES})
+target_include_directories(magnum-cubemap PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-cubemap
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::SceneGraph)
 
 install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-cubemap.md)

@@ -31,20 +31,22 @@ find_package(Magnum REQUIRED
     Text
     Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
-add_executable(magnum-text TextExample.cpp ${TextExample_RESOURCES})
+add_executable(magnum-text
+    TextExample.cpp
+    ${TextExample_RESOURCES})
+target_include_directories(magnum-text PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-text
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_TEXT_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::Shaders
+    Magnum::Text)
 
 install(TARGETS magnum-text DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-text.md)

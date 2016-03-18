@@ -32,16 +32,15 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-primitives PrimitivesExample.cpp)
 target_link_libraries(magnum-primitives
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders)
 
 install(TARGETS magnum-primitives DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-primitives.md)

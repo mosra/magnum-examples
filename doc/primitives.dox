@@ -128,7 +128,7 @@ Compilation is pretty straigtforward. We now need some additional libraries,
 like `MeshTools` and `Primitives`, everything else is the same as previously:
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
-@until ${MAGNUM_APPLICATION_LIBRARIES})
+@until Magnum::Shaders)
 
 -   @ref primitives/PrimitivesExample.cpp
 -   @ref primitives/CMakeLists.txt

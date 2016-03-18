@@ -192,13 +192,11 @@ compilation process is explained thoroughly in Corrade's
 
 -   @ref textured-triangle/resources.conf
 
-In the `CMakeLists.txt` file first we find required Magnum package and use its
-include dir. We also need to include current binary dir, because it will
-contain our generated `configure.h`.
+In the `CMakeLists.txt` file first we find required Magnum package.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip find_package
-@until include_directories
+@until set_directory_properties
 
 We then process the configuration file with CMake:
 
@@ -208,12 +206,13 @@ We then process the configuration file with CMake:
 
 Now we compile the resources into the executable using
 @ref corrade-cmake-add-resource "corrade_add_resource()" macro, then we create
-executable from the result and other source files. Last step is linking, the
-same as previously.
+executable from the result and other source files. We also need to include
+current binary dir, because it will contain our generated `configure.h`. Last
+step is linking, the same as previously.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
-@until ${MAGNUM_APPLICATION_LIBRARIES})
+@until Magnum::Magnum)
 
 -   @ref textured-triangle/CMakeLists.txt
 

@@ -33,26 +33,23 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS} ${MAGNUM_AUDIO_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_resource(AudioData resources.conf)
+corrade_add_resource(AudioExample_RESOURCES resources.conf)
 
 add_executable(magnum-audio
     AudioExample.cpp
-
-    ${AudioData})
-
+    ${AudioExample_RESOURCES})
+target_include_directories(magnum-audio PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-audio
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_AUDIO_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_DEBUGTOOLS_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Application
+    Magnum::Audio
+    Magnum::DebugTools
+    Magnum::Magnum
+    Magnum::SceneGraph)
 
 install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)
