@@ -1,9 +1,15 @@
-# - Find OVR
+#.rst:
+# Find OVR
+# --------
 #
-# This module defines:
+# Finds the OVR library. This module defines:
 #
 #  OVR_FOUND                - True if OVR library is found
-#  OVR_LIBRARY              - OVR dynamic library
+#  OVR::OVR                 - OVR imported target
+#
+# Additionally these variables are defined for internal usage:
+#
+#  OVR_LIBRARY              - OVR library
 #  OVR_INCLUDE_DIR          - Include dir
 #
 
@@ -58,4 +64,17 @@ if(WIN32)
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(OVR OVR_LIBRARY OVR_INCLUDE_DIR)
+find_package_handle_standard_args(OVR DEFAULT_MSG
+    OVR_LIBRARY
+    OVR_INCLUDE_DIR)
+
+mark_as_advanced(FORCE
+    OVR_LIBRARY
+    OVR_INCLUDE_DIR)
+
+if(NOT TARGET OVR::OVR)
+    add_library(OVR::OVR UNKNOWN IMPORTED)
+    set_target_properties(OVR::OVR PROPERTIES
+        IMPORTED_LOCATION ${OVR_LIBRARY}
+        INTERFACE_INCLUDE_DIRECTORIES ${OVR_INCLUDE_DIR})
+endif()
