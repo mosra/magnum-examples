@@ -20,7 +20,7 @@ Minimal dependencies
     On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
     support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
-*   **CMake** >= 2.8.9
+*   **CMake** >= 2.8.12
 *   **Corrade**, **Magnum** -- The engine itself
 
 Compilation, installation
