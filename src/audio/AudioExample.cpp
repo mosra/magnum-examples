@@ -196,7 +196,7 @@ void AudioExample::keyPressEvent(KeyEvent& event) {
         _sourceRig.normalizeRotation();
     } else if(event.key() == KeyEvent::Key::PageUp)
         _sourceObject.translate({0.0f, 0.0f, -.25f});
-    else if(event.key() == KeyEvent::Key::PageDown && _sourceObject.transformation().translation().z() > 0.0f)
+    else if(event.key() == KeyEvent::Key::PageDown && _sourceObject.transformation().translation().z() < 0.0f)
         _sourceObject.translate({0.0f, 0.0f, .25f});
     else if(event.key() == KeyEvent::Key::Esc)
         this->exit();
