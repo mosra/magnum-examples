@@ -98,6 +98,13 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
 
     # (no inter-component dependencies yet)
 
+    # Mark the dependencies as required if the component is also required
+    if(MagnumIntegration_FIND_REQUIRED_${_component})
+        foreach(_dependency ${_MAGNUMINTEGRATION_${_COMPONENT}_DEPENDENCIES})
+            set(MagnumIntegration_FIND_REQUIRED_${_dependency} TRUE)
+        endforeach()
+    endif()
+
     list(APPEND _MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS ${_MAGNUMINTEGRATION_${_COMPONENT}_DEPENDENCIES})
 endforeach()
 
