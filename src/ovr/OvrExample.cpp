@@ -129,7 +129,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer. */
-    _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::SRGB8, resolution);
+    _mirrorTexture = &_hmd->createMirrorTexture(resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
                       .mapForRead(Framebuffer::ColorAttachment(0));
@@ -245,12 +245,15 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::LatencyTiming;
                 break;
             case OvrIntegration::PerformanceHudMode::LatencyTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::RenderTiming;
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::AppRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::RenderTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfHeadroom;
+            case OvrIntegration::PerformanceHudMode::AppRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::CompRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::PerfHeadroom:
+            case OvrIntegration::PerformanceHudMode::CompRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfSummary;
+                break;
+            case OvrIntegration::PerformanceHudMode::PerfSummary:
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::VersionInfo;
                 break;
             case OvrIntegration::PerformanceHudMode::VersionInfo:
