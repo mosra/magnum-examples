@@ -51,8 +51,8 @@ class HmdCamera: public SceneGraph::Camera3D {
         /**
          * @return Reference to the texture set used for rendering.
          */
-        OvrIntegration::SwapTextureSet& textureSet() const {
-            return *_textureSet;
+        OvrIntegration::TextureSwapChain& textureSet() const {
+            return *_textureSwapChain;
         }
 
     private:
@@ -62,7 +62,7 @@ class HmdCamera: public SceneGraph::Camera3D {
         std::unique_ptr<Texture2D> _depth;
 
         OvrIntegration::Hmd& _hmd;
-        std::unique_ptr<OvrIntegration::SwapTextureSet> _textureSet;
+        std::unique_ptr<OvrIntegration::TextureSwapChain> _textureSwapChain;
 
         Vector2i _textureSize;
         std::unique_ptr<Framebuffer> _framebuffer;

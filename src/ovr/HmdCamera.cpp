@@ -57,7 +57,7 @@ HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): S
 }
 
 void HmdCamera::createEyeRenderTexture() {
-    _textureSet =_hmd.createSwapTextureSet(TextureFormat::SRGB8Alpha8, _textureSize);
+    _textureSwapChain =_hmd.createTextureSwapChain(_textureSize);
 
     /* create the framebuffer which will be used to render to the current texture
      * of the texture set later. */
@@ -67,7 +67,7 @@ void HmdCamera::createEyeRenderTexture() {
     /* setup depth attachment */
     TextureFormat format = TextureFormat::DepthComponent24;
 
-    if(Magnum::Context::current()->isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
+    if(Magnum::Context::current().isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
         format = TextureFormat::DepthComponent32F;
     }
 
@@ -79,13 +79,10 @@ void HmdCamera::createEyeRenderTexture() {
 }
 
 void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {
-    /* increment to use next texture */
-    _textureSet->increment();
-
     /* switch to eye render target and bind render textures */
     _framebuffer->bind();
 
-    _framebuffer->attachTexture(Framebuffer::ColorAttachment(0), _textureSet->activeTexture(), 0)
+    _framebuffer->attachTexture(Framebuffer::ColorAttachment(0), _textureSwapChain->activeTexture(), 0)
                 .attachTexture(Framebuffer::BufferAttachment::Depth, *_depth, 0)
     /* clear with the standard grey so that at least that will be visible in case the scene is not
      * correctly set up. */
@@ -93,6 +90,9 @@ void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {
 
     /* render scene */
     SceneGraph::Camera3D::draw(group);
+
+    /* commit changes and use next texture in chain */
+    _textureSwapChain->commit();
 
     /* Reasoning for the next two lines, taken from the Oculus SDK examples code:
      * Without this, [during the next frame, this method] would bind a framebuffer with an
