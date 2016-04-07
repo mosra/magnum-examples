@@ -36,6 +36,12 @@
 
 namespace Magnum { namespace Examples {
 
+/**
+ * @brief Hmd camera
+ *
+ * Camera which renders a scene to a @ref OvrIntegration::TextureSwapChain.
+ * Handles framebuffer creation and activation.
+ */
 class HmdCamera: public SceneGraph::Camera3D {
     public:
         /**
