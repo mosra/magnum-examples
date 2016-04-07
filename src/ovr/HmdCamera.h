@@ -40,11 +40,11 @@ class HmdCamera: public SceneGraph::Camera3D {
     public:
         /**
          * @brief Constructor.
-         * @param hmd Hmd which this camera belongs to.
+         * @param session Oculus session for the HMD to create this camera for
          * @param eye Eye index associated with this camera. (0 for left, 1 for right eye)
          * @param object Object holding this feature.
          */
-        explicit HmdCamera(OvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
+        explicit HmdCamera(OvrIntegration::Session& session, const int eye, SceneGraph::AbstractObject3D& object);
 
         void draw(SceneGraph::DrawableGroup3D& group) override;
 
@@ -61,7 +61,7 @@ class HmdCamera: public SceneGraph::Camera3D {
 
         std::unique_ptr<Texture2D> _depth;
 
-        OvrIntegration::Hmd& _hmd;
+        OvrIntegration::Session& _session;
         std::unique_ptr<OvrIntegration::TextureSwapChain> _textureSwapChain;
 
         Vector2i _textureSize;
