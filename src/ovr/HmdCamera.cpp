@@ -38,14 +38,14 @@
 #include <Magnum/Image.h>
 #include <Magnum/DefaultFramebuffer.h>
 
-#include <Magnum/OvrIntegration/Hmd.h>
+#include <Magnum/OvrIntegration/Session.h>
 
 namespace Magnum { namespace Examples {
 
 using namespace OvrIntegration;
 
-HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), _hmd(hmd) {
-    _textureSize = _hmd.fovTextureSize(eye);
+HmdCamera::HmdCamera(Session& session, int eye, SceneGraph::AbstractObject3D& object): SceneGraph::Camera3D(object), _session(session) {
+    _textureSize = _session.fovTextureSize(eye);
 
     createEyeRenderTexture();
 
@@ -53,11 +53,11 @@ HmdCamera::HmdCamera(Hmd& hmd, int eye, SceneGraph::AbstractObject3D& object): S
 
     const Float near = 0.001f;
     const Float far = 100.0f;
-    setProjectionMatrix(_hmd.projectionMatrix(eye, near, far));
+    setProjectionMatrix(_session.projectionMatrix(eye, near, far));
 }
 
 void HmdCamera::createEyeRenderTexture() {
-    _textureSwapChain =_hmd.createTextureSwapChain(_textureSize);
+    _textureSwapChain =_session.createTextureSwapChain(_textureSize);
 
     /* create the framebuffer which will be used to render to the current texture
      * of the texture set later. */
