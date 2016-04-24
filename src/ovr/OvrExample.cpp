@@ -52,7 +52,7 @@
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
-#include <Magnum/OvrIntegration/Hmd.h>
+#include <Magnum/OvrIntegration/Session.h>
 #include <Magnum/OvrIntegration/HmdEnum.h>
 
 #include "Types.h"
@@ -70,7 +70,7 @@ class OvrExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
 
         OvrIntegration::Context _ovrContext;
-        std::unique_ptr<OvrIntegration::Hmd> _hmd;
+        std::unique_ptr<OvrIntegration::Session> _session;
 
         std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
         std::unique_ptr<Mesh> _mesh;
@@ -101,12 +101,11 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off),
     _enableMirroring(true)
 {
-    /* connect to an HMD, or create a debug HMD with DK2 type in case none is
-       connected */
-    _hmd = _ovrContext.createHmd();
+    /* Connect to an active Oculus session */
+    _session = _ovrContext.createSession();
 
     /* get the hmd display resolution */
-    Vector2i resolution = _hmd->resolution() / 2;
+    Vector2i resolution = _session->resolution() / 2;
 
     /* create a context with the HMD display resolution */
     Configuration conf;
@@ -125,11 +124,11 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FramebufferSRGB);
 
-    _hmd->configureRendering();
+    _session->configureRendering();
 
     /* setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer. */
-    _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::SRGB8, resolution);
+    _mirrorTexture = &_session->createMirrorTexture(resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
                       .mapForRead(Framebuffer::ColorAttachment(0));
@@ -183,7 +182,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     /* setup compositor layers */
     _layer = &_ovrContext.compositor().addLayerEyeFov();
-    _layer->setFov(*_hmd.get());
+    _layer->setFov(*_session.get());
     _layer->setHighQuality(true);
 
     /* setup cameras */
@@ -192,7 +191,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     for(int eye = 0; eye < 2; ++eye) {
         /* projection matrix is set in the camera, since it requires some hmd-specific fov etc. */
-        _cameras[eye].reset(new HmdCamera(*_hmd, eye, _eyes[eye]));
+        _cameras[eye].reset(new HmdCamera(*_session, eye, _eyes[eye]));
 
         _layer->setColorTexture(eye, _cameras[eye]->textureSet());
         _layer->setViewport(eye, {{}, _cameras[eye]->viewport()});
@@ -201,7 +200,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
 void OvrExample::drawEvent() {
     /* get orientation and position of the hmd. */
-    std::array<DualQuaternion, 2> poses = _hmd->pollEyePoses().eyePoses();
+    std::array<DualQuaternion, 2> poses = _session->pollEyePoses().eyePoses();
 
     /* draw the scene for both cameras */
     for(int eye = 0; eye < 2; ++eye) {
@@ -212,10 +211,10 @@ void OvrExample::drawEvent() {
     }
 
     /* set the layers eye poses to the poses chached in the _hmd. */
-    _layer->setRenderPoses(*_hmd.get());
+    _layer->setRenderPoses(*_session.get());
 
     /* let the libOVR sdk compositor do its magic! */
-    _ovrContext.compositor().submitFrame(*_hmd.get());
+    _ovrContext.compositor().submitFrame(*_session.get());
 
     if(_enableMirroring) {
         /* blit mirror texture to defaultFramebuffer. */
@@ -229,7 +228,7 @@ void OvrExample::drawEvent() {
         swapBuffers();
     }
 
-    if(_hmd->isDebugHmd()) {
+    if(_session->isDebugHmd()) {
         /* provide some rotation, but only without real devices to avoid vr sickness ;) */
         _cameraObject.rotateY(Deg(0.1f));
     }
@@ -245,12 +244,15 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::LatencyTiming;
                 break;
             case OvrIntegration::PerformanceHudMode::LatencyTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::RenderTiming;
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::AppRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::RenderTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfHeadroom;
+            case OvrIntegration::PerformanceHudMode::AppRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::CompRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::PerfHeadroom:
+            case OvrIntegration::PerformanceHudMode::CompRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfSummary;
+                break;
+            case OvrIntegration::PerformanceHudMode::PerfSummary:
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::VersionInfo;
                 break;
             case OvrIntegration::PerformanceHudMode::VersionInfo:
@@ -258,7 +260,7 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 break;
         }
 
-        _hmd->setPerformanceHudMode(_curPerfHudMode);
+        _session->setPerformanceHudMode(_curPerfHudMode);
     } else if(event.key() == KeyEvent::Key::F12) {
         /* toggle through the debug hud stereo modes */
         switch(_curDebugHudStereoMode) {
@@ -276,7 +278,7 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 break;
         }
 
-        _hmd->setDebugHudStereoMode(_curDebugHudStereoMode);
+        _session->setDebugHudStereoMode(_curDebugHudStereoMode);
     } else if(event.key() == KeyEvent::Key::M) {
         /* toggle mirroring */
         _enableMirroring = !_enableMirroring;

@@ -36,23 +36,29 @@
 
 namespace Magnum { namespace Examples {
 
+/**
+ * @brief Hmd camera
+ *
+ * Camera which renders a scene to a @ref OvrIntegration::TextureSwapChain.
+ * Handles framebuffer creation and activation.
+ */
 class HmdCamera: public SceneGraph::Camera3D {
     public:
         /**
          * @brief Constructor.
-         * @param hmd Hmd which this camera belongs to.
+         * @param session Oculus session for the HMD to create this camera for
          * @param eye Eye index associated with this camera. (0 for left, 1 for right eye)
          * @param object Object holding this feature.
          */
-        explicit HmdCamera(OvrIntegration::Hmd& hmd, const int eye, SceneGraph::AbstractObject3D& object);
+        explicit HmdCamera(OvrIntegration::Session& session, const int eye, SceneGraph::AbstractObject3D& object);
 
         void draw(SceneGraph::DrawableGroup3D& group) override;
 
         /**
          * @return Reference to the texture set used for rendering.
          */
-        OvrIntegration::SwapTextureSet& textureSet() const {
-            return *_textureSet;
+        OvrIntegration::TextureSwapChain& textureSet() const {
+            return *_textureSwapChain;
         }
 
     private:
@@ -61,8 +67,8 @@ class HmdCamera: public SceneGraph::Camera3D {
 
         std::unique_ptr<Texture2D> _depth;
 
-        OvrIntegration::Hmd& _hmd;
-        std::unique_ptr<OvrIntegration::SwapTextureSet> _textureSet;
+        OvrIntegration::Session& _session;
+        std::unique_ptr<OvrIntegration::TextureSwapChain> _textureSwapChain;
 
         Vector2i _textureSize;
         std::unique_ptr<Framebuffer> _framebuffer;
