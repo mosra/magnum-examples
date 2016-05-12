@@ -37,8 +37,8 @@ install:
 - ren SDL2-2.0.3 SDL
 
 # OVR SDK
-- appveyor DownloadFile http://static.oculus.com/sdk-downloads/0.7.0.0/Public/1440610361/ovr_sdk_win_0.7.0.0.zip
-- 7z x ovr_sdk_win_0.7.0.0.zip
+- appveyor DownloadFile http://static.oculus.com/sdk-downloads/1.3.0/Public/1459135039/ovr_sdk_win_1.3.0_public.zip
+- 7z x ovr_sdk_win_1.3.0_public.zip -oC:/Sys
 
 # Corrade
 - git clone --depth 1 git://github.com/mosra/corrade.git
@@ -67,7 +67,7 @@ install:
 - cd magnum-integration
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_OVR=OFF -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DWITH_OVR=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
 - cmake --build .
 - cmake --build . --target install
 - cd ..
@@ -76,7 +76,7 @@ install:
 build_script:
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/Deploy -DCMAKE_PREFIX_PATH="C:/Sys;%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DOVR_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Include -DOVR_LIBRARY=%APPVEYOR_BUILD_FOLDER%/OculusSDK/LibOVR/Lib/Windows/Win32/Release/VS2013/LibOVR.lib -DWITH_AUDIO_EXAMPLE=ON -DWITH_BULLET_EXAMPLE=OFF -DWITH_CUBEMAP_EXAMPLE=ON -DWITH_MOTIONBLUR_EXAMPLE=ON -DWITH_OVR_EXAMPLE=OFF -DWITH_PICKING_EXAMPLE=ON -DWITH_PRIMITIVES_EXAMPLE=ON -DWITH_TEXT_EXAMPLE=ON -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON -DWITH_TRIANGLE_EXAMPLE=ON -DWITH_VIEWER_EXAMPLE=ON -G Ninja
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/Deploy -DCMAKE_PREFIX_PATH="C:/Sys;%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO_EXAMPLE=ON -DWITH_BULLET_EXAMPLE=OFF -DWITH_CUBEMAP_EXAMPLE=ON -DWITH_MOTIONBLUR_EXAMPLE=ON -DWITH_OVR_EXAMPLE=ON -DWITH_PICKING_EXAMPLE=ON -DWITH_PRIMITIVES_EXAMPLE=ON -DWITH_TEXT_EXAMPLE=ON -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON -DWITH_TRIANGLE_EXAMPLE=ON -DWITH_VIEWER_EXAMPLE=ON -G Ninja
 - cmake --build .
 - cmake --build . --target install
 - cd ../Deploy
