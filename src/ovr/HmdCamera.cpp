@@ -37,7 +37,6 @@
 #include <Magnum/Context.h>
 #include <Magnum/Image.h>
 #include <Magnum/DefaultFramebuffer.h>
-
 #include <Magnum/OvrIntegration/Session.h>
 
 namespace Magnum { namespace Examples {
@@ -50,57 +49,52 @@ HmdCamera::HmdCamera(Session& session, int eye, SceneGraph::AbstractObject3D& ob
     createEyeRenderTexture();
 
     setViewport(_textureSize);
-
-    const Float near = 0.001f;
-    const Float far = 100.0f;
-    setProjectionMatrix(_session.projectionMatrix(eye, near, far));
+    setProjectionMatrix(_session.projectionMatrix(eye, 0.001f, 100.0f));
 }
 
 void HmdCamera::createEyeRenderTexture() {
     _textureSwapChain =_session.createTextureSwapChain(_textureSize);
 
-    /* create the framebuffer which will be used to render to the current texture
-     * of the texture set later. */
+    /* Create the framebuffer which will be used to render to the current
+       texture of the texture set later. */
     _framebuffer.reset(new Framebuffer({{}, _textureSize}));
     _framebuffer->mapForDraw(Framebuffer::ColorAttachment(0));
 
-    /* setup depth attachment */
+    /* Setup depth attachment */
     TextureFormat format = TextureFormat::DepthComponent24;
-
-    if(Magnum::Context::current().isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>()) {
+    if(Magnum::Context::current().isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>())
         format = TextureFormat::DepthComponent32F;
-    }
 
-    _depth.reset(new Texture2D());
+    _depth.reset(new Texture2D);
     _depth->setMinificationFilter(Sampler::Filter::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
-           .setStorage(1, format, _textureSize);
+        .setMagnificationFilter(Sampler::Filter::Linear)
+        .setWrapping(Sampler::Wrapping::ClampToEdge)
+        .setStorage(1, format, _textureSize);
 }
 
 void HmdCamera::draw(SceneGraph::DrawableGroup3D& group) {
-    /* switch to eye render target and bind render textures */
+    /* Switch to eye render target and bind render textures */
     _framebuffer->bind();
 
     _framebuffer->attachTexture(Framebuffer::ColorAttachment(0), _textureSwapChain->activeTexture(), 0)
-                .attachTexture(Framebuffer::BufferAttachment::Depth, *_depth, 0)
-    /* clear with the standard grey so that at least that will be visible in case the scene is not
-     * correctly set up. */
-                .clear(FramebufferClear::Color | FramebufferClear::Depth);
+        .attachTexture(Framebuffer::BufferAttachment::Depth, *_depth, 0)
+        /* Clear with the standard grey so that at least that will be visible in
+           case the scene is not correctly set up */
+        .clear(FramebufferClear::Color | FramebufferClear::Depth);
 
-    /* render scene */
+    /* Render scene */
     SceneGraph::Camera3D::draw(group);
 
-    /* commit changes and use next texture in chain */
+    /* Commit changes and use next texture in chain */
     _textureSwapChain->commit();
 
-    /* Reasoning for the next two lines, taken from the Oculus SDK examples code:
-     * Without this, [during the next frame, this method] would bind a framebuffer with an
-     * invalid COLOR_ATTACHMENT0 because the texture ID associated with COLOR_ATTACHMENT0
-     * had been unlocked by calling wglDXUnlockObjectsNV. */
+    /* Reasoning for the next two lines, taken from the Oculus SDK examples
+       code: Without this, [during the next frame, this method] would bind a
+       framebuffer with an invalid COLOR_ATTACHMENT0 because the texture ID
+       associated with COLOR_ATTACHMENT0 had been unlocked by calling
+       wglDXUnlockObjectsNV(). */
     _framebuffer->detach(Framebuffer::ColorAttachment(0))
-                 .detach(Framebuffer::BufferAttachment::Depth);
-
+        .detach(Framebuffer::BufferAttachment::Depth);
 }
 
 }}

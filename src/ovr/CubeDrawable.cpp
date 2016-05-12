@@ -33,11 +33,10 @@
 
 namespace Magnum { namespace Examples {
 
-CubeDrawable::CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(mesh), _shader(shader), _color(color) {
-}
+CubeDrawable::CubeDrawable(Mesh& mesh, Shaders::Phong& shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), _mesh(mesh), _shader(shader), _color(color) {}
 
 void CubeDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
-    _shader->setDiffuseColor(_color)
+    _shader.setDiffuseColor(_color)
         .setSpecularColor(Color3(1.0f))
         .setShininess(20)
         .setLightPosition(camera.cameraMatrix().transformPoint({3.0f, 3.0f, 3.0f}))
@@ -45,15 +44,7 @@ void CubeDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3
         .setNormalMatrix(transformationMatrix.rotationScaling())
         .setProjectionMatrix(camera.projectionMatrix());
 
-    _mesh->draw(*_shader);
-}
-
-void CubeDrawable::setColor(Color3 color) {
-    _color = color;
-}
-
-Color3 CubeDrawable::getColor(void) {
-    return _color;
+    _mesh.draw(_shader);
 }
 
 }}

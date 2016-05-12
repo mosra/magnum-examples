@@ -5,8 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2015
-              Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2015, 2016 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -37,16 +36,16 @@ namespace Magnum { namespace Examples {
 
 class CubeDrawable: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit CubeDrawable(Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit CubeDrawable(Mesh& mesh, Shaders::Phong& shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
-
-        void setColor(Color3 color);
-        Color3 getColor(void);
+        Color3 color() const { return _color; }
+        void setColor(const Color3& color) { _color = color; }
 
     private:
-        Mesh* _mesh;
-        Shaders::Phong* _shader;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
+
+        Mesh& _mesh;
+        Shaders::Phong& _shader;
         Color3 _color;
 };
 
