@@ -8,10 +8,6 @@ clone_depth: 1
 
 os: Visual Studio 2015
 
-environment:
-  matrix:
-  - BUILD_STATIC: OFF
-
 notifications:
 - provider: Webhook
   url: https://webhooks.gitter.im/e/415ae90928ba0dbd3df4
@@ -45,7 +41,7 @@ install:
 - cd corrade
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -G Ninja
 - cmake --build .
 - cmake --build . --target install
 - cd ..
@@ -56,7 +52,7 @@ install:
 - cd magnum
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO=ON -DWITH_DEBUGTOOLS=ON -DWITH_SHAPES=ON -DWITH_SDL2APPLICATION=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO=ON -DWITH_DEBUGTOOLS=ON -DWITH_SHAPES=ON -DWITH_SDL2APPLICATION=ON -G Ninja
 - cmake --build .
 - cmake --build . --target install
 - cd ..
@@ -67,7 +63,7 @@ install:
 - cd magnum-integration
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DWITH_OVR=ON -DBUILD_STATIC=%BUILD_STATIC% -G Ninja
+- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DWITH_OVR=ON -G Ninja
 - cmake --build .
 - cmake --build . --target install
 - cd ..
