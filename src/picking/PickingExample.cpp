@@ -266,6 +266,9 @@ void PickingExample::drawEvent() {
         .bind();
     _camera->draw(_drawables);
 
+    /* Bind the main buffer back */
+    defaultFramebuffer.bind();
+
     /* Blit color to window framebuffer */
     _framebuffer.mapForRead(Framebuffer::ColorAttachment{0});
     AbstractFramebuffer::blit(_framebuffer, defaultFramebuffer,
