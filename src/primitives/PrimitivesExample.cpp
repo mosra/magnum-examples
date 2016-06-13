@@ -35,6 +35,8 @@
 
 namespace Magnum { namespace Examples {
 
+using namespace Magnum::Math::Literals;
+
 class PrimitivesExample: public Platform::Application {
     public:
         explicit PrimitivesExample(const Arguments& arguments);

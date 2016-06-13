@@ -40,6 +40,8 @@
 
 namespace Magnum { namespace Examples {
 
+using namespace Magnum::Math::Literals;
+
 class TextExample: public Platform::Application {
     public:
         explicit TextExample(const Arguments& arguments);

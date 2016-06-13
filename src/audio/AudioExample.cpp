@@ -54,9 +54,10 @@
 
 #include "configure.h"
 
-using namespace Magnum::SceneGraph;
+namespace Magnum { namespace Examples {
 
-namespace Magnum {namespace Examples {
+using namespace Magnum::SceneGraph;
+using namespace Magnum::Math::Literals;
 
 typedef Scene<DualQuaternionTransformation> Scene3D;
 typedef Object<DualQuaternionTransformation> Object3D;
