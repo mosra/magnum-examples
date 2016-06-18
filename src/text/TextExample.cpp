@@ -49,7 +49,7 @@ class TextExample: public Platform::Application {
     private:
         void viewportEvent(const Vector2i& size) override;
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
 
         void updateText();
 
@@ -127,12 +127,13 @@ void TextExample::drawEvent() {
     swapBuffers();
 }
 
-void TextExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() == MouseEvent::Button::WheelUp)
+void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
+    if(!event.offset().y()) return;
+
+    if(event.offset().y() > 0)
         _transformation = Matrix3::rotation(Deg(1.0f))*Matrix3::scaling(Vector2(1.1f))* _transformation;
-    else if(event.button() == MouseEvent::Button::WheelDown)
+    else
         _transformation = Matrix3::rotation(Deg(-1.0f))*Matrix3::scaling(Vector2(1.0f/1.1f))* _transformation;
-    else return;
 
     updateText();
 

@@ -66,6 +66,7 @@ class ViewerExample: public Platform::Application {
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
 
         Vector3 positionOnSphere(const Vector2i& _position) const;
 
@@ -318,31 +319,26 @@ void ViewerExample::drawEvent() {
 }
 
 void ViewerExample::mousePressEvent(MouseEvent& event) {
-    switch(event.button()) {
-        case MouseEvent::Button::Left:
-            _previousPosition = positionOnSphere(event.position());
-            break;
-
-        case MouseEvent::Button::WheelUp:
-        case MouseEvent::Button::WheelDown: {
-            /* Distance to origin */
-            Float distance = _cameraObject->transformation().translation().z();
-
-            /* Move 15% of the distance back or forward */
-            distance *= 1 - (event.button() == MouseEvent::Button::WheelUp ? 1/0.85f : 0.85f);
-            _cameraObject->translate(Vector3::zAxis(distance));
-
-            redraw();
-            break;
-        }
-
-        default: ;
-    }
+    if(event.button() == MouseEvent::Button::Left)
+        _previousPosition = positionOnSphere(event.position());
 }
 
 void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::Left)
         _previousPosition = Vector3();
+}
+
+void ViewerExample::mouseScrollEvent(MouseScrollEvent& event) {
+    if(!event.offset().y()) return;
+
+    /* Distance to origin */
+    Float distance = _cameraObject->transformation().translation().z();
+
+    /* Move 15% of the distance back or forward */
+    distance *= 1 - (event.offset().y() > 0 ? 1/0.85f : 0.85f);
+    _cameraObject->translate(Vector3::zAxis(distance));
+
+    redraw();
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& position) const {
