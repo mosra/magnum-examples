@@ -23,55 +23,47 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# On MSVC remove /W3, as we are replacing it with /W4
-if(MSVC)
-    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+cmake_minimum_required(VERSION 2.8.12)
+project(MagnumShadowsExample)
+
+# CMake policies: enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
+endif()
+# Don't treat imported targets with :: as files
+if(POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW)
 endif()
 
-if(WITH_AUDIO_EXAMPLE)
-    add_subdirectory(audio)
-endif()
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+	SceneGraph
+    Sdl2Application)
 
-if(WITH_BULLET_EXAMPLE)
-    add_subdirectory(bullet)
-endif()
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-if(WITH_CUBEMAP_EXAMPLE)
-    add_subdirectory(cubemap)
-endif()
+corrade_add_resource(Shadows_RESOURCES resources.conf)
 
-if(WITH_MOTIONBLUR_EXAMPLE)
-    add_subdirectory(motionblur)
-endif()
+add_executable(magnum-shadows
+		ShadowsExample.cpp
+		ShadowCasterDrawable.cpp
+		ShadowLight.cpp
+		ShadowCasterShader.cpp
+		ShadowCasterShader.h
+		ShadowReceiverDrawable.cpp
+		ShadowReceiverDrawable.h
+		ShadowReceiverShader.cpp
+		ShadowReceiverShader.h
+		${Shadows_RESOURCES})
+target_link_libraries(magnum-shadows
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+	Magnum::SceneGraph
+    Magnum::Shaders)
 
-if(WITH_OVR_EXAMPLE)
-    add_subdirectory(ovr)
-endif()
-
-if(WITH_PICKING_EXAMPLE)
-    add_subdirectory(picking)
-endif()
-
-if(WITH_PRIMITIVES_EXAMPLE)
-    add_subdirectory(primitives)
-endif()
-
-if(WITH_SHADOWS_EXAMPLE)
-    add_subdirectory(shadows)
-endif()
-
-if(WITH_TEXT_EXAMPLE)
-    add_subdirectory(text)
-endif()
-
-if(WITH_TEXTUREDTRIANGLE_EXAMPLE)
-    add_subdirectory(textured-triangle)
-endif()
-
-if(WITH_TRIANGLE_EXAMPLE)
-    add_subdirectory(triangle)
-endif()
-
-if(WITH_VIEWER_EXAMPLE)
-    add_subdirectory(viewer)
-endif()
+install(TARGETS magnum-shadows DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-shadows.md)
