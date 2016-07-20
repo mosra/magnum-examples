@@ -80,6 +80,7 @@ if(CORRADE_TARGET_IOS)
     set(_SDL2_FRAMEWORK_LIBRARIES )
     foreach(framework ${_SDL2_FRAMEWORKS})
         find_library(_SDL2_${framework}_LIBRARY ${framework})
+        mark_as_advanced(_SDL2_${framework}_LIBRARY)
         list(APPEND _SDL2_FRAMEWORK_LIBRARIES ${_SDL2_${framework}_LIBRARY})
         list(APPEND _SDL2_FRAMEWORK_LIBRARY_NAMES _SDL2_${framework}_LIBRARY)
     endforeach()
@@ -96,7 +97,7 @@ if(NOT TARGET SDL2::SDL2)
         add_library(SDL2::SDL2 UNKNOWN IMPORTED)
 
         # Work around BUGGY framework support on OSX
-        # https://cmake.org/Bug/view.php?id=13765
+        # https://cmake.org/Bug/view.php?id=14105
         if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
             set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)
         else()
@@ -111,6 +112,7 @@ if(NOT TARGET SDL2::SDL2)
 
         # Link also EGL library, if on ES (and not on WebGL)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+            find_package(EGL REQUIRED)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES EGL::EGL)
         endif()

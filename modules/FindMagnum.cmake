@@ -47,13 +47,16 @@
 #  Shapes                       - Shapes library
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
+#  GlfwApplication              - GLFW application
 #  GlutApplication              - GLUT application
 #  GlxApplication               - GLX application
 #  NaClApplication              - NaCl application
 #  Sdl2Application              - SDL2 application
 #  XEglApplication              - X/EGL application
 #  WindowlessCglApplication     - Windowless CGL application
+#  WindowlessEglApplication     - Windowless EGL application
 #  WindowlessGlxApplication     - Windowless GLX application
+#  WindowlessIosApplication     - Windowless iOS application
 #  WindowlessNaClApplication    - Windowless NaCl application
 #  WindowlessWglApplication     - Windowless WGL application
 #  WindowlessWindowsEglApplication - Windowless Windows/EGL application
@@ -102,12 +105,15 @@
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
 #   included
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
+#  MAGNUM_BUILD_MULTITHREADED   - Defined if compiled in a way that allows
+#   having multiple thread-local Magnum contexts
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
 #  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
+#  MAGNUM_TARGET_HEADLESS       - Defined if compiled for headless machines
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -202,11 +208,13 @@ file(READ ${_MAGNUM_CONFIGURE_FILE} _magnumConfigure)
 set(_magnumFlags
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_MULTITHREADED
     TARGET_GLES
     TARGET_GLES2
     TARGET_GLES3
     TARGET_DESKTOP_GLES
-    TARGET_WEBGL)
+    TARGET_WEBGL
+    TARGET_HEADLESS)
 foreach(_magnumFlag ${_magnumFlags})
     string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
     if(NOT _magnum_${_magnumFlag} EQUAL -1)
@@ -334,7 +342,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessGlxApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|info)$")
 
@@ -417,7 +425,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
 
             # Reset back
-            set(CMAKE_FIND_LIBRARY_PREFIXES ${_tmp_prefixes})
+            set(CMAKE_FIND_LIBRARY_PREFIXES "${_tmp_prefixes}")
         endif()
 
         # Library location for libraries/plugins
@@ -462,6 +470,12 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES android EGL::EGL)
 
+            # GLFW application dependencies
+            elseif(_component STREQUAL GlfwApplication)
+                find_package(GLFW)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES GLFW::GLFW)
+
             # GLUT application dependencies
             elseif(_component STREQUAL GlutApplication)
                 find_package(GLUT)
@@ -490,6 +504,22 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
 
             # Windowless CGL application has no additional dependencies
+
+            # Windowless EGL application dependencies
+            elseif(_component STREQUAL WindowlessEglApplication)
+                find_package(EGL)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES EGL::EGL)
+
+            # Windowless iOS application dependencies
+            elseif(_component STREQUAL WindowlessIosApplication)
+                # We need to link to Foundation framework to use ObjC
+                find_library(_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+                mark_as_advanced(_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY)
+                find_package(EGL)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES EGL::EGL ${_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY})
+
             # Windowless WGL application has no additional dependencies
 
             # Windowless Windows/EGL application dependencies
@@ -520,10 +550,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
-            endif()
 
             # EGL context dependencies
-            if(_component STREQUAL EglContext)
+            elseif(_component STREQUAL EglContext)
                 find_package(EGL)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES EGL::EGL)

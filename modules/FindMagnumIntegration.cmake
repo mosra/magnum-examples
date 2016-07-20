@@ -160,8 +160,19 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             find_package(Bullet)
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_INCLUDE_DIRECTORIES ${BULLET_INCLUDE_DIRS})
-            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${BULLET_LIBRARIES})
+
+            # Need to handle special cases where both debug and release
+            # libraries are available (in form of debug;A;optimized;B in
+            # BULLET_LIBRARIES), thus appending them one by one
+            foreach(lib BULLET_DYNAMICS_LIBRARY BULLET_COLLISION_LIBRARY BULLET_MATH_LIBRARY BULLET_SOFTBODY_LIBRARY)
+                if(${lib}_DEBUG)
+                    set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES "$<$<CONFIG:Release>:${${lib}}>;$<$<CONFIG:Debug>:${${lib}_DEBUG}>")
+                else()
+                    set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${${lib}})
+                endif()
+            endforeach()
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
 
@@ -199,7 +210,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             endforeach()
         endif()
 
-        # Decide if the plugin was found
+        # Decide if the library was found
         if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS} AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE))
             set(MagnumIntegration_${_component}_FOUND TRUE)
         else()
