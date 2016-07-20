@@ -75,7 +75,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 ,   mainCameraObject(&scene)
 ,   mainCamera(mainCameraObject)
 {
-    shadowLight.setupShadowmaps(NUM_SHADER_LEVELS, {256,256});
+    shadowLight.setupShadowmaps(NUM_SHADER_LEVELS, {1024,1024});
 
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
