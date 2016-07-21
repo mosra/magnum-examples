@@ -39,11 +39,11 @@ void ShadowLight::setupShadowmaps(int numShadowLevels, Magnum::Vector2i size) {
 	for (int i = 0; i < numShadowLevels; i++) {
 		layers.emplace_back(size);
 		auto& shadowFramebuffer = this->layers.back().shadowFramebuffer;
-		shadowFramebuffer.setLabel("Shadow framebuffer " + std::__cxx11::to_string(i));
+		shadowFramebuffer.setLabel("Shadow framebuffer " + std::to_string(i));
 		shadowFramebuffer.bind();
 		shadowFramebuffer.attachTextureLayer(Framebuffer::BufferAttachment::Depth, *this->shadowTexture, 0, i);
 		shadowFramebuffer.mapForDraw(Framebuffer::DrawAttachment::None);
-		auto status = shadowFramebuffer.checkStatus(FramebufferTarget::ReadDraw);
+		auto status = shadowFramebuffer.checkStatus(FramebufferTarget::Draw);
 		Magnum::Debug() << "Framebuffer status: " << status;
 	}
 }
@@ -63,7 +63,7 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
 	auto inverseCameraRotationMatrix = cameraRotationMatrix.inverted();
 
 	for (auto i = 0u; i < layers.size(); i++) {
-		auto mainCameraFrustumCorners = getCameraFrustumCorners(mainCamera, i);
+		auto mainCameraFrustumCorners = getCameraFrustumCorners(mainCamera, int(i));
 		auto& d = layers[i];
 		Magnum::Vector3 min(std::numeric_limits<float>::max()), max(std::numeric_limits<float>::lowest());
 		for (auto worldPoint : mainCameraFrustumCorners) {
@@ -83,35 +83,39 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
 
 		auto range = max - min;
 		d.orthographicSize = range.xy();
-		d.orthographicNear = -0.5f * range.z();
-		d.orthographicFar =  0.5f * range.z();
+		d.orthographicNear = 0.5f * range.z();
+		d.orthographicFar =  -0.5f * range.z();
 		cameraMatrix.translation() = cameraPosition;
 		d.shadowCameraMatrix = cameraMatrix;
 	}
 }
 
-void ShadowLight::setNearFar(float zNear, float zFar) {
-	cutPlanes.clear();
-	cutPlanes.reserve(layers.size());
+void ShadowLight::setCutPlanes(float zNear, float zFar, float power) {
 	//props http://stackoverflow.com/a/33465663
-	for (auto i = 1u; i <= layers.size(); i++) {
-//		float linearDepth = zNear + i * (zFar - zNear) / numLayers;
-//		float linearDepth = zNear + (numLayers - i) * (zFar) / numLayers;
-		float linearDepth = zNear + std::pow(float(i) / layers.size(), 3.0f) * (zFar - zNear);
+	for (auto i = 0u; i < layers.size(); i++) {
+		float linearDepth = zNear + std::pow(float(i+1) / layers.size(), power) * (zFar - zNear);
 		float nonLinearDepth = (zFar + zNear - 2.0f * zNear * zFar / linearDepth) / (zFar - zNear);
-		cutPlanes.push_back((nonLinearDepth + 1.0f) / 2.0f);
+		layers[i].cutPlane = (nonLinearDepth + 1.0f) / 2.0f;
 	}
 }
 
 std::vector<Magnum::Vector3> ShadowLight::getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer) {
+	auto z0 = layer == 0 ? 0 : layers[layer-1].cutPlane;
+	auto z1 = layers[layer].cutPlane;
+	return getCameraFrustumCorners(mainCamera, z0, z1);
+}
+
+std::vector<Vector3> ShadowLight::getCameraFrustumCorners(SceneGraph::Camera3D &mainCamera, float z0, float z1) {
 	auto imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
-	auto projectImvpAndDivide = [&](Vector4 vec) -> Magnum::Vector3 {
+	return getFrustumCorners(imvp, z0, z1);
+}
+
+std::vector<Vector3> ShadowLight::getFrustumCorners(const Magnum::Matrix4 &imvp, float z0, float z1) {
+	auto projectImvpAndDivide = [&](Vector4 vec) -> Vector3 {
 		auto vec2 = imvp * vec;
 		return vec2.xyz() / vec2.w();
 	};
-	auto z0 = layer == 0 ? 0 : cutPlanes[layer-1];
-	auto z1 = cutPlanes[layer];
-	return std::vector<Vector3>{
+	return std::__1::vector<Vector3>{
 		projectImvpAndDivide({-1,-1, z0, 1}),
 		projectImvpAndDivide({ 1,-1, z0, 1}),
 		projectImvpAndDivide({-1, 1, z0, 1}),

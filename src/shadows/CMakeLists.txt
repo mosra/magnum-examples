@@ -48,7 +48,9 @@ corrade_add_resource(Shadows_RESOURCES resources.conf)
 
 add_executable(magnum-shadows
 		ShadowsExample.cpp
+		ShadowCasterDrawable.h
 		ShadowCasterDrawable.cpp
+		ShadowLight.h
 		ShadowLight.cpp
 		ShadowCasterShader.cpp
 		ShadowCasterShader.h
@@ -56,6 +58,8 @@ add_executable(magnum-shadows
 		ShadowReceiverDrawable.h
 		ShadowReceiverShader.cpp
 		ShadowReceiverShader.h
+		DebugLines.h
+		DebugLines.cpp
 		${Shadows_RESOURCES})
 target_link_libraries(magnum-shadows
     Magnum::Application

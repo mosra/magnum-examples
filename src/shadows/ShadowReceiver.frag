@@ -33,7 +33,7 @@ void main() {
 	}
 
     vec3 ambient = vec3(0.5);
-    color.rgb = ((ambient + vec3(intensity * shadow)) * albedo);
+    color.rgb = ((ambient + vec3(shadow)) * albedo);
     color.a = 1.0;
 
 #ifdef DEBUG_SHADOWMAP_LEVELS

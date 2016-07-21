@@ -20,6 +20,7 @@
 #include "ShadowLight.h"
 #include "ShadowCasterDrawable.h"
 #include "ShadowReceiverDrawable.h"
+#include "DebugLines.h"
 
 namespace Magnum { namespace Examples {
 
@@ -55,10 +56,17 @@ class ShadowsExample: public Platform::Application {
 		ShadowCasterShader shadowCasterShader;
 		ShadowReceiverShader shadowReceiverShader;
 
+		DebugLines debugLines;
+
 		Object3D shadowLightObject;
 		ShadowLight shadowLight;
         Object3D mainCameraObject;
 		Magnum::SceneGraph::Camera3D mainCamera;
+		Object3D debugCameraObject;
+		Magnum::SceneGraph::Camera3D debugCamera;
+
+		Object3D* activeCameraObject;
+		Magnum::SceneGraph::Camera3D* activeCamera;
 
 		std::vector<Model> models;
 
@@ -74,6 +82,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 ,   shadowLight(shadowLightObject)
 ,   mainCameraObject(&scene)
 ,   mainCamera(mainCameraObject)
+,   debugCameraObject(&scene)
+,   debugCamera(debugCameraObject)
 {
     shadowLight.setupShadowmaps(NUM_SHADER_LEVELS, {1024,1024});
 
@@ -96,10 +106,15 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
     float near = 0.01f;
     float far = 100.0f;
 
-    shadowLight.setNearFar(near, far);
-    mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(),
-                                                                  near, far));
+    shadowLight.setCutPlanes(near, far, 3.0f);
+    mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near, far));
 	mainCameraObject.setTransformation(Matrix4::translation({0,4,0}));
+
+	debugCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near / 4.0f, far * 4.0f));
+	debugCameraObject.setTransformation(Matrix4::translation({0,10,50}));
+
+	activeCamera = &mainCamera;
+	activeCameraObject = &mainCameraObject;
 
 	shadowLightObject.setTransformation(Matrix4::lookAt(
 			{0.1f,1,0.1f},
@@ -155,6 +170,11 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
 
 void ShadowsExample::drawEvent() {
 
+	debugLines.reset();
+	debugLines.addFrustum((mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted(), {1,0,0});
+	debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {1,0,0});
+
+
 	shadowLight.setTarget({0.2f,0.2f,1.0f}, mainCameraObject.transformation()[2].xyz(), mainCamera);
 
     shadowLight.render(shadowCasterDrawables);
@@ -165,18 +185,21 @@ void ShadowsExample::drawEvent() {
     Corrade::Containers::Array<Magnum::Matrix4> shadowMatrices(Corrade::Containers::NoInit, shadowLight.getNumLayers());
     for (auto layerIndex = 0u; layerIndex < shadowLight.getNumLayers(); layerIndex++) {
         shadowMatrices[layerIndex] = shadowLight.getLayerMatrix(layerIndex);
+		debugLines.addFrustum((Matrix4{{2,0,0,0},{0,2,0,0},{0,0,2,0},{-1,-1,-1,1}} * shadowMatrices[layerIndex]).inverted(), {1,0,0});
     }
     shadowReceiverShader.setShadowmapMatrices(shadowMatrices);
-	shadowReceiverShader.setLightDirection(mainCamera.cameraMatrix().rotationScaling() * shadowLightObject.transformation()[2].xyz());
     shadowReceiverShader.setShadowmapTexture(*shadowLight.getShadowTexture());
 
-    mainCamera.draw(shadowReceiverDrawables);
+    activeCamera->draw(shadowReceiverDrawables);
+
+	shadowReceiverShader.setLightDirection(activeCamera->cameraMatrix().rotationScaling() * shadowLightObject.transformation()[2].xyz());
+	debugLines.draw(activeCamera->projectionMatrix() * activeCamera->cameraMatrix());
 
     swapBuffers();
 	if (!mainCameraVelocity.isZero()) {
-		auto transform = mainCameraObject.transformation();
+		auto transform = activeCameraObject->transformation();
 		transform.translation() += transform.rotation() * mainCameraVelocity * 0.1f;
-		mainCameraObject.setTransformation(transform);
+		activeCameraObject->setTransformation(transform);
 		redraw();
 	}
 }
@@ -196,7 +219,7 @@ void ShadowsExample::mouseReleaseEvent(MouseEvent& event) {
 void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    auto transform = mainCameraObject.transformation();
+    auto transform = activeCameraObject->transformation();
 
 	constexpr float angleScale = 0.01f;
 	auto angleX = event.relativePosition().x() * angleScale;
@@ -204,7 +227,7 @@ void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
 	if (angleX != 0 || angleY != 0) {
 		transform = Matrix4::lookAt(transform.translation(), transform.translation() - transform.rotationScaling() * Magnum::Vector3{-angleX, angleY, 1}, {0,1,0});
 
-		mainCameraObject.setTransformation(transform);
+		activeCameraObject->setTransformation(transform);
 	}
 
 
@@ -224,6 +247,14 @@ void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 	}
 	else if (event.key() == KeyEvent::Key::Left) {
 		mainCameraVelocity.x() = -1;
+	}
+	else if (event.key() == KeyEvent::Key::F1) {
+		activeCamera = &mainCamera;
+		activeCameraObject = &mainCameraObject;
+	}
+	else if (event.key() == KeyEvent::Key::F2) {
+		activeCamera = &debugCamera;
+		activeCameraObject = &debugCameraObject;
 	}
 	redraw();
 }

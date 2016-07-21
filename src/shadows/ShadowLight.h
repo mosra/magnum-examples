@@ -17,7 +17,7 @@ public:
 
 	void setupShadowmaps(int numShadowLevels, Magnum::Vector2i size);
 
-	void setNearFar(float cameraNear, float cameraFar);
+	void setCutPlanes(float cameraNear, float cameraFar, float power);
 
 	void setTarget(Magnum::Vector3 lightDirection, Magnum::Vector3 screenDirection,
 				   Magnum::SceneGraph::Camera3D &mainCamera);
@@ -25,15 +25,13 @@ public:
 	void render(Magnum::SceneGraph::DrawableGroup3D& drawables);
 	
 	std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer);
+	static std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, float z0 = -1, float z1 = 1);
+	static std::vector<Magnum::Vector3> getFrustumCorners(const Magnum::Matrix4 &imvp, float z0, float z1);
 
 	size_t getNumLayers() const { return layers.size(); }
 
 	const Magnum::Matrix4& getLayerMatrix(int layer) const {
 		return layers[layer].shadowMatrix;
-	}
-
-	const std::vector<float>& getCutPlanes() const {
-		return cutPlanes;
 	}
 
 	std::vector<Magnum::Vector4> calculateClipPlanes();
@@ -45,7 +43,6 @@ public:
 private:
 	Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>& object;
 	Magnum::Texture2DArray* shadowTexture;
-	std::vector<float> cutPlanes;
 
 	struct ShadowLayerData {
 		Magnum::Framebuffer shadowFramebuffer;
@@ -53,6 +50,7 @@ private:
 		Magnum::Matrix4 shadowMatrix;
 		Magnum::Vector2 orthographicSize;
 		float orthographicNear, orthographicFar;
+		float cutPlane;
 
 		ShadowLayerData(Magnum::Vector2i size);
 	};
