@@ -1,7 +1,5 @@
 This example shows an example of shadow mapping using a Parallel Split / Cascade shadow mapping technique.
 
-![Primitives](primitives.png)
-
 Key shortcuts
 -------------
 
