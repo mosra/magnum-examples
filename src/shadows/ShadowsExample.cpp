@@ -8,6 +8,7 @@
 #include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Primitives/Capsule.h>
 #include <Magnum/Primitives/Plane.h>
+#include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -71,6 +72,8 @@ class ShadowsExample: public Platform::Application {
 		std::vector<Model> models;
 
 		Magnum::Vector3 mainCameraVelocity;
+
+	bool isDebugCameraActive() const;
 };
 
 const int NUM_SHADER_LEVELS = 4;
@@ -91,8 +94,10 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
     Renderer::enable(Renderer::Feature::FaceCulling);
 
 	addModel(Primitives::Cube::solid());
+	addModel(Primitives::Icosphere::solid(0));
+	addModel(Primitives::Icosphere::solid(2));
     addModel(Primitives::Capsule3D::solid(6,6,6,1));
-    addModel(Primitives::Cylinder::solid(6,6,0.5f,Primitives::Cylinder::Flag::CapEnds));
+//    addModel(Primitives::Cylinder::solid(6,6,1,Primitives::Cylinder::Flag::CapEnds)); // The caps were floating for me
 
 	auto ground = createSceneObject(models[0], false, true);
 	ground->setTransformation(Magnum::Matrix4::scaling({100,1,100}));
@@ -108,10 +113,10 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 
     shadowLight.setCutPlanes(near, far, 3.0f);
     mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near, far));
-	mainCameraObject.setTransformation(Matrix4::translation({0,4,0}));
+	mainCameraObject.setTransformation(Matrix4::translation({0,3,0}));
 
 	debugCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near / 4.0f, far * 4.0f));
-	debugCameraObject.setTransformation(Matrix4::translation({0,10,50}));
+	debugCameraObject.setTransformation(Matrix4::lookAt({100,50,0},{0,0,-30},{0,1,0}));
 
 	activeCamera = &mainCamera;
 	activeCameraObject = &mainCameraObject;
@@ -169,13 +174,16 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
 }
 
 void ShadowsExample::drawEvent() {
+	Matrix4 imvp;
+	if (isDebugCameraActive()) {
+		debugLines.reset();
+		imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
+		debugLines.addFrustum(imvp, {1, 0, 0});
+		debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {0,0,1});
+	}
 
-	debugLines.reset();
-	debugLines.addFrustum((mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted(), {1,0,0});
-	debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {1,0,0});
 
-
-	shadowLight.setTarget({0.2f,0.2f,1.0f}, mainCameraObject.transformation()[2].xyz(), mainCamera);
+	shadowLight.setTarget({1,2,1}, mainCameraObject.transformation()[2].xyz(), mainCamera);
 
     shadowLight.render(shadowCasterDrawables);
 
@@ -185,24 +193,35 @@ void ShadowsExample::drawEvent() {
     Corrade::Containers::Array<Magnum::Matrix4> shadowMatrices(Corrade::Containers::NoInit, shadowLight.getNumLayers());
     for (auto layerIndex = 0u; layerIndex < shadowLight.getNumLayers(); layerIndex++) {
         shadowMatrices[layerIndex] = shadowLight.getLayerMatrix(layerIndex);
-		debugLines.addFrustum((Matrix4{{2,0,0,0},{0,2,0,0},{0,0,2,0},{-1,-1,-1,1}} * shadowMatrices[layerIndex]).inverted(), {1,0,0});
+		if (isDebugCameraActive()) {
+			debugLines.addFrustum((Matrix4{{2,  0,  0,  0},
+										   {0,  2,  0,  0},
+										   {0,  0,  2,  0},
+										   {-1, -1, -1, 1}} * shadowMatrices[layerIndex]).inverted(), {0, 1, 1});
+			debugLines.addFrustum(imvp, {1.0f, 0.5f, 0.5f}, layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
+								  shadowLight.getCutZ(layerIndex));
+		}
     }
     shadowReceiverShader.setShadowmapMatrices(shadowMatrices);
     shadowReceiverShader.setShadowmapTexture(*shadowLight.getShadowTexture());
+	shadowReceiverShader.setLightDirection(shadowLightObject.transformation()[2].xyz());
 
     activeCamera->draw(shadowReceiverDrawables);
 
-	shadowReceiverShader.setLightDirection(activeCamera->cameraMatrix().rotationScaling() * shadowLightObject.transformation()[2].xyz());
-	debugLines.draw(activeCamera->projectionMatrix() * activeCamera->cameraMatrix());
+	if (isDebugCameraActive()) {
+		debugLines.draw(activeCamera->projectionMatrix() * activeCamera->cameraMatrix());
+	}
 
     swapBuffers();
 	if (!mainCameraVelocity.isZero()) {
 		auto transform = activeCameraObject->transformation();
-		transform.translation() += transform.rotation() * mainCameraVelocity * 0.1f;
+		transform.translation() += transform.rotation() * mainCameraVelocity * 0.3f;
 		activeCameraObject->setTransformation(transform);
 		redraw();
 	}
 }
+
+bool ShadowsExample::isDebugCameraActive() const { return activeCamera == &debugCamera; }
 
 void ShadowsExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
@@ -230,7 +249,6 @@ void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
 		activeCameraObject->setTransformation(transform);
 	}
 
-
     event.setAccepted();
     redraw();
 }
@@ -241,6 +259,12 @@ void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 	}
 	else if (event.key() == KeyEvent::Key::Down) {
 		mainCameraVelocity.z() = 1;
+	}
+	else if (event.key() == KeyEvent::Key::PageUp) {
+		mainCameraVelocity.y() = 1;
+	}
+	else if (event.key() == KeyEvent::Key::PageDown) {
+		mainCameraVelocity.y() = -1;
 	}
 	else if (event.key() == KeyEvent::Key::Right) {
 		mainCameraVelocity.x() = 1;
@@ -262,6 +286,9 @@ void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 void ShadowsExample::keyReleaseEvent(Platform::Sdl2Application::KeyEvent &event) {
 	if (event.key() == KeyEvent::Key::Up || event.key() == KeyEvent::Key::Down) {
 		mainCameraVelocity.z() = 0;
+	}
+	else if (event.key() == KeyEvent::Key::PageDown || event.key() == KeyEvent::Key::PageUp) {
+		mainCameraVelocity.y() = 0;
 	}
 	else if (event.key() == KeyEvent::Key::Right || event.key() == KeyEvent::Key::Left) {
 		mainCameraVelocity.x() = 0;

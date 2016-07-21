@@ -24,9 +24,10 @@ public:
 	
 	void render(Magnum::SceneGraph::DrawableGroup3D& drawables);
 	
-	std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer);
+	std::vector<Magnum::Vector3> getLayerFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer);
 	static std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, float z0 = -1, float z1 = 1);
 	static std::vector<Magnum::Vector3> getFrustumCorners(const Magnum::Matrix4 &imvp, float z0, float z1);
+	float getCutZ(int layer) const;
 
 	size_t getNumLayers() const { return layers.size(); }
 

@@ -63,7 +63,7 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
 	auto inverseCameraRotationMatrix = cameraRotationMatrix.inverted();
 
 	for (auto i = 0u; i < layers.size(); i++) {
-		auto mainCameraFrustumCorners = getCameraFrustumCorners(mainCamera, int(i));
+		auto mainCameraFrustumCorners = getLayerFrustumCorners(mainCamera, int(i));
 		auto& d = layers[i];
 		Magnum::Vector3 min(std::numeric_limits<float>::max()), max(std::numeric_limits<float>::lowest());
 		for (auto worldPoint : mainCameraFrustumCorners) {
@@ -90,6 +90,10 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
 	}
 }
 
+float ShadowLight::getCutZ(int layer) const {
+	return layers[layer].cutPlane;
+}
+
 void ShadowLight::setCutPlanes(float zNear, float zFar, float power) {
 	//props http://stackoverflow.com/a/33465663
 	for (auto i = 0u; i < layers.size(); i++) {
@@ -99,7 +103,7 @@ void ShadowLight::setCutPlanes(float zNear, float zFar, float power) {
 	}
 }
 
-std::vector<Magnum::Vector3> ShadowLight::getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer) {
+std::vector<Magnum::Vector3> ShadowLight::getLayerFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer) {
 	auto z0 = layer == 0 ? 0 : layers[layer-1].cutPlane;
 	auto z1 = layers[layer].cutPlane;
 	return getCameraFrustumCorners(mainCamera, z0, z1);
@@ -115,7 +119,7 @@ std::vector<Vector3> ShadowLight::getFrustumCorners(const Magnum::Matrix4 &imvp,
 		auto vec2 = imvp * vec;
 		return vec2.xyz() / vec2.w();
 	};
-	return std::__1::vector<Vector3>{
+	return std::vector<Vector3>{
 		projectImvpAndDivide({-1,-1, z0, 1}),
 		projectImvpAndDivide({ 1,-1, z0, 1}),
 		projectImvpAndDivide({-1, 1, z0, 1}),
@@ -130,8 +134,8 @@ std::vector<Vector3> ShadowLight::getFrustumCorners(const Magnum::Matrix4 &imvp,
 std::vector<Magnum::Vector4> ShadowLight::calculateClipPlanes() {
 	Magnum::Matrix4 pm = projectionMatrix();
 	std::vector<Magnum::Vector4> clipPlanes = {{
-		Magnum::Vector4( pm[3][0]-pm[2][0], pm[3][1]-pm[2][1], pm[3][2]-pm[2][2], pm[3][3]-pm[2][3] ), // far
 		Magnum::Vector4( pm[3][0]+pm[2][0], pm[3][1]+pm[2][1], pm[3][2]+pm[2][2], pm[3][3]+pm[2][3] ), // near
+		Magnum::Vector4( pm[3][0]-pm[2][0], pm[3][1]-pm[2][1], pm[3][2]-pm[2][2], pm[3][3]-pm[2][3] ), // far
 
 		Magnum::Vector4( pm[3][0]+pm[0][0], pm[3][1]+pm[0][1], pm[3][2]+pm[0][2], pm[3][3]+pm[0][3] ), // left
 		Magnum::Vector4( pm[3][0]-pm[0][0], pm[3][1]-pm[0][1], pm[3][2]-pm[0][2], pm[3][3]-pm[0][3] ), // right
@@ -168,7 +172,7 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 		auto orthographicFar = d.orthographicFar;
 		object.setTransformation(d.shadowCameraMatrix);
 		object.setClean();
-		setProjectionMatrix(Magnum::Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar));
+		setProjectionMatrix(Magnum::Matrix4::orthographicProjection(d.orthographicSize, -orthographicNear, -orthographicFar));
 		auto clipPlanes = calculateClipPlanes();
 
 		auto transformations = object.scene()->AbstractObject<3,Float>::transformationMatrices(objects, cameraMatrix());
@@ -189,8 +193,8 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			}
 			{
 				auto nearestPoint = drawableCentre.z() + drawable.getRadius();
-				if (nearestPoint > orthographicFar) {
-					orthographicFar = nearestPoint;
+				if (nearestPoint > orthographicNear) {
+					orthographicNear = nearestPoint;
 				}
 				filteredDrawables.push_back(&drawable);
 				transformations[transformationsOutIndex++] = transform;

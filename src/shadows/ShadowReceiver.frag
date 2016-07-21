@@ -1,39 +1,43 @@
 
 uniform sampler2DArrayShadow shadowmapTexture;
-uniform highp vec3 lightDirection;
 
 in mediump vec3 transformedNormal;
-
+in highp vec3 interpolatedLightDirection;
 in highp vec3 shadowCoord[NUM_SHADOW_MAP_LEVELS];
 uniform float shadowDepthSplits[NUM_SHADOW_MAP_LEVELS];
 
 out lowp vec4 color;
+
 
 void main() {
     vec3 albedo = vec3(0.5,0.5,0.5);
 
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
 
-	float shadow = 0.0;
-	lowp float intensity = dot(normalizedTransformedNormal, lightDirection);
+	float shadow = 1.0;
+	//Is the normal of this face pointing towards the light?
+	lowp float intensity = dot(normalizedTransformedNormal, normalize(interpolatedLightDirection));
 	int shadowLevel = 0;
 	if (intensity <= 0) {
+		//Pointing away from the light
 		shadow = 0.0f;
 		intensity = 0.0f;
 	}
 	else {
+    	albedo = vec3(0.5,0.0,0.5);
 		for (; shadowLevel < NUM_SHADOW_MAP_LEVELS; shadowLevel++) {
 			bool inRange = shadowCoord[shadowLevel].x >= 0 && shadowCoord[shadowLevel].y >= 0 && shadowCoord[shadowLevel].x < 1 && shadowCoord[shadowLevel].y < 1;
 			if (inRange) {
 				float bias = 0.0015;
-				shadow = texture(shadowmapTexture, vec4(shadowCoord[shadowLevel].xy, shadowLevel, (1-shadowCoord[shadowLevel].z)-bias));
+				shadow = texture(shadowmapTexture, vec4(shadowCoord[shadowLevel].xy, shadowLevel, (1-shadowCoord[shadowLevel]).z-bias));
+				albedo = vec3(0.5,0.5,0.5);
 				break;
 			}
 		}
 	}
 
     vec3 ambient = vec3(0.5);
-    color.rgb = ((ambient + vec3(shadow)) * albedo);
+    color.rgb = ((ambient + vec3(intensity * shadow)) * albedo);
     color.a = 1.0;
 
 #ifdef DEBUG_SHADOWMAP_LEVELS

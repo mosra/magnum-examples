@@ -31,8 +31,11 @@ public:
 	}
 
 	void addFrustum(const Matrix4& imvp, Color3 col);
+	void addFrustum(const Matrix4 &imvp, const Color3 &col, float z0, float z1);
 
     void draw(const Magnum::Matrix4& transformationProjectionMatrix);
+
+
 
 protected:
 
@@ -40,5 +43,6 @@ protected:
 	Magnum::Buffer buffer;
 	Magnum::Mesh mesh;
 	Shader shader;
+
 };
 

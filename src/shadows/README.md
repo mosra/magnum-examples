@@ -1,15 +1,12 @@
-This example shows how to use builtin primitives and do simple input handling.
-It displays colored cube which can be rotated using mouse.
+This example shows an example of shadow mapping using a Parallel Split / Cascade shadow mapping technique.
 
 ![Primitives](primitives.png)
 
 Key shortcuts
 -------------
 
-Rotate the cube using **mouse drag**, change its color using **mouse click**.
+* Cursor keys and Page Up / Down - Translate camera
+* Left mouse drag - rotate the camera
+* F1 Switch to main camera
+* F2 Switch to debug camera
 
-Documentation
--------------
-
-This example is thoroughly explained in the documentation, which you can read
-also online at http://mosra.cz/blog/magnum-doc/examples-primitives.html .
