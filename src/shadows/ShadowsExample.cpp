@@ -178,8 +178,8 @@ void ShadowsExample::drawEvent() {
 	if (isDebugCameraActive()) {
 		debugLines.reset();
 		imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
-		debugLines.addFrustum(imvp, {1, 0, 0});
-		debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {0,0,1});
+//		debugLines.addFrustum(imvp, {1, 0, 0});
+//		debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {0,0,1});
 	}
 
 
@@ -197,8 +197,11 @@ void ShadowsExample::drawEvent() {
 			debugLines.addFrustum((Matrix4{{2,  0,  0,  0},
 										   {0,  2,  0,  0},
 										   {0,  0,  2,  0},
-										   {-1, -1, -1, 1}} * shadowMatrices[layerIndex]).inverted(), {0, 1, 1});
-			debugLines.addFrustum(imvp, {1.0f, 0.5f, 0.5f}, layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
+										   {-1, -1, -1, 1}} * shadowMatrices[layerIndex]).inverted(),
+								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 0.5f));
+			debugLines.addFrustum(imvp,
+								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 1.0f),
+								  layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
 								  shadowLight.getCutZ(layerIndex));
 		}
     }
