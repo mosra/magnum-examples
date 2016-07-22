@@ -36,6 +36,7 @@ ShadowReceiverShader::ShadowReceiverShader(int numShaderLevels) {
 	transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
 	shadowmapMatrixUniform = uniformLocation("shadowmapMatrix");
 	lightDirectionUniform = uniformLocation("lightDirection");
+	shadowBiasUniform = uniformLocation("shadowBias");
 
 	setUniform(uniformLocation("shadowmapTexture"), ShadowmapTextureLayer);
 }
@@ -66,5 +67,10 @@ ShadowReceiverShader &ShadowReceiverShader::setLightDirection(const Magnum::Vect
 
 ShadowReceiverShader &ShadowReceiverShader::setShadowmapTexture(Magnum::Texture2DArray &texture) {
 	texture.bind(ShadowmapTextureLayer);
+	return *this;
+}
+
+ShadowReceiverShader &ShadowReceiverShader::setShadowBias(float bias) {
+	setUniform(shadowBiasUniform, bias);
 	return *this;
 }

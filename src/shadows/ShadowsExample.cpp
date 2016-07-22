@@ -5,10 +5,8 @@
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Primitives/Capsule.h>
 #include <Magnum/Primitives/Plane.h>
-#include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -73,7 +71,7 @@ class ShadowsExample: public Platform::Application {
 
 		Magnum::Vector3 mainCameraVelocity;
 
-	bool isDebugCameraActive() const;
+	void renderDebugLines() const;
 };
 
 const int NUM_SHADER_LEVELS = 3;
@@ -89,6 +87,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 ,   debugCamera(debugCameraObject)
 {
     shadowLight.setupShadowmaps(NUM_SHADER_LEVELS, {1024,1024});
+	shadowReceiverShader.setShadowBias(0.003f);
 
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
@@ -96,7 +95,6 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 	addModel(Primitives::Cube::solid());
     addModel(Primitives::Capsule3D::solid(1,1,4,1));
 	addModel(Primitives::Capsule3D::solid(6,1,9,1));
-//    addModel(Primitives::Cylinder::solid(6,6,1,Primitives::Cylinder::Flag::CapEnds)); // The caps were floating for me
 
 	auto ground = createSceneObject(models[0], false, true);
 	ground->setTransformation(Magnum::Matrix4::scaling({100,1,100}));
@@ -104,7 +102,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 	for (int i = 0; i < 200; i++) {
 		auto& model = models[rand() % models.size()];
 		auto object = createSceneObject(model, true, true);
-		object->setTransformation(Magnum::Matrix4::translation({rand()*100.0f/RAND_MAX - 50, rand()*10.0f/RAND_MAX - 5, rand()*100.0f/RAND_MAX - 50}));
+		object->setTransformation(Magnum::Matrix4::translation({rand()*100.0f/RAND_MAX - 50, rand()*5.0f/RAND_MAX, rand()*100.0f/RAND_MAX - 50}));
 	}
 
     float near = 0.01f;
@@ -173,15 +171,6 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
 }
 
 void ShadowsExample::drawEvent() {
-	Matrix4 imvp;
-	if (isDebugCameraActive()) {
-		debugLines.reset();
-		imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
-//		debugLines.addFrustum(imvp, {1, 0, 0});
-//		debugLines.addFrustum((shadowLight.projectionMatrix() * shadowLight.cameraMatrix()).inverted(), {0,0,1});
-	}
-
-
 	shadowLight.setTarget({1,2,1}, mainCameraObject.transformation()[2].xyz(), mainCamera);
 
     shadowLight.render(shadowCasterDrawables);
@@ -192,29 +181,17 @@ void ShadowsExample::drawEvent() {
     Corrade::Containers::Array<Magnum::Matrix4> shadowMatrices(Corrade::Containers::NoInit, shadowLight.getNumLayers());
     for (auto layerIndex = 0u; layerIndex < shadowLight.getNumLayers(); layerIndex++) {
         shadowMatrices[layerIndex] = shadowLight.getLayerMatrix(layerIndex);
-		if (isDebugCameraActive()) {
-			debugLines.addFrustum((Matrix4{{2,  0,  0,  0},
-										   {0,  2,  0,  0},
-										   {0,  0,  2,  0},
-										   {-1, -1, -1, 1}} * shadowMatrices[layerIndex]).inverted(),
-								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 0.5f));
-			debugLines.addFrustum(imvp,
-								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 1.0f),
-								  layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
-								  shadowLight.getCutZ(layerIndex));
-		}
     }
+
     shadowReceiverShader.setShadowmapMatrices(shadowMatrices);
     shadowReceiverShader.setShadowmapTexture(*shadowLight.getShadowTexture());
 	shadowReceiverShader.setLightDirection(shadowLightObject.transformation()[2].xyz());
 
     activeCamera->draw(shadowReceiverDrawables);
 
-	if (isDebugCameraActive()) {
-		debugLines.draw(activeCamera->projectionMatrix() * activeCamera->cameraMatrix());
-	}
+	renderDebugLines();
 
-    swapBuffers();
+	swapBuffers();
 	if (!mainCameraVelocity.isZero()) {
 		auto transform = activeCameraObject->transformation();
 		transform.translation() += transform.rotation() * mainCameraVelocity * 0.3f;
@@ -223,7 +200,25 @@ void ShadowsExample::drawEvent() {
 	}
 }
 
-bool ShadowsExample::isDebugCameraActive() const { return activeCamera == &debugCamera; }
+void ShadowsExample::renderDebugLines() const {
+	if (activeCamera == &debugCamera) {
+		debugLines.reset();
+		auto imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
+		for (auto layerIndex = 0u; layerIndex < shadowLight.getNumLayers(); layerIndex++) {
+			auto layerMatrix = shadowLight.getLayerMatrix(layerIndex);
+			debugLines.addFrustum((Matrix4{{2,  0,  0,  0},
+										   {0,  2,  0,  0},
+										   {0,  0,  2,  0},
+										   {-1, -1, -1, 1}} * layerMatrix).inverted(),
+								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 0.5f));
+			debugLines.addFrustum(imvp,
+								  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 1.0f),
+								  layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
+								  shadowLight.getCutZ(layerIndex));
+		}
+		debugLines.draw(activeCamera->projectionMatrix() * activeCamera->cameraMatrix());
+	}
+}
 
 void ShadowsExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
