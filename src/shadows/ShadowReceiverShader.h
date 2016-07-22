@@ -3,6 +3,7 @@
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Shaders/Generic.h>
 
+/// Shader that can synthesize shadows on an object
 class ShadowReceiverShader : public Magnum::AbstractShaderProgram {
 public:
 	ShadowReceiverShader(int numShaderLevels);

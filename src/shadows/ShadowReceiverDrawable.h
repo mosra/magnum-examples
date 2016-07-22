@@ -5,6 +5,7 @@
 class ShadowReceiverShader;
 class ShadowLight;
 
+/// Drawable that should render shadows cast by casters
 class ShadowReceiverDrawable : public Magnum::SceneGraph::Drawable3D {
 public:
 	ShadowReceiverDrawable(Magnum::SceneGraph::AbstractObject3D &object,

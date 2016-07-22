@@ -93,7 +93,7 @@ float ShadowLight::getCutZ(int layer) const {
 	return layers[layer].cutPlane;
 }
 
-void ShadowLight::setCutPlanes(float zNear, float zFar, float power) {
+void ShadowLight::setupSplitDistances(float zNear, float zFar, float power) {
 	//props http://stackoverflow.com/a/33465663
 	for (auto i = 0u; i < layers.size(); i++) {
 		float linearDepth = zNear + std::pow(float(i+1) / layers.size(), power) * (zFar - zNear);
@@ -182,7 +182,7 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			auto& drawable = static_cast<ShadowCasterDrawable&>(drawables[drawableIndex]);
 			auto transform = transformations[drawableIndex];
 			// If your centre is offset, inject it here
-			const Vector4 &localCentre = Magnum::Vector4{0, 0, 0, 1};
+			Vector4 localCentre{0, 0, 0, 1};
 			Magnum::Vector4 drawableCentre = transform * localCentre;
 			for (size_t clipPlaneIndex = 1; clipPlaneIndex < clipPlanes.size(); clipPlaneIndex++) {
 				auto distance = Magnum::Math::dot(clipPlanes[clipPlaneIndex], drawableCentre);

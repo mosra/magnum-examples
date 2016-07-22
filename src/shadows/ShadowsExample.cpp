@@ -33,6 +33,12 @@ class ShadowsExample: public Platform::Application {
         explicit ShadowsExample(const Arguments& arguments);
 
     private:
+		struct Model {
+			Buffer indexBuffer, vertexBuffer;
+			Mesh mesh;
+			float radius;
+		};
+
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
@@ -41,12 +47,7 @@ class ShadowsExample: public Platform::Application {
 		void keyReleaseEvent(KeyEvent &event) override;
 
 		void addModel(const Trade::MeshData3D &meshData3D);
-
-		struct Model {
-			Buffer indexBuffer, vertexBuffer;
-			Mesh mesh;
-			float radius;
-		};
+		void renderDebugLines();
 		Object3D* createSceneObject(Model &model, bool makeCaster, bool makeReceiver);
 
 		Scene3D scene;
@@ -70,8 +71,6 @@ class ShadowsExample: public Platform::Application {
 		std::vector<Model> models;
 
 		Magnum::Vector3 mainCameraVelocity;
-
-	void renderDebugLines() const;
 };
 
 const int NUM_SHADER_LEVELS = 3;
@@ -108,7 +107,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
     float near = 0.01f;
     float far = 100.0f;
 
-    shadowLight.setCutPlanes(near, far, 3.0f);
+	shadowLight.setupSplitDistances(near, far, 3.0f);
+
     mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near, far));
 	mainCameraObject.setTransformation(Matrix4::translation({0,3,0}));
 
@@ -119,7 +119,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 	activeCameraObject = &mainCameraObject;
 
 	shadowLightObject.setTransformation(Matrix4::lookAt(
-			{0.1f,1,0.1f},
+			{3.0f,1,2.0f},
 			{0,0,0},
 			{0,1,0}
 	));
@@ -171,7 +171,7 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
 }
 
 void ShadowsExample::drawEvent() {
-	shadowLight.setTarget({1,2,1}, mainCameraObject.transformation()[2].xyz(), mainCamera);
+	shadowLight.setTarget({3,2,3}, mainCameraObject.transformation()[2].xyz(), mainCamera);
 
     shadowLight.render(shadowCasterDrawables);
 
@@ -200,7 +200,7 @@ void ShadowsExample::drawEvent() {
 	}
 }
 
-void ShadowsExample::renderDebugLines() const {
+void ShadowsExample::renderDebugLines() {
 	if (activeCamera == &debugCamera) {
 		debugLines.reset();
 		auto imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
