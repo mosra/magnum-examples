@@ -7,9 +7,9 @@ currently supported.
 Usage
 -----
 
-Pass path to scene file as parameter:
+Pass path to an OpenGEX or COLLADA scene file as parameter:
 
-    ./viewer scene.ogex
+    ./magnum-viewer scene.ogex
 
 The application opens the file using `AnySceneImporter` which detects the file
 type, delegates the import to plugin dedicated for given format (such as
@@ -19,6 +19,9 @@ the scene, **mouse wheel** zooms in and out.
 
 Sample OpenGEX scene is supplied alonside the source. If you install the
 examples, the scene is also copied into `<prefix>/share/magnum/examples/viewer/`.
+Running the example with the bundled scene can be then done like this:
+
+    ./magnum-cubemap <path-to-example-source>/scene.ogex
 
 Documentation
 -------------
