@@ -55,16 +55,15 @@ ShadowLight::~ShadowLight()
 {
 }
 
-void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
-							SceneGraph::Camera3D &mainCamera)
+void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection, SceneGraph::Camera3D &mainCamera)
 {
 	auto cameraMatrix = Magnum::Matrix4::lookAt({0,0,0}, -lightDirection, screenDirection);
 	auto cameraRotationMatrix = cameraMatrix.rotation();
 	auto inverseCameraRotationMatrix = cameraRotationMatrix.inverted();
 
-	for (auto i = 0u; i < layers.size(); i++) {
-		auto mainCameraFrustumCorners = getLayerFrustumCorners(mainCamera, int(i));
-		auto& d = layers[i];
+	for (auto layerIndex = 0u; layerIndex < layers.size(); layerIndex++) {
+		auto mainCameraFrustumCorners = getLayerFrustumCorners(mainCamera, int(layerIndex));
+		auto& layer = layers[layerIndex];
 		Magnum::Vector3 min(std::numeric_limits<float>::max()), max(std::numeric_limits<float>::lowest());
 		for (auto worldPoint : mainCameraFrustumCorners) {
 			auto cameraPoint = inverseCameraRotationMatrix * worldPoint;
@@ -82,11 +81,11 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection,
 		auto cameraPosition = cameraRotationMatrix * mid;
 
 		auto range = max - min;
-		d.orthographicSize = range.xy();
-		d.orthographicNear = 0.5f * range.z();
-		d.orthographicFar =  -0.5f * range.z();
+		layer.orthographicSize = range.xy();
+		layer.orthographicNear = -0.5f * range.z();
+		layer.orthographicFar =  0.5f * range.z();
 		cameraMatrix.translation() = cameraPosition;
-		d.shadowCameraMatrix = cameraMatrix;
+		layer.shadowCameraMatrix = cameraMatrix;
 	}
 }
 
@@ -172,7 +171,7 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 		auto orthographicFar = d.orthographicFar;
 		object.setTransformation(d.shadowCameraMatrix);
 		object.setClean();
-		setProjectionMatrix(Magnum::Matrix4::orthographicProjection(d.orthographicSize, -orthographicNear, -orthographicFar));
+		setProjectionMatrix(Magnum::Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar));
 		auto clipPlanes = calculateClipPlanes();
 
 		auto transformations = object.scene()->AbstractObject<3,Float>::transformationMatrices(objects, cameraMatrix());
@@ -192,8 +191,8 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 				}
 			}
 			{
-				auto nearestPoint = drawableCentre.z() + drawable.getRadius();
-				if (nearestPoint > orthographicNear) {
+				auto nearestPoint = -drawableCentre.z() - drawable.getRadius();
+				if (nearestPoint < orthographicNear) {
 					orthographicNear = nearestPoint;
 				}
 				filteredDrawables.push_back(&drawable);
@@ -202,11 +201,12 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			next:;
 		}
 
-		auto shadowCameraProjectionMatrix = Magnum::Matrix4::orthographicProjection(d.orthographicSize, -orthographicNear, -orthographicFar);
+		auto shadowCameraProjectionMatrix = Magnum::Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar);
 		d.shadowMatrix = bias * shadowCameraProjectionMatrix * cameraMatrix();
 		setProjectionMatrix(shadowCameraProjectionMatrix);
 
 		Magnum::Renderer::enable(Magnum::Renderer::Feature::DepthTest);
+		Magnum::Renderer::disable(Magnum::Renderer::Feature::FaceCulling);
 		Magnum::Renderer::setDepthMask(true);
 		d.shadowFramebuffer.clear(Magnum::FramebufferClear::Depth);
 		d.shadowFramebuffer.bind();
@@ -214,6 +214,7 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			filteredDrawables[i]->draw(transformations[i], *this);
 		}
 
+		Magnum::Renderer::enable(Magnum::Renderer::Feature::FaceCulling);
 		Magnum::defaultFramebuffer.bind();
 	}
 

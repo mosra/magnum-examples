@@ -76,7 +76,7 @@ class ShadowsExample: public Platform::Application {
 	bool isDebugCameraActive() const;
 };
 
-const int NUM_SHADER_LEVELS = 4;
+const int NUM_SHADER_LEVELS = 3;
 
 ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Shadows Example")}
 ,   scene()
@@ -94,9 +94,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
     Renderer::enable(Renderer::Feature::FaceCulling);
 
 	addModel(Primitives::Cube::solid());
-	addModel(Primitives::Icosphere::solid(0));
-	addModel(Primitives::Icosphere::solid(2));
-    addModel(Primitives::Capsule3D::solid(6,6,6,1));
+    addModel(Primitives::Capsule3D::solid(1,1,4,1));
+	addModel(Primitives::Capsule3D::solid(6,1,9,1));
 //    addModel(Primitives::Cylinder::solid(6,6,1,Primitives::Cylinder::Flag::CapEnds)); // The caps were floating for me
 
 	auto ground = createSceneObject(models[0], false, true);
@@ -105,7 +104,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 	for (int i = 0; i < 200; i++) {
 		auto& model = models[rand() % models.size()];
 		auto object = createSceneObject(model, true, true);
-		object->setTransformation(Magnum::Matrix4::translation({rand()*100.0f/RAND_MAX - 50, rand()*10.0f/RAND_MAX, rand()*100.0f/RAND_MAX - 50}));
+		object->setTransformation(Magnum::Matrix4::translation({rand()*100.0f/RAND_MAX - 50, rand()*10.0f/RAND_MAX - 5, rand()*100.0f/RAND_MAX - 50}));
 	}
 
     float near = 0.01f;

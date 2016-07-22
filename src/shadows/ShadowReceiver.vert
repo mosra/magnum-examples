@@ -8,7 +8,7 @@ in mediump vec3 normal;
 
 out mediump vec3 transformedNormal;
 
-out highp vec3 shadowCoord[NUM_SHADOW_MAP_LEVELS];
+out highp vec3 shadowCoords[NUM_SHADOW_MAP_LEVELS];
 out highp vec3 interpolatedLightDirection;
 
 void main() {
@@ -18,7 +18,7 @@ void main() {
 
     vec4 worldPos4 = modelMatrix * position;
     for (int i = 0; i < shadowmapMatrix.length(); i++) {
-        shadowCoord[i] = (shadowmapMatrix[i] * worldPos4).xyz;
+        shadowCoords[i] = (shadowmapMatrix[i] * worldPos4).xyz;
     }
 
     gl_Position = transformationProjectionMatrix * position;
