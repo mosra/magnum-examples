@@ -21,7 +21,7 @@ Sample OpenGEX scene is supplied alonside the source. If you install the
 examples, the scene is also copied into `<prefix>/share/magnum/examples/viewer/`.
 Running the example with the bundled scene can be then done like this:
 
-    ./magnum-cubemap <path-to-example-source>/scene.ogex
+    ./magnum-viewer <path-to-example-source>/scene.ogex
 
 Documentation
 -------------
