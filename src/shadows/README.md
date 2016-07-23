@@ -1,5 +1,8 @@
 This example shows an example of shadow mapping using a Parallel Split / Cascade shadow mapping technique.
 
+![Shadows](shadows1.png)
+![Shadow Debug Camera](shadows2.png)
+
 Key shortcuts
 -------------
 
