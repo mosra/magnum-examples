@@ -14,7 +14,8 @@ public:
 	ShadowCasterDrawable(Magnum::SceneGraph::AbstractObject3D& parent, Magnum::SceneGraph::DrawableGroup3D *drawables);
 
 	virtual ~ShadowCasterDrawable();
-	
+
+	/* Mesh to use for this drawable and its bounding sphere radius. */
     void setMesh(Magnum::Mesh* mesh, float radius) {
 		this->mesh = mesh;
 		this->radius = radius;

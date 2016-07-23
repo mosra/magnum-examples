@@ -9,7 +9,7 @@ class ShadowLight;
 class ShadowReceiverDrawable : public Magnum::SceneGraph::Drawable3D {
 public:
 	ShadowReceiverDrawable(Magnum::SceneGraph::AbstractObject3D &object,
-							   Magnum::SceneGraph::DrawableGroup3D *drawables);
+						   Magnum::SceneGraph::DrawableGroup3D *drawables);
 
 	virtual void draw(const Magnum::Matrix4 &transformationMatrix,
 					  Magnum::SceneGraph::Camera3D &camera) override;

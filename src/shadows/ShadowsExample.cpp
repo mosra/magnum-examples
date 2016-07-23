@@ -171,8 +171,18 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
 }
 
 void ShadowsExample::drawEvent() {
+
+	if (!mainCameraVelocity.isZero()) {
+		auto transform = activeCameraObject->transformation();
+		transform.translation() += transform.rotation() * mainCameraVelocity * 0.3f;
+		activeCameraObject->setTransformation(transform);
+		redraw();
+	}
+
+	/* You only really need to do this when your camera moves */
 	shadowLight.setTarget({3,2,3}, mainCameraObject.transformation()[2].xyz(), mainCamera);
 
+	/* Create the shadow map textures. */
     shadowLight.render(shadowCasterDrawables);
 
 	Magnum::Renderer::setClearColor({0.1f,0.1f,0.4f,1.0f});
@@ -192,12 +202,6 @@ void ShadowsExample::drawEvent() {
 	renderDebugLines();
 
 	swapBuffers();
-	if (!mainCameraVelocity.isZero()) {
-		auto transform = activeCameraObject->transformation();
-		transform.translation() += transform.rotation() * mainCameraVelocity * 0.3f;
-		activeCameraObject->setTransformation(transform);
-		redraw();
-	}
 }
 
 void ShadowsExample::renderDebugLines() {

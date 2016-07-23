@@ -27,7 +27,6 @@ public:
 	 * @param lightDirection Direction of travel of the light.
 	 * @param screenDirection Crossed with light direction to determine orientation of the shadow maps. Use the forward direction of the camera for best resolution use, or use a constant value for more stable shadows.
 	 * @param mainCamera The camera to use to determine the optimal splits (normally, the main camera that the shadows will be rendered to). */
-
 	void setTarget(Magnum::Vector3 lightDirection, Magnum::Vector3 screenDirection,
 				   Magnum::SceneGraph::Camera3D &mainCamera);
 

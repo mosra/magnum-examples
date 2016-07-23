@@ -64,6 +64,8 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection, Sce
 	for (auto layerIndex = 0u; layerIndex < layers.size(); layerIndex++) {
 		auto mainCameraFrustumCorners = getLayerFrustumCorners(mainCamera, int(layerIndex));
 		auto& layer = layers[layerIndex];
+
+		/* Calculate the AABB in shadow-camera space */
 		Magnum::Vector3 min(std::numeric_limits<float>::max()), max(std::numeric_limits<float>::lowest());
 		for (auto worldPoint : mainCameraFrustumCorners) {
 			auto cameraPoint = inverseCameraRotationMatrix * worldPoint;
@@ -76,11 +78,13 @@ void ShadowLight::setTarget(Vector3 lightDirection, Vector3 screenDirection, Sce
 				}
 			}
 		}
-		auto mid = (min+max) * 0.5f;
 
+		/* Place the shadow camera at the mid-point of the camera box */
+		auto mid = (min+max) * 0.5f;
 		auto cameraPosition = cameraRotationMatrix * mid;
 
 		auto range = max - min;
+		/* Set up the initial extends of the shadow map's render volume. Note we will adjust this later when we render. */
 		layer.orthographicSize = range.xy();
 		layer.orthographicNear = -0.5f * range.z();
 		layer.orthographicFar =  0.5f * range.z();
@@ -158,6 +162,8 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 	}
 	std::vector<ShadowCasterDrawable*> filteredDrawables;
 
+	/* Projecting world points normalized device coordinates means they range -1 -> 1.
+	 * Use this bias matrix so we go straight from world -> texture space */
 	auto bias = Magnum::Matrix4{
 			{0.5f, 0.0f, 0.0f, 0.0f},
 			{0.0f, 0.5f, 0.0f, 0.0f},
@@ -165,32 +171,45 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			{0.5f, 0.5f, 0.5f, 1.0f}
 	};
 
+	Magnum::Renderer::enable(Magnum::Renderer::Feature::DepthTest);
+	/* You can use face culling, depending on your geometry. You might want to render only back faces for shadows. */
+	Magnum::Renderer::disable(Magnum::Renderer::Feature::FaceCulling);
+	Magnum::Renderer::setDepthMask(true);
+
 	for (auto layer = 0u; layer < layers.size(); layer++) {
 		auto& d = layers[layer];
 		auto orthographicNear = d.orthographicNear;
 		auto orthographicFar = d.orthographicFar;
+
+		/* Move this whole object to the right place to render each layer */
 		object.setTransformation(d.shadowCameraMatrix);
 		object.setClean();
 		setProjectionMatrix(Magnum::Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar));
+
 		auto clipPlanes = calculateClipPlanes();
-
 		auto transformations = object.scene()->AbstractObject<3,Float>::transformationMatrices(objects, cameraMatrix());
-		auto transformationsOutIndex = 0u;
 
+		/* Rebuild the list of objects we will draw by clipping them with the shadow camera's planes */
+		auto transformationsOutIndex = 0u;
 		filteredDrawables.clear();
 		for (size_t drawableIndex = 0; drawableIndex < drawables.size(); drawableIndex++) {
 			auto& drawable = static_cast<ShadowCasterDrawable&>(drawables[drawableIndex]);
 			auto transform = transformations[drawableIndex];
-			// If your centre is offset, inject it here
+			/* If your centre is offset, inject it here */
 			Vector4 localCentre{0, 0, 0, 1};
 			Magnum::Vector4 drawableCentre = transform * localCentre;
+			/* Start at 1, not 0 to skip out the near plane because we need to include shadow casters traveling the direction the camera is facing. */
 			for (size_t clipPlaneIndex = 1; clipPlaneIndex < clipPlanes.size(); clipPlaneIndex++) {
 				auto distance = Magnum::Math::dot(clipPlanes[clipPlaneIndex], drawableCentre);
+				/* If the object is on the useless side of any one plane, we can skip it */
 				if (distance < -drawable.getRadius()) {
 					goto next;
 				}
 			}
 			{
+				/* If this object extends in front of the near plane, extend the near plane.
+				 * We negate the z because the negative z is forward away from the camera,
+				 * but the near/far planes are measured forwards. */
 				auto nearestPoint = -drawableCentre.z() - drawable.getRadius();
 				if (nearestPoint < orthographicNear) {
 					orthographicNear = nearestPoint;
@@ -201,22 +220,20 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			next:;
 		}
 
+		/* Recalculate the projection matrix with new near plane. */
 		auto shadowCameraProjectionMatrix = Magnum::Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar);
 		d.shadowMatrix = bias * shadowCameraProjectionMatrix * cameraMatrix();
 		setProjectionMatrix(shadowCameraProjectionMatrix);
 
-		Magnum::Renderer::enable(Magnum::Renderer::Feature::DepthTest);
-		Magnum::Renderer::disable(Magnum::Renderer::Feature::FaceCulling);
-		Magnum::Renderer::setDepthMask(true);
 		d.shadowFramebuffer.clear(Magnum::FramebufferClear::Depth);
 		d.shadowFramebuffer.bind();
 		for(std::size_t i = 0; i != transformationsOutIndex; ++i) {
 			filteredDrawables[i]->draw(transformations[i], *this);
 		}
-
-		Magnum::Renderer::enable(Magnum::Renderer::Feature::FaceCulling);
-		Magnum::defaultFramebuffer.bind();
 	}
+
+	Magnum::Renderer::enable(Magnum::Renderer::Feature::FaceCulling);
+	Magnum::defaultFramebuffer.bind();
 
 }
 

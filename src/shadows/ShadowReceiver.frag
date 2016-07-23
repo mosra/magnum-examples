@@ -3,7 +3,6 @@ uniform sampler2DArrayShadow shadowmapTexture;
 uniform highp vec3 lightDirection;
 
 in mediump vec3 transformedNormal;
-in highp vec3 interpolatedLightDirection;
 in highp vec3 shadowCoords[NUM_SHADOW_MAP_LEVELS];
 uniform float shadowDepthSplits[NUM_SHADOW_MAP_LEVELS];
 
@@ -22,13 +21,14 @@ void main() {
 	//Is the normal of this face pointing towards the light?
 	lowp float intensity = dot(normalizedTransformedNormal, lightDirection);
 	if (intensity <= 0) {
-		//Pointing away from the light
+		//Pointing away from the light anyway, we know it's in the shade, don't bother shadow map lookup
 		inverseShadow = 0.0f;
 		intensity = 0.0f;
 	}
 	else {
 		int shadowLevel = 0;
 		bool inRange;
+		//Starting with highest resolution shadow map, find one we're in range of
 		for (; shadowLevel < NUM_SHADOW_MAP_LEVELS; shadowLevel++) {
 			vec3 shadowCoord = shadowCoords[shadowLevel];
 			inRange = shadowCoord.x >= 0 && shadowCoord.y >= 0 && shadowCoord.x < 1 && shadowCoord.y < 1 && shadowCoord.z >= 0 && shadowCoord.z < 1;
@@ -47,6 +47,7 @@ void main() {
         }
 #else
 		if (!inRange) {
+			// If your shadow maps don't cover your entire view, you might want to remove this
 			albedo *= vec3(1,0,1); //Something has gone wrong - didn't find a shadow map
 		}
 #endif
