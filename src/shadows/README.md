@@ -1,7 +1,10 @@
 Shadow Map Example
 ------------------
 
-This example shows an example of shadow mapping using a Parallel Split / Cascade shadow mapping technique with a single, directional light source.
+This example shows an example of shadow mapping using a Parallel Split / Cascade shadow mapping
+technique with a single, directional light source.
+
+It is intended to be a basis to start including your own shadow mapping system in your own project.
 
 ![Shadows](shadows1.png)
 ![Shadow Debug Camera](shadows2.png)
