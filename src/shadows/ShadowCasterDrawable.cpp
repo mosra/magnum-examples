@@ -1,6 +1,6 @@
 #include "ShadowCasterDrawable.h"
 #include "ShadowCasterShader.h"
-#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/SceneGraph/Camera.h"
 
 
 ShadowCasterDrawable::ShadowCasterDrawable(Magnum::SceneGraph::AbstractObject3D& parent,
