@@ -26,7 +26,7 @@ ShadowReceiverShader::ShadowReceiverShader(int numShadowLevels) {
 	Shader vert{Version::GL330, Shader::Type::Vertex};
 	Shader frag{Version::GL330, Shader::Type::Fragment};
 
-	std::__cxx11::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
+	std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
 	vert.addSource(preamble);
 	vert.addSource(rs.get("ShadowReceiver.vert"));
 	frag.addSource(preamble);
