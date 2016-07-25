@@ -21,28 +21,28 @@ using namespace Magnum;
 class DebugLines
 {
 public:
-	typedef Shaders::VertexColor3D Shader;
+    typedef Shaders::VertexColor3D Shader;
 
-	DebugLines();
+    DebugLines();
 
-	struct Point {
-		Vector3 position;
-		Color3 color;
-	};
-	
-	void reset();
+    struct Point {
+        Vector3 position;
+        Color3 color;
+    };
 
-	void addLine(Point&& p0, Point&& p1) {
-		lines.push_back(std::move(p0));
-		lines.push_back(std::move(p1));
-	}
+    void reset();
 
-	void addLine(Vector3 p0, Vector3 p1, Color3 col) {
-		addLine({p0,col},{p1,col});
-	}
+    void addLine(Point&& p0, Point&& p1) {
+        lines.push_back(std::move(p0));
+        lines.push_back(std::move(p1));
+    }
 
-	void addFrustum(const Matrix4& imvp, Color3 col);
-	void addFrustum(const Matrix4 &imvp, const Color3 &col, float z0, float z1);
+    void addLine(Vector3 p0, Vector3 p1, Color3 col) {
+        addLine({p0,col},{p1,col});
+    }
+
+    void addFrustum(const Matrix4& imvp, Color3 col);
+    void addFrustum(const Matrix4 &imvp, const Color3 &col, float z0, float z1);
 
     void draw(const Magnum::Matrix4& transformationProjectionMatrix);
 
@@ -51,9 +51,9 @@ public:
 protected:
 
     std::vector<Point> lines;
-	Magnum::Buffer buffer;
-	Magnum::Mesh mesh;
-	Shader shader;
+    Magnum::Buffer buffer;
+    Magnum::Mesh mesh;
+    Shader shader;
 
 };
 

@@ -23,59 +23,59 @@
 class ShadowLight : public Magnum::SceneGraph::Camera3D
 {
 public:
-	ShadowLight(Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>& parent);
+    ShadowLight(Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>& parent);
     virtual ~ShadowLight();
 
-	/** Initialize the shadow map texture array and framebuffers, should be called before setupSplitDistances. */
-	void setupShadowmaps(int numShadowLevels, Magnum::Vector2i size);
+    /** Initialize the shadow map texture array and framebuffers, should be called before setupSplitDistances. */
+    void setupShadowmaps(int numShadowLevels, Magnum::Vector2i size);
 
-	/** Sets up the distances we should cut the view frustum along. The distances will be distributed along a power series.
-	 * Should be called after setupShadowmaps */
-	void setupSplitDistances(float cameraNear, float cameraFar, float power);
+    /** Sets up the distances we should cut the view frustum along. The distances will be distributed along a power series.
+     * Should be called after setupShadowmaps */
+    void setupSplitDistances(float cameraNear, float cameraFar, float power);
 
-	/** Computes all the matrices for the shadow map splits. Should be called whenever your camera moves.
-	 * @param lightDirection Direction of travel of the light.
-	 * @param screenDirection Crossed with light direction to determine orientation of the shadow maps. Use the forward direction of the camera for best resolution use, or use a constant value for more stable shadows.
-	 * @param mainCamera The camera to use to determine the optimal splits (normally, the main camera that the shadows will be rendered to). */
-	void setTarget(Magnum::Vector3 lightDirection, Magnum::Vector3 screenDirection,
-				   Magnum::SceneGraph::Camera3D &mainCamera);
+    /** Computes all the matrices for the shadow map splits. Should be called whenever your camera moves.
+     * @param lightDirection Direction of travel of the light.
+     * @param screenDirection Crossed with light direction to determine orientation of the shadow maps. Use the forward direction of the camera for best resolution use, or use a constant value for more stable shadows.
+     * @param mainCamera The camera to use to determine the optimal splits (normally, the main camera that the shadows will be rendered to). */
+    void setTarget(Magnum::Vector3 lightDirection, Magnum::Vector3 screenDirection,
+                   Magnum::SceneGraph::Camera3D &mainCamera);
 
-	/** Render a group of shadow-casting drawables to the shadow maps */
-	void render(Magnum::SceneGraph::DrawableGroup3D& drawables);
-	
-	std::vector<Magnum::Vector3> getLayerFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer);
-	static std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, float z0 = -1, float z1 = 1);
-	static std::vector<Magnum::Vector3> getFrustumCorners(const Magnum::Matrix4 &imvp, float z0, float z1);
-	float getCutZ(int layer) const;
-	float getCutDistance(float zNear, float zFar, int layer) const;
+    /** Render a group of shadow-casting drawables to the shadow maps */
+    void render(Magnum::SceneGraph::DrawableGroup3D& drawables);
 
-	size_t getNumLayers() const { return layers.size(); }
+    std::vector<Magnum::Vector3> getLayerFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer);
+    static std::vector<Magnum::Vector3> getCameraFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, float z0 = -1, float z1 = 1);
+    static std::vector<Magnum::Vector3> getFrustumCorners(const Magnum::Matrix4 &imvp, float z0, float z1);
+    float getCutZ(int layer) const;
+    float getCutDistance(float zNear, float zFar, int layer) const;
 
-	const Magnum::Matrix4& getLayerMatrix(int layer) const {
-		return layers[layer].shadowMatrix;
-	}
+    size_t getNumLayers() const { return layers.size(); }
 
-	std::vector<Magnum::Vector4> calculateClipPlanes();
+    const Magnum::Matrix4& getLayerMatrix(int layer) const {
+        return layers[layer].shadowMatrix;
+    }
 
-	Magnum::Texture2DArray *getShadowTexture() const {
-		return shadowTexture;
-	}
+    std::vector<Magnum::Vector4> calculateClipPlanes();
+
+    Magnum::Texture2DArray *getShadowTexture() const {
+        return shadowTexture;
+    }
 
 private:
-	Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>& object;
-	Magnum::Texture2DArray* shadowTexture;
+    Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D>& object;
+    Magnum::Texture2DArray* shadowTexture;
 
-	struct ShadowLayerData {
-		Magnum::Framebuffer shadowFramebuffer;
-		Magnum::Matrix4 shadowCameraMatrix;
-		Magnum::Matrix4 shadowMatrix;
-		Magnum::Vector2 orthographicSize;
-		float orthographicNear, orthographicFar;
-		float cutPlane;
+    struct ShadowLayerData {
+        Magnum::Framebuffer shadowFramebuffer;
+        Magnum::Matrix4 shadowCameraMatrix;
+        Magnum::Matrix4 shadowMatrix;
+        Magnum::Vector2 orthographicSize;
+        float orthographicNear, orthographicFar;
+        float cutPlane;
 
-		ShadowLayerData(Magnum::Vector2i size);
-	};
+        ShadowLayerData(Magnum::Vector2i size);
+    };
 
-	std::vector<ShadowLayerData> layers;
+    std::vector<ShadowLayerData> layers;
 };
 

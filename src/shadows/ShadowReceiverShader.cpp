@@ -20,34 +20,34 @@
 using namespace Magnum;
 
 ShadowReceiverShader::ShadowReceiverShader(int numShadowLevels) {
-	MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
-	const Utility::Resource rs{"shadow-data"};
+    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+    const Utility::Resource rs{"shadow-data"};
 
-	Shader vert{Version::GL330, Shader::Type::Vertex};
-	Shader frag{Version::GL330, Shader::Type::Fragment};
+    Shader vert{Version::GL330, Shader::Type::Vertex};
+    Shader frag{Version::GL330, Shader::Type::Fragment};
 
-	std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
-	vert.addSource(preamble);
-	vert.addSource(rs.get("ShadowReceiver.vert"));
-	frag.addSource(preamble);
-	frag.addSource(rs.get("ShadowReceiver.frag"));
+    std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
+    vert.addSource(preamble);
+    vert.addSource(rs.get("ShadowReceiver.vert"));
+    frag.addSource(preamble);
+    frag.addSource(rs.get("ShadowReceiver.frag"));
 
-	CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-	bindAttributeLocation(Position::Location, "position");
-	bindAttributeLocation(Normal::Location, "normal");
+    bindAttributeLocation(Position::Location, "position");
+    bindAttributeLocation(Normal::Location, "normal");
 
-	attachShaders({vert, frag});
+    attachShaders({vert, frag});
 
-	CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-	modelMatrixUniform = uniformLocation("modelMatrix");
-	transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-	shadowmapMatrixUniform = uniformLocation("shadowmapMatrix");
-	lightDirectionUniform = uniformLocation("lightDirection");
-	shadowBiasUniform = uniformLocation("shadowBias");
+    modelMatrixUniform = uniformLocation("modelMatrix");
+    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    shadowmapMatrixUniform = uniformLocation("shadowmapMatrix");
+    lightDirectionUniform = uniformLocation("lightDirection");
+    shadowBiasUniform = uniformLocation("shadowBias");
 
-	setUniform(uniformLocation("shadowmapTexture"), ShadowmapTextureLayer);
+    setUniform(uniformLocation("shadowmapTexture"), ShadowmapTextureLayer);
 }
 
 ShadowReceiverShader::~ShadowReceiverShader() {
@@ -55,31 +55,31 @@ ShadowReceiverShader::~ShadowReceiverShader() {
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setTransformationProjectionMatrix(const Magnum::Matrix4 &matrix) {
-	setUniform(transformationProjectionMatrixUniform, matrix);
-	return *this;
+    setUniform(transformationProjectionMatrixUniform, matrix);
+    return *this;
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setModelMatrix(const Magnum::Matrix4 &matrix) {
-	setUniform(modelMatrixUniform, matrix);
-	return *this;
+    setUniform(modelMatrixUniform, matrix);
+    return *this;
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setShadowmapMatrices(const Corrade::Containers::ArrayView<Magnum::Matrix4> &matrix) {
-	setUniform(shadowmapMatrixUniform, matrix);
-	return *this;
+    setUniform(shadowmapMatrixUniform, matrix);
+    return *this;
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setLightDirection(const Magnum::Vector3 &vector3) {
-	setUniform(lightDirectionUniform, vector3);
-	return *this;
+    setUniform(lightDirectionUniform, vector3);
+    return *this;
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setShadowmapTexture(Magnum::Texture2DArray &texture) {
-	texture.bind(ShadowmapTextureLayer);
-	return *this;
+    texture.bind(ShadowmapTextureLayer);
+    return *this;
 }
 
 ShadowReceiverShader &ShadowReceiverShader::setShadowBias(float bias) {
-	setUniform(shadowBiasUniform, bias);
-	return *this;
+    setUniform(shadowBiasUniform, bias);
+    return *this;
 }

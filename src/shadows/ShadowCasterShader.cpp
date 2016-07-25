@@ -19,23 +19,23 @@
 using namespace Magnum;
 
 ShadowCasterShader::ShadowCasterShader() {
-	MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 
-	const Utility::Resource rs{"shadow-data"};
+    const Utility::Resource rs{"shadow-data"};
 
-	Shader vert{Version::GL330, Shader::Type::Vertex};
-	Shader frag{Version::GL330, Shader::Type::Fragment};
+    Shader vert{Version::GL330, Shader::Type::Vertex};
+    Shader frag{Version::GL330, Shader::Type::Fragment};
 
-	vert.addSource(rs.get("ShadowCaster.vert"));
-	frag.addSource(rs.get("ShadowCaster.frag"));
+    vert.addSource(rs.get("ShadowCaster.vert"));
+    frag.addSource(rs.get("ShadowCaster.frag"));
 
-	CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-	attachShaders({vert, frag});
+    attachShaders({vert, frag});
 
-	CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-	transformationMatrixUniform = uniformLocation("transformationMatrix");
+    transformationMatrixUniform = uniformLocation("transformationMatrix");
 }
 
 ShadowCasterShader::~ShadowCasterShader() {
@@ -43,6 +43,6 @@ ShadowCasterShader::~ShadowCasterShader() {
 }
 
 ShadowCasterShader &ShadowCasterShader::setTransformationMatrix(const Magnum::Matrix4 &matrix) {
-	setUniform(transformationMatrixUniform, matrix);
-	return *this;
+    setUniform(transformationMatrixUniform, matrix);
+    return *this;
 }
