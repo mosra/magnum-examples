@@ -267,29 +267,37 @@ void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
 void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 	if (event.key() == KeyEvent::Key::Up) {
 		mainCameraVelocity.z() = -1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::Down) {
 		mainCameraVelocity.z() = 1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::PageUp) {
 		mainCameraVelocity.y() = 1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::PageDown) {
 		mainCameraVelocity.y() = -1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::Right) {
 		mainCameraVelocity.x() = 1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::Left) {
 		mainCameraVelocity.x() = -1;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::F1) {
 		activeCamera = &mainCamera;
 		activeCameraObject = &mainCameraObject;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::F2) {
 		activeCamera = &debugCamera;
 		activeCameraObject = &debugCameraObject;
+		event.setAccepted();
 	}
 	redraw();
 }
@@ -297,12 +305,15 @@ void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 void ShadowsExample::keyReleaseEvent(Platform::Sdl2Application::KeyEvent &event) {
 	if (event.key() == KeyEvent::Key::Up || event.key() == KeyEvent::Key::Down) {
 		mainCameraVelocity.z() = 0;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::PageDown || event.key() == KeyEvent::Key::PageUp) {
 		mainCameraVelocity.y() = 0;
+		event.setAccepted();
 	}
 	else if (event.key() == KeyEvent::Key::Right || event.key() == KeyEvent::Key::Left) {
 		mainCameraVelocity.x() = 0;
+		event.setAccepted();
 	}
 	redraw();
 }

@@ -20,7 +20,7 @@ ShadowReceiverDrawable::ShadowReceiverDrawable(Magnum::SceneGraph::AbstractObjec
 }
 
 void ShadowReceiverDrawable::draw(const Magnum::Matrix4 &transformationMatrix,
-								  Magnum::SceneGraph::Camera<3, Magnum::Float> &camera) {
+								  Magnum::SceneGraph::Camera3D &camera) {
 	shader->setTransformationProjectionMatrix(camera.projectionMatrix() * transformationMatrix);
 	shader->setModelMatrix(object().transformationMatrix());
 
