@@ -16,11 +16,11 @@
 /// Shader that can synthesize shadows on an object
 class ShadowReceiverShader : public Magnum::AbstractShaderProgram {
 public:
-	ShadowReceiverShader(int numShaderLevels);
-	virtual ~ShadowReceiverShader();
-
 	typedef Magnum::Shaders::Generic3D::Position Position;
 	typedef Magnum::Shaders::Generic3D::Normal Normal;
+
+	ShadowReceiverShader(int numShadowLevels);
+	virtual ~ShadowReceiverShader();
 
 	/** Matrix that transforms from local model space -> world space -> camera space -> clip coordinates (aka model-view-projection matrix)  */
 	ShadowReceiverShader& setTransformationProjectionMatrix(const Magnum::Matrix4& matrix);

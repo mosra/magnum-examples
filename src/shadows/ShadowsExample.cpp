@@ -9,6 +9,7 @@
  * Credit is appreciated, but not required.
  * */
 #include <Magnum/Buffer.h>
+#include <Magnum/Texture.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/MeshTools/Interleave.h>
@@ -32,6 +33,9 @@
 #include "DebugLines.h"
 
 namespace Magnum { namespace Examples {
+
+const float MAIN_CAMERA_NEAR = 0.01f;
+const float MAIN_CAMERA_FAR = 100.0f;
 
 using namespace Magnum::Math::Literals;
 
@@ -59,12 +63,15 @@ class ShadowsExample: public Platform::Application {
 		void addModel(const Trade::MeshData3D &meshData3D);
 		void renderDebugLines();
 		Object3D* createSceneObject(Model &model, bool makeCaster, bool makeReceiver);
+		void recompileReceiverShader(size_t numLayers);
+		void setShadowMapSize(Vector2i shadowMapSize);
+		void setShadowSplitExponent(float power);
 
 		Scene3D scene;
 	    Magnum::SceneGraph::DrawableGroup3D shadowCasterDrawables;
 		Magnum::SceneGraph::DrawableGroup3D shadowReceiverDrawables;
 		ShadowCasterShader shadowCasterShader;
-		ShadowReceiverShader shadowReceiverShader;
+		std::unique_ptr<ShadowReceiverShader> shadowReceiverShader;
 
 		DebugLines debugLines;
 
@@ -81,22 +88,30 @@ class ShadowsExample: public Platform::Application {
 		std::vector<Model> models;
 
 		Magnum::Vector3 mainCameraVelocity;
-};
 
-const int NUM_SHADER_LEVELS = 3;
+		float shadowBias;
+		float layerSplitExponent;
+		Magnum::Vector2i shadowMapSize;
+		int shadowMapFaceCullMode;
+		bool shadowStaticAlignment;
+};
 
 ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Shadows Example")}
 ,   scene()
-,	shadowReceiverShader(NUM_SHADER_LEVELS)
 ,	shadowLightObject(&scene)
 ,   shadowLight(shadowLightObject)
 ,   mainCameraObject(&scene)
 ,   mainCamera(mainCameraObject)
 ,   debugCameraObject(&scene)
 ,   debugCamera(debugCameraObject)
+,	shadowBias(0.003f)
+,	layerSplitExponent(3.0f)
+,	shadowMapSize(1024,1024)
+,	shadowMapFaceCullMode(1)
 {
-    shadowLight.setupShadowmaps(NUM_SHADER_LEVELS, {1024,1024});
-	shadowReceiverShader.setShadowBias(0.003f);
+    shadowLight.setupShadowmaps(3, shadowMapSize);
+	shadowReceiverShader.reset(new ShadowReceiverShader(shadowLight.getNumLayers()));
+	shadowReceiverShader->setShadowBias(shadowBias);
 
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
@@ -114,15 +129,12 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
 		object->setTransformation(Magnum::Matrix4::translation({rand()*100.0f/RAND_MAX - 50, rand()*5.0f/RAND_MAX, rand()*100.0f/RAND_MAX - 50}));
 	}
 
-    float near = 0.01f;
-    float far = 100.0f;
+	shadowLight.setupSplitDistances(MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR, layerSplitExponent);
 
-	shadowLight.setupSplitDistances(near, far, 3.0f);
-
-    mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near, far));
+    mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR));
 	mainCameraObject.setTransformation(Matrix4::translation({0,3,0}));
 
-	debugCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), near / 4.0f, far * 4.0f));
+	debugCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), MAIN_CAMERA_NEAR / 4.0f, MAIN_CAMERA_FAR * 4.0f));
 	debugCameraObject.setTransformation(Matrix4::lookAt({100,50,0},{0,0,-30},{0,1,0}));
 
 	activeCamera = &mainCamera;
@@ -146,7 +158,7 @@ Object3D* ShadowsExample::createSceneObject(ShadowsExample::Model &model, bool m
 
 	if (makeReceiver) {
 		auto receiver = new ShadowReceiverDrawable(*object, &shadowReceiverDrawables);
-		receiver->setShader(&shadowReceiverShader);
+		receiver->setShader(shadowReceiverShader.get());
 		receiver->setMesh(&model.mesh);
 	}
 	return object;
@@ -189,11 +201,31 @@ void ShadowsExample::drawEvent() {
 		redraw();
 	}
 
+	auto screenDirection = shadowStaticAlignment ? Vector3{0,0,1} : mainCameraObject.transformation()[2].xyz();
 	/* You only really need to do this when your camera moves */
-	shadowLight.setTarget({3,2,3}, mainCameraObject.transformation()[2].xyz(), mainCamera);
+	shadowLight.setTarget({3, 2, 3}, screenDirection, mainCamera);
+
+	/* You can use face culling, depending on your geometry. You might want to render only back faces for shadows. */
+	switch (shadowMapFaceCullMode) {
+		case 0:
+			Magnum::Renderer::disable(Magnum::Renderer::Feature::FaceCulling);
+			break;
+		case 2:
+			Magnum::Renderer::setFaceCullingMode(Magnum::Renderer::PolygonFacing::Front);
+			break;
+	}
 
 	/* Create the shadow map textures. */
     shadowLight.render(shadowCasterDrawables);
+
+	switch (shadowMapFaceCullMode) {
+		case 0:
+			Magnum::Renderer::enable(Magnum::Renderer::Feature::FaceCulling);
+			break;
+		case 2:
+			Magnum::Renderer::setFaceCullingMode(Magnum::Renderer::PolygonFacing::Back);
+			break;
+	}
 
 	Magnum::Renderer::setClearColor({0.1f,0.1f,0.4f,1.0f});
 	defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
@@ -203,9 +235,9 @@ void ShadowsExample::drawEvent() {
         shadowMatrices[layerIndex] = shadowLight.getLayerMatrix(layerIndex);
     }
 
-    shadowReceiverShader.setShadowmapMatrices(shadowMatrices);
-    shadowReceiverShader.setShadowmapTexture(*shadowLight.getShadowTexture());
-	shadowReceiverShader.setLightDirection(shadowLightObject.transformation()[2].xyz());
+    shadowReceiverShader->setShadowmapMatrices(shadowMatrices);
+    shadowReceiverShader->setShadowmapTexture(*shadowLight.getShadowTexture());
+	shadowReceiverShader->setLightDirection(shadowLightObject.transformation()[2].xyz());
 
     activeCamera->draw(shadowReceiverDrawables);
 
@@ -299,7 +331,91 @@ void ShadowsExample::keyPressEvent(Platform::Sdl2Application::KeyEvent &event) {
 		activeCameraObject = &debugCameraObject;
 		event.setAccepted();
 	}
+	else if (event.key() == KeyEvent::Key::F3) {
+		shadowMapFaceCullMode = (shadowMapFaceCullMode + 1) % 3;
+		Debug() << "Face cull mode: " << (shadowMapFaceCullMode == 0 ? "no cull" : shadowMapFaceCullMode == 1 ? "cull back" : "cull front");
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::F4) {
+		shadowStaticAlignment = !shadowStaticAlignment;
+		Debug() << "Shadow alignment: " << (shadowStaticAlignment ? "static" : "camera direction");
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::One) {
+		setShadowSplitExponent(layerSplitExponent *= 1.125f);
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::Two) {
+		setShadowSplitExponent(layerSplitExponent /= 1.125f);
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::Three) {
+		shadowReceiverShader->setShadowBias(shadowBias /= 1.125f);
+		Debug() << "Shadow bias " << shadowBias;
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::Four) {
+		shadowReceiverShader->setShadowBias(shadowBias *= 1.125f);
+		Debug() << "Shadow bias " << shadowBias;
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::Five) {
+		auto numLayers = shadowLight.getNumLayers() - 1;
+		if (numLayers >= 1) {
+			shadowLight.setupShadowmaps(numLayers, shadowMapSize);
+			recompileReceiverShader(numLayers);
+			shadowLight.setupSplitDistances(MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR, layerSplitExponent);
+			Debug() << "Shadow map size " << shadowMapSize << " x " << shadowLight.getNumLayers() << " layers";
+			event.setAccepted();
+		}
+	}
+	else if (event.key() == KeyEvent::Key::Six) {
+		auto numLayers = shadowLight.getNumLayers() + 1;
+		if (numLayers <= 32) {
+			shadowLight.setupShadowmaps(numLayers, shadowMapSize);
+			recompileReceiverShader(numLayers);
+			shadowLight.setupSplitDistances(MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR, layerSplitExponent);
+			Debug() << "Shadow map size " << shadowMapSize << " x " << shadowLight.getNumLayers() << " layers";
+			event.setAccepted();
+		}
+	}
+	else if (event.key() == KeyEvent::Key::Seven) {
+		setShadowMapSize(shadowMapSize / 2);
+		event.setAccepted();
+	}
+	else if (event.key() == KeyEvent::Key::Eight) {
+		setShadowMapSize(shadowMapSize * 2);
+		event.setAccepted();
+	}
 	redraw();
+}
+
+void ShadowsExample::setShadowSplitExponent(float power) {
+	shadowLight.setupSplitDistances(MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR, power);
+	std::string buf = "";
+	for (size_t layer = 0; layer < shadowLight.getNumLayers(); layer++) {
+		if (layer) buf += ", ";
+		buf += std::to_string(shadowLight.getCutDistance(MAIN_CAMERA_NEAR, MAIN_CAMERA_FAR, layer));
+	}
+	Debug() << "Shadow splits power=" << power << " cut points: " << buf;
+}
+
+void ShadowsExample::setShadowMapSize(Vector2i shadowMapSize) {
+	if (shadowMapSize.x() <= Magnum::Texture2D::maxSize().x() && shadowMapSize.y() <= Magnum::Texture2D::maxSize().y() &&
+			shadowMapSize.x() >= 1 && shadowMapSize.y() >= 1) {
+		this->shadowMapSize = shadowMapSize;
+		shadowLight.setupShadowmaps(shadowLight.getNumLayers(), shadowMapSize);
+		Debug() << "Shadow map size " << shadowMapSize << " x " << shadowLight.getNumLayers() << " layers";
+	}
+}
+
+void ShadowsExample::recompileReceiverShader(size_t numLayers) {
+	shadowReceiverShader.reset(new ShadowReceiverShader(numLayers));
+	shadowReceiverShader->setShadowBias(shadowBias);
+	for(size_t i = 0; i < shadowReceiverDrawables.size(); i++) {
+		auto& drawable = static_cast<ShadowReceiverDrawable&>(shadowReceiverDrawables[i]);
+		drawable.setShader(shadowReceiverShader.get());
+	}
 }
 
 void ShadowsExample::keyReleaseEvent(Platform::Sdl2Application::KeyEvent &event) {

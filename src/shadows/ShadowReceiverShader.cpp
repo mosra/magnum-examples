@@ -19,15 +19,14 @@
 
 using namespace Magnum;
 
-ShadowReceiverShader::ShadowReceiverShader(int numShaderLevels) {
+ShadowReceiverShader::ShadowReceiverShader(int numShadowLevels) {
 	MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
-
 	const Utility::Resource rs{"shadow-data"};
 
 	Shader vert{Version::GL330, Shader::Type::Vertex};
 	Shader frag{Version::GL330, Shader::Type::Fragment};
 
-	std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShaderLevels) + "\n";
+	std::__cxx11::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
 	vert.addSource(preamble);
 	vert.addSource(rs.get("ShadowReceiver.vert"));
 	frag.addSource(preamble);

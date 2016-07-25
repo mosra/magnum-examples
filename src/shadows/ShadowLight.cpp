@@ -116,6 +116,14 @@ void ShadowLight::setupSplitDistances(float zNear, float zFar, float power) {
 	}
 }
 
+
+float ShadowLight::getCutDistance(float zNear, float zFar, int layer) const {
+	auto depthSample = layers[layer].cutPlane;
+	depthSample = 2.0f * depthSample - 1.0f;
+	float zLinear = 2.0f * zNear * zFar / (zFar + zNear - depthSample * (zFar - zNear));
+	return zLinear;
+}
+
 std::vector<Magnum::Vector3> ShadowLight::getLayerFrustumCorners(Magnum::SceneGraph::Camera3D &mainCamera, int layer) {
 	auto z0 = layer == 0 ? 0 : layers[layer-1].cutPlane;
 	auto z1 = layers[layer].cutPlane;
@@ -181,9 +189,6 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 			{0.5f, 0.5f, 0.5f, 1.0f}
 	};
 
-	Magnum::Renderer::enable(Magnum::Renderer::Feature::DepthTest);
-	/* You can use face culling, depending on your geometry. You might want to render only back faces for shadows. */
-	Magnum::Renderer::disable(Magnum::Renderer::Feature::FaceCulling);
 	Magnum::Renderer::setDepthMask(true);
 
 	for (auto layer = 0u; layer < layers.size(); layer++) {
@@ -242,7 +247,6 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
 		}
 	}
 
-	Magnum::Renderer::enable(Magnum::Renderer::Feature::FaceCulling);
 	Magnum::defaultFramebuffer.bind();
 
 }

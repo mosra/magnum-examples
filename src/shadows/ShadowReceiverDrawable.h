@@ -28,7 +28,7 @@ public:
 		this->mesh = mesh;
 	}
 
-	void setShader(ShadowReceiverShader *shader) {
+	void setShader(ShadowReceiverShader* shader) {
 		this->shader = shader;
 	}
 
