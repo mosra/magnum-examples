@@ -39,7 +39,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     Shaders
-	SceneGraph
+    SceneGraph
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -47,26 +47,26 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 corrade_add_resource(Shadows_RESOURCES resources.conf)
 
 add_executable(magnum-shadows
-		ShadowsExample.cpp
-		ShadowCasterDrawable.h
-		ShadowCasterDrawable.cpp
-		ShadowLight.h
-		ShadowLight.cpp
-		ShadowCasterShader.cpp
-		ShadowCasterShader.h
-		ShadowReceiverDrawable.cpp
-		ShadowReceiverDrawable.h
-		ShadowReceiverShader.cpp
-		ShadowReceiverShader.h
-		DebugLines.h
-		DebugLines.cpp
-		${Shadows_RESOURCES})
+    ShadowsExample.cpp
+    ShadowCasterDrawable.h
+    ShadowCasterDrawable.cpp
+    ShadowLight.h
+    ShadowLight.cpp
+    ShadowCasterShader.cpp
+    ShadowCasterShader.h
+    ShadowReceiverDrawable.cpp
+    ShadowReceiverDrawable.h
+    ShadowReceiverShader.cpp
+    ShadowReceiverShader.h
+    DebugLines.h
+    DebugLines.cpp
+    ${Shadows_RESOURCES})
 target_link_libraries(magnum-shadows
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-	Magnum::SceneGraph
+    Magnum::SceneGraph
     Magnum::Shaders)
 
 install(TARGETS magnum-shadows DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
