@@ -140,11 +140,7 @@ ShadowsExample::ShadowsExample(const Arguments& arguments): Platform::Applicatio
     activeCamera = &mainCamera;
     activeCameraObject = &mainCameraObject;
 
-    shadowLightObject.setTransformation(Matrix4::lookAt(
-            {3.0f,1,2.0f},
-            {0,0,0},
-            {0,1,0}
-    ));
+    shadowLightObject.setTransformation(Matrix4::lookAt({3.0f,1,2.0f}, {0,0,0}, {0,1,0}));
 }
 
 Object3D* ShadowsExample::createSceneObject(ShadowsExample::Model &model, bool makeCaster, bool makeReceiver) {
@@ -186,9 +182,9 @@ void ShadowsExample::addModel(const Trade::MeshData3D &meshData3D) {
     model.indexBuffer.setData(indexData, BufferUsage::StaticDraw);
 
     model.mesh.setPrimitive(meshData3D.primitive())
-            .setCount(meshData3D.indices().size())
-            .addVertexBuffer(model.vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-            .setIndexBuffer(model.indexBuffer, 0, indexType, indexStart, indexEnd);
+        .setCount(meshData3D.indices().size())
+        .addVertexBuffer(model.vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+        .setIndexBuffer(model.indexBuffer, 0, indexType, indexStart, indexEnd);
 
 }
 
@@ -248,17 +244,20 @@ void ShadowsExample::drawEvent() {
 
 void ShadowsExample::renderDebugLines() {
     if (activeCamera == &debugCamera) {
+        Matrix4 unbiasMatrix{
+                {2,  0,  0,  0},
+                {0,  2,  0,  0},
+                {0,  0,  2,  0},
+                {-1, -1, -1, 1}};
         debugLines.reset();
         auto imvp = (mainCamera.projectionMatrix() * mainCamera.cameraMatrix()).inverted();
         for (auto layerIndex = 0u; layerIndex < shadowLight.getNumLayers(); layerIndex++) {
             auto layerMatrix = shadowLight.getLayerMatrix(layerIndex);
-            debugLines.addFrustum((Matrix4{{2,  0,  0,  0},
-                                           {0,  2,  0,  0},
-                                           {0,  0,  2,  0},
-                                           {-1, -1, -1, 1}} * layerMatrix).inverted(),
-                                  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 0.5f));
+            auto hue = layerIndex * 360.0_degf / shadowLight.getNumLayers();
+            debugLines.addFrustum((unbiasMatrix * layerMatrix).inverted(),
+                                  Color3::fromHSV(hue, 1.0f, 0.5f));
             debugLines.addFrustum(imvp,
-                                  Color3::fromHSV(layerIndex * 360.0_degf / shadowLight.getNumLayers(), 1.0f, 1.0f),
+                                  Color3::fromHSV(hue, 1.0f, 1.0f),
                                   layerIndex == 0 ? 0 : shadowLight.getCutZ(layerIndex - 1),
                                   shadowLight.getCutZ(layerIndex));
         }

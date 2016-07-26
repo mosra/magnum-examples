@@ -141,29 +141,29 @@ std::vector<Vector3> ShadowLight::getFrustumCorners(const Magnum::Matrix4 &imvp,
         return vec2.xyz() / vec2.w();
     };
     return std::vector<Vector3>{
-            projectImvpAndDivide({-1,-1, z0, 1}),
-            projectImvpAndDivide({ 1,-1, z0, 1}),
-            projectImvpAndDivide({-1, 1, z0, 1}),
-            projectImvpAndDivide({ 1, 1, z0, 1}),
-            projectImvpAndDivide({-1,-1, z1, 1}),
-            projectImvpAndDivide({ 1,-1, z1, 1}),
-            projectImvpAndDivide({-1, 1, z1, 1}),
-            projectImvpAndDivide({ 1, 1, z1, 1}),
+        projectImvpAndDivide({-1,-1, z0, 1}),
+        projectImvpAndDivide({ 1,-1, z0, 1}),
+        projectImvpAndDivide({-1, 1, z0, 1}),
+        projectImvpAndDivide({ 1, 1, z0, 1}),
+        projectImvpAndDivide({-1,-1, z1, 1}),
+        projectImvpAndDivide({ 1,-1, z1, 1}),
+        projectImvpAndDivide({-1, 1, z1, 1}),
+        projectImvpAndDivide({ 1, 1, z1, 1}),
     };
 }
 
 std::vector<Magnum::Vector4> ShadowLight::calculateClipPlanes() {
     Magnum::Matrix4 pm = projectionMatrix();
     std::vector<Magnum::Vector4> clipPlanes = {{
-                                                       Magnum::Vector4( pm[3][0]+pm[2][0], pm[3][1]+pm[2][1], pm[3][2]+pm[2][2], pm[3][3]+pm[2][3] ), // near
-                                                       Magnum::Vector4( pm[3][0]-pm[2][0], pm[3][1]-pm[2][1], pm[3][2]-pm[2][2], pm[3][3]-pm[2][3] ), // far
+        Magnum::Vector4( pm[3][0]+pm[2][0], pm[3][1]+pm[2][1], pm[3][2]+pm[2][2], pm[3][3]+pm[2][3] ), // near
+        Magnum::Vector4( pm[3][0]-pm[2][0], pm[3][1]-pm[2][1], pm[3][2]-pm[2][2], pm[3][3]-pm[2][3] ), // far
 
-                                                       Magnum::Vector4( pm[3][0]+pm[0][0], pm[3][1]+pm[0][1], pm[3][2]+pm[0][2], pm[3][3]+pm[0][3] ), // left
-                                                       Magnum::Vector4( pm[3][0]-pm[0][0], pm[3][1]-pm[0][1], pm[3][2]-pm[0][2], pm[3][3]-pm[0][3] ), // right
+        Magnum::Vector4( pm[3][0]+pm[0][0], pm[3][1]+pm[0][1], pm[3][2]+pm[0][2], pm[3][3]+pm[0][3] ), // left
+        Magnum::Vector4( pm[3][0]-pm[0][0], pm[3][1]-pm[0][1], pm[3][2]-pm[0][2], pm[3][3]-pm[0][3] ), // right
 
-                                                       Magnum::Vector4( pm[3][0]+pm[1][0], pm[3][1]+pm[1][1], pm[3][2]+pm[1][2], pm[3][3]+pm[1][3] ), // bottom
-                                                       Magnum::Vector4( pm[3][0]-pm[1][0], pm[3][1]-pm[1][1], pm[3][2]-pm[1][2], pm[3][3]-pm[1][3] ), // top
-                                               }};
+        Magnum::Vector4( pm[3][0]+pm[1][0], pm[3][1]+pm[1][1], pm[3][2]+pm[1][2], pm[3][3]+pm[1][3] ), // bottom
+        Magnum::Vector4( pm[3][0]-pm[1][0], pm[3][1]-pm[1][1], pm[3][2]-pm[1][2], pm[3][3]-pm[1][3] ), // top
+    }};
     for (auto& plane : clipPlanes) {
         plane *= plane.xyz().lengthInverted();
     }
@@ -183,10 +183,10 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
     /* Projecting world points normalized device coordinates means they range -1 -> 1.
      * Use this bias matrix so we go straight from world -> texture space */
     auto bias = Magnum::Matrix4{
-            {0.5f, 0.0f, 0.0f, 0.0f},
-            {0.0f, 0.5f, 0.0f, 0.0f},
-            {0.0f, 0.0f, 0.5f, 0.0f},
-            {0.5f, 0.5f, 0.5f, 1.0f}
+        {0.5f, 0.0f, 0.0f, 0.0f},
+        {0.0f, 0.5f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.5f, 0.0f},
+        {0.5f, 0.5f, 0.5f, 1.0f}
     };
 
     Magnum::Renderer::setDepthMask(true);
@@ -211,7 +211,7 @@ void ShadowLight::render(Magnum::SceneGraph::DrawableGroup3D& drawables)
             auto& drawable = static_cast<ShadowCasterDrawable&>(drawables[drawableIndex]);
             auto transform = transformations[drawableIndex];
             /* If your centre is offset, inject it here */
-            Vector4 localCentre{0, 0, 0, 1};
+            Magnum::Vector4 localCentre{0, 0, 0, 1};
             Magnum::Vector4 drawableCentre = transform * localCentre;
             /* Start at 1, not 0 to skip out the near plane because we need to include shadow casters traveling the direction the camera is facing. */
             for (size_t clipPlaneIndex = 1; clipPlaneIndex < clipPlanes.size(); clipPlaneIndex++) {
