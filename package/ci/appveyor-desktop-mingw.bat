@@ -39,6 +39,10 @@ cmake --build . --target install -- -j || exit /b
 cd .. && cd ..
 
 rem Build Magnum Integration
+rem For MinGW it's not possible to use the OVR SDK directly, the Oculus Runtime
+rem is needed to be installed, but that's apparently not possible from a
+rem command-line so I'm just disabling it.
+rem https://forums.oculus.com/community/discussion/18303/silent-installation-of-oculus-runtime-windows
 git clone --depth 1 git://github.com/mosra/magnum-integration.git || exit /b
 cd magnum-integration || exit /b
 mkdir build && cd build || exit /b
@@ -46,7 +50,7 @@ cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_BULLET=OFF ^
-    -DWITH_OVR=ON ^
+    -DWITH_OVR=OFF ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b
 cmake --build . --target install -- -j || exit /b
@@ -61,7 +65,7 @@ cmake .. ^
     -DWITH_BULLET_EXAMPLE=OFF ^
     -DWITH_CUBEMAP_EXAMPLE=ON ^
     -DWITH_MOTIONBLUR_EXAMPLE=ON ^
-    -DWITH_OVR_EXAMPLE=ON ^
+    -DWITH_OVR_EXAMPLE=OFF ^
     -DWITH_PICKING_EXAMPLE=ON ^
     -DWITH_PRIMITIVES_EXAMPLE=ON ^
     -DWITH_TEXT_EXAMPLE=ON ^
