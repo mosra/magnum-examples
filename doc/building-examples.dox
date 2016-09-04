@@ -103,13 +103,14 @@ OS X Homebrew formulas are in `package/homebrew` directory. Either use the
 
 @subsection building-examples-ci-travis Travis
 
-In `package/ci/` there is `travis.yml` file with Linux GCC 4.7 and OSX Clang
-configuration. Online at https://travis-ci.org/mosra/magnum-examples.
+In `package/ci/` there is `travis.yml` file with Linux GCC 4.7, OSX Clang, iOS
+GLES2/GLES3 and Emscripten WebGL1/WebGL2 configuration. Online at
+https://travis-ci.org/mosra/magnum-examples.
 
 @subsection building-examples-ci-appveyor AppVeyor
 
-In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
-Online at https://ci.appveyor.com/project/mosra/magnum-examples.
+In `package/ci/` there is `appveyor.yml` file with Windows desktop MSVC, MinGW
+and Windows RT GLES2/GLES3 configuration. Online at https://ci.appveyor.com/project/mosra/magnum-examples.
 
 @subsection building-examples-ci-jenkins Jenkins
 

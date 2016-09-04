@@ -2,7 +2,19 @@ Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
 Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum.
 
-[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+SUPPORTED PLATFORMS
+===================
+
+*   **Linux** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **Windows** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+*   **OS X** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **iOS** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **Android**
+*   **Windows RT** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+*   **Google Chrome**
+*   **HTML5/JavaScript** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
 
 INSTALLATION
 ============
