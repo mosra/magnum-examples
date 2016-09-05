@@ -52,7 +52,7 @@
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
 #include <Magnum/OvrIntegration/Session.h>
-#include <Magnum/OvrIntegration/HmdEnum.h>
+#include <Magnum/OvrIntegration/Enums.h>
 
 #include "Types.h"
 #include "HmdCamera.h"
