@@ -102,6 +102,12 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     /* Connect to an active Oculus session */
     _session = _ovrContext.createSession();
 
+    if(!_session) {
+        Error() << "No HMD connected.";
+        exit();
+        return;
+    }
+
     /* Get the HMD display resolution */
     const Vector2i resolution = _session->resolution() / 2;
 
