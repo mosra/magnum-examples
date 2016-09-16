@@ -48,6 +48,7 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 const Color3 PINK{1.0f, 0.0f, 1.0f};
 const Color3 WHITE{1.0f, 1.0f, 1.0f};
 const Color3 LIGHT_GREY{0.5f, 0.5f, 0.5f};
+const Color3 GREEN{0.0f, 0.2f, 0.0f};
 
 class WireframeDrawable: public Object3D, public SceneGraph::Drawable3D {
     public:
@@ -84,15 +85,19 @@ class OctreeExample: public Platform::Application {
         void addBox(const Range3D& box);
         Vector3 calculateIntersection(const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
+        void addDrawableForOctree(Octree::Octree<SceneGraph::Drawable<3, Float>*>& octree);
+
         Scene3D _scene;
         Object3D _cameraObject;
         Object3D _viewerObject;
+        Object3D _octreeObject;
         SceneGraph::Camera3D _camera; /* camera which will be culled for */
         SceneGraph::Camera3D _viewer; /* external camera */
         SceneGraph::Camera3D* _activeCamera; /* camera from which we will render */
 
         SceneGraph::OctreeDrawableGroup<Float> _culledDrawables;
         SceneGraph::DrawableGroup3D _drawables;
+        SceneGraph::DrawableGroup3D _octreeVisualization;
 
         Buffer _buffer;
         Mesh _mesh;
@@ -102,12 +107,15 @@ class OctreeExample: public Platform::Application {
         Mesh _cubeMesh;
 
         Shaders::Flat3D _flatShader;
+
+        bool _visualizeOctree = true;
 };
 
 OctreeExample::OctreeExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Octree View Frustrum Culling Example").setSampleCount(8)},
     _cameraObject(&_scene),
     _viewerObject(&_scene),
+    _octreeObject{&_scene},
     _camera(_cameraObject),
     _viewer(_viewerObject),
     _activeCamera(&_viewer)
@@ -173,6 +181,7 @@ OctreeExample::OctreeExample(const Arguments& arguments):
 
     _culledDrawables.buildOctree(4);
 
+    addDrawableForOctree(*_culledDrawables.octree());
 }
 
 Vector3 OctreeExample::calculateIntersection(const Vector4 &v1, const Vector4 &v2, const Vector4 &v3) {
@@ -199,6 +208,21 @@ void OctreeExample::addBox(const Range3D& aabox) {
     _culledDrawables.add(*renderer, aabox);
 }
 
+void OctreeExample::addDrawableForOctree(Octree::Octree<SceneGraph::Drawable<3, Float>*>& octree) {
+    if(octree.isLeafNode()) {
+        const Matrix4 transformationMatrix = Matrix4::translation(octree.center())*Matrix4::scaling(Vector3{octree.radius()*0.999f});
+
+        Object3D* box = new Object3D{&_octreeObject};
+        box->setTransformation(transformationMatrix);
+
+        (new WireframeDrawable(box, &_octreeVisualization, _cubeMesh, _flatShader))->setColor(GREEN * float(octree.depth()));
+    } else {
+        for(int i = 0; i < 8; ++i) {
+            addDrawableForOctree(*octree.child(i));
+        }
+    }
+}
+
 void OctreeExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color | FramebufferClear::Depth);
 
@@ -207,6 +231,9 @@ void OctreeExample::drawEvent() {
 
     _activeCamera->draw(_culledDrawables);
     _activeCamera->draw(_drawables);
+    if(_visualizeOctree) {
+        _activeCamera->draw(_octreeVisualization);
+    }
 
     swapBuffers();
 
@@ -224,6 +251,8 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
         } else {
             _activeCamera = &_viewer;
         }
+    } else if(event.key() == KeyEvent::Key::V) {
+        _visualizeOctree = !_visualizeOctree;
     }
 }
 
