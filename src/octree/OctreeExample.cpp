@@ -26,8 +26,6 @@
 */
 
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/DebugTools/ShapeRenderer.h>
-#include <Magnum/DebugTools/ResourceManager.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -35,33 +33,41 @@
 #include <Magnum/SceneGraph/OctreeDrawableGroup.h>
 #include <Magnum/SceneGraph/OctreeDrawableGroup.hpp>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/Shapes/Shape.h>
-#include <Magnum/Shapes/ShapeGroup.h>
-#include <Magnum/Shapes/AxisAlignedBox.h>
-#include <Magnum/Shapes/Box.h>
+#include <Magnum/Primitives/Cube.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Buffer.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/Shaders/Flat.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
-class FrustumDrawable: public Object3D, public SceneGraph::Drawable3D {
+const Color3 PINK{1.0f, 0.0f, 1.0f};
+const Color3 WHITE{1.0f, 1.0f, 1.0f};
+
+class WireframeDrawable: public Object3D, public SceneGraph::Drawable3D {
     public:
-        explicit FrustumDrawable(Object3D* parent, SceneGraph::DrawableGroup3D* group, Mesh& mesh): Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _mesh(mesh) {
+        explicit WireframeDrawable(Object3D* parent, SceneGraph::DrawableGroup3D* group, Mesh& mesh): Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _mesh(mesh) {
         }
+
+        WireframeDrawable& setColor(const Color3& color) {
+            _color = color;
+            return *this;
+        }
+
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override {
-            _shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+            _shader.setColor(_color)
                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix);
             _mesh.draw(_shader);
         }
 
         Mesh& _mesh;
         Shaders::Flat3D _shader;
+        Color3 _color;
 };
 
 class OctreeExample: public Platform::Application {
@@ -75,8 +81,6 @@ class OctreeExample: public Platform::Application {
         void addBox(Shapes::AxisAlignedBox3D& box);
         Vector3 calculateIntersection(const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
-        DebugTools::ResourceManager _manager;
-
         Scene3D _scene;
         Object3D _cameraObject;
         Object3D _viewerObject;
@@ -85,12 +89,13 @@ class OctreeExample: public Platform::Application {
         SceneGraph::Camera3D* _activeCamera; /* camera from which we will render */
 
         SceneGraph::OctreeDrawableGroup<Float> _culledDrawables;
-        SceneGraph::ShapeGroup<3> _shapes;
-
         SceneGraph::DrawableGroup3D _drawables;
 
         Buffer _buffer;
         Mesh _mesh;
+
+        Buffer _cubeBuffer;
+        Mesh _cubeMesh;
 };
 
 OctreeExample::OctreeExample(const Arguments& arguments):
@@ -105,8 +110,6 @@ OctreeExample::OctreeExample(const Arguments& arguments):
 
     _camera.setProjectionMatrix(Matrix4::perspectiveProjection(75.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.5f, 75.0f));
     _viewer.setProjectionMatrix(Matrix4::perspectiveProjection(75.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 150.0f));
-
-    _manager.set("pink", DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 1.0f}));
 
     /* Setup _camera and _viewer transformation */
     _viewerObject.translate({0.0f, 10.0f, 50.0f});
@@ -144,7 +147,13 @@ OctreeExample::OctreeExample(const Arguments& arguments):
          .setCount(16)
          .addVertexBuffer(_buffer, 0, Shaders::Flat3D::Position{});
 
-    new FrustumDrawable(&_cameraObject, &_drawables, _mesh);
+    (new WireframeDrawable(&_cameraObject, &_drawables, _mesh))->setColor(WHITE);
+
+    Trade::MeshData3D cubeData = Primitives::Cube::wireframe();
+    _cubeBuffer.setData(cubeData.positions(0), BufferUsage::StaticDraw);
+    _cubeMesh.setPrimitive(cubeData.primitive())
+            .addVertexBuffer(_cubeBuffer, 0, Shaders::Flat3D::Position{})
+            .setCount(cubeData.positions(0).size());
 
     // TODO: add more boxes
     // TODO: Do it with a loop and random values
@@ -187,11 +196,9 @@ void OctreeExample::addBox(Shapes::AxisAlignedBox3D& aabox) {
     const Vector3 center = aabox.min() + size/2;
     const Matrix4 transformationMatrix = Matrix4::translation(center) * Matrix4::scaling(size);
 
-    Shapes::Shape<Shapes::Box3D>* box = new Shapes::Shape<Shapes::Box3D>(_scene, transformationMatrix, &_shapes);
-    new DebugTools::ShapeRenderer3D(*box, ResourceKey("pink"), &_culledDrawables);
-
+    Object3D* box = new Object3D{&_scene};
     // TODO: maybe randomize the color? *later*
-    DebugTools::ShapeRenderer<3>* renderer = new DebugTools::ShapeRenderer<3>(*box, ResourceKey("pink"));
+    WireframeDrawable* renderer = new WireframeDrawable(box, &_drawables, _cubeMesh);
 
     _culledDrawables.add(*renderer, aabox);
 }
