@@ -230,7 +230,10 @@ void OctreeExample::drawEvent() {
     _culledDrawables.cull(_camera);
 
     _activeCamera->draw(_culledDrawables);
-    _activeCamera->draw(_drawables);
+
+    if(_activeCamera == &_viewer) {
+        _activeCamera->draw(_drawables);
+    }
     if(_visualizeOctree) {
         _activeCamera->draw(_octreeVisualization);
     }
