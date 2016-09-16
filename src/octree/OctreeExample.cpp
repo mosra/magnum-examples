@@ -47,10 +47,13 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
 const Color3 PINK{1.0f, 0.0f, 1.0f};
 const Color3 WHITE{1.0f, 1.0f, 1.0f};
+const Color3 LIGHT_GREY{0.5f, 0.5f, 0.5f};
 
 class WireframeDrawable: public Object3D, public SceneGraph::Drawable3D {
     public:
-        explicit WireframeDrawable(Object3D* parent, SceneGraph::DrawableGroup3D* group, Mesh& mesh): Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _mesh(mesh) {
+        explicit WireframeDrawable(Object3D* parent, SceneGraph::DrawableGroup3D* group, Mesh& mesh, Shaders::Flat3D& shader):
+            Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _mesh(mesh), _shader{shader}
+        {
         }
 
         WireframeDrawable& setColor(const Color3& color) {
@@ -66,7 +69,7 @@ class WireframeDrawable: public Object3D, public SceneGraph::Drawable3D {
         }
 
         Mesh& _mesh;
-        Shaders::Flat3D _shader;
+        Shaders::Flat3D& _shader;
         Color3 _color;
 };
 
@@ -78,7 +81,7 @@ class OctreeExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-        void addBox(Shapes::AxisAlignedBox3D& box);
+        void addBox(const Range3D& box);
         Vector3 calculateIntersection(const Vector4& v1, const Vector4& v2, const Vector4& v3);
 
         Scene3D _scene;
@@ -95,7 +98,10 @@ class OctreeExample: public Platform::Application {
         Mesh _mesh;
 
         Buffer _cubeBuffer;
+        Buffer _cubeIndexBuffer;
         Mesh _cubeMesh;
+
+        Shaders::Flat3D _flatShader;
 };
 
 OctreeExample::OctreeExample(const Arguments& arguments):
@@ -147,36 +153,25 @@ OctreeExample::OctreeExample(const Arguments& arguments):
          .setCount(16)
          .addVertexBuffer(_buffer, 0, Shaders::Flat3D::Position{});
 
-    (new WireframeDrawable(&_cameraObject, &_drawables, _mesh))->setColor(WHITE);
+    (new WireframeDrawable(&_cameraObject, &_drawables, _mesh, _flatShader))->setColor(WHITE);
 
     Trade::MeshData3D cubeData = Primitives::Cube::wireframe();
     _cubeBuffer.setData(cubeData.positions(0), BufferUsage::StaticDraw);
+    _cubeIndexBuffer.setData(cubeData.indices(), BufferUsage::StaticDraw);
     _cubeMesh.setPrimitive(cubeData.primitive())
             .addVertexBuffer(_cubeBuffer, 0, Shaders::Flat3D::Position{})
-            .setCount(cubeData.positions(0).size());
+            .setIndexBuffer(_cubeIndexBuffer, 0, Mesh::IndexType::UnsignedInt)
+            .setCount(cubeData.indices().size());
 
-    // TODO: add more boxes
-    // TODO: Do it with a loop and random values
-    auto rightBox = Shapes::AxisAlignedBox3D(Vector3{10.0, -0.5, -0.5}, Vector3{11.0, 0.5, 0.5});
-    //doesn't break the culling
-    //auto rightBox = Shapes::AxisAlignedBox3D(Vector3{10.0, -0.5, -10.5}, Vector3{11.0, 0.5, 0.5});
-    //breaks the culling
-    //auto rightBox = Shapes::AxisAlignedBox3D(Vector3{10.0, -0.5, -15.5}, Vector3{11.0, 0.5, 0.5});
-    addBox(rightBox);
-
-    const float RAND_MAX_RANGE = float(RAND_MAX/40);
-    for(int i = 0; i < 1000; ++i) {
-        const Vector3 min = Vector3{float(std::rand())/RAND_MAX_RANGE, float(std::rand())/RAND_MAX_RANGE, float(std::rand())/RAND_MAX_RANGE} - Vector3{20.0f};
-        auto box = Shapes::AxisAlignedBox3D(min, min + Vector3{1.0f});
+    const float RAND_MAX_RANGE = float(RAND_MAX/60);
+    for(int i = 0; i < 10000; ++i) {
+        const Vector3 randomVector{float(std::rand()), float(std::rand()), float(std::rand())};
+        const Vector3 min = randomVector/RAND_MAX_RANGE - Vector3{30.0f};
+        auto box = Range3D(min, min + Vector3{1.0f});
         addBox(box);
     }
 
-    auto originBox = Shapes::AxisAlignedBox3D(Vector3{-1.0f}, Vector3{1.0f});
-    addBox(originBox);
-
-    // breaks the culling
-    // auto shape5 = Shapes::AxisAlignedBox3D(Vector3{-25.5, 5.5, -46.5}, Vector3{-24.5, 6.5, -45.5});
-    // addBox(shape5);
+    _culledDrawables.buildOctree(4);
 
 }
 
@@ -190,15 +185,16 @@ Vector3 OctreeExample::calculateIntersection(const Vector4 &v1, const Vector4 &v
     return Vector3{x, y, -z};
 }
 
-void OctreeExample::addBox(Shapes::AxisAlignedBox3D& aabox) {
-
-    const Vector3 size = aabox.max() - aabox.min();
-    const Vector3 center = aabox.min() + size/2;
-    const Matrix4 transformationMatrix = Matrix4::translation(center) * Matrix4::scaling(size);
+void OctreeExample::addBox(const Range3D& aabox) {
+    const Matrix4 transformationMatrix = Matrix4::translation(aabox.center()) * Matrix4::scaling(aabox.size()/2);
 
     Object3D* box = new Object3D{&_scene};
-    // TODO: maybe randomize the color? *later*
-    WireframeDrawable* renderer = new WireframeDrawable(box, &_drawables, _cubeMesh);
+    box->setTransformation(transformationMatrix);
+
+    (new WireframeDrawable(box, &_drawables, _cubeMesh, _flatShader))->setColor(LIGHT_GREY);
+
+    WireframeDrawable* renderer = new WireframeDrawable(box, nullptr, _cubeMesh, _flatShader);
+    renderer->setColor(PINK);
 
     _culledDrawables.add(*renderer, aabox);
 }
@@ -207,7 +203,6 @@ void OctreeExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color | FramebufferClear::Depth);
 
     /* cull for _camera */
-    _culledDrawables.buildOctree();
     _culledDrawables.cull(_camera);
 
     _activeCamera->draw(_culledDrawables);

@@ -38,6 +38,7 @@ endif()
 
 find_package(Magnum REQUIRED
     SceneGraph
+    Shaders
     Primitives
     Sdl2Application)
 
@@ -50,11 +51,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 
 add_executable(magnum-octree OctreeExample.cpp)
 target_link_libraries(magnum-octree
-    Magnum::Magnum
+    Magnum::Shaders
     Magnum::SceneGraph
     Magnum::Primitives
     Magnum::Application
-    MagnumExtras::Octree)
+    MagnumExtras::Octree
+    MagnumExtras::SceneGraph
+    Magnum::Magnum)
 
 target_compile_features(magnum-octree PRIVATE cxx_range_for)
 
