@@ -24,7 +24,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.12)
 project(MagnumOctreeExample)
 
 # CMake policies: enable MACOSX_RPATH by default
@@ -37,24 +37,26 @@ if(POLICY CMP0028)
 endif()
 
 find_package(Magnum REQUIRED
-    DebugTools
     SceneGraph
+    Primitives
     Sdl2Application)
 
 find_package(MagnumExtras REQUIRED
     Octree
     SceneGraph)
 
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_OCTREE_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
 
 add_executable(magnum-octree OctreeExample.cpp)
 target_link_libraries(magnum-octree
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_DEBUGTOOLS_LIBRARIES}
-    ${MAGNUMEXTRAS_SCENEGRAPH_LIBRARIES}
-    ${MAGNUMEXTRAS_OCTREE_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::SceneGraph
+    Magnum::Primitives
+    Magnum::Application
+    MagnumExtras::Octree)
+
+target_compile_features(magnum-octree PRIVATE cxx_range_for)
 
 install(TARGETS magnum-octree DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-octree.md)
