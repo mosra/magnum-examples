@@ -253,6 +253,8 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
         }
     } else if(event.key() == KeyEvent::Key::V) {
         _visualizeOctree = !_visualizeOctree;
+    } else if(event.key() == KeyEvent::Key::Esc) {
+        exit();
     }
 }
 
