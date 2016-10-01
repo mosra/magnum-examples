@@ -68,5 +68,7 @@ See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
 LICENSE
 =======
 
-Magnum is licensed under MIT/Expat license, see [COPYING](COPYING) file for
-details.
+While Magnum itself and its documentation are licensed under MIT/Expat license,
+all example code is put into public domain (or UNLICENSE) to free you from any
+legal obstacles when reusing the code in your apps. See the [COPYING](COPYING)
+file for details.

@@ -18,21 +18,25 @@ Code contribution
 *   Best way to contribute is by using GitHub [pull requests](https://github.com/mosra/magnum-examples/pulls)
     -- fork the repository and make pull request from feature branch. You can
     also send patches via e-mail or contact me any other way.
-*   All your code will be released under license of the project (see [COPYING](COPYING)
-    file for details), so make sure you and your collaborators (or employers)
-    have no problems with it. If you create new files, don't forget to add
-    license header (verbatim copied from other files) and don't forget to add
-    yourself to license header of files you added or significantly modified,
-    for example:
+*   All your code will be released under license of the project, so make sure
+    you and your collaborators (or employers) have no problems with it. While
+    Magnum itself and its documentation are licensed under MIT/Expat license,
+    all example code is put into public domain (or UNLICENSE), see the
+    [COPYING](COPYING) file for details. If you create new files, don't forget
+    to add license header (verbatim copied from other files) and don't forget
+    to add yourself to license header of files you added or significantly
+    modified, for example:
 
         /*
             This file is part of Magnum.
 
-            Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
-                      Vladimír Vondruš <mosra@centrum.cz>
-            Copyright © YEAR YOUR_NAME <your@mail.com>
+            Original authors — credit is appreciated but not required:
 
-            Permission is hereby granted, free of charge, to any person obtaining a
+                2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+                    Vladimír Vondruš <mosra@centrum.cz>
+                YEAR — YOUR_NAME <your@mail.com>
+
+            This is free and unencumbered software released into the public domain.
             ...
 
 Contact
