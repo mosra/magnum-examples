@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_ShadowReceiverDrawable_h
+#define Magnum_Examples_ShadowReceiverDrawable_h
 /*
     This file is part of Magnum.
 
@@ -28,34 +30,30 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/Mesh.h>
+
+namespace Magnum { namespace Examples {
 
 class ShadowReceiverShader;
 class ShadowLight;
 
-/// Drawable that should render shadows cast by casters
-class ShadowReceiverDrawable : public Magnum::SceneGraph::Drawable3D {
-public:
-    ShadowReceiverDrawable(Magnum::SceneGraph::AbstractObject3D &object,
-                           Magnum::SceneGraph::DrawableGroup3D *drawables);
+/** @brief Drawable that should render shadows cast by casters */
+class ShadowReceiverDrawable: public SceneGraph::Drawable3D {
+    public:
+        explicit ShadowReceiverDrawable(SceneGraph::AbstractObject3D& object, SceneGraph::DrawableGroup3D* drawables);
 
-    virtual void draw(const Magnum::Matrix4 &transformationMatrix,
-                      Magnum::SceneGraph::Camera3D &camera) override;
+        void draw(const Matrix4 &transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-    void setMesh(Magnum::Mesh *mesh) {
-        this->mesh = mesh;
-    }
+        void setMesh(Mesh* mesh) { _mesh = mesh; }
 
-    void setShader(ShadowReceiverShader* shader) {
-        this->shader = shader;
-    }
+        void setShader(ShadowReceiverShader* shader) { _shader = shader; }
 
-private:
-    Magnum::Mesh* mesh;
-    ShadowReceiverShader* shader;
+    private:
+        Mesh* _mesh;
+        ShadowReceiverShader* _shader;
 };
 
+}}
 
-
+#endif

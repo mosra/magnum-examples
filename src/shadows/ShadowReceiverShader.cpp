@@ -33,14 +33,15 @@
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Context.h>
 #include <Magnum/Shader.h>
+#include <Magnum/TextureArray.h>
 #include <Magnum/Version.h>
 #include <Magnum/Math/Matrix4.h>
-#include <Magnum/TextureArray.h>
 
-using namespace Magnum;
+namespace Magnum { namespace Examples {
 
-ShadowReceiverShader::ShadowReceiverShader(int numShadowLevels) {
+ShadowReceiverShader::ShadowReceiverShader(Int numShadowLevels) {
     MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+
     const Utility::Resource rs{"shadow-data"};
 
     Shader vert{Version::GL330, Shader::Type::Vertex};
@@ -61,45 +62,43 @@ ShadowReceiverShader::ShadowReceiverShader(int numShadowLevels) {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    modelMatrixUniform = uniformLocation("modelMatrix");
-    transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-    shadowmapMatrixUniform = uniformLocation("shadowmapMatrix");
-    lightDirectionUniform = uniformLocation("lightDirection");
-    shadowBiasUniform = uniformLocation("shadowBias");
+    _modelMatrixUniform = uniformLocation("modelMatrix");
+    _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+    _shadowmapMatrixUniform = uniformLocation("shadowmapMatrix");
+    _lightDirectionUniform = uniformLocation("lightDirection");
+    _shadowBiasUniform = uniformLocation("shadowBias");
 
     setUniform(uniformLocation("shadowmapTexture"), ShadowmapTextureLayer);
 }
 
-ShadowReceiverShader::~ShadowReceiverShader() {
-
-}
-
-ShadowReceiverShader &ShadowReceiverShader::setTransformationProjectionMatrix(const Magnum::Matrix4 &matrix) {
-    setUniform(transformationProjectionMatrixUniform, matrix);
+ShadowReceiverShader& ShadowReceiverShader::setTransformationProjectionMatrix(const Matrix4& matrix) {
+    setUniform(_transformationProjectionMatrixUniform, matrix);
     return *this;
 }
 
-ShadowReceiverShader &ShadowReceiverShader::setModelMatrix(const Magnum::Matrix4 &matrix) {
-    setUniform(modelMatrixUniform, matrix);
+ShadowReceiverShader& ShadowReceiverShader::setModelMatrix(const Matrix4& matrix) {
+    setUniform(_modelMatrixUniform, matrix);
     return *this;
 }
 
-ShadowReceiverShader &ShadowReceiverShader::setShadowmapMatrices(const Corrade::Containers::ArrayView<Magnum::Matrix4> &matrix) {
-    setUniform(shadowmapMatrixUniform, matrix);
+ShadowReceiverShader& ShadowReceiverShader::setShadowmapMatrices(const Containers::ArrayView<const Matrix4> matrices) {
+    setUniform(_shadowmapMatrixUniform, matrices);
     return *this;
 }
 
-ShadowReceiverShader &ShadowReceiverShader::setLightDirection(const Magnum::Vector3 &vector3) {
-    setUniform(lightDirectionUniform, vector3);
+ShadowReceiverShader& ShadowReceiverShader::setLightDirection(const Vector3& vector) {
+    setUniform(_lightDirectionUniform, vector);
     return *this;
 }
 
-ShadowReceiverShader &ShadowReceiverShader::setShadowmapTexture(Magnum::Texture2DArray &texture) {
+ShadowReceiverShader& ShadowReceiverShader::setShadowmapTexture(Texture2DArray& texture) {
     texture.bind(ShadowmapTextureLayer);
     return *this;
 }
 
-ShadowReceiverShader &ShadowReceiverShader::setShadowBias(float bias) {
-    setUniform(shadowBiasUniform, bias);
+ShadowReceiverShader& ShadowReceiverShader::setShadowBias(const Float bias) {
+    setUniform(_shadowBiasUniform, bias);
     return *this;
 }
+
+}}

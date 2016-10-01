@@ -29,24 +29,18 @@
 */
 
 #include "ShadowCasterDrawable.h"
+
+#include <Magnum/SceneGraph/Camera.h>
+
 #include "ShadowCasterShader.h"
-#include "Magnum/SceneGraph/Camera.h"
 
+namespace Magnum { namespace Examples {
 
-ShadowCasterDrawable::ShadowCasterDrawable(Magnum::SceneGraph::AbstractObject3D& parent,
-                                           Magnum::SceneGraph::DrawableGroup3D *drawables)
-:   Magnum::SceneGraph::Drawable3D(parent, drawables)
-{
+ShadowCasterDrawable::ShadowCasterDrawable(SceneGraph::AbstractObject3D& parent, SceneGraph::DrawableGroup3D* drawables): Magnum::SceneGraph::Drawable3D{parent, drawables} {}
+
+void ShadowCasterDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& shadowCamera) {
+    _shader->setTransformationMatrix(shadowCamera.projectionMatrix()*transformationMatrix);
+    _mesh->draw(*_shader);
 }
 
-ShadowCasterDrawable::~ShadowCasterDrawable()
-{
-
-}
-
-void ShadowCasterDrawable::draw(const Magnum::Matrix4& transformationMatrix, Magnum::SceneGraph::Camera3D& shadowCamera)
-{
-    shader->setTransformationMatrix(shadowCamera.projectionMatrix() * transformationMatrix);
-    mesh->draw(*shader);
-}
-
+}}

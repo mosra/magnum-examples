@@ -28,22 +28,22 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Array.h>
 #include "ShadowReceiverDrawable.h"
+
+#include <Corrade/Containers/Array.h>
+
 #include "ShadowReceiverShader.h"
 #include "ShadowLight.h"
 
-ShadowReceiverDrawable::ShadowReceiverDrawable(Magnum::SceneGraph::AbstractObject3D &object,
-                                               Magnum::SceneGraph::DrawableGroup3D *drawables)
-: Drawable(object, drawables) {
+namespace Magnum { namespace Examples {
 
+ShadowReceiverDrawable::ShadowReceiverDrawable(SceneGraph::AbstractObject3D &object, SceneGraph::DrawableGroup3D* drawables): Drawable{object, drawables} {}
+
+void ShadowReceiverDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
+    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix);
+    _shader->setModelMatrix(object().transformationMatrix());
+
+    _mesh->draw(*_shader);
 }
 
-void ShadowReceiverDrawable::draw(const Magnum::Matrix4 &transformationMatrix,
-                                  Magnum::SceneGraph::Camera3D &camera) {
-    shader->setTransformationProjectionMatrix(camera.projectionMatrix() * transformationMatrix);
-    shader->setModelMatrix(object().transformationMatrix());
-
-    mesh->draw(*shader);
-}
-
+}}

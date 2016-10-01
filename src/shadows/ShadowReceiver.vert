@@ -43,9 +43,9 @@ void main() {
     transformedNormal = mat3(modelMatrix)*normal;
 
     vec4 worldPos4 = modelMatrix * position;
-    for (int i = 0; i < shadowmapMatrix.length(); i++) {
-        shadowCoords[i] = (shadowmapMatrix[i] * worldPos4).xyz;
+    for(int i = 0; i < shadowmapMatrix.length(); i++) {
+        shadowCoords[i] = (shadowmapMatrix[i]*worldPos4).xyz;
     }
 
-    gl_Position = transformationProjectionMatrix * position;
+    gl_Position = transformationProjectionMatrix*position;
 }

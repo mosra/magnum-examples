@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_ShadowReceiverShader_h
+#define Magnum_Examples_ShadowReceiverShader_h
 /*
     This file is part of Magnum.
 
@@ -28,47 +30,65 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Shaders/Generic.h>
 
-/// Shader that can synthesize shadows on an object
-class ShadowReceiverShader : public Magnum::AbstractShaderProgram {
-public:
-    typedef Magnum::Shaders::Generic3D::Position Position;
-    typedef Magnum::Shaders::Generic3D::Normal Normal;
+namespace Magnum { namespace Examples {
 
-    ShadowReceiverShader(int numShadowLevels);
-    virtual ~ShadowReceiverShader();
+/** @brief Shader that can synthesize shadows on an object */
+class ShadowReceiverShader: public AbstractShaderProgram {
+    public:
+        typedef Shaders::Generic3D::Position Position;
+        typedef Shaders::Generic3D::Normal Normal;
 
-    /** Matrix that transforms from local model space -> world space -> camera space -> clip coordinates (aka model-view-projection matrix)  */
-    ShadowReceiverShader& setTransformationProjectionMatrix(const Magnum::Matrix4& matrix);
+        explicit ShadowReceiverShader(Int numShadowLevels);
 
-    /** Matrix that transforms from local model space -> world space (used for lighting) (aka model matrix) */
-    ShadowReceiverShader& setModelMatrix(const Magnum::Matrix4& matrix);
+        /**
+         * @brief Set transformation and projection matrix
+         *
+         * Matrix that transforms from local model space -> world space ->
+         * camera space -> clip coordinates (aka model-view-projection matrix).
+         */
+        ShadowReceiverShader& setTransformationProjectionMatrix(const Matrix4& matrix);
 
-    /** Matrix that transforms from world space -> shadow texture space */
-    ShadowReceiverShader& setShadowmapMatrices(const Corrade::Containers::ArrayView<Magnum::Matrix4>& matrix);
+        /**
+         * @brief Set model matrix
+         *
+         * Matrix that transforms from local model space -> world space (used
+         * for lighting).
+         */
+        ShadowReceiverShader& setModelMatrix(const Matrix4& matrix);
 
-    /** World-space direction to the light source */
-    ShadowReceiverShader& setLightDirection(const Magnum::Vector3& vector3);
+        /**
+         * @brief Set shadowmap matrices
+         *
+         * Matrix that transforms from world space -> shadow texture space.
+         */
+        ShadowReceiverShader& setShadowmapMatrices(Containers::ArrayView<const Matrix4> matrices);
 
-    /** The shadow map texture array */
-    ShadowReceiverShader& setShadowmapTexture(Magnum::Texture2DArray& texture);
+        /** @brief Set world-space direction to the light source */
+        ShadowReceiverShader& setLightDirection(const Vector3& vector3);
 
-    /** Shadow bias uniform - normally it wants to be something from 0.0001 -> 0.001 */
-    ShadowReceiverShader& setShadowBias(float bias);
+        /** @brief Set shadow map texture array */
+        ShadowReceiverShader& setShadowmapTexture(Texture2DArray& texture);
 
-private:
-    Magnum::Int modelMatrixUniform;
-    Magnum::Int transformationProjectionMatrixUniform;
-    Magnum::Int shadowmapMatrixUniform;
-    Magnum::Int lightDirectionUniform;
-    Magnum::Int shadowBiasUniform;
+        /**
+         * @brief Set thadow bias uniform
+         *
+         * Normally it wants to be something from 0.0001 -> 0.001.
+         */
+        ShadowReceiverShader& setShadowBias(Float bias);
 
-    enum: Magnum::Int { ShadowmapTextureLayer = 0 };
+    private:
+        enum: Int { ShadowmapTextureLayer = 0 };
+
+        Int _modelMatrixUniform,
+            _transformationProjectionMatrixUniform,
+            _shadowmapMatrixUniform,
+            _lightDirectionUniform,
+            _shadowBiasUniform;
 };
 
+}}
 
-
+#endif

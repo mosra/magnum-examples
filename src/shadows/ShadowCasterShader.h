@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_ShadowCasterShader_h
+#define Magnum_Examples_ShadowCasterShader_h
 /*
     This file is part of Magnum.
 
@@ -28,21 +30,27 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-
 #include <Magnum/AbstractShaderProgram.h>
 
-class ShadowCasterShader : public Magnum::AbstractShaderProgram {
-public:
-    ShadowCasterShader();
-    virtual ~ShadowCasterShader();
+namespace Magnum { namespace Examples {
 
-    /** Matrix that transforms from local model space -> world space -> camera space -> clip coordinates (aka model-view-projection matrix)  */
-    ShadowCasterShader& setTransformationMatrix(const Magnum::Matrix4& matrix);
+class ShadowCasterShader: public AbstractShaderProgram {
+    public:
+        explicit ShadowCasterShader();
 
-private:
-    Magnum::Int transformationMatrixUniform;
+        /**
+         * @brief Set transformation matrix
+         *
+         * Matrix that transforms from local model space -> world space ->
+         * camera space -> clip coordinates (aka model-view-projection
+         * matrix).
+         */
+        ShadowCasterShader& setTransformationMatrix(const Matrix4& matrix);
+
+    private:
+        Int _transformationMatrixUniform;
 };
 
+}}
 
-
+#endif

@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_ShadowCasterDrawable_h
+#define Magnum_Examples_ShadowCasterDrawable_h
 /*
     This file is part of Magnum.
 
@@ -28,39 +30,38 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#pragma once
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Resource.h>
 #include <Magnum/Mesh.h>
-#include <Magnum/Math/Vector3.h>
+#include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/Object.h>
+
+namespace Magnum { namespace Examples {
 
 class ShadowCasterShader;
 
-class ShadowCasterDrawable
-:   public Magnum::SceneGraph::Drawable3D
-{
-public:
-    ShadowCasterDrawable(Magnum::SceneGraph::AbstractObject3D& parent, Magnum::SceneGraph::DrawableGroup3D *drawables);
+class ShadowCasterDrawable: public SceneGraph::Drawable3D {
+    public:
+        explicit ShadowCasterDrawable(SceneGraph::AbstractObject3D& parent, SceneGraph::DrawableGroup3D* drawables);
 
-    virtual ~ShadowCasterDrawable();
+        /** @brief Mesh to use for this drawable and its bounding sphere radius */
+        void setMesh(Mesh* mesh, Float radius) {
+            _mesh = mesh;
+            _radius = radius;
+        }
 
-    /* Mesh to use for this drawable and its bounding sphere radius. */
-    void setMesh(Magnum::Mesh* mesh, float radius) {
-        this->mesh = mesh;
-        this->radius = radius;
-    }
-    void setShader(ShadowCasterShader* shader) {
-        this->shader = shader;
-    }
+        void setShader(ShadowCasterShader* shader) {
+            _shader = shader;
+        }
 
-    float getRadius() const { return radius; }
+        Float radius() const { return _radius; }
 
-    virtual void draw(const Magnum::Matrix4& transformationMatrix, Magnum::SceneGraph::Camera3D& shadowCamera) override;
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& shadowCamera) override;
 
-private:
-    Magnum::Mesh* mesh;
-    ShadowCasterShader* shader;
-    float radius;
+    private:
+        Mesh* _mesh;
+        ShadowCasterShader* _shader;
+        Float _radius;
 };
 
+}}
+
+#endif
