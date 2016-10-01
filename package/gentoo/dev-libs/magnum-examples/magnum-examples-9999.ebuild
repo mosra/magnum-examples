@@ -11,7 +11,7 @@ inherit cmake-utils git-r3
 DESCRIPTION="Examples for Magnum OpenGL graphics engine"
 HOMEPAGE="http://mosra.cz/blog/magnum.php"
 
-LICENSE="MIT"
+LICENSE="public-domain"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""

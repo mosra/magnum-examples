@@ -5,7 +5,7 @@ pkgrel=1
 pkgdesc="Examples for Magnum OpenGL graphics engine"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
-license=('MIT')
+license=('custom:Public Domain')
 depends=('magnum' 'magnum-plugins' 'magnum-integration' 'bullet' 'openal')
 makedepends=('cmake' 'ninja')
 options=(!strip)
@@ -35,6 +35,10 @@ build() {
 }
 
 package() {
-  cd "$_rootdir/build"
-  DESTDIR="$pkgdir/" ninja install
+    cd "$_rootdir/build"
+    DESTDIR="$pkgdir/" ninja install
+
+    # Install the UNLICENSE because Arch has no pre-defined license for Public
+    # Domain
+    install -D -m644 "${_rootdir}/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
 }
