@@ -54,6 +54,7 @@ for more information.
     library.
 -   `WITH_PICKING_EXAMPLE` -- Build Object Picking example.
 -   `WITH_PRIMITIVES_EXAMPLE` -- Build @ref examples-primitives "Primitives" example.
+-   `WITH_SHADOWS_EXAMPLE` -- Build Shadows example.
 -   `WITH_TEXT_EXAMPLE` -- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
     plugin.
 -   `WITH_TEXTUREDTRIANGLE_EXAMPLE` -- Build @ref examples-textured-triangle "Textured Triangle"
