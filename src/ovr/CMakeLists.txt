@@ -1,4 +1,4 @@
-﻿#
+#
 #   This file is part of Magnum.
 #
 #   Original authors — credit is appreciated but not required:
