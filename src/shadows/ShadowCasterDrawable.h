@@ -57,8 +57,8 @@ class ShadowCasterDrawable: public SceneGraph::Drawable3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& shadowCamera) override;
 
     private:
-        Mesh* _mesh;
-        ShadowCasterShader* _shader;
+        Mesh* _mesh{};
+        ShadowCasterShader* _shader{};
         Float _radius;
 };
 

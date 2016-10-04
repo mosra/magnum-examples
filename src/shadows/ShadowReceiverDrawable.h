@@ -50,8 +50,8 @@ class ShadowReceiverDrawable: public SceneGraph::Drawable3D {
         void setShader(ShadowReceiverShader& shader) { _shader = &shader; }
 
     private:
-        Mesh* _mesh;
-        ShadowReceiverShader* _shader;
+        Mesh* _mesh{};
+        ShadowReceiverShader* _shader{};
 };
 
 }}
