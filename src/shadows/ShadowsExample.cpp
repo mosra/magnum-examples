@@ -420,7 +420,7 @@ void ShadowsExample::setShadowSplitExponent(const Float power) {
 }
 
 void ShadowsExample::setShadowMapSize(const Vector2i& shadowMapSize) {
-    if(shadowMapSize.x() <= Texture2D::maxSize().x() && shadowMapSize.y() <= Texture2D::maxSize().y() && shadowMapSize.x() >= 1 && shadowMapSize.y() >= 1) {
+    if((shadowMapSize >= Vector2i{1}).all() && (shadowMapSize <= Texture2D::maxSize()).all()) {
         _shadowMapSize = shadowMapSize;
         _shadowLight.setupShadowmaps(_shadowLight.layerCount(), _shadowMapSize);
         Debug() << "Shadow map size" << shadowMapSize << "x" << _shadowLight.layerCount() << "layers";
