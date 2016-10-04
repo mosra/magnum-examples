@@ -87,14 +87,8 @@ void ShadowLight::setTarget(const Vector3& lightDirection, const Vector3& screen
         Vector3 min{std::numeric_limits<Float>::max()}, max{std::numeric_limits<Float>::lowest()};
         for(Vector3 worldPoint: mainCameraFrustumCorners) {
             Vector3 cameraPoint = inverseCameraRotationMatrix*worldPoint;
-            for(std::size_t i = 0; i < 3; i++) {
-                if(cameraPoint[i] < min[i]) {
-                    min[i] = cameraPoint[i];
-                }
-                if(cameraPoint[i] > max[i]) {
-                    max[i] = cameraPoint[i];
-                }
-            }
+            min = Math::min(min, cameraPoint);
+            max = Math::max(max, cameraPoint);
         }
 
         /* Place the shadow camera at the mid-point of the camera box */
@@ -231,8 +225,7 @@ void ShadowLight::render(SceneGraph::DrawableGroup3D& drawables) {
                    forward away from the camera, but the near/far planes are
                    measured forwards. */
                 const Float nearestPoint = -drawableCentre.z() - drawable.radius();
-                if(nearestPoint < orthographicNear)
-                    orthographicNear = nearestPoint;
+                orthographicNear = Math::min(orthographicNear, nearestPoint);
                 filteredDrawables.push_back(&drawable);
                 transformations[transformationsOutIndex++] = transform;
             }
