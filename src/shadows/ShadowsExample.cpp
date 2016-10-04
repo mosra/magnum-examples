@@ -310,17 +310,15 @@ void ShadowsExample::mouseReleaseEvent(MouseEvent& event) {
 void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    Matrix4 transform = _activeCameraObject->transformation();
+    const Matrix4 transform = _activeCameraObject->transformation();
 
     constexpr const Float angleScale = 0.01f;
     const Float angleX = event.relativePosition().x()*angleScale;
     const Float angleY = event.relativePosition().y()*angleScale;
     if(angleX != 0.0f || angleY != 0.0f) {
-        transform = Matrix4::lookAt(transform.translation(),
+        _activeCameraObject->setTransformation(Matrix4::lookAt(transform.translation(),
             transform.translation() - transform.rotationScaling()*Vector3{-angleX, angleY, 1.0f},
-            Vector3::yAxis());
-
-        _activeCameraObject->setTransformation(transform);
+            Vector3::yAxis()));
     }
 
     event.setAccepted();
