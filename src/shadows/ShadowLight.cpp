@@ -167,10 +167,10 @@ std::vector<Vector4> ShadowLight::calculateClipPlanes() {
 
 void ShadowLight::render(SceneGraph::DrawableGroup3D& drawables) {
     /* Compute transformations of all objects in the group relative to the camera */
-    std::vector<std::reference_wrapper<SceneGraph::AbstractObject3D>> objects;
+    std::vector<std::reference_wrapper<Object3D>> objects;
     objects.reserve(drawables.size());
     for(std::size_t i = 0; i != drawables.size(); ++i)
-        objects.push_back(drawables[i].object());
+        objects.push_back(static_cast<Object3D&>(drawables[i].object()));
     std::vector<ShadowCasterDrawable*> filteredDrawables;
 
     /* Projecting world points normalized device coordinates means they range
@@ -194,7 +194,7 @@ void ShadowLight::render(SceneGraph::DrawableGroup3D& drawables) {
         setProjectionMatrix(Matrix4::orthographicProjection(d.orthographicSize, orthographicNear, orthographicFar));
 
         const std::vector<Vector4> clipPlanes = calculateClipPlanes();
-        std::vector<Matrix4> transformations = _object.scene()->AbstractObject<3,Float>::transformationMatrices(objects, cameraMatrix());
+        std::vector<Matrix4> transformations = _object.scene()->transformationMatrices(objects, cameraMatrix());
 
         /* Rebuild the list of objects we will draw by clipping them with the
            shadow camera's planes */

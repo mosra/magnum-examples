@@ -52,6 +52,7 @@
 #include "ShadowLight.h"
 #include "ShadowCasterDrawable.h"
 #include "ShadowReceiverDrawable.h"
+#include "Types.h"
 
 namespace Magnum { namespace Examples {
 
@@ -59,9 +60,6 @@ constexpr const float MainCameraNear = 0.01f;
 constexpr const float MainCameraFar = 100.0f;
 
 using namespace Math::Literals;
-
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class ShadowsExample: public Platform::Application {
     public:

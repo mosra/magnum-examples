@@ -36,6 +36,8 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/AbstractFeature.h>
 
+#include "Types.h"
+
 namespace Magnum { namespace Examples {
 
 /**
@@ -105,7 +107,7 @@ class ShadowLight: public SceneGraph::Camera3D {
         }
 
     private:
-        SceneGraph::Object<SceneGraph::MatrixTransformation3D>& _object;
+        Object3D& _object;
         Texture2DArray* _shadowTexture;
 
         struct ShadowLayerData {
