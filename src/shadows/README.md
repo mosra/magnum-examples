@@ -24,8 +24,7 @@ Keyboard Controls
 
 * *F3* Change shadow face culling mode
 * *F4* Shadow map alignment - camera/static
-* *1* / *2* - Change layer split exponent 
-* *3* / *4* - Tweak bias
-* *5* / *6* - Change number of layers
-* *7* / *8* - Change shadow map resolution
-
+* *F5* / *F6* - Change layer split exponent
+* *F7* / *F8* - Tweak bias
+* *F9* / *F10* - Change number of layers
+* *F11* / *F12* - Change shadow map resolution

@@ -364,21 +364,21 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
         Debug() << "Shadow alignment:"
             << (_shadowStaticAlignment ? "static" : "camera direction");
 
-    } else if(event.key() == KeyEvent::Key::One) {
+    } else if(event.key() == KeyEvent::Key::F5) {
         setShadowSplitExponent(_layerSplitExponent *= 1.125f);
 
-    } else if(event.key() == KeyEvent::Key::Two) {
+    } else if(event.key() == KeyEvent::Key::F6) {
         setShadowSplitExponent(_layerSplitExponent /= 1.125f);
 
-    } else if(event.key() == KeyEvent::Key::Three) {
+    } else if(event.key() == KeyEvent::Key::F7) {
         _shadowReceiverShader->setShadowBias(_shadowBias /= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
-    } else if(event.key() == KeyEvent::Key::Four) {
+    } else if(event.key() == KeyEvent::Key::F8) {
         _shadowReceiverShader->setShadowBias(_shadowBias *= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
-    } else if(event.key() == KeyEvent::Key::Five) {
+    } else if(event.key() == KeyEvent::Key::F9) {
         std::size_t numLayers = _shadowLight.layerCount() - 1;
         if(numLayers >= 1) {
             _shadowLight.setupShadowmaps(numLayers, _shadowMapSize);
@@ -387,7 +387,7 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
             Debug() << "Shadow map size" << _shadowMapSize << "x" << _shadowLight.layerCount() << "layers";
         } else return;
 
-    } else if(event.key() == KeyEvent::Key::Six) {
+    } else if(event.key() == KeyEvent::Key::F10) {
         std::size_t numLayers = _shadowLight.layerCount() + 1;
         if(numLayers <= 32) {
             _shadowLight.setupShadowmaps(numLayers, _shadowMapSize);
@@ -396,10 +396,10 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
             Debug() << "Shadow map size" << _shadowMapSize << "x" << _shadowLight.layerCount() << "layers";
         } else return;
 
-    } else if(event.key() == KeyEvent::Key::Seven) {
+    } else if(event.key() == KeyEvent::Key::F11) {
         setShadowMapSize(_shadowMapSize/2);
 
-    } else if(event.key() == KeyEvent::Key::Eight) {
+    } else if(event.key() == KeyEvent::Key::F12) {
         setShadowMapSize(_shadowMapSize*2);
 
     } else return;
