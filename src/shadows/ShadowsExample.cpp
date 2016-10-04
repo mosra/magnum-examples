@@ -176,14 +176,14 @@ Object3D* ShadowsExample::createSceneObject(Model& model, bool makeCaster, bool 
 
     if(makeCaster) {
         auto caster = new ShadowCasterDrawable(*object, &_shadowCasterDrawables);
-        caster->setShader(&_shadowCasterShader);
-        caster->setMesh(&model.mesh, model.radius);
+        caster->setShader(_shadowCasterShader);
+        caster->setMesh(model.mesh, model.radius);
     }
 
     if(makeReceiver) {
         auto receiver = new ShadowReceiverDrawable(*object, &_shadowReceiverDrawables);
-        receiver->setShader(_shadowReceiverShader.get());
-        receiver->setMesh(&model.mesh);
+        receiver->setShader(*_shadowReceiverShader);
+        receiver->setMesh(model.mesh);
     }
 
     return object;
@@ -261,7 +261,7 @@ void ShadowsExample::drawEvent() {
         shadowMatrices[layerIndex] = _shadowLight.layerMatrix(layerIndex);
 
     _shadowReceiverShader->setShadowmapMatrices(shadowMatrices)
-        .setShadowmapTexture(*_shadowLight.shadowTexture())
+        .setShadowmapTexture(_shadowLight.shadowTexture())
         .setLightDirection(_shadowLightObject.transformation()[2].xyz());
 
     _activeCamera->draw(_shadowReceiverDrawables);
@@ -432,7 +432,7 @@ void ShadowsExample::recompileReceiverShader(const std::size_t numLayers) {
     _shadowReceiverShader->setShadowBias(_shadowBias);
     for(std::size_t i = 0; i != _shadowReceiverDrawables.size(); ++i) {
         auto& drawable = static_cast<ShadowReceiverDrawable&>(_shadowReceiverDrawables[i]);
-        drawable.setShader(_shadowReceiverShader.get());
+        drawable.setShader(*_shadowReceiverShader);
     }
 }
 

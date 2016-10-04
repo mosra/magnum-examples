@@ -32,6 +32,7 @@
 
 #include <Magnum/Framebuffer.h>
 #include <Magnum/Resource.h>
+#include <Magnum/TextureArray.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/AbstractFeature.h>
@@ -102,13 +103,11 @@ class ShadowLight: public SceneGraph::Camera3D {
 
         std::vector<Vector4> calculateClipPlanes();
 
-        Texture2DArray* shadowTexture() const {
-            return _shadowTexture;
-        }
+        Texture2DArray& shadowTexture() { return _shadowTexture; }
 
     private:
         Object3D& _object;
-        Texture2DArray* _shadowTexture;
+        Texture2DArray _shadowTexture;
 
         struct ShadowLayerData {
             Framebuffer shadowFramebuffer;

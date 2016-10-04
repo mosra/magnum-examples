@@ -35,7 +35,6 @@
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/Renderer.h>
-#include <Magnum/TextureArray.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/SceneGraph/FeatureGroup.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -45,14 +44,14 @@
 
 namespace Magnum { namespace Examples {
 
-ShadowLight::ShadowLight(SceneGraph::Object<SceneGraph::MatrixTransformation3D>& parent): SceneGraph::Camera3D{parent}, _object{parent}, _shadowTexture{} {
+ShadowLight::ShadowLight(SceneGraph::Object<SceneGraph::MatrixTransformation3D>& parent): SceneGraph::Camera3D{parent}, _object{parent}, _shadowTexture{NoCreate} {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::NotPreserved);
 }
 
 void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
     _layers.clear();
 
-    (*(_shadowTexture = new Texture2DArray()))
+    (_shadowTexture = Texture2DArray{})
         .setLabel("Shadow texture")
         .setImage(0, TextureFormat::DepthComponent, ImageView3D{PixelFormat::DepthComponent, PixelType::Float, {size, numShadowLevels}, nullptr})
         .setMaxLevel(0)
@@ -65,7 +64,7 @@ void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
         _layers.emplace_back(size);
         Framebuffer& shadowFramebuffer = _layers.back().shadowFramebuffer;
         shadowFramebuffer.setLabel("Shadow framebuffer " + std::to_string(i))
-            .attachTextureLayer(Framebuffer::BufferAttachment::Depth, *_shadowTexture, 0, i)
+            .attachTextureLayer(Framebuffer::BufferAttachment::Depth, _shadowTexture, 0, i)
             .mapForDraw(Framebuffer::DrawAttachment::None)
             .bind();
         Debug() << "Framebuffer status:" << shadowFramebuffer.checkStatus(FramebufferTarget::Draw);

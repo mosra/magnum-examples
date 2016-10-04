@@ -43,13 +43,13 @@ class ShadowCasterDrawable: public SceneGraph::Drawable3D {
         explicit ShadowCasterDrawable(SceneGraph::AbstractObject3D& parent, SceneGraph::DrawableGroup3D* drawables);
 
         /** @brief Mesh to use for this drawable and its bounding sphere radius */
-        void setMesh(Mesh* mesh, Float radius) {
-            _mesh = mesh;
+        void setMesh(Mesh& mesh, Float radius) {
+            _mesh = &mesh;
             _radius = radius;
         }
 
-        void setShader(ShadowCasterShader* shader) {
-            _shader = shader;
+        void setShader(ShadowCasterShader& shader) {
+            _shader = &shader;
         }
 
         Float radius() const { return _radius; }
