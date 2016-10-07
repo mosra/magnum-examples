@@ -271,7 +271,6 @@ to talk about.
 @until }
 @until }
 @until }
-@until }
 
 @section examples-viewer-objects Drawable objects
 
@@ -317,7 +316,7 @@ example.
 
 @dontinclude viewer/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
-@until ${MAGNUM_APPLICATION_LIBRARIES})
+@until Magnum::Shaders)
 
 -   @ref viewer/configure.h.cmake
 -   @ref viewer/CMakeLists.txt

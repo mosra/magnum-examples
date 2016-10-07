@@ -11,6 +11,7 @@ Contributors to Magnum examples
 
 *   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Oculus VR
     example, audio example
+*   Jan Dupal ([@JanDupal](https://github.com/JanDupal) -- Bullet example
 *   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
 

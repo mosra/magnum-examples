@@ -1,28 +1,31 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
-              Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2015
-              Jonathan Hale <squareys@googlemail.com>
+    Original authors — credit is appreciated but not required:
 
-    Permission is hereby granted, free of charge, to any person obtaining a
-    copy of this software and associated documentation files (the "Software"),
-    to deal in the Software without restriction, including without limitation
-    the rights to use, copy, modify, merge, publish, distribute, sublicense,
-    and/or sell copies of the Software, and to permit persons to whom the
-    Software is furnished to do so, subject to the following conditions:
+        2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+            Vladimír Vondruš <mosra@centrum.cz>
+        2015, 2016 — Jonathan Hale <squareys@googlemail.com>
 
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
+    This is free and unencumbered software released into the public domain.
+
+    Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+    this software, either in source code form or as a compiled binary, for any
+    purpose, commercial or non-commercial, and by any means.
+
+    In jurisdictions that recognize copyright laws, the author or authors of
+    this software dedicate any and all copyright interest in the software to
+    the public domain. We make this dedication for the benefit of the public
+    at large and to the detriment of our heirs and successors. We intend this
+    dedication to be an overt act of relinquishment in perpetuity of all
+    present and future rights to this software under copyright law.
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-    DEALINGS IN THE SOFTWARE.
+    THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <memory>
@@ -52,8 +55,8 @@
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
-#include <Magnum/OvrIntegration/Hmd.h>
-#include <Magnum/OvrIntegration/HmdEnum.h>
+#include <Magnum/OvrIntegration/Session.h>
+#include <Magnum/OvrIntegration/Enums.h>
 
 #include "Types.h"
 #include "HmdCamera.h"
@@ -70,7 +73,7 @@ class OvrExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
 
         OvrIntegration::Context _ovrContext;
-        std::unique_ptr<OvrIntegration::Hmd> _hmd;
+        std::unique_ptr<OvrIntegration::Session> _session;
 
         std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
         std::unique_ptr<Mesh> _mesh;
@@ -96,19 +99,23 @@ class OvrExample: public Platform::Application {
 };
 
 OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
-    _indexBuffer(nullptr), _vertexBuffer(nullptr), _mesh(nullptr),
-    _shader(nullptr), _scene(), _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
+    _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
     _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off),
     _enableMirroring(true)
 {
-    /* connect to an HMD, or create a debug HMD with DK2 type in case none is
-       connected */
-    _hmd = _ovrContext.createHmd();
+    /* Connect to an active Oculus session */
+    _session = _ovrContext.createSession();
 
-    /* get the hmd display resolution */
-    Vector2i resolution = _hmd->resolution() / 2;
+    if(!_session) {
+        Error() << "No HMD connected.";
+        exit();
+        return;
+    }
 
-    /* create a context with the HMD display resolution */
+    /* Get the HMD display resolution */
+    const Vector2i resolution = _session->resolution() / 2;
+
+    /* Create a context with the HMD display resolution */
     Configuration conf;
     conf.setTitle("Magnum OculusVR Example")
         .setSize(resolution)
@@ -117,7 +124,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     if(!tryCreateContext(conf))
         createContext(conf.setSampleCount(0));
 
-    /* the oculus sdk compositor does some "magic" to reduce latency. For
+    /* The oculus sdk compositor does some "magic" to reduce latency. For
        that to work, VSync needs to be turned off. */
     if(!setSwapInterval(0))
         Error() << "Could not turn off VSync.";
@@ -125,16 +132,16 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FramebufferSRGB);
 
-    _hmd->configureRendering();
+    _session->configureRendering();
 
-    /* setup mirroring of oculus sdk compositor results to a texture which can
-       later be blitted onto the default framebuffer. */
-    _mirrorTexture = &_hmd->createMirrorTexture(TextureFormat::SRGB8, resolution);
+    /* Setup mirroring of oculus sdk compositor results to a texture which can
+       later be blitted onto the default framebuffer */
+    _mirrorTexture = &_session->createMirrorTexture(resolution);
     _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
     _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
                       .mapForRead(Framebuffer::ColorAttachment(0));
 
-    /* setup cube mesh. */
+    /* Setup cube mesh */
     const Trade::MeshData3D cube = Primitives::Cube::solid();
 
     _vertexBuffer.reset(new Buffer());
@@ -157,68 +164,69 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
                 Shaders::Phong::Normal {}).setIndexBuffer(*_indexBuffer, 0, indexType,
                                                           indexStart, indexEnd);
 
-    /* setup shader */
+    /* Setup shader */
     _shader.reset(new Shaders::Phong());
 
-    /* setup scene */
+    /* Setup scene */
     _cubes[0] = std::unique_ptr<Object3D>(new Object3D(&_scene));
     _cubes[0]->rotateY(Deg(45.0f));
     _cubes[0]->translate({0.0f, 0.0f, -3.0f});
-    _cubeDrawables[0] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {1.0f, 1.0f, 0.0f}, _cubes[0].get(), &_drawables));
+    _cubeDrawables[0] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {1.0f, 1.0f, 0.0f}, _cubes[0].get(), &_drawables));
 
     _cubes[1] = std::unique_ptr<Object3D>(new Object3D(&_scene));
     _cubes[1]->rotateY(Deg(45.0f));
     _cubes[1]->translate({5.0f, 0.0f, 0.0f});
-    _cubeDrawables[1] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {1.0f, 0.0f, 0.0f}, _cubes[1].get(), &_drawables));
+    _cubeDrawables[1] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {1.0f, 0.0f, 0.0f}, _cubes[1].get(), &_drawables));
 
     _cubes[2] = std::unique_ptr<Object3D>(new Object3D(&_scene));
     _cubes[2]->rotateY(Deg(45.0f));
     _cubes[2]->translate({-10.0f, 0.0f, 0.0f});
-    _cubeDrawables[2] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {0.0f, 0.0f, 1.0f}, _cubes[2].get(), &_drawables));
+    _cubeDrawables[2] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {0.0f, 0.0f, 1.0f}, _cubes[2].get(), &_drawables));
 
     _cubes[3] = std::unique_ptr<Object3D>(new Object3D(&_scene));
     _cubes[3]->rotateY(Deg(45.0f));
     _cubes[3]->translate({0.0f, 0.0f, 7.0f});
-    _cubeDrawables[3] = std::unique_ptr<CubeDrawable>(new CubeDrawable(_mesh.get(), _shader.get(), {0.0f, 1.0f, 1.0f}, _cubes[3].get(), &_drawables));
+    _cubeDrawables[3] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {0.0f, 1.0f, 1.0f}, _cubes[3].get(), &_drawables));
 
-    /* setup compositor layers */
+    /* Setup compositor layers */
     _layer = &_ovrContext.compositor().addLayerEyeFov();
-    _layer->setFov(*_hmd.get());
+    _layer->setFov(*_session.get());
     _layer->setHighQuality(true);
 
-    /* setup cameras */
+    /* Setup cameras */
     _eyes[0].setParent(&_cameraObject);
     _eyes[1].setParent(&_cameraObject);
 
     for(int eye = 0; eye < 2; ++eye) {
-        /* projection matrix is set in the camera, since it requires some hmd-specific fov etc. */
-        _cameras[eye].reset(new HmdCamera(*_hmd, eye, _eyes[eye]));
+        /* Projection matrix is set in the camera, since it requires some
+           HMD-specific FoV etc */
+        _cameras[eye].reset(new HmdCamera(*_session, eye, _eyes[eye]));
 
-        _layer->setColorTexture(eye, _cameras[eye]->textureSet());
+        _layer->setColorTexture(eye, _cameras[eye]->textureSwapChain());
         _layer->setViewport(eye, {{}, _cameras[eye]->viewport()});
     }
 }
 
 void OvrExample::drawEvent() {
-    /* get orientation and position of the hmd. */
-    std::array<DualQuaternion, 2> poses = _hmd->pollEyePoses().eyePoses();
+    /* Get orientation and position of the hmd. */
+    const std::array<DualQuaternion, 2> poses = _session->pollEyePoses().eyePoses();
 
-    /* draw the scene for both cameras */
-    for(int eye = 0; eye < 2; ++eye) {
+    /* Draw the scene for both cameras */
+    for(int eye: {0, 1}) {
         /* set the transformation according to rift trackers */
         _eyes[eye].setTransformation(poses[eye].toMatrix());
         /* render each eye. */
         _cameras[eye]->draw(_drawables);
     }
 
-    /* set the layers eye poses to the poses chached in the _hmd. */
-    _layer->setRenderPoses(*_hmd.get());
+    /* Set the layers eye poses to the poses chached in the _hmd. */
+    _layer->setRenderPoses(*_session.get());
 
-    /* let the libOVR sdk compositor do its magic! */
-    _ovrContext.compositor().submitFrame(*_hmd.get());
+    /* Let the libOVR sdk compositor do its magic! */
+    _ovrContext.compositor().submitFrame(*_session.get());
 
     if(_enableMirroring) {
-        /* blit mirror texture to defaultFramebuffer. */
+        /* Blit mirror texture to default framebuffer */
         const Vector2i size = _mirrorTexture->imageSize(0);
         Framebuffer::blit(*_mirrorFramebuffer,
                           defaultFramebuffer,
@@ -229,8 +237,9 @@ void OvrExample::drawEvent() {
         swapBuffers();
     }
 
-    if(_hmd->isDebugHmd()) {
-        /* provide some rotation, but only without real devices to avoid vr sickness ;) */
+    if(_session->isDebugHmd()) {
+        /* Provide some rotation, but only without real devices to avoid VR
+           sickness ;) */
         _cameraObject.rotateY(Deg(0.1f));
     }
 
@@ -238,19 +247,22 @@ void OvrExample::drawEvent() {
 }
 
 void OvrExample::keyPressEvent(KeyEvent& event) {
+    /* Toggle through the performance hud modes */
     if(event.key() == KeyEvent::Key::F11) {
-        /* toggle through the performance hud modes */
         switch(_curPerfHudMode) {
             case OvrIntegration::PerformanceHudMode::Off:
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::LatencyTiming;
                 break;
             case OvrIntegration::PerformanceHudMode::LatencyTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::RenderTiming;
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::AppRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::RenderTiming:
-                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfHeadroom;
+            case OvrIntegration::PerformanceHudMode::AppRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::CompRenderTiming;
                 break;
-            case OvrIntegration::PerformanceHudMode::PerfHeadroom:
+            case OvrIntegration::PerformanceHudMode::CompRenderTiming:
+                _curPerfHudMode = OvrIntegration::PerformanceHudMode::PerfSummary;
+                break;
+            case OvrIntegration::PerformanceHudMode::PerfSummary:
                 _curPerfHudMode = OvrIntegration::PerformanceHudMode::VersionInfo;
                 break;
             case OvrIntegration::PerformanceHudMode::VersionInfo:
@@ -258,9 +270,10 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 break;
         }
 
-        _hmd->setPerformanceHudMode(_curPerfHudMode);
+        _session->setPerformanceHudMode(_curPerfHudMode);
+
+    /* Toggle through the debug hud stereo modes */
     } else if(event.key() == KeyEvent::Key::F12) {
-        /* toggle through the debug hud stereo modes */
         switch(_curDebugHudStereoMode) {
             case OvrIntegration::DebugHudStereoMode::Off:
                 _curDebugHudStereoMode = OvrIntegration::DebugHudStereoMode::Quad;
@@ -276,10 +289,13 @@ void OvrExample::keyPressEvent(KeyEvent& event) {
                 break;
         }
 
-        _hmd->setDebugHudStereoMode(_curDebugHudStereoMode);
+        _session->setDebugHudStereoMode(_curDebugHudStereoMode);
+
+    /* Toggle mirroring */
     } else if(event.key() == KeyEvent::Key::M) {
-        /* toggle mirroring */
         _enableMirroring = !_enableMirroring;
+
+    /* Exit */
     } else if(event.key() == KeyEvent::Key::Esc) {
         exit();
     }

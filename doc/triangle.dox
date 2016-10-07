@@ -86,14 +86,13 @@ buffers after drawing.
 -   @ref triangle/TriangleExample.cpp
 
 That's all, now we can compile the whole example using CMake. First we find
-required `Magnum` package with `Shaders` and `Sdl2Application` component and
-add include dirs for both core library and application to include path. It's
+required `Magnum` package with `Shaders` and `Sdl2Application` component. It's
 recommended to use also Corrade's set of compiler flags to enable additional
 warnings. Then we collect our source files, create our executable and link to
 all Magnum libraries we requested. See @ref cmake for more information.
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
-@until ${MAGNUM_SHADERS_LIBRARIES})
+@until Magnum::Shaders)
 
 -   @ref triangle/CMakeLists.txt
 

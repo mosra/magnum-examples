@@ -1,14 +1,16 @@
-# - Find SDL2
+#.rst:
+# Find SDL2
+# ---------
 #
-# This module defines:
+# Finds the SDL2 library. This module defines:
 #
 #  SDL2_FOUND               - True if SDL2 library is found
-#  SDL2_LIBRARIES           - SDL2 library and dependent libraries
-#  SDL2_INCLUDE_DIRS        - Root include dir and include dirs of dependencies
+#  SDL2::SDL2               - SDL2 imported target
 #
 # Additionally these variables are defined for internal usage:
-#  SDL2_INCLUDE_DIR         - Root include dir (w/o dependencies)
-#  SDL2_LIBRARY             - SDL2 library (w/o dependencies)
+#
+#  SDL2_LIBRARY             - SDL2 library
+#  SDL2_INCLUDE_DIR         - Root include dir
 #
 
 #
@@ -41,14 +43,19 @@
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(_SDL2_PATH_SUFFIXES SDL)
 else()
+    # Precompiled libraries for Windows are in x86/x64 subdirectories
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_SDL_LIBRARY_PATH_SUFFIX lib/x64)
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(_SDL_LIBRARY_PATH_SUFFIX lib/x86)
+    endif()
+
     find_library(SDL2_LIBRARY
         # Compiling SDL2 from scratch on OSX creates dead libSDL2.so symlink
         # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
         # the dylib first so it is preferred.
         NAMES SDL2-2.0 SDL2
-
-        # Precompiled libraries for Windows are in x86/x64 subdirectories
-        PATH_SUFFIXES lib/x86 lib/x64)
+        PATH_SUFFIXES ${_SDL_LIBRARY_PATH_SUFFIX})
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
@@ -78,6 +85,7 @@ if(CORRADE_TARGET_IOS)
     set(_SDL2_FRAMEWORK_LIBRARIES )
     foreach(framework ${_SDL2_FRAMEWORKS})
         find_library(_SDL2_${framework}_LIBRARY ${framework})
+        mark_as_advanced(_SDL2_${framework}_LIBRARY)
         list(APPEND _SDL2_FRAMEWORK_LIBRARIES ${_SDL2_${framework}_LIBRARY})
         list(APPEND _SDL2_FRAMEWORK_LIBRARY_NAMES _SDL2_${framework}_LIBRARY)
     endforeach()
@@ -89,5 +97,37 @@ find_package_handle_standard_args("SDL2" DEFAULT_MSG
     ${_SDL2_FRAMEWORK_LIBRARY_NAMES}
     SDL2_INCLUDE_DIR)
 
-set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
-set(SDL2_LIBRARIES ${SDL2_LIBRARY} ${_SDL2_FRAMEWORK_LIBRARIES})
+if(NOT TARGET SDL2::SDL2)
+    if(SDL2_LIBRARY_NEEDED)
+        add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+
+        # Work around BUGGY framework support on OSX
+        # https://cmake.org/Bug/view.php?id=14105
+        if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)
+        else()
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
+        endif()
+
+        # Link frameworks on iOS
+        if(CORRADE_TARGET_IOS)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
+        endif()
+
+        # Link also EGL library, if on ES (and not on WebGL)
+        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+            find_package(EGL REQUIRED)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES EGL::EGL)
+        endif()
+    else()
+        # This won't work in CMake 2.8.12, but that affects Emscripten only so
+        # I assume people building for that are not on that crap old Ubuntu
+        # 14.04 LTS
+        add_library(SDL2::SDL2 INTERFACE IMPORTED)
+    endif()
+
+    set_property(TARGET SDL2::SDL2 PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES ${SDL2_INCLUDE_DIR})
+endif()

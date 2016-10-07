@@ -1,8 +1,14 @@
-# - Find EGL
+#.rst:
+# Find EGL
+# --------
 #
-# This module defines:
+# Finds the EGL library. This module defines:
 #
 #  EGL_FOUND            - True if EGL library is found
+#  EGL::EGL             - EGL imported target
+#
+# Additionally these variables are defined for internal usage:
+#
 #  EGL_LIBRARY          - EGL library
 #  EGL_INCLUDE_DIR      - Include dir
 #
@@ -50,6 +56,23 @@ find_path(EGL_INCLUDE_DIR NAMES
     EAGL.h)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args("EGL" DEFAULT_MSG
+find_package_handle_standard_args(EGL DEFAULT_MSG
     EGL_LIBRARY
     EGL_INCLUDE_DIR)
+
+if(NOT TARGET EGL::EGL)
+    # Work around BUGGY framework support on OSX
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if(APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$")
+        add_library(EGL::EGL INTERFACE IMPORTED)
+        set_property(TARGET EGL::EGL APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${EGL_LIBRARY})
+    else()
+        add_library(EGL::EGL UNKNOWN IMPORTED)
+        set_property(TARGET EGL::EGL PROPERTY
+            IMPORTED_LOCATION ${EGL_LIBRARY})
+    endif()
+
+    set_target_properties(EGL::EGL PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES ${EGL_INCLUDE_DIR})
+endif()

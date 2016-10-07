@@ -2,7 +2,19 @@ Here are various examples for Magnum C++11/C++14 OpenGL engine, demonstrating
 Magnum features, usage and capabilities. If you don't know what Magnum is, see
 https://github.com/mosra/magnum.
 
-[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=compatibility)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/compatibility?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/compatibility)
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+SUPPORTED PLATFORMS
+===================
+
+*   **Linux** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **Windows** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+*   **OS X** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **iOS** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
+*   **Android**
+*   **Windows RT** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+*   **Google Chrome**
+*   **HTML5/JavaScript** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
 
 INSTALLATION
 ============
@@ -15,12 +27,10 @@ for more comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
-    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
-    support involves some ugly workarounds and thus is available only in
-    `compatibility` branch.
-*   **CMake** >= 2.8.9
+*   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >=
+    2015. On Windows you can also use **MinGW-w64**.
+*   **CMake** >= 2.8.12
 *   **Corrade**, **Magnum** -- The engine itself
 
 Compilation, installation
@@ -56,5 +66,7 @@ See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
 LICENSE
 =======
 
-Magnum is licensed under MIT/Expat license, see [COPYING](COPYING) file for
-details.
+While Magnum itself and its documentation are licensed under MIT/Expat license,
+all example code is put into public domain (or UNLICENSE) to free you from any
+legal obstacles when reusing the code in your apps. See the [COPYING](COPYING)
+file for details.

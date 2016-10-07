@@ -1,32 +1,44 @@
-﻿#
+#
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
-#             Vladimír Vondruš <mosra@centrum.cz>
-#   Copyright © 2015
-#             Jonathan Hale <squareys@googlemail.com>
+#   Original authors — credit is appreciated but not required:
 #
-#   Permission is hereby granted, free of charge, to any person obtaining a
-#   copy of this software and associated documentation files (the "Software"),
-#   to deal in the Software without restriction, including without limitation
-#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-#   and/or sell copies of the Software, and to permit persons to whom the
-#   Software is furnished to do so, subject to the following conditions:
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+#           Vladimír Vondruš <mosra@centrum.cz>
+#       2015, 2016 — Jonathan Hale <squareys@googlemail.com>
 #
-#   The above copyright notice and this permission notice shall be included
-#   in all copies or substantial portions of the Software.
+#   This is free and unencumbered software released into the public domain.
+#
+#   Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+#   this software, either in source code form or as a compiled binary, for any
+#   purpose, commercial or non-commercial, and by any means.
+#
+#   In jurisdictions that recognize copyright laws, the author or authors of
+#   this software dedicate any and all copyright interest in the software to
+#   the public domain. We make this dedication for the benefit of the public
+#   at large and to the detriment of our heirs and successors. We intend this
+#   dedication to be an overt act of relinquishment in perpetuity of all
+#   present and future rights to this software under copyright law.
 #
 #   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 #   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-#   DEALINGS IN THE SOFTWARE.
+#   THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+#   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.12)
 project(MagnumOvrExample)
+
+# CMake policies: enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
+endif()
+# Don't treat imported targets with :: as files
+if(POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW)
+endif()
 
 find_package(Magnum REQUIRED
     MeshTools
@@ -34,14 +46,10 @@ find_package(Magnum REQUIRED
     Shaders
     SceneGraph
     Sdl2Application)
+find_package(MagnumIntegration REQUIRED
+    Ovr)
 
-find_package(MagnumIntegration REQUIRED Ovr)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS}
-    ${MAGNUMINTEGRATION_INCLUDE_DIRS}
-    ${MAGNUM_APPLICATION_INCLUDE_DIRS}
-    ${MAGNUM_OVRINTEGRATION_INCLUDE_DIRS})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-ovr
     OvrExample.cpp
@@ -50,14 +58,14 @@ add_executable(magnum-ovr
     CubeDrawable.cpp
     CubeDrawable.h
     Types.h)
-
 target_link_libraries(magnum-ovr
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_SCENEGRAPH_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES}
-    ${MAGNUM_OVRINTEGRATION_LIBRARIES})
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::SceneGraph
+    Magnum::Shaders
+    MagnumIntegration::Ovr)
 
+install(TARGETS magnum-ovr DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-ovr.md)

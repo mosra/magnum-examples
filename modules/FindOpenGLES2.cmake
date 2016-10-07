@@ -1,8 +1,14 @@
-# - Find OpenGL ES 2
+#.rst:
+# Find OpenGL ES 2
+# ----------------
 #
-# This module defines:
+# Finds the OpenGL ES 2 library. This module defines:
 #
-#  OPENGLES2_FOUND          - True if OpenGL ES 2 library is found
+#  OpenGLES2_FOUND          - True if OpenGL ES 2 library is found
+#  OpenGLES2::OpenGLES2     - OpenGL ES 2 imported target
+#
+# Additionally these variables are defined for internal usage:
+#
 #  OPENGLES2_LIBRARY        - OpenGL ES 2 library
 #  OPENGLES2_INCLUDE_DIR    - Include dir
 #
@@ -57,6 +63,30 @@ find_path(OPENGLES2_INCLUDE_DIR NAMES
     ES2/gl.h)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args("OpenGLES2" DEFAULT_MSG
+find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG
     ${OPENGLES2_LIBRARY_NEEDED}
     OPENGLES2_INCLUDE_DIR)
+
+if(NOT TARGET OpenGLES2::OpenGLES2)
+    if(OPENGLES2_LIBRARY_NEEDED)
+        # Work around BUGGY framework support on OSX
+        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+        if(CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$")
+            add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
+            set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
+        else()
+            add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
+            set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
+                IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
+        endif()
+    else()
+        # This won't work in CMake 2.8.12, but that affects Emscripten only so
+        # I assume people building for that are not on that crap old Ubuntu
+        # 14.04 LTS
+        add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
+    endif()
+
+    set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES ${OPENGLES2_INCLUDE_DIR})
+endif()

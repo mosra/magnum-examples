@@ -1,5 +1,3 @@
-#ifndef Magnum_Examples_Types_h
-#define Magnum_Examples_Types_h
 /*
     This file is part of Magnum.
 
@@ -7,7 +5,6 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2015, 2016 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -30,13 +27,14 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+uniform vec3 color = vec3(1.0, 1.0, 1.0);
+uniform sampler2D textureData;
 
-namespace Magnum { namespace Examples {
+in vec2 interpolatedTextureCoordinates;
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+out vec4 fragmentColor;
 
-}}
-
-#endif
+void main() {
+    fragmentColor.rgb = color*texture(textureData, interpolatedTextureCoordinates).rgb;
+    fragmentColor.a = 1.0;
+}

@@ -24,14 +24,17 @@ that all images must be turned upside down (+Y is top):
 You can also pass file path prefix to the application as parameter, for
 example
 
-    ./cubemap ~/images/city
+    ./magnum-cubemap ~/images/city
 
 The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
 etc. as cube map texture.
 
 Sample cube map files are supplied alonside the source. If you install the
 examples, the images are also copied into
-`<prefix>/share/magnum/examples/cubemap/`.
+`<prefix>/share/magnum/examples/cubemap/`. Running the example with the bundled
+files can be then done like this:
+
+    ./magnum-cubemap <path-to-example-source>/
 
 Key shortcuts
 -------------
