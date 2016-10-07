@@ -90,11 +90,11 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
         .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
         .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
 
-    _transformation = Matrix4::rotationX(Deg{30.0f})*
-                      Matrix4::rotationY(Deg{40.0f});
-    _color = Color3::fromHSV(Deg{35.0f}, 1.0f, 1.0f);
+    _transformation = Matrix4::rotationX(30.0_degf)*
+                      Matrix4::rotationY(40.0_degf);
+    _color = Color3::fromHSV(35.0_degf, 1.0f, 1.0f);
 
-    _projection = Matrix4::perspectiveProjection(Deg{35.0f}, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
+    _projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
                   Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
@@ -116,7 +116,7 @@ void PrimitivesExample::drawEvent() {
 void PrimitivesExample::viewportEvent(const Vector2i& size) {
     defaultFramebuffer.setViewport({{}, size});
 
-    _projection = Matrix4::perspectiveProjection(Deg{35.0f}, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
+    _projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
                   Matrix4::translation(Vector3::zAxis(-10.0f));
 }
 
@@ -130,7 +130,7 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
-    _color = Color3::fromHSV(_color.hue() + Deg{50.0f}, 1.0f, 1.0f);
+    _color = Color3::fromHSV(_color.hue() + 50.0_degf, 1.0f, 1.0f);
 
     event.setAccepted();
     redraw();

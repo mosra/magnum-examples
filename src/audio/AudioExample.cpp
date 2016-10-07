@@ -147,7 +147,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     _sourceObject.translate({0.0f, 0.0f, -5.0f});
 
     /* Camera placement */
-    _cameraObject.rotateX(Deg(-45.0f)).rotateY(Deg(45.0f));
+    _cameraObject.rotateX(-45.0_degf).rotateY(45.0_degf);
     _cameraObject.translate({8.0f, 10.0f, 8.0f});
 
     /* Setup simple shape rendering for listener and source */

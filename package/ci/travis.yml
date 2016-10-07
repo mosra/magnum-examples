@@ -40,6 +40,7 @@ addons:
     - ubuntu-toolchain-r-test
     - kubuntu-backports
     packages:
+    - g++-4.7
     - cmake
     # Not yet (https://github.com/travis-ci/apt-package-whitelist/issues/1190)
     #- libbullet-dev

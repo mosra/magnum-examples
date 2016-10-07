@@ -85,10 +85,9 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     vert.addSource(rs.get("MotionBlurShader.vert"));
     frag.addSource(rs.get("MotionBlurShader.frag"));
 
-    /* GCC 4.4 has explicit std::reference_wrapper constructor */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    attachShaders({std::ref(vert), std::ref(frag)});
+    attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
