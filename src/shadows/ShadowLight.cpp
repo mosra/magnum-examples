@@ -44,7 +44,7 @@
 
 namespace Magnum { namespace Examples {
 
-ShadowLight::ShadowLight(SceneGraph::Object<SceneGraph::MatrixTransformation3D>& parent): SceneGraph::Camera3D{parent}, _object{parent}, _shadowTexture{NoCreate} {
+ShadowLight::ShadowLight(SceneGraph::Object<SceneGraph::MatrixTransformation3D>& parent): SceneGraph::Camera3D{parent}, _object(parent), _shadowTexture{NoCreate} {
     setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::NotPreserved);
 }
 
