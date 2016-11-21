@@ -126,7 +126,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments):
     _shadowBias{0.003f},
     _layerSplitExponent{3.0f},
     _shadowMapSize{1024, 1024},
-    _shadowMapFaceCullMode{1}
+    _shadowMapFaceCullMode{1},
+    _shadowStaticAlignment{false}
 {
     _shadowLight.setupShadowmaps(3, _shadowMapSize);
     _shadowReceiverShader.reset(new ShadowReceiverShader(_shadowLight.layerCount()));
