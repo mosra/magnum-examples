@@ -52,7 +52,6 @@ void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
     _layers.clear();
 
     (_shadowTexture = Texture2DArray{})
-        .setLabel("Shadow texture")
         .setImage(0, TextureFormat::DepthComponent, ImageView3D{PixelFormat::DepthComponent, PixelType::Float, {size, numShadowLevels}, nullptr})
         .setMaxLevel(0)
         .setCompareFunction(Sampler::CompareFunction::LessOrEqual)
@@ -63,11 +62,10 @@ void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
     for(std::int_fast32_t i = 0; i < numShadowLevels; ++i) {
         _layers.emplace_back(size);
         Framebuffer& shadowFramebuffer = _layers.back().shadowFramebuffer;
-        shadowFramebuffer.setLabel("Shadow framebuffer " + std::to_string(i))
-            .attachTextureLayer(Framebuffer::BufferAttachment::Depth, _shadowTexture, 0, i)
+        shadowFramebuffer.attachTextureLayer(Framebuffer::BufferAttachment::Depth, _shadowTexture, 0, i)
             .mapForDraw(Framebuffer::DrawAttachment::None)
             .bind();
-        Debug() << "Framebuffer status:" << shadowFramebuffer.checkStatus(FramebufferTarget::Draw);
+        CORRADE_INTERNAL_ASSERT(shadowFramebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
     }
 }
 

@@ -38,7 +38,6 @@
 namespace Magnum { namespace Examples {
 
 DebugLines::DebugLines(): _mesh{MeshPrimitive::Lines} {
-    _buffer.setLabel("debug lines buffer");
     _mesh.addVertexBuffer(_buffer, 0, Shader::Position(), Shader::Color());
 }
 
