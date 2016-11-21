@@ -136,18 +136,14 @@ std::vector<Vector3> ShadowLight::cameraFrustumCorners(SceneGraph::Camera3D& mai
 }
 
 std::vector<Vector3> ShadowLight::frustumCorners(const Matrix4& imvp, const Float z0, const Float z1) {
-    auto projectImvpAndDivide = [&](Vector4 vec) -> Vector3 {
-        const Vector4 vec2 = imvp*vec;
-        return vec2.xyz()/vec2.w();
-    };
-    return {projectImvpAndDivide({-1,-1, z0, 1}),
-            projectImvpAndDivide({ 1,-1, z0, 1}),
-            projectImvpAndDivide({-1, 1, z0, 1}),
-            projectImvpAndDivide({ 1, 1, z0, 1}),
-            projectImvpAndDivide({-1,-1, z1, 1}),
-            projectImvpAndDivide({ 1,-1, z1, 1}),
-            projectImvpAndDivide({-1, 1, z1, 1}),
-            projectImvpAndDivide({ 1, 1, z1, 1})};
+    return {imvp.transformPoint({-1,-1, z0}),
+            imvp.transformPoint({ 1,-1, z0}),
+            imvp.transformPoint({-1, 1, z0}),
+            imvp.transformPoint({ 1, 1, z0}),
+            imvp.transformPoint({-1,-1, z1}),
+            imvp.transformPoint({ 1,-1, z1}),
+            imvp.transformPoint({-1, 1, z1}),
+            imvp.transformPoint({ 1, 1, z1})};
 }
 
 std::vector<Vector4> ShadowLight::calculateClipPlanes() {

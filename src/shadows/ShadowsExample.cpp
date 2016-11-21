@@ -262,7 +262,7 @@ void ShadowsExample::drawEvent() {
 
     _shadowReceiverShader->setShadowmapMatrices(shadowMatrices)
         .setShadowmapTexture(_shadowLight.shadowTexture())
-        .setLightDirection(_shadowLightObject.transformation()[2].xyz());
+        .setLightDirection(_shadowLightObject.transformation().backward());
 
     _activeCamera->draw(_shadowReceiverDrawables);
 
