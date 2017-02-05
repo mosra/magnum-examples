@@ -81,7 +81,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Appl
 
     _transformation = Matrix4::rotationX(30.0_degf)*
                       Matrix4::rotationY(40.0_degf);
-    _color = Color3::fromHSV(35.0_degf, 1.0f, 1.0f);
+    _color = Color3::fromHsv(35.0_degf, 1.0f, 1.0f);
 
     _projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
                   Matrix4::translation(Vector3::zAxis(-10.0f));
@@ -93,7 +93,7 @@ void PrimitivesExample::drawEvent() {
     _shader.setLightPosition({7.0f, 5.0f, 2.5f})
         .setLightColor(Color3{1.0f})
         .setDiffuseColor(_color)
-        .setAmbientColor(Color3::fromHSV(_color.hue(), 1.0f, 0.3f))
+        .setAmbientColor(Color3::fromHsv(_color.hue(), 1.0f, 0.3f))
         .setTransformationMatrix(_transformation)
         .setNormalMatrix(_transformation.rotationScaling())
         .setProjectionMatrix(_projection);
@@ -110,7 +110,7 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
 }
 
 void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
-    _color = Color3::fromHSV(_color.hue() + 50.0_degf, 1.0f, 1.0f);
+    _color = Color3::fromHsv(_color.hue() + 50.0_degf, 1.0f, 1.0f);
 
     event.setAccepted();
     redraw();
