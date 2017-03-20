@@ -99,7 +99,7 @@ class AudioExample: public Platform::Application {
 };
 
 AudioExample::AudioExample(const Arguments& arguments):
-    Platform::Application{arguments, nullptr},
+    Platform::Application{arguments, NoCreate},
     /* Create the audio context. Without this, sound will not be initialized:
        Needs to be done before Playables and Sources are initialized. */
     _context(Audio::Context::Configuration().setHrtf(Audio::Context::Configuration::Hrtf::Enabled)),

@@ -78,7 +78,7 @@ class BulletExample: public Platform::Application {
         btRigidBody* _bGround;
 };
 
-BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, nullptr) {
+BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
     /* Try 16x MSAA */
     Configuration conf;
     conf.setTitle("Magnum Bullet Integration Example")
