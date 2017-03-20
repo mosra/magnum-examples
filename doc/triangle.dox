@@ -39,7 +39,7 @@ which is needed for rendering into the window. You can read more about platform
 support and various portability tricks in @ref platform.
 
 We also need @ref Mesh encapsulating our triangle, @ref Buffer to store vertex
-data and @ref Shaders::Flat "shader" which will take care of rendering.
+data and @ref Shaders::VertexColor2D shader which will take care of rendering.
 @dontinclude triangle/TriangleExample.cpp
 @skip class TriangleExample
 @until };
@@ -49,12 +49,14 @@ In the constructor we pass necessary arguments to the application class.
 
 Now we specify vertex attributes, consisting of positions and colors. For
 performance reasons it is common to interleave them, so data for each vertex
-are in one continuous place in memory. We will cheat a bit here and use
-@ref Vector3 for both 3D positions and RGB colors, so we can interleave them
-easily in place. In the next tutorial we will learn how to interleave them
-programatically. See @ref types for more information about scalar and vector
-types used in Magnum.
-@skip data
+are in one continuous place in memory. In this case, because we need just three
+vertices, we will interleave them manually in-place. In the next tutorial we
+will learn how to interleave them programatically. See @ref types for more
+information about scalar and vector types used in Magnum -- one of the notable
+convenience features is ability to use a custom literal to specify hexadecimal
+colors, just like you are used to from CSS and various graphics editors.
+@skip struct TriangleVertex
+@until };
 @until };
 
 We then create vertex buffer and fill it with the data. The data won't be
@@ -67,7 +69,9 @@ Now we configure the mesh - we specify @ref MeshPrimitive "mesh primitive" and
 vertex count, add vertex buffer and specify attribute locations for use with
 the shader. We need to describe physical location of vertex attributes in the
 buffer - zero offset from the beginning, first the position, then the color
-with no gaps in between.
+with no gaps in between. Because it's not immediately clear whether we want to
+use RGB or RGBA colors, the shader attribute requires to say how many
+components our colors have.
 @skip _mesh.
 @until }
 @until }
