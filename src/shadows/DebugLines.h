@@ -39,8 +39,6 @@ namespace Magnum { namespace Examples {
 
 class DebugLines {
     public:
-        typedef Shaders::VertexColor3D Shader;
-
         struct Point {
             Vector3 position;
             Color3 color;
@@ -68,7 +66,7 @@ class DebugLines {
         std::vector<Point> _lines;
         Buffer _buffer;
         Mesh _mesh;
-        Shader _shader;
+        Shaders::VertexColor3D _shader;
 };
 
 }}
