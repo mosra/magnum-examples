@@ -11,6 +11,12 @@ matrix:
     os: linux
     compiler: gcc
     env:
+    - TARGET=desktop
+    - BUILD_DEPRECATED=OFF
+  - language: cpp
+    os: linux
+    compiler: gcc
+    env:
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
   #- language: cpp
@@ -94,6 +100,7 @@ cache:
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
+- if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export WITH_BULLET=OFF; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin && chmod +x android-*.bin && ./android-*.bin -y | grep -v Extracting; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
