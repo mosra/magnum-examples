@@ -61,4 +61,5 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON
-make -j${JOBS_LIMIT}
+# Otherwise the job gets killed (probably because using too much memory)
+make -j4
