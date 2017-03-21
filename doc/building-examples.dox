@@ -104,45 +104,15 @@ OS X Homebrew formulas are in `package/homebrew` directory. Either use the
 
 @subsection building-examples-ci-travis Travis
 
-In `package/ci/` there is `travis.yml` file with Linux GCC 4.7, OSX Clang, iOS
-GLES2/GLES3 and Emscripten WebGL1/WebGL2 configuration. Online at
-https://travis-ci.org/mosra/magnum-examples.
+In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, OSX Clang,
+Linux desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2 and
+Android GLES2/GLES3 configuration. Online at https://travis-ci.org/mosra/magnum-examples.
 
 @subsection building-examples-ci-appveyor AppVeyor
 
-In `package/ci/` there is `appveyor.yml` file with Windows desktop MSVC, MinGW
-and Windows RT GLES2/GLES3 configuration. Online at https://ci.appveyor.com/project/mosra/magnum-examples.
-
-@subsection building-examples-ci-jenkins Jenkins
-
-In `package/ci/` there is `jenkins.xml` file containing job configuration.
-Setup your Jenkins server, enable the **Git** and **Text-finder** plugin and
-download the CLI application from here (replace `localhost:8080` with your
-server name):
-
-    http://localhost:8080/cli
-
-Then add new job or update existing one (update path to the `*.jar` file,
-replace `localhost:8080` with your server name, replace `update-job` with
-`create-job` if the job doesn't exist yet).
-
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples < package/ci/jenkins.xml
-
-Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **Bullet** libraries. It expects that **GCC** >= 4.9, 4.8,
-4.7 and **Clang** are installed and there are **OpenGL**, **OpenGL ES 2.0**
-and **OpenGL ES 3.0** librares as it tries to compile the library with every
-combination of them. You can add/remove the axes in `axes/hudson.matrix.TextAxis`
-or via the web interface later.
-
-There are also MinGW-w64, Emscripten, NaCl and Android configurations, add or
-update them with the commands below. See @ref building-crosscompiling for more
-information about setting up the crosscompilers and `toolchains/` submodule.
-
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples-MinGW-w64 < package/ci/jenkins-mingw-w64.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples-Emscripten < package/ci/jenkins-emscripten.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples-NaCl < package/ci/jenkins-nacl.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job MagnumExamples-Android < package/ci/jenkins-android.xml
+In `package/ci/` there is an `appveyor.yml` file with Windows desktop MSVC,
+MinGW, Windows desktop GLES2/GLES3 and Windows RT GLES2/GLES3 configuration.
+Online at https://ci.appveyor.com/project/mosra/magnum-examples.
 
 */
 }

@@ -33,7 +33,7 @@ cmake .. \
     -DWITH_INTERCONNECT=OFF \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum
@@ -61,7 +61,7 @@ cmake .. \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum Integration
@@ -79,7 +79,7 @@ cmake .. \
     -DWITH_OVR=OFF \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile
@@ -104,4 +104,4 @@ cmake .. \
     -DWITH_TRIANGLE_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=OFF \
     -G Xcode
-cmake --build . --config Release | xcpretty && exit ${PIPESTATUS[0]}
+set -o pipefail && cmake --build . --config Release | xcpretty
