@@ -97,7 +97,7 @@ target_link_libraries(magnum-cubemap
 
 # iOS-specific
 if(CORRADE_TARGET_IOS)
-    target_link_libraries(magnum-cubemap Magnum::StbImageImporter)
+    target_link_libraries(magnum-cubemap MagnumPlugins::StbImageImporter)
     set_target_properties(magnum-cubemap PROPERTIES
         MACOSX_BUNDLE ON
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
