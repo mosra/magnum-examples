@@ -3,8 +3,9 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
             Vladimír Vondruš <mosra@centrum.cz>
+        2016 — Bill Robinson <airbaggins@gmail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -27,14 +28,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-uniform vec3 color = vec3(1.0, 1.0, 1.0);
-uniform sampler2D textureData;
+uniform highp mat4 transformationMatrix;
 
-in vec2 interpolatedTextureCoordinates;
-
-out vec4 fragmentColor;
+in highp vec4 position;
 
 void main() {
-    fragmentColor.rgb = color*texture(textureData, interpolatedTextureCoordinates).rgb;
-    fragmentColor.a = 1.0;
+    gl_Position = transformationMatrix * position;
 }

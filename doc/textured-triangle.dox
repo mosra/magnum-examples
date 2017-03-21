@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -125,6 +125,7 @@ As specified in the shader above, we use @ref Vector2 for both 2D vertex
 positions and 2D texture coordinates:
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip TexturedTriangleExample::TexturedTriangleExample
+@until };
 @until };
 
 We then fill the buffer, configure mesh primitive and vertex count, and specify

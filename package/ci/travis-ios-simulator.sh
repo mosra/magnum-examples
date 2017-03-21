@@ -33,7 +33,7 @@ cmake .. \
     -DWITH_INTERCONNECT=OFF \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty
+cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
 cd ../..
 
 # Crosscompile Magnum
@@ -61,7 +61,7 @@ cmake .. \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty
+cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
 cd ../..
 
 # Crosscompile Magnum Integration
@@ -79,7 +79,7 @@ cmake .. \
     -DWITH_OVR=OFF \
     -DBUILD_STATIC=ON \
     -G Xcode
-cmake --build . --config Release --target install | xcpretty
+cmake --build . --config Release --target install | xcpretty && exit ${PIPESTATUS[0]}
 cd ../..
 
 # Crosscompile
@@ -98,9 +98,10 @@ cmake .. \
     -DWITH_OVR_EXAMPLE=OFF \
     -DWITH_PICKING_EXAMPLE=OFF \
     -DWITH_PRIMITIVES_EXAMPLE=OFF \
+    -DWITH_SHADOWS_EXAMPLE=OFF \
     -DWITH_TEXT_EXAMPLE=OFF \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=OFF \
     -G Xcode
-cmake --build . --config Release | xcpretty
+cmake --build . --config Release | xcpretty && exit ${PIPESTATUS[0]}

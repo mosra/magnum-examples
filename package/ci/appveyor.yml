@@ -10,6 +10,12 @@ environment:
     COMPILER: msvc
   - TARGET: desktop
     COMPILER: mingw
+  - TARGET: desktop-gles
+    COMPILER: msvc
+    TARGET_GLES2: ON
+  - TARGET: desktop-gles
+    COMPILER: msvc
+    TARGET_GLES2: OFF
   - TARGET: rt
     TARGET_GLES2: ON
   - TARGET: rt
@@ -25,28 +31,35 @@ notifications:
 install:
 - cinst ninja
 - set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cinst mingw /f >nul
+# `cinst mingw` fails with 404 since Dec 2016, `appveyor Downloadfile` fails
+# with "Message string length exceeds 32k characters" so I have to call a
+# fucking powershell command in order to download a file. Oh and %20 in the URL
+# somehow gives a 404 ALSO so I have to explicitly use spaces. WHAT THE FUCK!
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z powershell -Command "(new-object System.Net.WebClient).Downloadfile('https://sourceforge.net/projects/mingw-w64/files/Toolchains targetting Win64/Personal Builds/mingw-builds/6.3.0/threads-posix/seh/x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z', 'x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z')"
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cd C:\tools && 7z x %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z && cd %APPVEYOR_BUILD_FOLDER%
 
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
 - IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.17.2-bin.zip && ren openal-soft-1.17.2-bin openal
 
 # SDL2
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.4-VC.zip && ren SDL2-2.0.4 SDL
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.4-VC.zip && ren SDL2-2.0.4 SDL
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
 
 # OVR SDK
-- IF "%TARGET%" == "desktop" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.3.0_public.zip appveyor DownloadFile http://static.oculus.com/sdk-downloads/1.3.0/Public/1459135039/ovr_sdk_win_1.3.0_public.zip
-- IF "%TARGET%" == "desktop" 7z x ovr_sdk_win_1.3.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.3.0_public.zip appveyor DownloadFile http://static.oculus.com/sdk-downloads/1.3.0/Public/1459135039/ovr_sdk_win_1.3.0_public.zip
+- IF NOT "%TARGET%" == "rt" 7z x ovr_sdk_win_1.3.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
 
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
+- IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
 - openal-soft-1.17.2-bin.zip
 - SDL2-devel-2.0.4-VC.zip
 - ovr_sdk_win_1.3.0_public.zip
+- x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z

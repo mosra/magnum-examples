@@ -64,6 +64,7 @@
 #  EglContext                   - EGL context
 #  GlxContext                   - GLX context
 #  WglContext                   - WGL context
+#  OpenGLTester                 - OpenGLTester class
 #  MagnumFont                   - Magnum bitmap font plugin
 #  MagnumFontConverter          - Magnum bitmap font converter plugin
 #  ObjImporter                  - OBJ importer plugin
@@ -129,17 +130,30 @@
 #  MAGNUM_BINARY_INSTALL_DIR    - Binary installation directory
 #  MAGNUM_LIBRARY_INSTALL_DIR   - Library installation directory
 #  MAGNUM_DATA_INSTALL_DIR      - Data installation directory
-#  MAGNUM_PLUGINS_[DEBUG|RELEASE]_INSTALL_DIR - Plugin installation directory
-#  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_INSTALL_DIR - Font plugin installation
-#   directory
-#  MAGNUM_PLUGINS_FONTCONVERTER_[DEBUG|RELEASE]_INSTALL_DIR - Font converter
-#   plugin installation directory
-#  MAGNUM_PLUGINS_IMAGECONVERTER_[DEBUG|RELEASE]_INSTALL_DIR - Image converter
-#   plugin installation directory
-#  MAGNUM_PLUGINS_IMPORTER_[DEBUG|RELEASE]_INSTALL_DIR  - Importer plugin
+#  MAGNUM_PLUGINS_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Plugin binary
 #   installation directory
-#  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_INSTALL_DIR - Audio importer
-#   plugin installation directory
+#  MAGNUM_PLUGINS_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Plugin library
+#   installation directory
+#  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Font plugin binary
+#   installation directory
+#  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Font plugin
+#   library installation directory
+#  MAGNUM_PLUGINS_FONTCONVERTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Font
+#   converter plugin binary installation directory
+#  MAGNUM_PLUGINS_FONTCONVERTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Font
+#   converter plugin library installation directory
+#  MAGNUM_PLUGINS_IMAGECONVERTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Image
+#   converter plugin binary installation directory
+#  MAGNUM_PLUGINS_IMAGECONVERTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Image
+#   converter plugin library installation directory
+#  MAGNUM_PLUGINS_IMPORTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR  - Importer
+#   plugin binary installation directory
+#  MAGNUM_PLUGINS_IMPORTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR  - Importer
+#   plugin library installation directory
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Audio
+#   importer plugin binary installation directory
+#  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Audio
+#   importer plugin library installation directory
 #  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR - Plugin header installation directory
 #
@@ -162,7 +176,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -238,17 +252,24 @@ if(NOT TARGET Magnum::Magnum)
     # information to guess also build type of dynamic plugins
     if(MAGNUM_LIBRARY_DEBUG AND MAGNUM_LIBRARY_RELEASE)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
-        get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_DEBUG} PATH)
         if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
         endif()
     elseif(MAGNUM_LIBRARY_DEBUG)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_DEBUG})
-        get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_DEBUG} PATH)
+        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_DEBUG} PATH)
         set(_MAGNUM_PLUGINS_DIR_SUFFIX "-d")
     elseif(MAGNUM_LIBRARY_RELEASE)
         set(MAGNUM_LIBRARY ${MAGNUM_LIBRARY_RELEASE})
-        get_filename_component(_MAGNUM_LIBRARY_PATH ${MAGNUM_LIBRARY_RELEASE} PATH)
+        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${MAGNUM_LIBRARY_RELEASE} PATH)
+    endif()
+
+    # On DLL platforms the plugins are stored in bin/ instead of lib/, modify
+    # _MAGNUM_PLUGINS_DIR_PREFIX accordingly
+    if(CORRADE_TARGET_WINDOWS)
+        get_filename_component(_MAGNUM_PLUGINS_DIR_PREFIX ${_MAGNUM_PLUGINS_DIR_PREFIX} PATH)
+        set(_MAGNUM_PLUGINS_DIR_PREFIX ${_MAGNUM_PLUGINS_DIR_PREFIX}/bin)
     endif()
 
     if(MAGNUM_LIBRARY_RELEASE)
@@ -310,6 +331,26 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools)
     elseif(_component STREQUAL DebugTools)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes)
+    elseif(_component STREQUAL OpenGLTester)
+        if(MAGNUM_TARGET_HEADLESS)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication)
+        elseif(CORRADE_TARGET_IOS)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessIosApplication)
+        elseif(CORRADE_TARGET_APPLE)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessCglApplication)
+        elseif(CORRADE_TARGET_UNIX)
+            if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication)
+            else()
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessGlxApplication)
+            endif()
+        elseif(CORRADE_TARGET_WINDOWS)
+            if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWglApplication)
+            else()
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWindowsEglApplication)
+            endif()
+        endif()
     elseif(_component STREQUAL MagnumFont)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImporter) # and below
     elseif(_component STREQUAL MagnumFontConverter)
@@ -344,7 +385,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
@@ -573,9 +614,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # No special setup for DebugTools library
 
-        # Mesh tools library
+        # MeshTools library
         elseif(_component STREQUAL MeshTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
+
+        # OpenGLTester library
+        elseif(_component STREQUAL OpenGLTester)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum)
 
         # Primitives library
         elseif(_component STREQUAL Primitives)
@@ -749,28 +794,41 @@ include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
-set(MAGNUM_PLUGINS_DEBUG_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
-set(MAGNUM_PLUGINS_RELEASE_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
-set(MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/importers)
-set(MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/importers)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/audioimporters)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum-d)
+set(MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
+set(MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_FONT_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONT_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/fonts)
+set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/fontconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/imageconverters)
+set(MAGNUM_PLUGINS_IMPORTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_IMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/audioimporters)
+set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 
-# Get base plugin directory from main library location
-set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_LIBRARY_PATH}/magnum-d
-    CACHE PATH "Base directory where to look for Magnum plugins for debug builds")
-set(MAGNUM_PLUGINS_RELEASE_DIR ${_MAGNUM_LIBRARY_PATH}/magnum
-    CACHE PATH "Base directory where to look for Magnum plugins for release builds")
-set(MAGNUM_PLUGINS_DIR ${_MAGNUM_LIBRARY_PATH}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
-    CACHE PATH "Base directory where to look for Magnum plugins")
+# Get base plugin directory from main library location. This is *not* PATH,
+# because CMake always converts the path to an absolute location internally,
+# making it impossible to specify relative paths there. Sorry in advance for
+# not having the dir selection button in CMake GUI.
+set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum-d
+    CACHE STRING "Base directory where to look for Magnum plugins for debug builds")
+set(MAGNUM_PLUGINS_RELEASE_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum
+    CACHE STRING "Base directory where to look for Magnum plugins for release builds")
+set(MAGNUM_PLUGINS_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
+    CACHE STRING "Base directory where to look for Magnum plugins")
 
 # Plugin directories
 set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)

@@ -3,7 +3,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -32,6 +32,12 @@ if(MSVC)
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
+# On Windows enable UNICODE/_UNICODE macros to avoid accidentally passing UTF-8
+# values to ANSI functions
+if(CORRADE_TARGET_WINDOWS)
+    add_definitions("-DUNICODE" "-D_UNICODE")
+endif()
+
 if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
@@ -58,6 +64,10 @@ endif()
 
 if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
+endif()
+
+if(WITH_SHADOWS_EXAMPLE)
+    add_subdirectory(shadows)
 endif()
 
 if(WITH_TEXT_EXAMPLE)

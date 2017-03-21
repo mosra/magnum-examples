@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
             Vladimír Vondruš <mosra@centrum.cz>
         2013 — Jan Dupal <dupal.j@gmail.com>
 
@@ -78,7 +78,7 @@ class BulletExample: public Platform::Application {
         btRigidBody* _bGround;
 };
 
-BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, nullptr) {
+BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
     /* Try 16x MSAA */
     Configuration conf;
     conf.setTitle("Magnum Bullet Integration Example")

@@ -9,7 +9,8 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF
+    -DWITH_INTERCONNECT=OFF \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 make -j install
 cd ../..
 
@@ -29,7 +30,8 @@ cmake .. \
     -DWITH_SHAPES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
-    -DWITH_SDL2APPLICATION=ON
+    -DWITH_SDL2APPLICATION=ON \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 make -j install
 cd ../..
 
@@ -56,8 +58,10 @@ cmake .. \
     -DWITH_OVR_EXAMPLE=OFF \
     -DWITH_PICKING_EXAMPLE=ON \
     -DWITH_PRIMITIVES_EXAMPLE=ON \
+    -DWITH_SHADOWS_EXAMPLE=ON \
     -DWITH_TEXT_EXAMPLE=ON \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON
-make -j${JOBS_LIMIT}
+# Otherwise the job gets killed (probably because using too much memory)
+make -j4

@@ -11,7 +11,7 @@ SUPPORTED PLATFORMS
 *   **Windows** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
 *   **OS X** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
 *   **iOS** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
-*   **Android**
+*   **Android** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
 *   **Windows RT** [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
 *   **Google Chrome**
 *   **HTML5/JavaScript** [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
@@ -28,8 +28,8 @@ Minimal dependencies
 --------------------
 
 *   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >=
-    2015. On Windows you can also use **MinGW-w64**.
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
+    On Windows you can also use **MinGW-w64**.
 *   **CMake** >= 2.8.12
 *   **Corrade**, **Magnum** -- The engine itself
 

@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -52,25 +52,33 @@ class TriangleExample: public Platform::Application {
 
         Buffer _buffer;
         Mesh _mesh;
-        Shaders::VertexColor3D _shader;
+        Shaders::VertexColor2D _shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setWindowFlags(Configuration::WindowFlag::Resizable
+TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")
     #ifdef CORRADE_TARGET_IOS
-    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
     #endif
-    )}
+    }
 {
-    constexpr static Vector3 data[] = {
-        {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, /* Left vertex, red color */
-        { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, /* Right vertex, green color */
-        { 0.0f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}  /* Top vertex, blue color */
+    using namespace Math::Literals;
+
+    struct TriangleVertex {
+        Vector2 position;
+        Color3 color;
+    };
+    static const TriangleVertex data[]{
+        {{-0.5f, -0.5f}, 0xff0000_srgbf},   /* Left vertex, red color */
+        {{ 0.5f, -0.5f}, 0x00ff00_srgbf},   /* Right vertex, green color */
+        {{ 0.0f,  0.5f}, 0x0000ff_srgbf}    /* Top vertex, blue color */
     };
 
     _buffer.setData(data, BufferUsage::StaticDraw);
     _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(_buffer, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{});
+        .addVertexBuffer(_buffer, 0,
+            Shaders::VertexColor2D::Position{},
+            Shaders::VertexColor2D::Color{Shaders::VertexColor2D::Color::Components::Three});
 }
 
 void TriangleExample::viewportEvent(const Vector2i& size) {

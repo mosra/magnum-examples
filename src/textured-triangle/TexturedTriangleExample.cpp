@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -71,22 +71,28 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example").setWindowFlags(Configuration::WindowFlag::Resizable
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
     #ifdef CORRADE_TARGET_IOS
-    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+    .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
     #endif
-    )}, _shader{Shaders::Flat2D::Flag::Textured}
+    }, _shader{Shaders::Flat2D::Flag::Textured}
 {
-    static const Vector2 data[] = {
-        {-0.5f, -0.5f}, {0.0f, 0.0f}, /* Left vertex position and texture coordinate */
-        { 0.5f, -0.5f}, {1.0f, 0.0f}, /* Right vertex position and texture coordinate */
-        { 0.0f,  0.5f}, {0.5f, 1.0f}  /* Top vertex position and texture coordinate */
+    struct TriangleVertex {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    };
+    static const TriangleVertex data[]{
+        {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left vertex position and texture coordinate */
+        {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right vertex position and texture coordinate */
+        {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top vertex position and texture coordinate */
     };
 
     _buffer.setData(data, BufferUsage::StaticDraw);
     _mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(_buffer, 0, Shaders::Flat2D::Position{}, Shaders::Flat2D::TextureCoordinates{});
+        .addVertexBuffer(_buffer, 0,
+            Shaders::Flat2D::Position{},
+            Shaders::Flat2D::TextureCoordinates{});
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};

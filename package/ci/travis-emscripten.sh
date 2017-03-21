@@ -95,8 +95,10 @@ cmake .. \
     -DWITH_OVR_EXAMPLE=OFF \
     -DWITH_PICKING_EXAMPLE=OFF \
     -DWITH_PRIMITIVES_EXAMPLE=OFF \
+    -DWITH_SHADOWS_EXAMPLE=OFF \
     -DWITH_TEXT_EXAMPLE=OFF \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=OFF
+# Otherwise the job gets killed (probably because using too much memory)
 make -j4
