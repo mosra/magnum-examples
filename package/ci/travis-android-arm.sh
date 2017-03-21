@@ -87,7 +87,13 @@ ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
     -DWITH_SHADOWS_EXAMPLE=OFF \
     -DWITH_TEXT_EXAMPLE=OFF \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
-    -DWITH_TRIANGLE_EXAMPLE=OFF \
+    -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=OFF
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4
+
+# Wrap the android things around
+cd ../src/triangle
+android update project -p . -t "android-19"
+ant debug
+cd ../..
