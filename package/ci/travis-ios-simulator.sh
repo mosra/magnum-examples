@@ -58,7 +58,26 @@ cmake .. \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
     -DWITH_SDL2APPLICATION=ON \
+    -DWITH_TGAIMPORTER=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
+    -DBUILD_STATIC=ON \
+    -DBUILD_PLUGINS_STATIC=ON \
+    -G Xcode
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
+cd ../..
+
+# Crosscompile Magnum Plugins
+git clone --depth 1 git://github.com/mosra/magnum-plugins.git
+cd magnum-plugins
+mkdir build-ios && cd build-ios
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
+    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_STBIMAGEIMPORTER=$TARGET_GLES3 \
     -DBUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
@@ -93,15 +112,15 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO_EXAMPLE=OFF \
     -DWITH_BULLET_EXAMPLE=OFF \
-    -DWITH_CUBEMAP_EXAMPLE=OFF \
+    -DWITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
     -DWITH_MOTIONBLUR_EXAMPLE=OFF \
     -DWITH_OVR_EXAMPLE=OFF \
     -DWITH_PICKING_EXAMPLE=OFF \
-    -DWITH_PRIMITIVES_EXAMPLE=OFF \
+    -DWITH_PRIMITIVES_EXAMPLE=ON \
     -DWITH_SHADOWS_EXAMPLE=OFF \
     -DWITH_TEXT_EXAMPLE=OFF \
-    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
-    -DWITH_TRIANGLE_EXAMPLE=OFF \
+    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+    -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=OFF \
     -G Xcode
 set -o pipefail && cmake --build . --config Release | xcpretty
