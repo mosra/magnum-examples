@@ -28,6 +28,7 @@
 */
 
 #include <Magnum/Buffer.h>
+
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/Math/Vector3.h>
@@ -95,4 +96,7 @@ void TriangleExample::drawEvent() {
 
 }}
 
+#ifdef CORRADE_TARGET_WINDOWS_RT
+extern DECLSPEC int SDLCALL SDL_WinRTRunApp(int (*mainFunction)(int, char **), void * reserved);
+#endif
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::TriangleExample)
