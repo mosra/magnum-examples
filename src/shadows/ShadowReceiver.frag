@@ -60,7 +60,7 @@ void main() {
 
     } else {
         int shadowLevel = 0;
-        bool inRange;
+        bool inRange = false;
 
         /* Starting with highest resolution shadow map, find one we're in range
            of */
