@@ -21,7 +21,7 @@ INSTALLATION
 
 You can either use packaging scripts, which are stored in `package/`
 subdirectory, or compile and install everything manually. The building process
-is similar to Magnum itself - see [Magnum documentation](http://mosra.cz/blog/magnum-doc/)
+is similar to Magnum itself - see [Magnum documentation](http://doc.magnum.graphics/magnum/)
 for more comprehensive guide for building, packaging and crosscompiling.
 
 Minimal dependencies
