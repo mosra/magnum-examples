@@ -112,12 +112,11 @@ notifications:
 cache:
   directories:
   - $HOME/sdl2
+  - $HOME/bullet
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
-# TODO: https://github.com/travis-ci/apt-package-whitelist/issues/4129
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export WITH_BULLET=OFF; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin && chmod +x android-*.bin && ./android-*.bin -y | grep -v Extracting; fi
 # Because Android build has to use 12.04 and CMake 2.8.12 stopped working there
 # since May 2017, I have to manually download a prebuilt version. Also, the
@@ -126,7 +125,6 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then export PATH=$HOME/cmake/bin:$PATH; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export WITH_BULLET=ON; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install bullet; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 # Emscripten 1.37.10 is broken (crashes during optimization), using 1.37.1
 # works. Replace with just `brew install emscripten` when sane again
@@ -135,6 +133,11 @@ install:
 # SDL (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install sdl2; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then curl -O https://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4/Xcode-iOS/SDL && xcodebuild -sdk iphonesimulator9.3 | xcpretty && mkdir -p ../../../sdl2/lib && cp build/Release-iphonesimulator/libSDL2.a ../../../sdl2/lib && mkdir -p ../../../sdl2/include/SDL2 && cp -R ../../include/* ../../../sdl2/include/SDL2 && cd ../../..; fi
+
+# Bullet (cached)
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install bullet; fi
+# TODO: https://github.com/travis-ci/apt-package-whitelist/issues/4129
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ] ) && [ ! -e "$HOME/bullet/include" ]; then wget -nc https://github.com/bulletphysics/bullet3/archive/2.86.1.tar.gz && tar -xzvf 2.86.1.tar.gz && cd bullet3-2.86.1 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/bullet -DCMAKE_BUILD_TYPE=Release -DUSE_GRAPHICAL_BENCHMARK=OFF -DBUILD_CPU_DEMOS=OFF -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DINSTALL_LIBS=ON -DBUILD_UNIT_TESTS=OFF && make -j install && cd ../..; fi
 
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi

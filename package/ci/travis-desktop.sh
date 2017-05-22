@@ -40,19 +40,20 @@ git clone --depth 1 git://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_PREFIX_PATH=$HOME/bullet \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_BULLET=$WITH_BULLET \
+    -DWITH_BULLET=ON\
     -DWITH_OVR=OFF
 make -j install
 cd ../..
 
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2" \
+    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/bullet" \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO_EXAMPLE=ON \
-    -DWITH_BULLET_EXAMPLE=$WITH_BULLET \
+    -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=ON \
     -DWITH_MOTIONBLUR_EXAMPLE=ON \
     -DWITH_OVR_EXAMPLE=OFF \
