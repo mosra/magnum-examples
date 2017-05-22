@@ -107,7 +107,9 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export WITH_BULLET=ON; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install bullet; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
+# Emscripten 1.37.10 is broken (crashes during optimization), using 1.37.1
+# works. Replace with just `brew install emscripten` when sane again
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/53f53f6498ba0f507c443dd4f0c6217937f1ddf2/Formula/emscripten.rb && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
 
 # SDL (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install sdl2; fi
