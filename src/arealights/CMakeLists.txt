@@ -5,6 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
 #           Vladimír Vondruš <mosra@centrum.cz>
+#       2017 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -28,7 +29,7 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
-project(MagnumExamples)
+project(MagnumAreaLightsExample)
 
 # CMake policies: enable MACOSX_RPATH by default
 if(POLICY CMP0042)
@@ -39,22 +40,27 @@ if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+    Sdl2Application)
 
-include(CMakeDependentOption)
-option(WITH_AREALIGHTS_EXAMPLE "Build arealights example" OFF)
-option(WITH_AUDIO_EXAMPLE "Build audio example (requires Magnum Audio library)" OFF)
-option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletIntegration library)" OFF)
-cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
-option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
-option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
-option(WITH_SHADOWS_EXAMPLE "Build shadow mapping example" OFF)
-option(WITH_TEXT_EXAMPLE "Build Text example (requires FreeTypeFont plugin)" OFF)
-cmake_dependent_option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
-option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_subdirectory(src)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+corrade_add_resource(AreaLights_RESOURCES resources.conf)
+
+add_executable(magnum-arealights AreaLightsExample.cpp ${AreaLights_RESOURCES})
+target_include_directories(magnum-arealights PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(magnum-arealights
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders)
+
+install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-arealights.md)

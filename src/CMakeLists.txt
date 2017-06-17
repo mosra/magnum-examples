@@ -38,6 +38,10 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
+if(WITH_AREALIGHTS_EXAMPLE)
+    add_subdirectory(arealights)
+endif()
+
 if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
