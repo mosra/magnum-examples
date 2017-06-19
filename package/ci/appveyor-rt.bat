@@ -38,6 +38,7 @@ cmake .. ^
     -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_INTERCONNECT=OFF ^
+    -DWITH_TESTSUITE=OFF ^
     -DBUILD_STATIC=ON ^
     -G "Visual Studio 14 2015" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b

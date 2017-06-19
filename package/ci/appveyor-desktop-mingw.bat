@@ -30,6 +30,7 @@ cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_INTERCONNECT=OFF ^
+    -DWITH_TESTSUITE=OFF ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b
 cmake --build . --target install -- -j || exit /b

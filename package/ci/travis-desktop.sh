@@ -10,6 +10,7 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INTERCONNECT=OFF \
+    -DWITH_TESTSUITE=OFF \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 make -j install
 cd ../..

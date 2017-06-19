@@ -25,7 +25,8 @@ ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DWITH_INTERCONNECT=OFF
+    -DWITH_INTERCONNECT=OFF \
+    -DWITH_TESTSUITE=OFF
 make -j install
 cd ../..
 
