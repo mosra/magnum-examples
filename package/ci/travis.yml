@@ -113,6 +113,7 @@ cache:
   directories:
   - $HOME/sdl2
   - $HOME/bullet
+  - $HOME/cmake
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
