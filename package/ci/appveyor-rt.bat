@@ -101,7 +101,6 @@ cd .. && cd ..
 rem Crosscompile
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
-    -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
     -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
