@@ -37,8 +37,17 @@ out vec4 color;
 
 void main() {
     vec4 summedBlur = vec4(0.0, 0.0, 0.0, 0.0);
-    for(int i = 0; i != FrameCount; ++i)
-        summedBlur += texture(frame[i], textureCoordinate);
+
+    /* This could be just a loop, but Mesa drivers then complain that "error:
+       sampler arrays indexed with non-constant expressions are forbidden in
+       GLSL 1.30 and later" */
+    summedBlur += texture(frame[0], textureCoordinate);
+    summedBlur += texture(frame[1], textureCoordinate);
+    summedBlur += texture(frame[2], textureCoordinate);
+    summedBlur += texture(frame[3], textureCoordinate);
+    summedBlur += texture(frame[4], textureCoordinate);
+    summedBlur += texture(frame[5], textureCoordinate);
+    summedBlur += texture(frame[6], textureCoordinate);
 
     color.rgb = summedBlur.rgb/FrameCount;
     color.a = 1.0;
