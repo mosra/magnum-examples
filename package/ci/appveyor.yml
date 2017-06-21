@@ -70,8 +70,8 @@ install:
 - IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
 
 # OVR SDK
-- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.3.0_public.zip appveyor DownloadFile http://static.oculus.com/sdk-downloads/1.3.0/Public/1459135039/ovr_sdk_win_1.3.0_public.zip
-- IF NOT "%TARGET%" == "rt" 7z x ovr_sdk_win_1.3.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.4.0_public.zip appveyor DownloadFile https://static.oculus.com/sdk-downloads/1.4.0/Public/1463687419/ovr_sdk_win_1.4.0_public.zip
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.4.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
 
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
@@ -80,7 +80,7 @@ build_script:
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
-- openal-soft-1.17.2-bin.zip
-- SDL2-devel-2.0.4-VC.zip
-- ovr_sdk_win_1.3.0_public.zip
-- x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z
+- openal-soft-1.17.2-bin.zip -> package/ci/appveyor-cache-reset.txt
+- SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
+- ovr_sdk_win_1.4.0_public.zip -> package/ci/appveyor-cache-reset.txt
+- x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z -> package/ci/appveyor-cache-reset.txt
