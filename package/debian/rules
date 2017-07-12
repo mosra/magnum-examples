@@ -1,10 +1,20 @@
 #!/usr/bin/make -f
 
+# For some crappy reason Ubuntu includes this flag by default when building deb
+# packages. This breaks signal/slot connections across *.sos in
+# Corrade::Interconnect library (which may affect some examples here) and as
+# said on the links below, it has some noticeable unintended/dangerous effects
+# as well, so I'm just disabling it globally. See:
+#  http://stackoverflow.com/questions/7216973/is-there-a-downside-to-using-bsymbolic-functions
+#  https://software.intel.com/en-us/articles/performance-tools-for-software-developers-bsymbolic-can-cause-dangerous-side-effects
+export DEB_LDFLAGS_MAINT_STRIP = -Wl,-Bsymbolic-functions
+
 %:
 	dh $@ --parallel
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release \
 		-DWITH_AUDIO_EXAMPLE=ON \
 		-DWITH_BULLET_EXAMPLE=ON \
 		-DWITH_CUBEMAP_EXAMPLE=ON \

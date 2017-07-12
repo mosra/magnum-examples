@@ -9,7 +9,8 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF
+    -DWITH_INTERCONNECT=OFF \
+    -DWITH_TESTSUITE=OFF
 make -j install
 cd ../..
 
@@ -43,17 +44,17 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_BULLET=OFF \
+    -DWITH_BULLET=ON \
     -DWITH_OVR=OFF
 make -j install
 cd ../..
 
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2" \
+    -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO_EXAMPLE=ON \
-    -DWITH_BULLET_EXAMPLE=OFF \
+    -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
     -DWITH_MOTIONBLUR_EXAMPLE=OFF \
     -DWITH_OVR_EXAMPLE=OFF \

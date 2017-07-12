@@ -31,6 +31,7 @@ cmake .. \
     -DBUILD_STATIC=ON \
     -DTESTSUITE_TARGET_XCTEST=ON \
     -DWITH_INTERCONNECT=OFF \
+    -DWITH_TESTSUITE=OFF \
     -DBUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty

@@ -27,4 +27,4 @@ Documentation
 -------------
 
 This example is thoroughly explained in the documentation, which you can read
-also online at http://mosra.cz/blog/magnum-doc/examples-viewer.html .
+also online at http://doc.magnum.graphics/magnum/examples-viewer.html .

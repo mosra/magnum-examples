@@ -64,7 +64,9 @@
 #
 #  CORRADE_GCC47_COMPATIBILITY  - Defined if compiled with compatibility mode
 #   for GCC 4.7
-#  CORRADE_MSVC2015_COMPATIBILITY  - Defined if compiled with compatibility
+#  CORRADE_MSVC2017_COMPATIBILITY - Defined if compiled with compatibility
+#   mode for MSVC 2017
+#  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2015
 #  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
 #   included
@@ -73,7 +75,9 @@
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, OS X)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for Apple platforms
-#  CORRADE_TARGET_IOS           - Defined if compiled for iOS
+#  CORRADE_TARGET_IOS           - Defined if compiled for iOS (device or
+#   simulator)
+#  CORRADE_TARGET_IOS_SIMULATOR - Defined if compiled for iOS Simulator
 #  CORRADE_TARGET_WINDOWS       - Defined if compiled for Windows
 #  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
 #  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome Native
@@ -97,6 +101,7 @@
 #  CORRADE_USE_MODULE           - Path to UseCorrade.cmake module (included
 #   automatically)
 #  CORRADE_TESTSUITE_XCTEST_RUNNER - Path to XCTestRunner.mm.in file
+#  CORRADE_TESTSUITE_ADB_RUNNER - Path to AdbRunner.sh file
 #  CORRADE_PEDANTIC_COMPILER_OPTIONS - List of pedantic compiler options used
 #   for targets with :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` enabled
 #  CORRADE_PEDANTIC_COMPILER_DEFINITIONS - List of pedantic compiler
@@ -120,12 +125,25 @@
 #
 #  corrade_add_test(<test name>
 #                   <sources>...
-#                   [LIBRARIES <libraries>...])
+#                   [LIBRARIES <libraries>...]
+#                   [FILES <files>...])
 #
 # Test name is also executable name. You can also specify libraries to link
 # with instead of using :command:`target_link_libraries()`.
 # ``Corrade::TestSuite`` target is linked automatically to each test. Note
 # that the :command:`enable_testing()` function must be called explicitly.
+#
+# You can list files needed by the test in the ``FILES`` section. If given
+# filename is relative, it is treated relatively to `CMAKE_CURRENT_SOURCE_DIR`.
+# The files are added to the :prop_test:`REQUIRED_FILES` target property. On
+# Emscripten they are bundled to the executable and available in the virtual
+# filesystem root. On Android they are copied along the executable to the
+# target. In case of Emscripten and Android, if the file is absolute or
+# contains ``..``, only the leaf name is used. Alternatively you can have a
+# filename formatted as ``<input>@<output>``, in which case the ``<input>`` is
+# treated as local filesystem location and ``<output>`` as remote/virtual
+# filesystem location. The remote location can't be absolute or contain ``..``
+# / ``@`` characters.
 #
 # Unless :variable:`CORRADE_TESTSUITE_TARGET_XCTEST` is set, test cases on iOS
 # targets are created as bundles with bundle identifier set to CMake project
@@ -142,7 +160,8 @@
 # generates resource data using given configuration file in current build
 # directory. Argument name is name under which the resources can be explicitly
 # loaded. Variable ``<name>`` contains compiled resource filename, which is
-# then used for compiling library / executable. Example usage::
+# then used for compiling library / executable. On CMake >= 3.1 the
+# `resources.conf` file can contain UTF-8-encoded filenames. Example usage::
 #
 #  corrade_add_resource(app_resources resources.conf)
 #  add_executable(app source1 source2 ... ${app_resources})
@@ -152,36 +171,59 @@
 # Add dynamic plugin::
 #
 #  corrade_add_plugin(<plugin name>
-#                     <debug install dir> <release install dir>
+#                     "<debug binary install dir>;<debug library install dir>"
+#                     "<release binary install dir>;<release library install dir>"
 #                     <metadata file>
 #                     <sources>...)
 #
 # The macro adds preprocessor directive ``CORRADE_DYNAMIC_PLUGIN``. Additional
 # libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
-# If ``<debug install dir>`` is set to :variable:`CMAKE_CURRENT_BINARY_DIR`
-# (e.g. for testing purposes), the files are copied directly, without the need
-# to perform install step. Note that the files are actually put into
-# configuration-based subdirectory, i.e. ``${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}``.
-# See documentation of :variable:`CMAKE_CFG_INTDIR` variable for more
-# information.
+# On DLL platforms, the plugin DLLs and metadata files are put into
+# ``<debug binary install dir>``/``<release binary install dir>`` and the
+# ``*.lib`` files into ``<debug library install dir>``/``<release library install dir>``.
+# On non-DLL platforms everything is put into ``<debug library install dir>``/
+# ``<release library install dir>``.
+#
+#  corrade_add_plugin(<plugin name>
+#                     <debug install dir>
+#                     <release install dir>
+#                     <metadata file>
+#                     <sources>...)
+#
+# Unline the above version this puts everything into ``<debug install dir>`` on
+# both DLL and non-DLL platforms. If ``<debug install dir>`` is set to
+# :variable:`CMAKE_CURRENT_BINARY_DIR` (e.g. for testing purposes), the files
+# are copied directly, without the need to perform install step. Note that the
+# files are actually put into configuration-based subdirectory, i.e.
+# ``${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}``. See documentation of
+# :variable:`CMAKE_CFG_INTDIR` variable for more information.
 #
 # .. command:: corrade_add_static_plugin
 #
 # Add static plugin::
 #
 #  corrade_add_static_plugin(<plugin name>
-#                            <install dir>
+#                            "<binary install dir>;<library install dir>"
 #                            <metadata file>
 #                            <sources>...)
 #
 # The macro adds preprocessor directive ``CORRADE_STATIC_PLUGIN``. Additional
 # libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
+# The ``<binary install dir>`` is ignored and included just for compatibility
+# with the :command:`corrade_add_plugin` command, everything is installed into
+# ``<library install dir>``. Note that plugins built in debug configuration
+# (e.g. with :variable:`CMAKE_BUILD_TYPE` set to ``Debug``) have ``"-d"``
+# suffix to make it possible to have both debug and release plugins installed
+# alongside each other.
+#
+#  corrade_add_static_plugin(<plugin name>
+#                            <install dir>
+#                            <metadata file>
+#                            <sources>...)
+#
+# Equivalent to the above with ``<library install dir>`` set to ``<install dir>``.
 # If ``<install dir>`` is set to :variable:`CMAKE_CURRENT_BINARY_DIR` (e.g. for
 # testing purposes), no installation rules are added.
-#
-# Note that plugins built in debug configuration (e.g. with :variable:`CMAKE_BUILD_TYPE`
-# set to ``Debug``) have ``"-d"`` suffix to make it possible to have both debug
-# and release plugins installed alongside each other.
 #
 # .. command:: corrade_find_dlls_for_libs
 #
@@ -197,8 +239,8 @@
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
+#               2017 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -243,11 +285,13 @@ file(READ ${_CORRADE_CONFIGURE_FILE} _corradeConfigure)
 set(_corradeFlags
     GCC47_COMPATIBILITY
     MSVC2015_COMPATIBILITY
+    MSVC2017_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
     TARGET_UNIX
     TARGET_APPLE
     TARGET_IOS
+    TARGET_IOS_SIMULATOR
     TARGET_WINDOWS
     TARGET_WINDOWS_RT
     TARGET_NACL
@@ -263,13 +307,6 @@ foreach(_corradeFlag ${_corradeFlags})
         set(CORRADE_${_corradeFlag} 1)
     endif()
 endforeach()
-
-# XCTest runner file
-if(CORRADE_TESTSUITE_TARGET_XCTEST)
-    find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
-        PATH_SUFFIXES share/corrade/TestSuite)
-    set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
-endif()
 
 # CMake module dir
 find_path(_CORRADE_MODULE_DIR
@@ -383,7 +420,21 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
             endif()
 
-        # No special setup for TestSuite library
+        # TestSuite library has some additional files
+        elseif(_component STREQUAL TestSuite)
+            # XCTest runner file
+            if(CORRADE_TESTSUITE_TARGET_XCTEST)
+                find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
+                    PATH_SUFFIXES share/corrade/TestSuite)
+                set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
+            endif()
+
+            # ADB runner file
+            if(CORRADE_TARGET_ANDROID)
+                find_file(CORRADE_TESTSUITE_ADB_RUNNER AdbRunner.sh
+                    PATH_SUFFIXES share/corrade/TestSuite)
+                set(CORRADE_TESTSUITE_ADB_RUNNER_NEEDED CORRADE_TESTSUITE_ADB_RUNNER)
+            endif()
 
         # Utility library (contains all setup that is used by others)
         elseif(_component STREQUAL Utility)
@@ -459,6 +510,7 @@ find_package_handle_standard_args(Corrade REQUIRED_VARS
     _CORRADE_MODULE_DIR
     _CORRADE_CONFIGURE_FILE
     ${CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED}
+    ${CORRADE_TESTSUITE_ADB_RUNNER_NEEDED}
     HANDLE_COMPONENTS)
 
 # Finalize the finding process

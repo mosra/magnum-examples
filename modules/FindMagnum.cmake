@@ -10,6 +10,9 @@
 # following:
 #
 #  Magnum_FOUND                 - Whether the base library was found
+#  MAGNUM_DEPLOY_PREFIX         - Prefix where to put final application
+#   executables, defaults to empty string. If a relative path is used, it's
+#   relative to :variable:`CMAKE_INSTALL_PREFIX`.
 #  MAGNUM_PLUGINS_DEBUG_DIR     - Base directory with dynamic plugins for
 #   debug builds, defaults to magnum-d/ subdirectory of dir where Magnum
 #   library was found
@@ -209,6 +212,7 @@ mark_as_advanced(MAGNUM_INCLUDE_DIR)
 # Configuration file
 find_file(_MAGNUM_CONFIGURE_FILE configure.h
     HINTS ${MAGNUM_INCLUDE_DIR}/Magnum/)
+mark_as_advanced(_MAGNUM_CONFIGURE_FILE)
 
 # We need to open configure.h file from MAGNUM_INCLUDE_DIR before we check for
 # the components. Bail out with proper error message if it wasn't found. The
@@ -789,11 +793,14 @@ if(_MAGNUM_CONTEXT_ALIAS AND NOT TARGET Magnum::Context)
     unset(_MAGNUM_CONTEXT_ALIAS)
 endif()
 
-# Installation dirs
+# Installation and deploy dirs
+set(MAGNUM_DEPLOY_PREFIX ""
+    CACHE STRING "Prefix where to put final application executables")
+
 include(${CORRADE_LIB_SUFFIX_MODULE})
-set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
-set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
-set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
+set(MAGNUM_BINARY_INSTALL_DIR bin)
+set(MAGNUM_LIBRARY_INSTALL_DIR lib${LIB_SUFFIX})
+set(MAGNUM_DATA_INSTALL_DIR share/magnum)
 set(MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum-d)
 set(MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
 set(MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum)
@@ -816,8 +823,8 @@ set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/audioimporters)
-set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
-set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
+set(MAGNUM_INCLUDE_INSTALL_DIR include/Magnum)
+set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR include/MagnumPlugins)
 
 # Get base plugin directory from main library location. This is *not* PATH,
 # because CMake always converts the path to an absolute location internally,
