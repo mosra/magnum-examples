@@ -11,10 +11,10 @@ Reporting bugs, requesting features
 Code contribution
 -----------------
 
-*   Building and installing Magnum is described in the [documentation](http://mosra.cz/blog/magnum-doc/building.html).
+*   Building and installing Magnum is described in the [documentation](http://doc.magnum.graphics/magnum/building.html).
 *   Follow the project coding guidelines. In short -- try to match style of the
     surrounding code and avoid any trailing whitespace. When in doubt, consult
-    coding guidelines, which are available also [online](http://mosra.cz/blog/magnum-doc/coding-style.html).
+    coding guidelines, which are available also [online](http://doc.magnum.graphics/magnum/coding-style.html).
 *   Best way to contribute is by using GitHub [pull requests](https://github.com/mosra/magnum-examples/pulls)
     -- fork the repository and make pull request from feature branch. You can
     also send patches via e-mail or contact me any other way.
@@ -42,7 +42,7 @@ Code contribution
 Contact
 -------
 
-*   Website -- http://mosra.cz/blog/magnum.php
+*   Website -- http://magnum.graphics
 *   GitHub -- https://github.com/mosra/magnum-examples
 *   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
