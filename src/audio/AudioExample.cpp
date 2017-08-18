@@ -5,7 +5,7 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2015 — Jonathan Hale <squareys@googlemail.com>
+        2015, 2017 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -58,6 +58,14 @@
 
 #include "configure.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(WavAudioImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
+
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::SceneGraph;
@@ -73,7 +81,7 @@ class AudioExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        void keyPressEvent(KeyEvent& event);
+        void keyPressEvent(KeyEvent& event) override;
 
         DebugTools::ResourceManager _manager;
 
@@ -169,7 +177,9 @@ AudioExample::AudioExample(const Arguments& arguments):
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     setMinimalLoopPeriod(16);
+    #endif
 }
 
 void AudioExample::drawEvent() {

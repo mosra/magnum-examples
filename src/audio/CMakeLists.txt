@@ -5,7 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2015 — Jonathan Hale <squareys@googlemail.com>
+#       2015, 2017 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -46,6 +46,10 @@ find_package(Magnum REQUIRED
     SceneGraph
     Sdl2Application)
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED WavAudioImporter)
+endif()
+
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -64,5 +68,25 @@ target_link_libraries(magnum-audio
     Magnum::Magnum
     Magnum::SceneGraph)
 
-install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    target_link_libraries(magnum-audio Magnum::WavAudioImporter)
+endif()
+
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES audio.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio RENAME index.html)
+    install(TARGETS magnum-audio DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-audio.md)
+endif()
