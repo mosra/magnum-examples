@@ -58,6 +58,14 @@
 
 #include "configure.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(WavAudioImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
+
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::SceneGraph;
@@ -73,7 +81,7 @@ class AudioExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        void keyPressEvent(KeyEvent& event);
+        void keyPressEvent(KeyEvent& event) override;
 
         DebugTools::ResourceManager _manager;
 
@@ -102,7 +110,12 @@ AudioExample::AudioExample(const Arguments& arguments):
     Platform::Application{arguments, NoCreate},
     /* Create the audio context. Without this, sound will not be initialized:
        Needs to be done before Playables and Sources are initialized. */
+#ifndef CORRADE_TARGET_EMSCRIPTEN
     _context(Audio::Context::Configuration().setHrtf(Audio::Context::Configuration::Hrtf::Enabled)),
+#else
+    /* No Hrtf support on emscripten :( */
+    _context(),
+#endif
     _sourceRig(&_scene),
     _sourceObject(&_sourceRig),
     _cameraObject(&_scene),
@@ -169,7 +182,6 @@ AudioExample::AudioExample(const Arguments& arguments):
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
-    setMinimalLoopPeriod(16);
 }
 
 void AudioExample::drawEvent() {
