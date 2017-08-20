@@ -91,9 +91,9 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES textured-triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+    install(FILES textured-triangle-emscripten.html DESTINATION ${MAGNUM_DEPLOY_PREFIX})
+    install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
 
 # Installation for desktop
 elseif(NOT CORRADE_TARGET_IOS)

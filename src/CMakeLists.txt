@@ -88,5 +88,5 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES WebApplication.css EmscriptenApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES WebApplication.css EmscriptenApplication.js DESTINATION ${MAGNUM_DEPLOY_PREFIX})
 endif()
