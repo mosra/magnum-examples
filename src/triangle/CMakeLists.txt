@@ -42,9 +42,7 @@ endif()
 find_package(Magnum REQUIRED
     Shaders)
 
-if(CORRADE_TARGET_NACL)
-    find_package(Magnum REQUIRED NaClApplication)
-elseif(CORRADE_TARGET_ANDROID)
+if(CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED AndroidApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
@@ -72,16 +70,8 @@ if(CORRADE_TARGET_IOS)
         XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
-# Installation for NaCl
-if(CORRADE_TARGET_NACL)
-    if(NOT CORRADE_TARGET_NACL_NEWLIB)
-        message(FATAL_ERROR "Only newlib NaCl target is supported")
-    endif()
-    install(FILES triangle-nacl.html triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS magnum-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
-
 # Installation for Emscripten
-elseif(CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)

@@ -32,9 +32,7 @@
 #include <Magnum/Renderer.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
-#ifdef CORRADE_TARGET_NACL
-#include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_ANDROID)
+#ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
 #else
 #include <Magnum/Platform/Sdl2Application.h>

@@ -34,9 +34,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
-#ifdef CORRADE_TARGET_NACL
-#include <Magnum/Platform/NaClApplication.h>
-#elif defined(CORRADE_TARGET_ANDROID)
+#ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
 #else
 #include <Magnum/Platform/Sdl2Application.h>

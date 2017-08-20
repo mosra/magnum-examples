@@ -43,13 +43,11 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     find_package(Magnum REQUIRED TgaImporter)
 endif()
 
-if(CORRADE_TARGET_NACL)
-    find_package(Magnum REQUIRED NaClApplication)
-elseif(CORRADE_TARGET_ANDROID)
+if(CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED AndroidApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
@@ -87,20 +85,12 @@ if(CORRADE_TARGET_IOS)
         XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     target_link_libraries(magnum-textured-triangle Magnum::TgaImporter)
 endif()
 
-# Installation for NaCl
-if(CORRADE_TARGET_NACL)
-    if(NOT CORRADE_TARGET_NACL_NEWLIB)
-        message(FATAL_ERROR "Only newlib NaCl target is supported")
-    endif()
-    install(FILES textured-triangle-nacl.html textured-triangle-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
-
 # Installation for Emscripten
-elseif(CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES textured-triangle-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-textured-triangle DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)

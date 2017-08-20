@@ -41,16 +41,11 @@ endif()
 
 find_package(Magnum REQUIRED
     Shaders
-    Text)
+    Text
+    Sdl2Application)
 
 if(MAGNUM_BUILD_STATIC)
     find_package(Magnum REQUIRED TgaImporter MagnumFont)
-endif()
-
-if(CORRADE_TARGET_NACL)
-    find_package(Magnum REQUIRED NaClApplication)
-else()
-    find_package(Magnum REQUIRED Sdl2Application)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -74,16 +69,8 @@ if(MAGNUM_BUILD_STATIC)
     target_link_libraries(magnum-text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
 endif()
 
-# Installation for NaCl
-if(CORRADE_TARGET_NACL)
-    if(NOT CORRADE_TARGET_NACL_NEWLIB)
-        message(FATAL_ERROR "Only newlib NaCl target is supported")
-    endif()
-    install(FILES text-nacl.html text-nacl.nmf DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS magnum-text DESTINATION ${CMAKE_INSTALL_PREFIX})
-
 # Installation for Emscripten
-elseif(CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES text-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(TARGETS magnum-text DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)

@@ -86,11 +86,6 @@ if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()
 
-# Installation for NaCl
-if(CORRADE_TARGET_NACL)
-    install(FILES WebApplication.css NaClApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
-
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES WebApplication.css EmscriptenApplication.js DESTINATION ${CMAKE_INSTALL_PREFIX})

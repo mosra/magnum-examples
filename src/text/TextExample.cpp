@@ -30,11 +30,7 @@
 #include <iomanip>
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
-#ifdef CORRADE_TARGET_NACL
-#include <Magnum/Platform/NaClApplication.h>
-#else
 #include <Magnum/Platform/Sdl2Application.h>
-#endif
 #include <Magnum/Math/Complex.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>
