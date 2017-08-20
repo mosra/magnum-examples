@@ -11,8 +11,8 @@
 #
 #  Magnum_FOUND                 - Whether the base library was found
 #  MAGNUM_DEPLOY_PREFIX         - Prefix where to put final application
-#   executables, defaults to empty string. If a relative path is used, it's
-#   relative to :variable:`CMAKE_INSTALL_PREFIX`.
+#   executables, defaults to ``.``. If a relative path is used, it's relative
+#   to :variable:`CMAKE_INSTALL_PREFIX`.
 #  MAGNUM_PLUGINS_DEBUG_DIR     - Base directory with dynamic plugins for
 #   debug builds, defaults to magnum-d/ subdirectory of dir where Magnum
 #   library was found
@@ -53,14 +53,12 @@
 #  GlfwApplication              - GLFW application
 #  GlutApplication              - GLUT application
 #  GlxApplication               - GLX application
-#  NaClApplication              - NaCl application
 #  Sdl2Application              - SDL2 application
 #  XEglApplication              - X/EGL application
 #  WindowlessCglApplication     - Windowless CGL application
 #  WindowlessEglApplication     - Windowless EGL application
 #  WindowlessGlxApplication     - Windowless GLX application
 #  WindowlessIosApplication     - Windowless iOS application
-#  WindowlessNaClApplication    - Windowless NaCl application
 #  WindowlessWglApplication     - Windowless WGL application
 #  WindowlessWindowsEglApplication - Windowless Windows/EGL application
 #  CglContext                   - CGL context
@@ -389,7 +387,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
@@ -536,11 +534,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(SDL2)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES SDL2::SDL2)
-
-            # (Windowless) NaCl application dependencies
-            elseif(_component STREQUAL NaClApplication OR _component STREQUAL WindowlessNaClApplication)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ppapi_cpp ppapi)
 
             # (Windowless) GLX application dependencies
             elseif(_component STREQUAL GlxApplication OR _component STREQUAL WindowlessGlxApplication)
@@ -794,7 +787,7 @@ if(_MAGNUM_CONTEXT_ALIAS AND NOT TARGET Magnum::Context)
 endif()
 
 # Installation and deploy dirs
-set(MAGNUM_DEPLOY_PREFIX ""
+set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")
 
 include(${CORRADE_LIB_SUFFIX_MODULE})

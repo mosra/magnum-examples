@@ -30,6 +30,7 @@
 #include "MotionBlurCamera.h"
 
 #include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/PixelFormat.h>
