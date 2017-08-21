@@ -85,8 +85,3 @@ endif()
 if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()
-
-# Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES WebApplication.css EmscriptenApplication.js DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-endif()

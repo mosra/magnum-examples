@@ -71,9 +71,15 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES text-emscripten.html DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(TARGETS magnum-text DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.js.mem DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
+    install(FILES text.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text RENAME index.html)
+    install(TARGETS magnum-text DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.js.mem
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text OPTIONAL)
 
 # Installation for desktop
 else()

@@ -61,9 +61,15 @@ target_link_libraries(magnum-picking
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES picking-emscripten.html DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(TARGETS magnum-picking DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-picking.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+    install(FILES picking.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking RENAME index.html)
+    install(TARGETS magnum-picking DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-picking.js.mem
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking OPTIONAL)
 
 # Installation for desktop
 else()

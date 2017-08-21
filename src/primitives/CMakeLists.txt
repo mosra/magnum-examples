@@ -76,9 +76,15 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES primitives-emscripten.html DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(TARGETS magnum-primitives DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
+    install(FILES primitives.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives RENAME index.html)
+    install(TARGETS magnum-primitives DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives OPTIONAL)
 
 # Installation for desktop
 elseif(NOT CORRADE_TARGET_IOS)

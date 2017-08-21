@@ -73,9 +73,15 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES viewer-emscripten.html DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(TARGETS magnum-viewer DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
+    install(FILES viewer.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer RENAME index.html)
+    install(TARGETS magnum-viewer DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer OPTIONAL)
 
 # Installation for desktop
 else()

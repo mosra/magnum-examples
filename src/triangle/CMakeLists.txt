@@ -72,9 +72,15 @@ endif()
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES triangle-emscripten.html DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(TARGETS magnum-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.js.mem DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
+    install(FILES triangle.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle RENAME index.html)
+    install(TARGETS magnum-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.js.mem
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle OPTIONAL)
 
 # Installation for desktop
 elseif(NOT CORRADE_TARGET_IOS)
