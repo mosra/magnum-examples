@@ -29,6 +29,8 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten \
+        -DWITH_AUDIO_EXAMPLE=ON \
+        -DWITH_PICKING_EXAMPLE=OFF \
         -DWITH_PRIMITIVES_EXAMPLE=ON \
         -DWITH_TEXT_EXAMPLE=ON \
         -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
