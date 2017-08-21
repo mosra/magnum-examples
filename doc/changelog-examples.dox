@@ -31,7 +31,7 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2015-05 snapshot
 
-## De­pen­den­cy changes
+## Dependency changes
 
 -   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
 -   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
@@ -46,6 +46,7 @@ namespace Magnum {
 -   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
 -   Windows Phone/Store support via ANGLE
 -   iOS support
+-   WebAssembly support when building for Emscripten
 -   WebGL 2.0 support
 -   New examples:
     -   [ovr](https://github.com/mosra/magnum-examples/tree/master/src/ovr)
