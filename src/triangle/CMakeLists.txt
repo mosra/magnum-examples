@@ -80,6 +80,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-triangle.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/triangle OPTIONAL)
 
 # Installation for desktop

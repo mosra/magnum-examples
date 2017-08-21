@@ -84,6 +84,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives OPTIONAL)
 
 # Installation for desktop

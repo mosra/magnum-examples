@@ -81,6 +81,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer OPTIONAL)
 
 # Installation for desktop

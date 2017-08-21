@@ -99,6 +99,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle OPTIONAL)
 
 # Installation for desktop
