@@ -6,8 +6,8 @@ pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
-depends=('emscripten-magnum=dev.webgl2')
-makedepends=('cmake' 'emscripten' 'corrade')
+depends=('emscripten-magnum=dev.webgl2' 'emscripten-magnum-plugins=dev.webgl2')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
@@ -19,9 +19,9 @@ build() {
         cd "$_rootdir/build-emscripten-webgl2"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
-            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+            -G Ninja
     fi
 
     cd "$_rootdir/build-emscripten-webgl2"
@@ -29,13 +29,16 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten \
-        -DWITH_TRIANGLE_EXAMPLE=OFF \
-        -DWITH_PICKING_EXAMPLE=ON
-    make
+        -DWITH_PICKING_EXAMPLE=ÓN \
+        -DWITH_PRIMITIVES_EXAMPLE=ON \
+        -DWITH_TEXT_EXAMPLE=ON \
+        -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+        -DWITH_TRIANGLE_EXAMPLE=ON \
+        -DWITH_VIEWER_EXAMPLE=ON
+    ninja
 }
 
 package() {
   cd "$_rootdir/build-emscripten-webgl2"
-  # Yes, I *am* installing the files into final destination
-  make install
+  DESTDIR="$pkgdir/" ninja install
 }

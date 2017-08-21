@@ -6,8 +6,8 @@ pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
-depends=('emscripten-magnum')
-makedepends=('cmake' 'emscripten' 'corrade')
+depends=('emscripten-magnum=dev', 'emscripten-magnum-plugins=dev')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
@@ -39,6 +39,5 @@ build() {
 
 package() {
   cd "$_rootdir/build-emscripten"
-  # Yes, I *am* installing the files into final destination
-  make install
+  DESTDIR="$pkgdir/" ninja install
 }
