@@ -1,0 +1,42 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=emscripten-magnum-examples
+pkgver=dev.wasm
+pkgrel=1
+pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten, wasm)"
+arch=('any')
+url="http://magnum.graphics"
+license=('MIT')
+depends=('emscripten-magnum=dev.wasm' 'emscripten-magnum-plugins=dev.wasm')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
+
+build() {
+    if [ ! -d "$_rootdir/build-emscripten-wasm" ] ; then
+        mkdir "$_rootdir/build-emscripten-wasm"
+        cd "$_rootdir/build-emscripten-wasm"
+
+        cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten-wasm.cmake" \
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+            -G Ninja
+    fi
+
+    cd "$_rootdir/build-emscripten-wasm"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
+        -DWITH_PRIMITIVES_EXAMPLE=ON \
+        -DWITH_TEXT_EXAMPLE=ON \
+        -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+        -DWITH_TRIANGLE_EXAMPLE=ON \
+        -DWITH_VIEWER_EXAMPLE=ON
+    ninja
+}
+
+package() {
+  cd "$_rootdir/build-emscripten-wasm"
+  DESTDIR="$pkgdir/" ninja install
+}
