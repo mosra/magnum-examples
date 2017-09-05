@@ -29,14 +29,14 @@
 
 uniform lowp vec3 ambientColor;
 uniform lowp vec3 color;
-uniform lowp int objectId;
+uniform lowp uint objectId;
 
 in mediump vec3 transformedNormal;
 in highp vec3 lightDirection;
 in highp vec3 cameraDirection;
 
 layout(location = 0) out lowp vec4 fragmentColor;
-layout(location = 1) out lowp int fragmentObjectId;
+layout(location = 1) out lowp uint fragmentObjectId;
 
 void main() {
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);

@@ -73,7 +73,7 @@ class PhongIdShader: public AbstractShaderProgram {
 
         explicit PhongIdShader();
 
-        PhongIdShader& setObjectId(Int id) {
+        PhongIdShader& setObjectId(UnsignedInt id) {
             setUniform(_objectIdUniform, id);
             return *this;
         }
