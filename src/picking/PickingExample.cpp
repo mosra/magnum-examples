@@ -267,12 +267,16 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
 
 void PickingExample::drawEvent() {
     /* Draw to custom framebuffer */
-    _framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth)
+    _framebuffer
+        .clearColor(0, Color3{0.125f})
+        .clearColor(1, Vector4ui{})
+        .clearDepth(1.0f)
         .bind();
     _camera->draw(_drawables);
 
     /* Bind the main buffer back */
-    defaultFramebuffer.bind();
+    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth)
+        .bind();
 
     /* Blit color to window framebuffer */
     _framebuffer.mapForRead(Framebuffer::ColorAttachment{0});
