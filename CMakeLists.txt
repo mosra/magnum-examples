@@ -44,6 +44,10 @@ endif()
 if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW)
 endif()
+# Quoted variables should not be dereferenced
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Magnum REQUIRED)
