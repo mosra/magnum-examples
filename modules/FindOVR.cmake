@@ -55,7 +55,7 @@ set(LIBOVR_ROOT ${OVR_SDK_ROOT}/LibOVR)
 find_path(OVR_INCLUDE_DIR NAMES OVR_CAPI.h HINTS ${LIBOVR_ROOT}/Include)
 
 if(WIN32)
-    if(MSVC)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
             # compiling for 64 bit
             set(_OVR_MSVC_ARCH "x64")
