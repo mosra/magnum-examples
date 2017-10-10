@@ -16,8 +16,10 @@
 #  AnyImageConverter            - Any image converter
 #  AnyImageImporter             - Any image importer
 #  AnySceneImporter             - Any scene importer
+#  AssimpImporter               - Assimp importer
 #  ColladaImporter              - Collada importer
 #  DdsImporter                  - DDS importer
+#  DevIlImageImporter           - Image importer using DevIL
 #  DrFlacAudioImporter          - FLAC audio importer plugin using dr_flac
 #  DrWavAudioImporter           - WAV audio importer plugin using dr_wav
 #  FreeTypeFont                 - FreeType font
@@ -28,8 +30,8 @@
 #  PngImageConverter            - PNG image converter
 #  PngImporter                  - PNG importer
 #  StanfordImporter             - Stanford PLY importer
+#  StbImageConverter            - Image converter using stb_image_write
 #  StbImageImporter             - Image importer using stb_image
-#  StbPngImageConverter         - PNG image converter using stb_image_write
 #  StbTrueTypeFont              - TrueType font using stb_truetype
 #  StbVorbisAudioImporter       - OGG audio importer using stb_vorbis
 #
@@ -67,7 +69,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -118,7 +120,9 @@ set(_MAGNUMPLUGINS_ADDITIONAL_COMPONENTS )
 foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
 
-    if(_component STREQUAL ColladaImporter)
+    if(_component STREQUAL AssimpImporter)
+        set(_MAGNUMPLUGINS_${_COMPONENT}_DEPENDENCIES AnyImageImporter)
+    elseif(_component STREQUAL ColladaImporter)
         set(_MAGNUMPLUGINS_${_COMPONENT}_DEPENDENCIES AnyImageImporter)
     elseif(_component STREQUAL OpenGexImporter)
         set(_MAGNUMPLUGINS_${_COMPONENT}_DEPENDENCIES AnyImageImporter)
@@ -146,7 +150,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMPLUGINS_PLUGIN_COMPONENTS "^(AnyAudioImporter|AnyImageConverter|AnyImageImporter|AnySceneImporter|ColladaImporter|DdsImporter|DrFlacAudioImporter|DrWavAudioImporter|FreeTypeFont|HarfBuzzFont|JpegImporter|MiniExrImageConverter|OpenGexImporter|PngImageConverter|PngImporter|StanfordImporter|StbImageImporter|StbPngImageConverter|StbTrueTypeFont|StbVorbisAudioImporter)$")
+set(_MAGNUMPLUGINS_PLUGIN_COMPONENTS "^(AnyAudioImporter|AnyImageConverter|AnyImageImporter|AnySceneImporter|AssimpImporter|ColladaImporter|DdsImporter|DevIlImageImporter|DrFlacAudioImporter|DrWavAudioImporter|FreeTypeFont|HarfBuzzFont|JpegImporter|MiniExrImageConverter|OpenGexImporter|PngImageConverter|PngImporter|StanfordImporter|StbImageConverter|StbImageImporter|StbTrueTypeFont|StbVorbisAudioImporter)$")
 
 # Find all components
 foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
@@ -196,8 +200,8 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
             # Dynamic plugins don't have any prefix (e.g. `lib` on Linux),
             # search with empty prefix and then reset that back so we don't
             # accidentaly break something else
-            set(_tmp_prefixes ${CMAKE_FIND_LIBRARY_PREFIXES})
-            set(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "")
+            set(_tmp_prefixes "${CMAKE_FIND_LIBRARY_PREFIXES}")
+            set(CMAKE_FIND_LIBRARY_PREFIXES "${CMAKE_FIND_LIBRARY_PREFIXES};")
 
             # Try to find both debug and release version. Dynamic and static
             # debug libraries are on different places.
@@ -235,6 +239,13 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         # AnyImageImporter has no dependencies
         # AnySceneImporter has no dependencies
 
+        # AssimpImporter plugin dependencies
+        if(_component STREQUAL AssimpImporter)
+            find_package(AssimpImporter)
+            set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Assimp::Assimp)
+        endif()
+
         # ColladaImporter plugin dependencies
         if(_component STREQUAL ColladaImporter)
             find_package(Qt4)
@@ -245,6 +256,14 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # DdsImporter has no dependencies
+
+        # DevIlImageImporter plugin dependencies
+        if(_component STREQUAL DevIlImageImporter)
+            find_package(DevIL)
+            set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${IL_LIBRARIES} ${ILU_LIBRARIES})
+        endif()
+
         # DrFlacAudioImporter has no dependencies
         # DrWavAudioImporter has no dependencies
 
@@ -288,8 +307,8 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # StanfordImporter has no dependencies
+        # StbImageConverter has no dependencies
         # StbImageImporter has no dependencies
-        # StbPngImageConverter has no dependencies
         # StbTrueTypeFont has no dependencies
         # StbVorbisAudioImporter has no dependencies
 
