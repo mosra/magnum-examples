@@ -16,12 +16,14 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
+    - JOBID=linux-desktop
     - TARGET=desktop
   - language: cpp
     os: linux
     dist: trusty
     compiler: gcc
     env:
+    - JOBID=linux-desktop-nondeprecated
     - TARGET=desktop
     - BUILD_DEPRECATED=OFF
   - language: cpp
@@ -29,6 +31,7 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
+    - JOBID=linux-es2
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
   - language: cpp
@@ -36,40 +39,48 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
+    - JOBID=linux-es3
     - TARGET=desktop-gles
     - TARGET_GLES2=OFF
   - language: cpp
     os: osx
     compiler: clang
-    env: TARGET=desktop
+    env:
+    - JOBID=macos-desktop
+    - TARGET=desktop
   #- language: cpp
     #os: osx
     #osx_image: xcode7.3
     #env:
+    #- JOBID=ios-es2
     #- TARGET=ios-simulator
     #- TARGET_GLES2=ON
   #- language: cpp
     #os: osx
     #osx_image: xcode7.3
     #env:
+    #- JOBID=ios-es3
     #- TARGET=ios-simulator
     #- TARGET_GLES2=OFF
   #- language: cpp
     #os: osx
     #osx_image: xcode8.3
     #env:
+    #- JOBID=emscripten-webgl1
     #- TARGET=emscripten
     #- TARGET_GLES2=ON
   #- language: cpp
     #os: osx
     #osx_image: xcode8.3
     #env:
+    #- JOBID=emscripten-webgl2
     #- TARGET=emscripten
     #- TARGET_GLES2=OFF
   #- language: android
     #os: linux
     #dist: precise
     #env:
+    #- JOBID=android-es2
     #- TARGET=android
     #- TARGET_GLES2=ON
     #addons:
@@ -87,6 +98,7 @@ matrix:
     #os: linux
     #dist: precise
     #env:
+    #- JOBID=android-es3
     #- TARGET=android
     #- TARGET_GLES2=OFF
     #addons:
