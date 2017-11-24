@@ -16,14 +16,14 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
-    - JOBID=linux-desktop
+    - JOBID=ports-linux-desktop
     - TARGET=desktop
   - language: cpp
     os: linux
     dist: trusty
     compiler: gcc
     env:
-    - JOBID=linux-desktop-nondeprecated
+    - JOBID=ports-linux-desktop-nondeprecated
     - TARGET=desktop
     - BUILD_DEPRECATED=OFF
   - language: cpp
@@ -31,7 +31,7 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
-    - JOBID=linux-es2
+    - JOBID=ports-linux-es2
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
   - language: cpp
@@ -39,7 +39,7 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
-    - JOBID=linux-es3
+    - JOBID=ports-linux-es3
     - TARGET=desktop-gles
     - TARGET_GLES2=OFF
   - language: cpp
@@ -47,41 +47,41 @@ matrix:
     osx_image: xcode8.3
     compiler: clang
     env:
-    - JOBID=macos-desktop
+    - JOBID=ports-macos-desktop
     - TARGET=desktop
   - language: cpp
     os: osx
     osx_image: xcode7.3
     env:
-    - JOBID=ios-es2
+    - JOBID=ports-ios-es2
     - TARGET=ios-simulator
     - TARGET_GLES2=ON
   - language: cpp
     os: osx
     osx_image: xcode7.3
     env:
-    - JOBID=ios-es3
+    - JOBID=ports-ios-es3
     - TARGET=ios-simulator
     - TARGET_GLES2=OFF
   - language: cpp
     os: osx
     osx_image: xcode8.3
     env:
-    - JOBID=emscripten-webgl1
+    - JOBID=ports-emscripten-webgl1
     - TARGET=emscripten
     - TARGET_GLES2=ON
   - language: cpp
     os: osx
     osx_image: xcode8.3
     env:
-    - JOBID=emscripten-webgl2
+    - JOBID=ports-emscripten-webgl2
     - TARGET=emscripten
     - TARGET_GLES2=OFF
   - language: android
     os: linux
     dist: precise
     env:
-    - JOBID=android-es2
+    - JOBID=ports-android-es2
     - TARGET=android
     - TARGET_GLES2=ON
     addons:
@@ -99,7 +99,7 @@ matrix:
     os: linux
     dist: precise
     env:
-    - JOBID=android-es3
+    - JOBID=ports-android-es3
     - TARGET=android
     - TARGET_GLES2=OFF
     addons:
