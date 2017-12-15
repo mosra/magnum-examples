@@ -30,7 +30,6 @@
 #include <Magnum/Buffer.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>
-#include <Magnum/Math/Vector3.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/VertexColor.h>
 
@@ -48,17 +47,19 @@ class TriangleExample: public Platform::Application {
         Shaders::VertexColor2D _shader;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")} {
+TriangleExample::TriangleExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")}
+{
     using namespace Math::Literals;
 
     struct TriangleVertex {
         Vector2 position;
         Color3 color;
     };
-    static const TriangleVertex data[]{
-        {{-0.5f, -0.5f}, 0xff0000_srgbf},   /* Left vertex, red color */
-        {{ 0.5f, -0.5f}, 0x00ff00_srgbf},   /* Right vertex, green color */
-        {{ 0.0f,  0.5f}, 0x0000ff_srgbf}    /* Top vertex, blue color */
+    const TriangleVertex data[]{
+        {{-0.5f, -0.5f}, 0xff0000_rgbf},    /* Left vertex, red color */
+        {{ 0.5f, -0.5f}, 0x00ff00_rgbf},    /* Right vertex, green color */
+        {{ 0.0f,  0.5f}, 0x0000ff_rgbf}     /* Top vertex, blue color */
     };
 
     _buffer.setData(data, BufferUsage::StaticDraw);

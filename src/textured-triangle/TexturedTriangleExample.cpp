@@ -56,12 +56,14 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")} {
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")}
+{
     struct TriangleVertex {
         Vector2 position;
         Vector2 textureCoordinates;
     };
-    static const TriangleVertex data[]{
+    const TriangleVertex data[]{
         {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left vertex position and texture coordinate */
         {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right vertex position and texture coordinate */
         {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top vertex position and texture coordinate */
@@ -97,8 +99,10 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Pl
 void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    _shader.setColor({1.0f, 0.7f, 0.7f})
-        .setTexture(_texture);
+    using namespace Math::Literals;
+
+    _shader.setColor(0xffb2b2_rgbf)
+        .bindTexture(_texture);
     _mesh.draw(_shader);
 
     swapBuffers();

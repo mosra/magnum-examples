@@ -47,7 +47,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
             return *this;
         }
 
-        TexturedTriangleShader& setTexture(Texture2D& texture) {
+        TexturedTriangleShader& bindTexture(Texture2D& texture) {
             texture.bind(TextureLayer);
             return *this;
         }

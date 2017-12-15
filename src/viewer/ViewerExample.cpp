@@ -31,12 +31,12 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/Buffer.h>
 #include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/TextureFormat.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -115,32 +115,39 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         Float _shininess;
 };
 
-ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")} {
+ViewerExample::ViewerExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")}
+{
     Utility::Arguments args;
     args.addArgument("file").setHelp("file", "file to load")
-        .setHelp("Loads and displays 3D scene file (such as OpenGEX or COLLADA one) provided on command-line.")
+        .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
+                 "COLLADA one) provided on command-line.")
         .parse(arguments.argc, arguments.argv);
 
     /* Phong shader instances */
-    _resourceManager.set("color", new Shaders::Phong)
+    _resourceManager
+        .set("color", new Shaders::Phong)
         .set("texture", new Shaders::Phong{Shaders::Phong::Flag::DiffuseTexture});
+
+    using namespace Math::Literals;
 
     /* Fallback material, texture and mesh in case the data are not present or
        cannot be loaded */
     auto material = new Trade::PhongMaterialData{{}, 50.0f};
-    material->ambientColor() = {0.0f, 0.0f, 0.0f};
-    material->diffuseColor() = {0.9f, 0.9f, 0.9f};
-    material->specularColor() = {1.0f, 1.0f, 1.0f};
-    _resourceManager.setFallback(material)
+    material->ambientColor() = 0x000000_rgbf;
+    material->diffuseColor() = 0xe5e5e5_rgbf;
+    material->specularColor() = 0xffffff_rgbf;
+    _resourceManager
+        .setFallback(material)
         .setFallback(new Texture2D)
         .setFallback(new Mesh);
 
     /* Every scene needs a camera */
-    (_cameraObject = new Object3D{&_scene})
-        ->translate(Vector3::zAxis(5.0f));
-    (_camera = new SceneGraph::Camera3D{*_cameraObject})
-        ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100))
+    (*(_cameraObject = new Object3D{&_scene}))
+        .translate(Vector3::zAxis(5.0f));
+    (*(_camera = new SceneGraph::Camera3D{*_cameraObject}))
+        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100))
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
@@ -150,7 +157,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
     if(!importer) std::exit(1);
 
-    Debug() << "Opening file" << args.value("file");
+    Debug{} << "Opening file" << args.value("file");
 
     /* Load file */
     if(!importer->openFile(args.value("file")))
@@ -158,11 +165,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 
     /* Load all materials */
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
-        Debug() << "Importing material" << i << importer->materialName(i);
+        Debug{} << "Importing material" << i << importer->materialName(i);
 
         std::unique_ptr<Trade::AbstractMaterialData> materialData = importer->material(i);
         if(!materialData || materialData->type() != Trade::MaterialType::Phong) {
-            Warning() << "Cannot load material, skipping";
+            Warning{} << "Cannot load material, skipping";
             continue;
         }
 
@@ -172,15 +179,15 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 
     /* Load all textures */
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
-        Debug() << "Importing texture" << i << importer->textureName(i);
+        Debug{} << "Importing texture" << i << importer->textureName(i);
 
         std::optional<Trade::TextureData> textureData = importer->texture(i);
         if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D) {
-            Warning() << "Cannot load texture, skipping";
+            Warning{} << "Cannot load texture, skipping";
             continue;
         }
 
-        Debug() << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
+        Debug{} << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
 
         std::optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
         if(!imageData || (imageData->format() != PixelFormat::RGB
@@ -189,7 +196,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
             #endif
             ))
         {
-            Warning() << "Cannot load texture image, skipping";
+            Warning{} << "Cannot load texture image, skipping";
             continue;
         }
 
@@ -208,11 +215,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 
     /* Load all meshes */
     for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
-        Debug() << "Importing mesh" << i << importer->mesh3DName(i);
+        Debug{} << "Importing mesh" << i << importer->mesh3DName(i);
 
         std::optional<Trade::MeshData3D> meshData = importer->mesh3D(i);
         if(!meshData || !meshData->hasNormals() || meshData->primitive() != MeshPrimitive::Triangles) {
-            Warning() << "Cannot load mesh, skipping";
+            Warning{} << "Cannot load mesh, skipping";
             continue;
         }
 
@@ -233,11 +240,11 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 
     /* Load the scene */
     if(importer->defaultScene() != -1) {
-        Debug() << "Adding default scene" << importer->sceneName(importer->defaultScene());
+        Debug{} << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
         std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
         if(!sceneData) {
-            Error() << "Cannot load scene, exiting";
+            Error{} << "Cannot load scene, exiting";
             return;
         }
 
@@ -248,7 +255,7 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
     /* The format has no scene support, display just the first loaded mesh with
        default material and be done with it */
     } else if(_resourceManager.state<Mesh>(ResourceKey{0}) == ResourceState::Final)
-        new ColoredObject(ResourceKey{0}, ResourceKey(-1), _o, &_drawables);
+        new ColoredObject{ResourceKey{0}, ResourceKey(-1), _o, &_drawables};
 
     /* Materials were consumed by objects and they are not needed anymore. Also
        free all texture/mesh data that weren't referenced by any object. */
@@ -259,12 +266,12 @@ ViewerExample::ViewerExample(const Arguments& arguments): Platform::Application{
 }
 
 void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, UnsignedInt i) {
-    Debug() << "Importing object" << i << importer.object3DName(i);
+    Debug{} << "Importing object" << i << importer.object3DName(i);
 
     Object3D* object = nullptr;
     std::unique_ptr<Trade::ObjectData3D> objectData = importer.object3D(i);
     if(!objectData) {
-        Error() << "Cannot import object, skipping";
+        Error{} << "Cannot import object, skipping";
         return;
     }
 
