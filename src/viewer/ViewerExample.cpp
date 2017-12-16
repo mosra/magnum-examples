@@ -147,7 +147,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         .translate(Vector3::zAxis(5.0f));
     (*(_camera = new SceneGraph::Camera3D{*_cameraObject}))
         .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 10.0f))
         .setViewport(defaultFramebuffer.viewport().size());
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
