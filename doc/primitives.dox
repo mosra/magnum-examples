@@ -27,30 +27,41 @@ namespace Magnum {
 /** @page examples-primitives Primitives
 @brief Importing mesh data, 3D transformations and input handling.
 
--   Previous example: @ref examples-triangle
--   Next example: @ref examples-textured-triangle
+@tableofcontents
+@m_footernavigation
 
 @image html primitives/primitives.png
 @image latex primitives/primitives.png
 
-@tableofcontents
-
 This example shows how to create indexed meshes from imported data and do some
 basic user interaction, introducing these new features:
+
 -   Interleaving vertex data and compressing indices for better performance.
 -   Basic 3D transformations and perspective projection.
 -   Mouse event handling.
 
-This example displays colored cube and the user will be able to change its
-color and rotate it using mouse.
+This example displays colored cube with ability to change its color and rotate
+it using mouse.
 
 @section examples-primitives-setup Setting up and preparing the mesh
 
-In our class we now need two buffers instead of one and additionaly for user
-interactivity we need to implement mouse event handlers and store
-transformation and projection @ref Math::Matrix4 "matrices" and current
-@ref Color3 "color".
+This example makes use of imported 3D mesh data, processes them and renders
+using a Phong shader.
+
 @dontinclude primitives/PrimitivesExample.cpp
+@skip #include
+@until Trade/MeshData3D
+
+@note Magnum does not provide any global "include everything" header, but
+    instead keeps the headers small with little dependencies. It may be a bit
+    annoying at first, but helps to keep your build times short. See
+    @ref compilation-speedup for more information.
+
+In our class we now need two buffers instead of one. Additionaly for user
+interactivity we need to implement mouse event handlers and store
+transformation/projection @ref Math::Matrix4 "matrices" plus current
+@ref Math::Color3 "color".
+
 @skip class PrimitivesExample
 @until };
 
@@ -58,14 +69,17 @@ Because we are displaying 3D scene, we need to enable depth test to have the
 cube rendered in proper Z-order. Enabling face culling is not needed for proper
 rendering, but it will speed things up as only front-facing faces will be
 rendered.
+
 @skip PrimitivesExample::PrimitivesExample
 @until Renderer::enable(Renderer::Feature::FaceCulling
 
-We now use pre-made @ref Primitives::Cube "cube primitive" and create mesh from
-it. The mesh is indexed and contains position and normal data. As said earlier,
-interleaving the data gives us best memory access performance. We can do it by
-hand as in previous example, but using @ref MeshTools::interleave() is much
-more convenient. We upload the interleaved data directly to vertex buffer.
+We now use the pre-made @ref Primitives::Cube "cube primitive" and create a
+mesh from it. The mesh is indexed and contains position and normal data. As
+said earlier, interleaving the data gives us best memory access performance. We
+can do it by hand as in the previous example, but using @ref MeshTools::interleave()
+is much more convenient. We upload the interleaved data directly to vertex
+buffer.
+
 @skip Trade::MeshData3D
 @until _vertexBuffer.setData(
 
@@ -75,34 +89,38 @@ consists of two triangles sharing two adjacent vertices. To save precious GPU
 memory, the mesh can be indexed, i.e. containing buffer with unique vertex data
 and index buffer telling which data belong to which vertex. The indices are by
 default just 32-bit integers. But most meshes don't need full 32-bit range to
-index vertex data -- our mesh has only 36 unique vertices, thus even the
+index vertex data --- our mesh has only 36 unique vertices, thus even the
 smallest possible 8-bit range is large enough. @ref MeshTools::compressIndices()
-again does all the boring work for us -- it checks index range and creates
-array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
-based on that.
+again does all the boring work for us --- it checks index range and creates
+an array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
+indices based on that.
+
 @skip Containers::Array<char>
 @until _indexBuffer.
 
-Everything is now ready for configuring the mesh. We set primitive type, index
-count, add our vertex buffer and specify index buffer. The `indexStart` and
-`indexEnd` parameters are purely optional, but they might improve memory access
-performance on desktop GL as the GPU will know what subset of vertex data are
-used.
+Everything is now ready for configuring the mesh. We set the primitive type,
+index count, add our vertex buffer and specify the index buffer. The `indexStart`
+and `indexEnd` parameters are purely optional, but they might improve memory
+access performance on desktop GL as the GPU will know what subset of vertex
+data are used.
+
 @skip _mesh.setPrimitive
 @until .setIndexBuffer
 
-We now specify initial transformation, color and projection. See
+We now specify the initial transformation, color and projection. See
 @ref matrix-vector and @ref transformations for more thorough introduction to
 transformations.
+
 @skip _transformation =
 @until }
 @until }
 
 @section examples-primitives-rendering Rendering
 
-In draw event we clear the framebuffer (don't forget to clear also depth
+In the draw event we clear the framebuffer (don't forget to clear also depth
 buffer), set transformation, normal and projection matrices and all material
 parameters and draw the mesh.
+
 @skip void PrimitivesExample::drawEvent
 @until }
 @until }
@@ -113,6 +131,7 @@ parameters and draw the mesh.
 Event handling is also nothing complicated, on every click (press + release) we
 change color hue to some other and on mouse drag we rotate the object based on
 relative mouse position to previous event.
+
 @skip void PrimitivesExample::mousePressEvent
 @until }
 @until }
@@ -122,24 +141,27 @@ relative mouse position to previous event.
 @until }
 @until }
 
+The main function is just the macro call, as previously.
+
+@code{.cpp}
+MAGNUM_APPLICATION_MAIN(PrimitivesExample)
+@endcode
+
 @section examples-primitives-compilation Compilation
 
 Compilation is pretty straigtforward. We now need some additional libraries,
 like `MeshTools` and `Primitives`, everything else is the same as previously:
+
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
 @until Magnum::Shaders)
 
+You can now try using another primitive from @ref Primitives namespace or
+render the mesh with different shader from @ref Shaders namespace. The full
+file content is linked below. Full source code is also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
+
 -   @ref primitives/PrimitivesExample.cpp
 -   @ref primitives/CMakeLists.txt
-
-You can now try using another primitive from @ref Primitives namespace or
-render the mesh with different shader from @ref Shaders namespace.
-
-Full source code is also available in the
-[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
-
--   Next example: @ref examples-textured-triangle
-
 */
 }

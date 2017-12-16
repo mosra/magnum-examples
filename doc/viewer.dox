@@ -27,12 +27,11 @@ namespace Magnum {
 /** @page examples-viewer Model viewer
 @brief Scene graph, resource manager and model importing.
 
-- Previous example: @ref examples-textured-triangle
+@tableofcontents
+@m_footernavigation
 
 @image html viewer/viewer.png
 @image latex viewer/viewer.png
-
-@tableofcontents
 
 In this example we will import 3D scene file and display it interactively on
 the screen. It covers these new features:
@@ -56,7 +55,7 @@ scene graph. Scene graph maintains three key things:
 Basically there is one root @ref SceneGraph::Scene "Scene" object and some
 @ref SceneGraph::Object "Object" instances. Each object can have some parent
 and maintains list of its children and features. This hierarchy is used also
-to simplify memory management -- when destroying any object, all its children
+to simplify memory management --- when destroying any object, all its children
 and features are recursively destroyed too.
 
 Each particular scene graph uses some transformation implementation, which
@@ -67,12 +66,12 @@ transformation relative to some arbitrary object in the same scene.
 
 Features are added to objects to make them do something useful. The most common
 feature, which will be also used in this example, is @ref SceneGraph::Drawable "Drawable".
-When implemented, it allows the object to be drawn on screen. Each drawable is
-part of some @ref SceneGraph::DrawableGroup "DrawableGroup". This group can be
-then rendered in one shot using @ref SceneGraph::Camera3D "Camera" feature,
-attached to some object in the same scene. The object controls camera
-transformation and the camera feature itself controls projection and aspect
-ratio correction.
+When implemented, it allows the object to be drawn on the screen. Each drawable
+is a part of some @ref SceneGraph::DrawableGroup "DrawableGroup". This group
+can be then rendered in one shot using the @ref SceneGraph::Camera3D "Camera"
+feature that is attached to some object in the same scene. The object controls
+camera transformation and the camera feature itself controls projection and
+aspect ratio correction.
 
 Magnum provides scene graph for both 2D and 3D scenes. Their usage is nearly
 the same and differs only in obvious ways (e.g. perspective projection is
@@ -93,32 +92,40 @@ only part of the time, would be also rather difficult.
 @ref ResourceManager allows storing of data of defined set of types under
 specific keys and retrieving them later. The key is stored as 32- or 64-bit
 integer and in many cases is hashed from some string. The data can be either
-persistent during whole lifetime of resource manager or have limited lifetime,
-managed either by manual freeing of unused data or automatic reference
-counting.
+persistent during the whole lifetime of resource manager or have limited
+lifetime, managed either by manual freeing of unused data or automatic
+reference counting.
 
-When an resource is requested from the manager using @ref ResourceManager::get(),
-it is wrapped in @ref Resource class. The wrapper takes care of reference
-counting (so the resource isn't removed while it is still in use) and updates
-the resource if the manager has new version. The resources can be added to the
-manager using @ref ResourceManager::set() and you can specify unique storage
-policies for each single resource.
+When a resource is requested from the manager using @ref ResourceManager::get(),
+it is wrapped in a @ref Resource class. The wrapper takes care of reference
+counting (so the resource isn't destroyed while it is still in use) and updates
+the resource if the manager has a new version. The resources can be added to
+the manager using @ref ResourceManager::set() and you can specify unique
+storage policies for each single resource.
 
 @section examples-viewer-setup Setting up, initializing resource manager and scene graph
 
-Our resource manager will store vertex and index buffers, meshes, textures and
-shaders for whole lifetime of our application. During loading we would need to
-access also material data, but these will be deleted after everything is
-loaded. We `typedef` the manager with all the types for easier
-usage later.
+As we are importing a complete scene, we need quite a lot of things to handle
+materials, meshes and textures:
+
 @dontinclude viewer/ViewerExample.cpp
+@skip #include
+@until configure.h
+
+Our resource manager will store vertex and index buffers, meshes, textures and
+shaders for the whole lifetime of our application. During loading we would need
+to access also material data, but these will be deleted after everything is
+loaded. We @cpp typedef @ce  the manager with all the types for easier usage
+later.
+
 @skipline typedef ResourceManager
 
 For this example we will use scene graph with @ref SceneGraph::MatrixTransformation3D "MatrixTransformation3D"
 transformation implementation. It is a good default choice, if you don't want
 to be limited in how you transform the objects, but on the other hand it eats
-up more memory and is slightly slower than for example @ref SceneGraph::DualQuaternionTransformation "DualQuaternionTransformation" implementation. We typedef the classes too to
-save us more typing.
+up more memory and is slightly slower than for example @ref SceneGraph::DualQuaternionTransformation "DualQuaternionTransformation"
+implementation. We typedef the classes too to save us more typing.
+
 @skip typedef SceneGraph::Object
 @until typedef SceneGraph::Scene
 
@@ -129,18 +136,20 @@ drawables, object holding the camera and the camera feature.
 @until };
 
 In the constructor we first parse command-line arguments using
-@ref Corrade::Utility::Arguments, which also provides help message.
+@ref Corrade::Utility::Arguments. It's quite self-sufficient and also provides
+a help message.
+
 @skip ViewerExample::ViewerExample
 @until .parse(
 
 Then we populate our resource manager with shaders and fallback empty data for
 materials, textures or meshes that weren't present in the file or couldn't be
 loaded for some reason.
-@skip _resourceManager.set("color"
+@skip Phong shader instances
 @until .setFallback(new Mesh);
 
 Next we setup the camera and renderer features.
-@skip (_cameraObject
+@skip Every scene needs a camera
 @until Renderer::enable
 @until Renderer::enable
 
@@ -150,11 +159,11 @@ For scene import we are using the @ref Trade::AnySceneImporter "AnySceneImporter
 plugin, which detects format based or file extension and then redirects the
 actual loading to plugin dedicated for given format. So, for example, if you
 open `scene.ogex`, the opening is done through @ref Trade::OpenGexImporter "OpenGexImporter",
-file named `mesh.obj` is opened using @ref Trade::ObjImporter etc. One thing to
-note is that each file format has slightly different feature set and thus to
-support greater range of formats, the viewer application must not rely on
-higher-level features that might not available in each format (such as material
-support, string data identifiers, scene hierarchy etc.).
+file named `mesh.obj` is opened using @ref Trade::ObjImporter "ObjImporter"
+etc. One thing to note is that each file format has slightly different feature
+set and thus to support greater range of formats, the viewer application must
+not rely on higher-level features that might not available in each format (such
+as material support, string data identifiers, scene hierarchy etc.).
 
 We try load and instantiate the plugin and open the file. If any operation
 fails, the application simply exits. The manager and importer prints message on
@@ -167,7 +176,10 @@ that the material has proper type and put it into the manager with material ID
 as the key. The manager stores the keys in unique map for each type, so there
 won't be any conflicts with other types. We also print some progress
 information about the import to output.
-@skip for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+
+@skip Load all materials
+@until }
+@until }
 @until }
 @until }
 @until }
@@ -180,15 +192,21 @@ file, it is opened through @ref Trade::PngImporter "PngImporter", `texture.jpg`
 through @ref Trade::JpegImporter "JpegImporter" etc. The plugins also have
 aliases, so for example on platforms that don't have `libPNG` available,
 dependency-less @ref Trade::StbImageImporter "StbImageImporter" can be
-transparently used in place of `PngImporter` without changing anything in the
-loading code. The ultimate goal is that you can deploy different set of plugins
-for each platform but still use them in platform-independent way, without
-worrying about which plugin might be available on what system.
+transparently used in place of @ref Trade::PngImporter "PngImporter" without
+changing anything in the loading code. The ultimate goal is that you can deploy
+different set of plugins for each platform but still use them in
+platform-independent way, without worrying about which plugin might be
+available on what system.
 
 The textures and images are also checked for proper format and then put into
 resource manager with their ID as a key. We'll use @ref ResourcePolicy::Manual
 for these so we can free unused ones later when importing is done.
-@skip for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+
+@skip Load all textures
+@until }
+@until }
+@until }
+@until }
 @until }
 @until }
 @until }
@@ -200,9 +218,9 @@ textured, the mesh might or might not be indexed etc., the mesh creation
 procedure would get fairly long-winded. There is a convenience
 @ref MeshTools::compile() function which examines the data, adds all available
 vertex attributes to the buffer (normals, texture coordinates...), packs the
-indices (if available) and then configures the mesh for @ref Shaders::Generic
+indices (if any) and then configures the mesh for the @ref Shaders::Generic
 shader, from which all other stock shaders are derived. This function is useful
-for exactly this case of importing general meshes, but the lower-level way
+for exactly this case of importing general meshes; but the lower-level way
 involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices() as
 explained in the earlier @ref examples-primitives "Primitives example" is far
 more flexible if you want data packing, index optimization and other
@@ -211,22 +229,29 @@ handle are meshes without normals (as is common with files in Stanford/PLY
 format), they would need to be generated to have the mesh displayed with proper
 lighting.
 
-We put the compiled mesh and buffers into the
-manager, using string keys for the buffers, because in most cases we need to
-save two of them for each mesh ID.
-@skip for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
+We put the compiled mesh and buffers into the manager, using string keys for
+the buffers, because in most cases we need to save two of them for each mesh
+ID.
+
+@skip Load all meshes
+@until }
+@until }
+@until }
 @until }
 @until }
 @until }
 
 Last reamining part is to populate the actual scene. We create helper object
 for easier interaction with the scene, which will be parent of all others:
-@skipline _o = new Object3D{&_scene};
+
+@skip Default object
+@until _o = new Object3D{&_scene};
 
 If the format supports scene hierarchy, we recursively import all objects
 in the scene, if it doesn't (such as OBJ files), we just add a single object
 with the first imported mesh and put default color-only material on it.
-@skip if(importer->defaultScene() != -1) {
+
+@skip Load the scene
 @until new ColoredObject
 
 The actual function which adds objects into the scene isn't very complex. It
@@ -234,6 +259,7 @@ just decides about object type based on material features, sets object
 transformation and then recursively calls itself for child objects. To make the
 example short enough, only fully colored or diffuse textured objects are
 supported, but adding support for specular textures etc. is fairly trivial.
+
 @skip void ViewerExample::addObject
 @until }
 @until }
@@ -241,17 +267,20 @@ supported, but adding support for specular textures etc. is fairly trivial.
 @until }
 @until }
 @until }
+@until }
+@until }
 
-When the import is done, we clear all material data (as they were copied into
-object instances) and free all unreferenced data by calling
-@ref ResourceManager::free(). Note that we're not doing that for buffers, as
-they are referenced only internally from Mesh and thus the manager would free
-them all, causing dangling memory references and crash later. Better solution
-might be to filter-out the unused data before actually importing them, but
-that's out of scope of this example.
+Back in the constructor, when the import is done, we clear all material data
+(as they were copied into object instances) and free all unreferenced data by
+calling @ref ResourceManager::free(). Note that we're not doing that for
+buffers, as they are referenced only internally from @ref Mesh and thus the
+manager would free them all, causing dangling memory references and crash
+later. Better solution might be to filter-out the unused data before actually
+importing them, but that's out of scope of this example.
+
 @dontinclude viewer/ViewerExample.cpp
-@skip _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
-@until .free<Mesh>();
+@skip Materials were consumed
+@until }
 
 @section examples-viewer-interactivity Event handling
 
@@ -302,13 +331,17 @@ drawing.
 @until }
 @until }
 
--   @ref viewer/ViewerExample.cpp
+Finally, the main function:
+
+@code{.cpp}
+MAGNUM_APPLICATION_MAIN(ViewerExample)
+@endcode
 
 @section examples-viewer-compilation Compilation
 
-Compilation is easy as usual, we just need to provide also path to plugin dir,
-similarly to what we did in the @ref examples-textured-triangle "Textured Triangle"
-example.
+Compilation is as easy as usual, we just need to provide also path to the
+plugin dir, similarly to what we did in the
+@ref examples-textured-triangle "Textured Triangle" example.
 
 @dontinclude viewer/configure.h.cmake
 @skip #ifdef CORRADE_IS_DEBUG_BUILD
@@ -318,11 +351,13 @@ example.
 @skip find_package(Magnum REQUIRED
 @until Magnum::Shaders)
 
+You can experiment by loading scenes of varying complexity and formats or
+adding light and camera property import. The full file content is linked below.
+Full source code is also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
+
+-   @ref viewer/ViewerExample.cpp
 -   @ref viewer/configure.h.cmake
 -   @ref viewer/CMakeLists.txt
-
-Full source code is also available in the
-[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
-
 */
 }

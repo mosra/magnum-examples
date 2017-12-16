@@ -27,16 +27,15 @@ namespace Magnum {
 /** @page examples-textured-triangle Textured triangle
 @brief Importing image data, texturing and custom shaders.
 
-- Previous example: @ref examples-primitives
-- Next example: @ref examples-viewer
+@tableofcontents
+@m_footernavigation
 
 @image html textured-triangle/textured-triangle.png
 @image latex textured-triangle/textured-triangle.png
 
-@tableofcontents
-
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
+
 -   Working with textures and using plugin manager for importing TGA image
     data.
 -   Creating custom shaders.
@@ -45,9 +44,16 @@ these features:
 
 @section examples-textured-triangle-skeleton Basic skeleton
 
-The basic skeleton of main example class is similar to the original triangle
-example, except for custom shader and added @ref Texture2D.
+Compared to the original triangle example, we need extra includes for loading
+image data  using a plugin and uploading them to a texture:
+
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
+@skip #include
+@until configure.h
+
+The basic skeleton of main example class is similar to the original, except for
+a custom shader and added @ref Texture2D.
+
 @skip class TexturedTriangle
 @until };
 
@@ -56,42 +62,43 @@ example, except for custom shader and added @ref Texture2D.
 Let's start with the shader. It's practically a simplified version of textured
 @ref Shaders::Flat2D, written for OpenGL 3.3 without bothering about backwards
 compatibility. The shader takes 2D vertex position and 2D texture coordinates.
-We declare both attributes as @ref Vector2 and assign vertex position to
-location zero and texture coordinates to location one. The locations can be
-chosen pretty arbitrarily, but location zero should be always occupied. It's
-also good to make attribute declarations compatible between shaders so you can
-use mesh configured for one shader with another.
+We declare both attributes as @ref Vector2; assign vertex position to location
+zero and texture coordinates to location one. The locations can be chosen
+pretty arbitrarily, but location zero should be always occupied. It's also good
+to make attribute declarations compatible between shaders so you can use a mesh
+configured for one shader with another shader.
 
-Next to these two attributes it also needs uniform for base color and function
-for binding the texture. We will provide convenience public API for setting
-these two parameters. Good practice is to allow @ref method-chaining "method chaining"
-on them.
+Next to these two attributes it also needs a uniform for the base color and a
+texture binding. We will provide convenience public API for setting these two
+parameters. Good practice is to allow @ref method-chaining "method chaining" on
+them.
+
 @dontinclude textured-triangle/TexturedTriangleShader.h
 @skip class TexturedTriangleShader
 @until };
 @until };
 
 We store GLSL sources as compiled-in resources because that's the most
-convenient way. By storing them in char array directly in the source we would
-lose syntax highlighting and line numbering in case the GLSL compiler ends with
-an error. By storing them as separate files would be we would need to carry
-these along the executable which is also not exactly convenient. The resource
-data will be compiled into source file using CMake later. You can read more
-about compiled-in resources in Corrade's
+convenient way --- by storing them in a string directly in the source we would
+lose syntax highlighting and line numbering in case the GLSL compiler fails
+with an error, whereas by storing them as separate files we would need to carry
+these along the executable. The resource data will be compiled into the binary
+using CMake later. You can read more about compiled-in resources in Corrade's
 @ref resource-management "resource management tutorial".
 
-In the constructor we load GLSL sources from compiled-in resources, compile and
-attach them and link the program together. Note that we explicitly check for
-compilation and link status. It's better to exit the program immediately
-instead of leaving it in undefined state. We then retrieve location for the
-base color uniform. Then we set texture layer uniform to fixed value, so it
-doesn't have to be set manually when using the shader for rendering. We require
-OpenGL 3.3 in the shader, so the attribute locations can be conveniently set
+In the constructor we load the GLSL sources from compiled-in resources, compile
+and attach them and link the program together. Note that we explicitly check
+for compilation and link status --- it's better to exit the program immediately
+instead of leaving it in some unexpected state. We then retrieve location for
+the base color uniform. Then we set the texture layer uniform to fixed value,
+so it doesn't have to be set manually when using the shader for rendering. We
+require OpenGL 3.3 in the shader, so the attribute locations can be conveniently set
 @ref AbstractShaderProgram-attribute-location "directly in the shader source".
 With newer OpenGL versions we could also explicitly set uniform locations and
 texture layers itself, see @ref AbstractShaderProgram-uniform-location and
 @ref AbstractShaderProgram-texture-units. However, in this example we will keep
 compatibility with OpenGL 3.3.
+
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
 @skip TexturedTriangleShader::TexturedTriangleShader
 @until }
@@ -101,41 +108,44 @@ compatibility with OpenGL 3.3.
 @until }
 @until }
 
- - @ref textured-triangle/TexturedTriangleShader.h
- - @ref textured-triangle/TexturedTriangleShader.cpp
+The `TexturedTriangleShader.vert` shader just sets the position and passes
+texture coordinates through to fragment shader. Note the explicit attribute
+locations:
 
-The vertex shader just sets the position and passes texture coordinates
-through to fragment shader. Note the explicit attribute locations:
 @dontinclude textured-triangle/TexturedTriangleShader.vert
 @skip layout
 @until }
 
-Fragment shader loads color from the texture and multiplies it with color we
-specified in the uniform:
+`TexturedTriangleShader.frag` loads color from the texture and multiplies it
+with color we specified in the uniform:
+
 @dontinclude textured-triangle/TexturedTriangleShader.frag
 @skip uniform
 @until }
-
- - @ref textured-triangle/TexturedTriangleShader.vert
- - @ref textured-triangle/TexturedTriangleShader.frag
 
 @section examples-textured-triangle-setup Setting up the mesh and texture
 
 As specified in the shader above, we use @ref Vector2 for both 2D vertex
 positions and 2D texture coordinates:
+
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip TexturedTriangleExample::TexturedTriangleExample
 @until };
 @until };
 
-We then fill the buffer, configure mesh primitive and vertex count, and specify
+We then fill the buffer, configure mesh primitive and vertex count and specify
 attribute locations in the buffer for use with our shader:
+
 @skipline _buffer
 @until addVertexBuffer
+@until }
+@until }
 
-Now we will instantiate the plugin manager and try to load `TgaImporter`
-plugin. If the plugin cannot be loaded, we exit immediately. You can read more
-about plugin directory locations and plugin loading in @ref plugins.
+Now we will instantiate the plugin manager and try to load the
+@ref Trade::TgaImporter "TgaImporter" plugin. If the plugin cannot be loaded,
+we exit immediately. You can read more about plugin directory locations and
+plugin loading in @ref plugins.
+
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip PluginManager::Manager
 @until manager.loadAndInstantiate
@@ -143,25 +153,33 @@ about plugin directory locations and plugin loading in @ref plugins.
 
 Now we need to load the texture. Similarly to shader sources, the texture is
 also stored as resource in the executable.
+
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip Utility::Resource
 @until }
 @until exit
 
-After the image is loaded, we create texture from it. Note that we have to
+After the image is loaded, we create a texture from it. Note that we have to
 explicitly set all required texture parameters, otherwise the texture will be
 incomplete.
+
 @skip std::optional<Trade::ImageData2D>
+@until }
 @until }
 
 The drawing function is again fairly simple. We clear the buffer, set base
 color to light red, set the texture and perform the drawing. Last thing is
 again buffer swap.
+
 @skip TexturedTriangleExample::drawEvent
 @until }
 @until }
 
- - @ref textured-triangle/TexturedTriangleExample.cpp
+And, don't forget the main function:
+
+@code{.cpp}
+MAGNUM_APPLICATION_MAIN(TexturedTriangleExample)
+@endcode
 
 @section examples-textured-triangle-compilation Compilation
 
@@ -180,18 +198,14 @@ detailed information about plugin directories.
 @skip #ifdef CORRADE_IS_DEBUG_BUILD
 @until #endif
 
--   @ref textured-triangle/configure.h.cmake
-
 The `resources.conf` file lists all resources which need to be compiled into
-the executable, that is our GLSL shader sources and the texture image. All
+the executable --- that is our GLSL shader sources and the texture image. All
 resource groups need to have unique identifier by which they are accessed, we
 will use `textured-triangle-data` as above. As said above, the resource
 compilation process is explained thoroughly in Corrade's
 @ref resource-management "resource management tutorial".
 
 @include textured-triangle/resources.conf
-
--   @ref textured-triangle/resources.conf
 
 In the `CMakeLists.txt` file first we find required Magnum package.
 
@@ -205,9 +219,9 @@ We then process the configuration file with CMake:
 @skip configure_file
 @until ${CMAKE_CURRENT_BINARY_DIR}/configure.h
 
-Now we compile the resources into the executable using
+Now we compile the resources into the executable using the
 @ref corrade-cmake-add-resource "corrade_add_resource()" macro, then we create
-executable from the result and other source files. We also need to include
+an executable from the result and other source files. We also need to include
 current binary dir, because it will contain our generated `configure.h`. Last
 step is linking, the same as previously.
 
@@ -215,12 +229,18 @@ step is linking, the same as previously.
 @skip corrade_add_resource
 @until Magnum::Magnum)
 
--   @ref textured-triangle/CMakeLists.txt
-
+You can now try playing around with the shader source, modifying texture
+coordinates or adding other effects. The full file content is linked below.
 Full source code is also available in the
-[GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
 
--   Next example: @ref examples-viewer
-
+-   @ref textured-triangle/TexturedTriangleExample.cpp
+-   @ref textured-triangle/TexturedTriangleShader.h
+-   @ref textured-triangle/TexturedTriangleShader.cpp
+-   @ref textured-triangle/TexturedTriangleShader.vert
+-   @ref textured-triangle/TexturedTriangleShader.frag
+-   @ref textured-triangle/configure.h.cmake
+-   @ref textured-triangle/resources.conf
+-   @ref textured-triangle/CMakeLists.txt
 */
 }

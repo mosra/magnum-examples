@@ -36,14 +36,12 @@ itself is not required, as Magnum wraps the functionality in its own classes.
 Full source code for all examples is available also in the
 [GitHub repository](https://github.com/mosra/magnum-examples).
 
- - @subpage examples-triangle -- @copybrief examples-triangle
- - @subpage examples-primitives -- @copybrief examples-primitives
- - @subpage examples-textured-triangle -- @copybrief examples-textured-triangle
- - @subpage examples-viewer -- @copybrief examples-viewer
+ - @subpage examples-triangle --- @copybrief examples-triangle
+ - @subpage examples-primitives --- @copybrief examples-primitives
+ - @subpage examples-textured-triangle --- @copybrief examples-textured-triangle
+ - @subpage examples-viewer --- @copybrief examples-viewer
 
-@todoc Rename (merge) to page `examples` when doxygen treats it as regular page.
-@todo MotionBlur: handle resizing for the second framebuffer
-@todo MotionBlur: make the canvas non-object (or 2D object)?
+@todoc Rename (merge) to page `examples` when doxygen treats it as regular page
 
 @example triangle/TriangleExample.cpp
 @example triangle/CMakeLists.txt

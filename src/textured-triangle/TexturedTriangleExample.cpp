@@ -69,17 +69,18 @@ class TexturedTriangleExample: public Platform::Application {
         Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
-    #ifdef CORRADE_TARGET_IOS
-    .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
-    #endif
+TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
+        #ifdef CORRADE_TARGET_IOS
+        .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
+        #endif
     }, _shader{Shaders::Flat2D::Flag::Textured}
 {
     struct TriangleVertex {
         Vector2 position;
         Vector2 textureCoordinates;
     };
-    static const TriangleVertex data[]{
+    const TriangleVertex data[]{
         {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left vertex position and texture coordinate */
         {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right vertex position and texture coordinate */
         {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top vertex position and texture coordinate */
@@ -123,8 +124,10 @@ void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
 void TexturedTriangleExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
+    using namespace Math::Literals;
+
     _shader.setTransformationProjectionMatrix({})
-        .setColor({1.0f, 0.7f, 0.7f})
+        .setColor(0xffb2b2_rgbf)
         .setTexture(_texture);
     _mesh.draw(_shader);
 

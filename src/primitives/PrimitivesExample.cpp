@@ -65,11 +65,13 @@ class PrimitivesExample: public Platform::Application {
         Color3 _color;
 };
 
-PrimitivesExample::PrimitivesExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example").setWindowFlags(Configuration::WindowFlag::Resizable
-    #ifdef CORRADE_TARGET_IOS
-    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
-    #endif
-)}, _indexBuffer{Buffer::TargetHint::ElementArray} {
+PrimitivesExample::PrimitivesExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example").setWindowFlags(Configuration::WindowFlag::Resizable
+        #ifdef CORRADE_TARGET_IOS
+        |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+        #endif
+    )}, _indexBuffer{Buffer::TargetHint::ElementArray}
+{
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
