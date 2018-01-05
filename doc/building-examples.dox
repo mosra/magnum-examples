@@ -65,6 +65,11 @@ for more information.
 -   `WITH_VIEWER_EXAMPLE` --- Build @ref examples-viewer "Viewer" example.
     Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 
+@section building-examples-doc Building Examples documentation
+
+The documentation is built as part of of the main Magnum documentation. Clone
+the projects next to each other and continue as described in @ref building-doc.
+
 @section building-examples-arch Building ArchLinux packages
 
 In `package/archlinux` directory is currently one package for Git development
