@@ -1,0 +1,66 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-motionblur Motion blur
+@brief Accumulates multiple frames together to create a motion blur effect.
+
+@m_footernavigation
+
+@image html motionblur/motionblur.png
+
+This example displays a few colored spheres moving at different speeds with
+motion blur interpolated from previous few frames applied to right side of the
+window.
+
+@section examples-motionblur-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/motionblur).
+
+-   @ref motionblur/CMakeLists.txt "CMakeLists.txt"
+-   @ref motionblur/Icosphere.cpp "Icosphere.cpp"
+-   @ref motionblur/Icosphere.h "Icosphere.h"
+-   @ref motionblur/MotionBlurCamera.cpp "MotionBlurCamera.cpp"
+-   @ref motionblur/MotionBlurCamera.h "MotionBlurCamera.h"
+-   @ref motionblur/MotionBlurExample.cpp "MotionBlurExample.cpp"
+-   @ref motionblur/MotionBlurShader.frag "MotionBlurShader.frag"
+-   @ref motionblur/MotionBlurShader.vert "MotionBlurShader.vert"
+-   @ref motionblur/resources.conf "resources.conf"
+-   @ref motionblur/Types.h "Types.h"
+
+@example motionblur/CMakeLists.txt @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/Icosphere.cpp @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/Icosphere.h @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/MotionBlurCamera.cpp @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/MotionBlurCamera.h @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/MotionBlurExample.cpp @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/MotionBlurShader.vert @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/MotionBlurShader.frag @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/resources.conf @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+@example motionblur/Types.h @m_examplenavigation{examples-motionblur,motionblur/} @m_footernavigation
+
+*/
+}

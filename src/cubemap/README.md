@@ -8,10 +8,10 @@ resource manager and pre-made primitives.
 Usage
 -----
 
-The application tries to load cube map texture from directory in which it is
-run. Cube map texture consists of six JEPG files `+x.jpg`, `-x.jpg`, `+y.jpg`,
-`-y.jpg`, `+z.jpg` and `-z.jpg`, each representing one side of the cube. Note
-that all images must be turned upside down (+Y is top):
+The application tries to load cube map texture from the directory in which it
+is run. Cube map texture consists of six JEPG files `+x.jpg`, `-x.jpg`,
+`+y.jpg`, `-y.jpg`, `+z.jpg` and `-z.jpg`, each representing one side of the
+cube. Note that all images must be turned upside down (+Y is top):
 
               +----+
               | -Y |
@@ -27,23 +27,23 @@ example
     ./magnum-cubemap ~/images/city
 
 The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
-etc. as cube map texture.
+etc. as a cube map texture.
 
-Sample cube map files are supplied alonside the source. If you install the
+Sample cube map files are supplied alongside the source. If you install the
 examples, the images are also copied into
 `<prefix>/share/magnum/examples/cubemap/`. Running the example with the bundled
 files can be then done like this:
 
     ./magnum-cubemap <path-to-example-source>/
 
-Key shortcuts
--------------
+Key controls
+------------
 
 **Arrow keys** *rotate* the camera around the spheres. It is not possible, due
-to nature of the cube map texture, to *move* around the scene.
+to nature of the cube map projection, to *move* around the scene.
 
-Image source
-------------
+Credits
+-------
 
 The sample images provided in this example are work of Emil Persson, aka Humus --
 http://www.humus.name, licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).

@@ -1,0 +1,57 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-bullet Bullet Physics
+@brief Integration of [Bullet Physics](http://www.bulletphysics.com) into Magnum.
+
+@m_footernavigation
+
+Shows a rotating table full of cubes that you can shoot down.
+
+@image html bullet/bullet.png
+
+@section examples-bullet-controls Key controls
+
+@m_class{m-label m-default} **Arrow keys** *rotate* the camera around,
+@m_class{m-label m-default} **mouse click** shoots a cube.
+
+@section examples-bullet-credits Credits
+
+This example was originally contributed by [Jan Dupal](https://github.com/JanDupal).
+
+@section examples-bullet-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/bullet).
+
+-   @ref bullet/BulletExample.cpp "BulletExample.cpp"
+-   @ref bullet/CMakeLists.txt "CMakeLists.txt"
+
+@example bullet/BulletExample.cpp @m_examplenavigation{examples-bullet,bullet/} @m_footernavigation
+@example bullet/CMakeLists.txt @m_examplenavigation{examples-bullet,bullet/} @m_footernavigation
+
+*/
+}

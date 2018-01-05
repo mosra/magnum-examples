@@ -23,8 +23,9 @@ Running the example with the bundled scene can be then done like this:
 
     ./magnum-viewer <path-to-example-source>/scene.ogex
 
-Documentation
--------------
+Documentation, live web version
+-------------------------------
 
 This example is thoroughly explained in the documentation, which you can read
-also online at http://doc.magnum.graphics/magnum/examples-viewer.html .
+online at http://doc.magnum.graphics/magnum/examples-viewer.html . There's also
+a live web version at http://magnum.graphics/showcase/viewer/ .

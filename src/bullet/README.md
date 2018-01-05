@@ -3,7 +3,12 @@ into Magnum.
 
 ![Bullet Physics](bullet.png)
 
-Key shortcuts
--------------
+Key controls
+------------
 
-**Arrow keys** *rotate* the camera around, **mouse click** shoots cube.
+**Arrow keys** *rotate* the camera around, **mouse click** shoots a cube.
+
+Credits
+-------
+
+This example was originally contributed by [Jan Dupal](https://github.com/JanDupal).

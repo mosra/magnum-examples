@@ -1,8 +1,8 @@
 Shadow Map Example
 ------------------
 
-This example shows an example of shadow mapping using a Parallel Split /
-Cascade shadow mapping technique with a single, directional light source.
+This is an example of shadow mapping using a Parallel Split / Cascade shadow
+mapping technique with a single, directional light source.
 
 It is intended to be a basis to start including your own shadow mapping system
 in your own project.
@@ -15,16 +15,21 @@ Keyboard Controls
 
 ### Movement/view
 
-* *Cursor keys* and *Page Up / Down* - Translate camera
-* *Left mouse drag* - rotate the camera
-* *F1* Switch to main camera
-* *F2* Switch to debug camera
+-   **Cursor keys** and **Page Up** / **Page Down** -- translate camera
+-   **Mouse drag** -- rotate the camera
+-   **F1** -- switch to main camera
+-   **F2** -- switch to debug camera
 
-### Shadow configuration changes - watch the console output for changes
+### Shadow configuration changes -- watch the console output for changes
 
-* *F3* Change shadow face culling mode
-* *F4* Shadow map alignment - camera/static
-* *F5* / *F6* - Change layer split exponent
-* *F7* / *F8* - Tweak bias
-* *F9* / *F10* - Change number of layers
-* *F11* / *F12* - Change shadow map resolution
+-   **F3** -- change shadow face culling mode
+-   **F4** -- shadow map alignment (camera/static)
+-   **F5** / **F6** -- change layer split exponent
+-   **F7** / **F8** -- tweak bias
+-   **F9** / **F10** -- change number of layers
+-   **F11** / **F12** -- change shadow map resolution
+
+Credits
+-------
+
+This example was originally contributed by [Bill Robinson](https://github.com/wivlaro).

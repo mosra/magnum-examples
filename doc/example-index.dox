@@ -1,0 +1,98 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page example-index Examples
+@brief Learn by example to get quickly up to speed.
+
+The examples assume that you have at least basic knowledge about graphics
+(what are homogeneous coordinates, what is mesh, vertex, texture...), how
+OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
+(attributes, uniforms, vertex/fragment shaders...). Deep knowledge of OpenGL
+API itself is not required, as Magnum wraps the functionality in its own
+classes.
+
+Full source code for all examples is available in the
+[GitHub repository](https://github.com/mosra/magnum-examples), see
+@ref building-examples for more information.
+
+The following examples explain the basic principles and have fully documented
+tutorials:
+
+-   @subpage examples-triangle @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-triangle
+-   @subpage examples-primitives @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-primitives
+-   @subpage examples-textured-triangle @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-textured-triangle
+-   @subpage examples-viewer @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-viewer
+
+The following consist of documented source code only:
+
+-   @subpage examples-audio @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-audio
+-   @subpage examples-bullet --- @copybrief examples-bullet
+-   @subpage examples-cubemap --- @copybrief examples-cubemap
+-   @subpage examples-motionblur --- @copybrief examples-motionblur
+-   @subpage examples-ovr --- @copybrief examples-ovr
+-   @subpage examples-picking --- @copybrief examples-picking
+-   @subpage examples-shadows --- @copybrief examples-shadows
+-   @subpage examples-text @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-text
+
+There are also @ref corrade-example-index "examples for the Corrade library"
+itself.
+
+While Magnum itself and its documentation is licensed under MIT/Expat license,
+all example code is put into public domain (or UNLICENSE) to free you from any
+legal obstacles when reusing the code in your apps:
+
+>
+>   This is free and unencumbered software released into the public domain.
+>
+>   Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+>   this software, either in source code form or as a compiled binary, for any
+>   purpose, commercial or non-commercial, and by any means.
+>
+>   In jurisdictions that recognize copyright laws, the author or authors of
+>   this software dedicate any and all copyright interest in the software to
+>   the public domain. We make this dedication for the benefit of the public
+>   at large and to the detriment of our heirs and successors. We intend this
+>   dedication to be an overt act of relinquishment in perpetuity of all
+>   present and future rights to this software under copyright law.
+>
+>   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+>   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+>   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+>   THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+>   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+>   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>
+>   For more information, please refer to <http://unlicense.org/>
+>
+
+*/
+}

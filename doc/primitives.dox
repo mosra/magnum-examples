@@ -31,7 +31,6 @@ namespace Magnum {
 @m_footernavigation
 
 @image html primitives/primitives.png
-@image latex primitives/primitives.png
 
 This example shows how to create indexed meshes from imported data and do some
 basic user interaction, introducing these new features:
@@ -42,6 +41,8 @@ basic user interaction, introducing these new features:
 
 This example displays colored cube with ability to change its color and rotate
 it using mouse.
+
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-primitives-setup Setting up and preparing the mesh
 
@@ -161,7 +162,11 @@ render the mesh with different shader from @ref Shaders namespace. The full
 file content is linked below. Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
 
--   @ref primitives/PrimitivesExample.cpp
--   @ref primitives/CMakeLists.txt
+-   @ref primitives/CMakeLists.txt "CMakeLists.txt"
+-   @ref primitives/PrimitivesExample.cpp "PrimitivesExample.cpp"
+
+@example primitives/CMakeLists.txt @m_examplenavigation{examples-primitives,primitives/} @m_footernavigation
+@example primitives/PrimitivesExample.cpp @m_examplenavigation{examples-primitives,primitives/} @m_footernavigation
+
 */
 }

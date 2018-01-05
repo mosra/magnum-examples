@@ -1,0 +1,61 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-picking Object picking
+@brief Usage of multiple framebuffer attachments to implement object picking.
+
+@m_footernavigation
+
+@image html picking.png
+
+One attachment is used for color output, the other contains object IDs. The
+color buffer is blit to window framebuffer, a pixel from the other is read
+after mouse click to retrieve object ID. Requires OpenGL 3.3+.
+
+@section examples-picking-controls Key controls
+
+Use @m_class{m-label m-default} **mouse drag** to rotate the scene,
+@m_class{m-label m-default} **mouse click** to highlight particular object.
+
+@section examples-picking-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/picking).
+
+-   @ref picking/CMakeLists.txt "CMakeLists.txt"
+-   @ref picking/PhongId.frag "PhongId.frag"
+-   @ref picking/PhongId.vert "PhongId.vert"
+-   @ref picking/PickingExample.cpp "PickingExample.cpp"
+-   @ref picking/resources.conf "resources.conf"
+
+@example picking/PhongId.vert @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+@example picking/PhongId.frag @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+@example picking/PickingExample.cpp @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+@example picking/resources.conf @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+@example picking/CMakeLists.txt @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+
+*/
+}

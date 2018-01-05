@@ -1,0 +1,74 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-ovr Oculus VR
+@brief Integration of the [Oculus SDK](http://developer.oculus.com/) into Magnum.
+
+@m_footernavigation
+
+@image html ovr/ovr.png
+
+@section examples-ovr-usage Usage
+
+This example requires you to have the Oculus Runtime 1.3.0 or newer installed.
+Since Oculus only supports Windows, the same holds for the example. If you
+don't own a HMD, you can still try the example. If no device is connected, it
+will create a debug HMD instead.
+
+@section examples-ovr-controls Key controls
+
+-   @m_class{m-label m-default} **F11** --- toggle performance HUD
+-   @m_class{m-label m-default} **F12** --- toggle stereo debug HUD
+-   @m_class{m-label m-default} **M** --- toggle mirroring
+-   @m_class{m-label m-default} **Escape** --- close the application
+
+@section examples-ovr-credits Credits
+
+This example was originally contributed by [Jonathan Hale](https://github.com/Squareys).
+
+@section examples-ovr-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/ovr).
+
+-   @ref ovr/CMakeLists.txt "CMakeLists.txt"
+-   @ref ovr/CubeDrawable.cpp "CubeDrawable.cpp"
+-   @ref ovr/CubeDrawable.h "CubeDrawable.h"
+-   @ref ovr/HmdCamera.cpp "HmdCamera.cpp"
+-   @ref ovr/HmdCamera.h "HmdCamera.h"
+-   @ref ovr/OvrExample.cpp "OvrExample.cpp"
+-   @ref ovr/Types.h "Types.h"
+
+@example ovr/CMakeLists.txt @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/CubeDrawable.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/CubeDrawable.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/HmdCamera.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/HmdCamera.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/OvrExample.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+@example ovr/Types.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
+
+*/
+}

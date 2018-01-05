@@ -8,8 +8,9 @@ Key shortcuts
 
 Rotate the cube using **mouse drag**, change its color using **mouse click**.
 
-Documentation
--------------
+Documentation, live web version
+-------------------------------
 
 This example is thoroughly explained in the documentation, which you can read
-also online at http://doc.magnum.graphics/magnum/examples-primitives.html .
+online at http://doc.magnum.graphics/magnum/examples-primitives.html . There's
+also a live web version at http://magnum.graphics/showcase/primitives/ .

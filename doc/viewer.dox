@@ -40,6 +40,8 @@ the screen. It covers these new features:
 -   Employing @ref ResourceManager for convenient resource management.
 -   Importing scenes, meshes, materials and textures via @ref Trade::AbstractImporter.
 
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/viewer/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+
 @section examples-viewer-scenegraph Scene graph
 
 In previous examples we managed our scene manually, because there was only one
@@ -356,8 +358,13 @@ adding light and camera property import. The full file content is linked below.
 Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
 
--   @ref viewer/ViewerExample.cpp
--   @ref viewer/configure.h.cmake
--   @ref viewer/CMakeLists.txt
+-   @ref viewer/CMakeLists.txt "CMakeLists.txt"
+-   @ref viewer/configure.h.cmake "configure.h.cmake"
+-   @ref viewer/ViewerExample.cpp "ViewerExample.cpp"
+
+@example viewer/CMakeLists.txt @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
+@example viewer/configure.h.cmake @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
+@example viewer/ViewerExample.cpp @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
+
 */
 }
