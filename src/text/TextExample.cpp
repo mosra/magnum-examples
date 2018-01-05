@@ -82,7 +82,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
         std::exit(1);
     }
 
-    _font->fillGlyphCache(_cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиγειασουτνκόμ ");
+    _font->fillGlyphCache(_cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиΓειασουκόμ ");
     std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.1295f,
         "Hello, world!\n"
         "Ahoj, světe!\n"
