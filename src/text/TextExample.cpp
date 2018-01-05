@@ -87,7 +87,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
         "Hello, world!\n"
         "Ahoj, světe!\n"
         "Здравствуй, мир!\n"
-        "γεια σου, τον κόσμο!\n"
+        "Γεια σου κόσμε!\n"
         "Hej Världen!",
         _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
