@@ -122,21 +122,20 @@ AudioExample::AudioExample(const Arguments& arguments):
            .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(90.0f), 1.0f, 0.001f, 100.0f))
            .setViewport(defaultFramebuffer.viewport().size());
 
-    /* Load WAV importer plugin */
+    /* Load importer plugin */
     PluginManager::Manager<Audio::AbstractImporter> audioManager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR};
-
-    std::unique_ptr<Audio::AbstractImporter> wavImporter = audioManager.loadAndInstantiate("WavAudioImporter");
-    if(!wavImporter)
+    std::unique_ptr<Audio::AbstractImporter> importer = audioManager.loadAndInstantiate("StbVorbisAudioImporter");
+    if(!importer)
         std::exit(1);
 
-    /* Load wav file  from compiled resources */
+    /* Load audio file from compiled resources */
     const Utility::Resource rs{"audio-data"};
-    if(!wavImporter->openData(rs.getRaw("test.wav")))
+    if(!importer->openData(rs.getRaw("chimes.ogg")))
         std::exit(2);
 
-    _bufferData = wavImporter->data(); /* Get the data from importer */
+    _bufferData = importer->data(); /* Get the data from importer */
     /* Add the sample data to the buffer */
-    _testBuffer.setData(wavImporter->format(), _bufferData, wavImporter->frequency());
+    _testBuffer.setData(importer->format(), _bufferData, importer->frequency());
 
     /* Make our sound source play the buffer again and again... */
     _playable.source().setBuffer(&_testBuffer);
