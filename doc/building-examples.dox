@@ -37,7 +37,10 @@ the documentation itself.
 The source is available on GitHub: https://github.com/mosra/magnum-examples.
 Building integration libraries is very similar to building Magnum itself. See
 @ref building for additonal information about building, crosscompiling and
-platform-specific issues.
+platform-specific issues. Unlike other Magnum repositories, ports to mobile and
+web platforms are provided in the [ports branch](https://github.com/mosra/magnum-examples/tree/ports)
+and not present in `master` in order to keep the example code as simple as
+possible.
 
 By default only *Triangle* example is built. Some examples depend on plugins
 and integration libraries, see @ref building-plugins and @ref building-integration

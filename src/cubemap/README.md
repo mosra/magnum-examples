@@ -47,3 +47,10 @@ Credits
 
 The sample images provided in this example are work of Emil Persson, aka Humus --
 http://www.humus.name, licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).
+
+Ports
+-----
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/cubemap)
+contains additional patches for iOS support that aren't present in `master` in
+order to keep the example code as simple as possible.

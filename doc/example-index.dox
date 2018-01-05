@@ -36,7 +36,10 @@ classes.
 
 Full source code for all examples is available in the
 [GitHub repository](https://github.com/mosra/magnum-examples), see
-@ref building-examples for more information.
+@ref building-examples for more information. The
+[ports branch](https://github.com/mosra/magnum-examples/tree/ports)
+contains additional patches for mobile and web platform support that aren't
+present in `master` in order to keep the example code as simple as possible.
 
 The following examples explain the basic principles and have fully documented
 tutorials:

@@ -20,7 +20,10 @@ This example was originally contributed by [Jonathan Hale](https://github.com/Sq
 The sound file used is a Chimes Sound Effect from http://www.orangefreesounds.com/chimes-sound-effect/,
 licensed under [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
 
-Live web version
-----------------
+Ports, live web version
+-----------------------
 
-A live web version is at http://magnum.graphics/showcase/audio/ .
+A live web version is at http://magnum.graphics/showcase/audio/ . The
+[ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/audio)
+contains additional patches for Emscripten support that aren't present in
+`master` in order to keep the example code as simple as possible.

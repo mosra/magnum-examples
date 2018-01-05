@@ -103,6 +103,11 @@ Full source code is linked below and together with assets available in the
 -   @ref cubemap/Types.cpp "Types.cpp"
 -   @ref cubemap/Types.h "Types.h"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/cubemap)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS" support that
+aren't present in `master` in order to keep the example code as simple as
+possible.
+
 @example cubemap/CMakeLists.txt @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
 @example cubemap/configure.h.cmake @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
 @example cubemap/CubeMap.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation

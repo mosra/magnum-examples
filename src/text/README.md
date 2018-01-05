@@ -16,7 +16,10 @@ Font license
 
 This example uses `DejaVuSans.ttf` font from [DejaVu Project](dejavu-fonts.org).
 
-Live web version
-----------------
+Ports, Live web version
+-----------------------
 
-A live web version is at http://magnum.graphics/showcase/text/ .
+A live web version is at http://magnum.graphics/showcase/text/ . The
+[ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/text)
+contains additional patches for Emscripten support that aren't present in `master`
+in order to keep the example code as simple as possible.

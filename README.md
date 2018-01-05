@@ -14,11 +14,16 @@ SUPPORTED PLATFORMS
 ===================
 
 -   **Linux** and embedded Linux
--   **Windows**, **Windows RT** (Store/Phone)
--   **macOS**, **iOS**
--   **Android**
--   **Web** ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
+-   **Windows**, **Windows RT** <sup>(*)</sup> (Store/Phone)
+-   **macOS**, **iOS** <sup>(*)</sup>
+-   **Android** <sup>(*)</sup>
+-   **Web** <sup>(*)</sup> ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
     through [Emscripten](http://kripken.github.io/emscripten-site/)
+
+<sup>*</sup> — the [ports](https://github.com/mosra/magnum-examples/tree/ports)
+branch contains additional patches for mobile and web platform support that
+aren't present in `master` in order to keep the example code as simple as
+possible.
 
 BUILDING MAGNUM EXAMPLES
 ========================

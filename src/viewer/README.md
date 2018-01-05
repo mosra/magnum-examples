@@ -23,9 +23,12 @@ Running the example with the bundled scene can be then done like this:
 
     ./magnum-viewer <path-to-example-source>/scene.ogex
 
-Documentation, live web version
--------------------------------
+Documentation, ports, live web version
+--------------------------------------
 
 This example is thoroughly explained in the documentation, which you can read
 online at http://doc.magnum.graphics/magnum/examples-viewer.html . There's also
-a live web version at http://magnum.graphics/showcase/viewer/ .
+a live web version at http://magnum.graphics/showcase/viewer/ . The
+[ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
+contains additional patches for Emscripten support that aren't present in `master`
+in order to keep the example code as simple as possible.

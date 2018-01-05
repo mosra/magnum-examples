@@ -56,6 +56,11 @@ Full source code is linked below and together with assets also available in the
 -   @ref text/resources.conf "resources.conf"
 -   @ref text/TextExample.cpp "TextExample.cpp"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/text)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example text/TextExample.cpp @m_examplenavigation{examples-text,text/} @m_footernavigation
 @example text/resources.conf @m_examplenavigation{examples-text,text/} @m_footernavigation
 @example text/configure.h.cmake @m_examplenavigation{examples-text,text/} @m_footernavigation

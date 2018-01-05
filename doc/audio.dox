@@ -64,6 +64,11 @@ Full source code is linked below and together with assets also available in the
 -   @ref audio/configure.h.cmake "configure.h.cmake"
 -   @ref audio/resources.conf "resources.conf"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/audio)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example audio/AudioExample.cpp @m_examplenavigation{examples-audio,audio/} @m_footernavigation
 @example audio/CMakeLists.txt @m_examplenavigation{examples-audio,audio/} @m_footernavigation
 @example audio/configure.h.cmake @m_examplenavigation{examples-audio,audio/} @m_footernavigation

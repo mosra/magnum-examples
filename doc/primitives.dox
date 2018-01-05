@@ -165,6 +165,12 @@ file content is linked below. Full source code is also available in the
 -   @ref primitives/CMakeLists.txt "CMakeLists.txt"
 -   @ref primitives/PrimitivesExample.cpp "PrimitivesExample.cpp"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/primitives)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example primitives/CMakeLists.txt @m_examplenavigation{examples-primitives,primitives/} @m_footernavigation
 @example primitives/PrimitivesExample.cpp @m_examplenavigation{examples-primitives,primitives/} @m_footernavigation
 
