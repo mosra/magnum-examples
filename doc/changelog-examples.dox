@@ -25,9 +25,10 @@
 
 namespace Magnum {
 
-/** @page changelog-examples Examples changelog
+/** @page changelog-examples Examples
 
 @tableofcontents
+@m_footernavigation
 
 @section changelog-examples-latest Changes since 2015-05 snapshot
 
@@ -49,16 +50,13 @@ namespace Magnum {
 -   WebAssembly support when building for Emscripten
 -   WebGL 2.0 support
 -   New examples:
-    -   [ovr](https://github.com/mosra/magnum-examples/tree/master/src/ovr)
-        example showing integration with Oculus VR using @ref OvrIntegration
-    -   [picking](https://github.com/mosra/magnum-examples/tree/master/src/picking)
-        example showing object picking using mouse cursor and @ref Framebuffer
-        readout
-    -   [audio](https://github.com/mosra/magnum-examples/tree/master/src/audio)
-        example showing usage of the @ref Audio library and integration with
-        @ref SceneGraph
-    -   [shadows](https://github.com/mosra/magnum-examples/tree/master/src/shadows)
-        example implementing cascaded shadow mapping
+    -   @ref examples-ovr example showing integration with Oculus VR using
+        @ref OvrIntegration
+    -   @ref examples-picking example showing object picking using mouse cursor
+        and @ref Framebuffer readout
+    -   @ref examples-audio example showing usage of the @ref Audio library and
+        integration with @ref SceneGraph
+    -   @ref examples-shadows example implementing cascaded shadow mapping
 -   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch
     contains a subset of the examples ported to mobile devices and HTML5
 
@@ -66,10 +64,10 @@ namespace Magnum {
 
 -   Relicensed all examples from MIT to public domain / UNLICENSE to allow
     their unencumered use in derived projects
--   Removed now obsolete `framebuffer` example, superseded by the `picking`
-    example
--   The `motionblur` example now uses VSync and minimal frame time to avoid
-    being a CPU hog
+-   Removed now obsolete `framebuffer` example, superseded by the
+    @ref examples-picking example
+-   The @ref examples-motionblur example now uses VSync and
+    minimal frame time to avoid being a CPU hog
 
 @subsection changelog-examples-latest-buildsystem Build system
 
@@ -79,15 +77,15 @@ namespace Magnum {
     coverage on [coveralls.io](https://coveralls.io/github/mosra/magnum-examples);
     replacing the unmaintained and outdated Jenkins configuration
 -   Support for CMake subprojects. You can now clone Magnum Plugins into a
-    subdirectory in your project and add it using `add_subdirectory()`. The
-    `find_package()` command will then use the CMake subproject instead of
-    looking for it in system-wide locations.
+    subdirectory in your project and add it using @cmake add_subdirectory() @ce.
+    The @cmake find_package() @ce command will then use the CMake subproject
+    instead of looking for it in system-wide locations.
 -   CMake targets are now organized in folders for better development
     experience in IDEs such as Visual Studio or Xcode
 -   Added @ref building-examples-brew "Homebrew package"
 -   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
--   Enabling only C++ in CMake `project()` call, if possible, to speed up
-    initial CMake run
+-   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
+    up initial CMake run
 
 @section changelog-examples-2015-05 2015-05 snapshot
 
