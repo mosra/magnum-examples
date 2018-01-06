@@ -1,0 +1,132 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-triangle-plain-glfw Triangle using plain GLFW
+@brief Shows how to use Magnum with custom platform integration APIs.
+
+@m_footernavigation
+
+@image html triangle/triangle.png
+
+This example has equivalent output to the @ref examples-triangle "Triangle"
+example, but demonstrates that it's possible to sidestep the
+@ref Platform::Sdl2Application "Platform::Application" wrappers and hook into
+existing OpenGL context and window surface provided by a third-party library.
+
+@m_div{m-note m-success} In this case we're using [GLFW](http://www.glfw.org/).
+It also has a Magnum wrapper in @ref Platform::GlfwApplication, but here the
+point is to show how to use Magnum with third-party window and event handling,
+so we won't use it. Note that it's possible to use any windowing toolkit that
+provides an OpenGL context, GLFW was chosen because it has a very clear and
+simple API. @m_enddiv
+
+We need to have @ref Buffer, @ref Mesh and @ref Shaders::VertexColor included
+to populate, set up and render our triangle and @ref DefaultFramebuffer to
+properly clear the framebuffer before  rendering. The @ref Platform::Context
+class will take care of hooking into provided OpenGL context.
+
+Because Magnum has its own stripped-down OpenGL headers, GLFW needs to be
+included last so its GL headers don't take priority over the Magnum ones.
+
+@dontinclude triangle-plain-glfw/main.cpp
+@skipline #include
+@until GLFW/glfw3.h
+
+The @cpp main() @ce function preamble is not much different from the
+[GLFW example code](http://www.glfw.org/documentation.html#example-code):
+
+@skipline main
+@until glfwMakeContextCurrent
+
+Now that we have the OpenGL context created and made current, we can
+instantiate @ref Platform::Context. We'll do it in an isolated scope, so the
+RAII principle will take care of destroying it at a right time. We'll pass the
+`argc` and `argv` parameters to it --- it's completely optional and we could
+use the default @ref Platform::Context::Context() constructor instead, but this
+allows us to control Magnum renderer behavior on particular hardware from
+command-line. All Magnum options are prefixed with `--magnum-` to avoid
+conflicts with other application arguments and even if we wouldn't propagate
+them, it's still possible to set the options from environment. See
+@ref Context-command-line for more information.
+
+@note
+    The @ref Platform::Context is just managing a state tracker for the
+    enclosing OpenGL context --- if we wouldn't need to access any OpenGL
+    functionality, we wouldn't even need its instance. Magnum functionality
+    that is not accessing OpenGL doesn't need any shared / global state to work
+    properly.
+
+After that follows setup of the triangle mesh that's equivalent to what was
+done in the Triangle example. Finally there's the main application loop that
+performs drawing and polls for updates.
+
+@skipline {
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+
+Once the window closes, Magnum context gets destroyed at the end of scope. The
+last remaining thing before exiting from @cpp main() @ce is to terminate GLFW.
+
+@skipline glfwTerminate
+@until }
+
+Compared to the Triangle example, the compilation is a bit trickier, as we need
+to link to a correct OpenGL context handler depending on the platform. In this
+case we'll limit the platforms to what GLFW supports, but see @ref platform-custom
+for further information.
+
+@dontinclude triangle-plain-glfw/CMakeLists.txt
+@skipline find_package
+@until Magnum::Shaders
+
+@note
+    Magnum doesn't force you to use CMake in your app --- you need CMake to
+    build Magnum itself, but then you can just take the resulting binaries and
+    headers and use whatever buildsystem you want. Keep in mind, however, that
+    then you are expected to handle library order and 3rd party dependencies
+    yourself. See @ref building-features and similar sections in other projects
+    for details about inter-project dependencies.
+
+That's it! The full file content is linked below. Full source code is also
+available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle-plain-glfw).
+
+-   @ref triangle-plain-glfw/CMakeLists.txt "CMakeLists.txt"
+-   @ref triangle-plain-glfw/main.cpp "main.cpp"
+
+@example triangle-plain-glfw/CMakeLists.txt @m_examplenavigation{examples-triangle-plain-glfw,triangle-plain-glfw/} @m_footernavigation
+@example triangle-plain-glfw/main.cpp @m_examplenavigation{examples-triangle-plain-glfw,triangle-plain-glfw/} @m_footernavigation
+
+*/
+}

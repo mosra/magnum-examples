@@ -82,6 +82,10 @@ if(WITH_TRIANGLE_EXAMPLE)
     add_subdirectory(triangle)
 endif()
 
+if(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
+    add_subdirectory(triangle-plain-glfw)
+endif()
+
 if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()

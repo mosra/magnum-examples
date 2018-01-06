@@ -57,6 +57,8 @@ namespace Magnum {
     -   @ref examples-audio example showing usage of the @ref Audio library and
         integration with @ref SceneGraph
     -   @ref examples-shadows example implementing cascaded shadow mapping
+    -   @ref examples-triangle-plain-glfw example showing integration into
+        custom platform toolkits
 -   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch
     contains a subset of the examples ported to mobile devices and HTML5
 

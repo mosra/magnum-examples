@@ -55,6 +55,7 @@ cmake .. ^
     -DWITH_TEXT=ON ^
     -DWITH_TEXTURETOOLS=ON ^
     -DWITH_SDL2APPLICATION=ON ^
+    -DWITH_WGLCONTEXT=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -91,6 +92,7 @@ cmake .. ^
     -DWITH_TEXT_EXAMPLE=ON ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b

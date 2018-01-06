@@ -94,6 +94,7 @@ cmake .. ^
     -DWITH_TEXT_EXAMPLE=ON ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b

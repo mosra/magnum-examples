@@ -63,6 +63,7 @@ cmake .. \
     -DWITH_TEXT_EXAMPLE=ON \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_EXAMPLE=ON \
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=ON
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4

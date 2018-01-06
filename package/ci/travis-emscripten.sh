@@ -55,6 +55,7 @@ cmake .. \
     -DWITH_SHAPES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
+    -DWITH_GLFWAPPLICATION=OFF \
     -DWITH_SDL2APPLICATION=ON \
     -DTARGET_GLES2=$TARGET_GLES2
 make -j install
@@ -100,6 +101,7 @@ cmake .. \
     -DWITH_TEXT_EXAMPLE=OFF \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_EXAMPLE=OFF \
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=OFF
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4

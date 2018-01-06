@@ -56,6 +56,7 @@ cmake .. ^
     -DWITH_TEXT=ON ^
     -DWITH_TEXTURETOOLS=ON ^
     -DWITH_SDL2APPLICATION=ON ^
+    -DWITH_WGLCONTEXT=ON ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b
 cmake --build . --target install -- -j || exit /b
@@ -96,6 +97,7 @@ cmake .. ^
     -DWITH_TEXT_EXAMPLE=ON ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b

@@ -52,6 +52,7 @@ tutorials:
     --- @copybrief examples-textured-triangle
 -   @subpage examples-viewer @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-viewer
+-   @subpage examples-triangle-plain-glfw --- @copybrief examples-triangle-plain-glfw
 
 The following consist of documented source code only:
 

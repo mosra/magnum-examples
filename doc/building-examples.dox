@@ -65,6 +65,7 @@ for more information.
     example. Requires @ref Trade::JpegImporter "JpegImporter" plugin, not
     available in OpenGL ES.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build @ref examples-triangle "Triangle" example.
+-   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example.
 -   `WITH_VIEWER_EXAMPLE` --- Build @ref examples-viewer "Viewer" example.
     Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 
