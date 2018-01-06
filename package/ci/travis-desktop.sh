@@ -21,7 +21,6 @@ cd magnum
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_PREFIX_PATH=$HOME/sdl2 \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO=ON \
     -DWITH_DEBUGTOOLS=ON \
@@ -43,7 +42,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_BULLET=ON\
+    -DWITH_BULLET=ON \
     -DWITH_OVR=OFF
 make -j install
 cd ../..

@@ -20,7 +20,6 @@ cd magnum
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_PREFIX_PATH=$HOME/sdl2 \
     -DCMAKE_BUILD_TYPE=Release \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
