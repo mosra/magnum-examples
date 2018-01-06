@@ -1,0 +1,131 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-cubemap Cube map
+@brief Demonstrates usage of cube map textures and texture blending.
+
+@m_footernavigation
+
+@image html cubemap/cubemap.png
+
+Simulates open world with two tarnish reflective spheres in front of the
+camera. This example also demonstrates usage of scene graph, resource manager
+and pre-made primitives.
+
+@section examples-cubemap-usage Usage
+
+The application tries to load cube map texture from the directory in which it
+is run. Cube map texture consists of six JEPG files `+x.jpg`, `-x.jpg`, `+y.jpg`,
+`-y.jpg`, `+z.jpg` and `-z.jpg`, each representing one side of the cube. Note
+that all images must be turned upside down (+Y is top):
+
+              +----+
+              | -Y |
+    +----+----+----+----+
+    | -Z | -X | +Z | +X |
+    +----+----+----+----+
+              | +Y |
+              +----+
+
+You can also pass file path prefix to the application as parameter, for
+example
+
+@code{.sh}
+./magnum-cubemap ~/images/city
+@endcode
+
+The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
+etc. as a cube map texture.
+
+Sample cube map files are supplied alongside the source. If you
+@ref building-examples "install the examples", the images are also copied into
+`<prefix>/share/magnum/examples/cubemap/`. Running the example with the bundled
+files can be then done like this:
+
+    ./magnum-cubemap <path-to-example-source>/
+
+@section examples-cubemap-controls Key controls
+
+@m_class{m-label m-default} **Arrow keys** *rotate* the camera around the
+spheres. It is not possible, due to nature of the cube map projection, to *move*
+around the scene.
+
+@section examples-cubemap-credits Credits
+
+The sample images provided in this example are work of Emil Persson, aka Humus
+--- [http://www.humus.name](http://www.humus.name), licensed under a
+[Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).
+
+@section examples-cubemap-source Source
+
+Full source code is linked below and together with assets available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/cubemap).
+
+-   @ref cubemap/CMakeLists.txt "CMakeLists.txt"
+-   @ref cubemap/configure.h.cmake "configure.h.cmake"
+-   @ref cubemap/CubeMap.cpp "CubeMap.cpp"
+-   @ref cubemap/CubeMap.h "CubeMap.h"
+-   @ref cubemap/CubeMapExample.cpp "CubeMapExample.cpp"
+-   @ref cubemap/CubeMapShader.cpp "CubeMapShader.cpp"
+-   @ref cubemap/CubeMapShader.frag "CubeMapShader.frag"
+-   @ref cubemap/CubeMapShader.h "CubeMapShader.h"
+-   @ref cubemap/CubeMapShader.vert "CubeMapShader.ver"
+-   @ref cubemap/Reflector.cpp "Reflector.cpp"
+-   @ref cubemap/Reflector.h "Reflector.h"
+-   @ref cubemap/ReflectorShader.cpp "ReflectorShader.cpp"
+-   @ref cubemap/ReflectorShader.frag "ReflectorShader.frag"
+-   @ref cubemap/ReflectorShader.h "ReflectorShader.h"
+-   @ref cubemap/ReflectorShader.vert "ReflectorShader.vert"
+-   @ref cubemap/resources.conf "resources.conf"
+-   @ref cubemap/Types.cpp "Types.cpp"
+-   @ref cubemap/Types.h "Types.h"
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/cubemap)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS" support that
+aren't present in `master` in order to keep the example code as simple as
+possible.
+
+@example cubemap/CMakeLists.txt @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/configure.h.cmake @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMap.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMap.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMapExample.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMapShader.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMapShader.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMapShader.frag @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/CubeMapShader.vert @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/Reflector.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/Reflector.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/ReflectorShader.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/ReflectorShader.frag @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/ReflectorShader.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/ReflectorShader.vert @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/resources.conf @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/Types.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/Types.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+
+*/
+}

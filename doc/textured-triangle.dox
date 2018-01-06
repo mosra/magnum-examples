@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,7 +31,6 @@ namespace Magnum {
 @m_footernavigation
 
 @image html textured-triangle/textured-triangle.png
-@image latex textured-triangle/textured-triangle.png
 
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
@@ -41,6 +40,8 @@ these features:
 -   Creating custom shaders.
 -   Storing resources in the executable, so they don't have to be carried as
     separate files along the application.
+
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/textured-triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-textured-triangle-skeleton Basic skeleton
 
@@ -234,13 +235,29 @@ coordinates or adding other effects. The full file content is linked below.
 Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
 
--   @ref textured-triangle/TexturedTriangleExample.cpp
--   @ref textured-triangle/TexturedTriangleShader.h
--   @ref textured-triangle/TexturedTriangleShader.cpp
--   @ref textured-triangle/TexturedTriangleShader.vert
--   @ref textured-triangle/TexturedTriangleShader.frag
--   @ref textured-triangle/configure.h.cmake
--   @ref textured-triangle/resources.conf
--   @ref textured-triangle/CMakeLists.txt
+-   @ref textured-triangle/CMakeLists.txt "CMakeLists.txt"
+-   @ref textured-triangle/configure.h.cmake "configure.h.cmake"
+-   @ref textured-triangle/TexturedTriangleExample.cpp "TexturedTriangleExample.cpp"
+-   @ref textured-triangle/TexturedTriangleShader.cpp "TexturedTriangleShader.cpp"
+-   @ref textured-triangle/TexturedTriangleShader.frag "TexturedTriangleShader.frag"
+-   @ref textured-triangle/TexturedTriangleShader.h "TexturedTriangleShader.h"
+-   @ref textured-triangle/TexturedTriangleShader.vert "TexturedTriangleShader.vert"
+-   @ref textured-triangle/resources.conf "resources.conf"
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/textured-triangle)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
+@example textured-triangle/CMakeLists.txt @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/configure.h.cmake @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/TexturedTriangleExample.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/TexturedTriangleShader.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/TexturedTriangleShader.frag @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/TexturedTriangleShader.h @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/TexturedTriangleShader.vert @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/resources.conf @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+
 */
 }

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,9 +30,12 @@ namespace Magnum {
 @m_footernavigation
 
 @image html triangle/triangle.png
-@image latex triangle/triangle.png
 
-For the examples we will use SDL2, which is the most widely used multiplatform
+The Hello World of 3D graphics, rendering a single colored triangle.
+
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+
+For this example we will use SDL2, which is the most widely used multiplatform
 windowing toolkit. Support for it is in the @ref Platform::Sdl2Application
 class. We also need @ref Mesh for encapsulating our triangle, @ref Buffer to
 store vertex data, @ref Shaders::VertexColor2D shader which will take care of
@@ -132,7 +135,17 @@ shader behaves. The full file content is linked below. Full source code is also
 available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle).
 
--   @ref triangle/TriangleExample.cpp
--   @ref triangle/CMakeLists.txt
+-   @ref triangle/CMakeLists.txt "CMakeLists.txt"
+-   @ref triangle/TriangleExample.cpp "TriangleExample.cpp"
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/triangle)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
+@example triangle/CMakeLists.txt @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation
+@example triangle/TriangleExample.cpp @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation
+
 */
 }

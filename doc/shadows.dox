@@ -1,0 +1,110 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/** @page examples-shadows Shadow map
+@brief Showcases the Parallel Split / Cascade shadow mapping technique.
+
+@m_footernavigation
+
+@image html shadows1.png
+@image html shadows2.png
+
+Shadow mapping with a single, directional light source. It is intended to be a
+basis to start including your own shadow mapping system in your own project.
+
+@section examples-shadows-controls Key controls
+
+Movement/view:
+
+-   @m_class{m-label m-default} **Arrow keys** and @m_class{m-label m-default} **Page Up**
+    / @m_class{m-label m-default} **Page Down** --- translate camera
+-   @m_class{m-label m-default} **Mouse drag** --- rotate the camera
+-   @m_class{m-label m-default} **F1** --- switch to main camera
+-   @m_class{m-label m-default} **F2** --- switch to debug camera
+
+Shadow configuration changes - watch the console output for changes:
+
+-   @m_class{m-label m-default} **F3** --- change shadow face culling mode
+-   @m_class{m-label m-default} **F4** --- shadow map alignment (camera/static)
+-   @m_class{m-label m-default} **F5** / @m_class{m-label m-default} **F6** ---
+    change layer split exponent
+-   @m_class{m-label m-default} **F7** / @m_class{m-label m-default} **F8** ---
+    tweak bias
+-   @m_class{m-label m-default} **F9** / @m_class{m-label m-default} **F10**
+    --- change number of layers
+-   @m_class{m-label m-default} **F11** / @m_class{m-label m-default} **F12**
+    --- change shadow map resolution
+
+@section examples-shadows-credits Credits
+
+This example was originally contributed by [Bill Robinson](https://github.com/wivlaro).
+
+@section examples-shadows-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/shadows).
+
+-   @ref shadows/CMakeLists.txt "CMakeLists.txt"
+-   @ref shadows/DebugLines.cpp "DebugLines.cpp"
+-   @ref shadows/DebugLines.h "DebugLines.h"
+-   @ref shadows/ShadowCaster.frag "ShadowCaster.frag"
+-   @ref shadows/ShadowCaster.vert "ShadowCaster.vert"
+-   @ref shadows/ShadowCasterDrawable.cpp "ShadowCasterDrawable.cpp"
+-   @ref shadows/ShadowCasterDrawable.h "ShadowCasterDrawable.h"
+-   @ref shadows/ShadowCasterShader.cpp "ShadowCasterShader.cpp"
+-   @ref shadows/ShadowCasterShader.h "ShadowCasterShader.h"
+-   @ref shadows/ShadowLight.cpp "ShadowLight.cpp"
+-   @ref shadows/ShadowLight.h "ShadowLight.h"
+-   @ref shadows/ShadowReceiver.frag "ShadowReceiver.frag"
+-   @ref shadows/ShadowReceiver.vert "ShadowReceiver.vert"
+-   @ref shadows/ShadowReceiverDrawable.cpp "ShadowReceiverDrawable.cpp"
+-   @ref shadows/ShadowReceiverDrawable.h "ShadowReceiverDrawable.h"
+-   @ref shadows/ShadowReceiverShader.cpp "ShadowReceiverShader.cpp"
+-   @ref shadows/ShadowReceiverShader.h "ShadowReceiverShader.h"
+-   @ref shadows/ShadowsExample.cpp "ShadowsExample.cpp"
+-   @ref shadows/Types.h "Types.h"
+
+@example shadows/CMakeLists.txt @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/DebugLines.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/DebugLines.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCaster.frag @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCaster.vert @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCasterDrawable.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCasterDrawable.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCasterShader.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowCasterShader.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowLight.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowLight.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiver.frag @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiver.vert @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiverDrawable.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiverDrawable.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiverShader.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowReceiverShader.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/ShadowsExample.cpp @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+@example shadows/Types.h @m_examplenavigation{examples-shadows,shadows/} @m_footernavigation
+
+*/
+}

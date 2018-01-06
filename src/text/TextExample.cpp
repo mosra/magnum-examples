@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -99,12 +99,12 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application(argu
     CORRADE_INTERNAL_ASSERT(_cache);
 
     std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.1295f,
-            "Hello, world!\n"
-            "Ahoj, světe!\n"
-            "Здравствуй, мир!\n"
-            "γεια σου, τον κόσμο!\n"
-            "Hej Världen!",
-            _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
+        "Hello, world!\n"
+        "Ahoj, světe!\n"
+        "Здравствуй, мир!\n"
+        "Γεια σου κόσμε!\n"
+        "Hej Världen!",
+        _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
     _text2.reset(new Text::Renderer2D(*_font, *_cache, 0.035f, Text::Alignment::TopRight));
     _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);

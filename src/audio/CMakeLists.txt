@@ -3,7 +3,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #       2015, 2017 — Jonathan Hale <squareys@googlemail.com>
 #
@@ -51,7 +51,7 @@ find_package(Magnum REQUIRED
     Sdl2Application)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(Magnum REQUIRED WavAudioImporter)
+    find_package(MagnumPlugins REQUIRED StbVorbisAudioImporter)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -73,7 +73,7 @@ target_link_libraries(magnum-audio
     Magnum::SceneGraph)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-audio Magnum::WavAudioImporter)
+    target_link_libraries(magnum-audio MagnumPlugins::StbVorbisAudioImporter)
 endif()
 
 # Installation for Emscripten

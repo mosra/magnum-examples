@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,10 @@ the documentation itself.
 The source is available on GitHub: https://github.com/mosra/magnum-examples.
 Building integration libraries is very similar to building Magnum itself. See
 @ref building for additonal information about building, crosscompiling and
-platform-specific issues.
+platform-specific issues. Unlike other Magnum repositories, ports to mobile and
+web platforms are provided in the [ports branch](https://github.com/mosra/magnum-examples/tree/ports)
+and not present in `master` in order to keep the example code as simple as
+possible.
 
 By default only *Triangle* example is built. Some examples depend on plugins
 and integration libraries, see @ref building-plugins and @ref building-integration
@@ -64,6 +67,11 @@ for more information.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build @ref examples-triangle "Triangle" example.
 -   `WITH_VIEWER_EXAMPLE` --- Build @ref examples-viewer "Viewer" example.
     Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
+
+@section building-examples-doc Building Examples documentation
+
+The documentation is built as part of of the main Magnum documentation. Clone
+the projects next to each other and continue as described in @ref building-doc.
 
 @section building-examples-arch Building ArchLinux packages
 
