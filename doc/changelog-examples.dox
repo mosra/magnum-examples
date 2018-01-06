@@ -87,6 +87,20 @@ namespace Magnum {
 -   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
     up initial CMake run
 
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   Fixed depth issues in the @ref examples-viewer example when running with
+    16bit depth buffer ([possibly related Firefox bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1202387))
+-   Fixed Greek text in the @ref examples-text example
+
+@subsection changelog-examples-latest-documentation Documentation
+
+-   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
+    related massive updates of *everything*
+-   All examples, even the ones without a tutorial, have now their dedicated
+    documentation page with a screenshot, source listing and possibly a link
+    to the live web version
+
 @section changelog-examples-2015-05 2015-05 snapshot
 
 See the [release notes and full changelog](http://blog.magnum.graphics/announcements/may-2015-updates/#magnum-examples).
