@@ -53,6 +53,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Magnum REQUIRED)
 
 include(CMakeDependentOption)
+option(WITH_AREALIGHTS_EXAMPLE "Build arealights example" OFF)
 option(WITH_AUDIO_EXAMPLE "Build audio example (requires Magnum Audio library)" OFF)
 option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletIntegration library)" OFF)
 cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
