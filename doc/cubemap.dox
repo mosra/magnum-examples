@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html cubemap/cubemap.png
+@image html cubemap.png
 
 Simulates open world with two tarnish reflective spheres in front of the
 camera. This example also demonstrates usage of scene graph, resource manager

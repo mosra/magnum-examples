@@ -64,4 +64,3 @@ target_link_libraries(magnum-picking
     Magnum::SceneGraph)
 
 install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-picking.md)

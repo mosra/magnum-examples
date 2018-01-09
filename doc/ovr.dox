@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html ovr/ovr.png
+@image html ovr.png
 
 @section examples-ovr-usage Usage
 

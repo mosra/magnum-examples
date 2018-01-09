@@ -64,5 +64,4 @@ target_link_libraries(magnum-viewer
     Magnum::Shaders)
 
 install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-viewer.md)
 install(FILES scene.ogex DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)

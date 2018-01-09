@@ -31,7 +31,7 @@ namespace Magnum {
 
 Shows a rotating table full of cubes that you can shoot down.
 
-@image html bullet/bullet.png
+@image html bullet.png
 
 @section examples-bullet-controls Key controls
 

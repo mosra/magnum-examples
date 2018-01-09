@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html triangle/triangle.png
+@image html triangle.png
 
 The Hello World of 3D graphics, rendering a single colored triangle.
 

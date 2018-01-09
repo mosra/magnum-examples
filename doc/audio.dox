@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html audio/audio.png
+@image html audio.png
 
 The audio scene includes a 3D sound source and a (default) listener, which are
 visualized as a sphere and a box respectively, the listener initially facing

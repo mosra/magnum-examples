@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html text/text.png
+@image html text.png
 
 Instead of rendering the glyphs for each size, the glyphs are prerendered and
 converted into a signed distance field texture. The texture is then used for

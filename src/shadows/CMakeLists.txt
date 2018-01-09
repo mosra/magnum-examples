@@ -80,4 +80,3 @@ target_link_libraries(magnum-shadows
     Magnum::Shaders)
 
 install(TARGETS magnum-shadows DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-shadows.md)

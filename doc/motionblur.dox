@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html motionblur/motionblur.png
+@image html motionblur.png
 
 This example displays a few colored spheres moving at different speeds with
 motion blur interpolated from previous few frames applied to right side of the

@@ -73,4 +73,3 @@ target_link_libraries(magnum-motionblur
     Magnum::Shaders)
 
 install(TARGETS magnum-motionblur DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-motionblur.md)

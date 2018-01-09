@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html triangle/triangle.png
+@image html triangle.png
 
 This example has equivalent output to the @ref examples-triangle "Triangle"
 example, but demonstrates that it's possible to sidestep the

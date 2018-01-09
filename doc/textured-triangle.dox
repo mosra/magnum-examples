@@ -30,7 +30,7 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@image html textured-triangle/textured-triangle.png
+@image html textured-triangle.png
 
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
