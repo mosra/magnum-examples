@@ -82,6 +82,12 @@ install:
 - IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
 - IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
 
+# GLFW
+- IF "%TARGET%" == "desktop" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
+- IF "%TARGET%" == "desktop" 7z x glfw-3.2.1.bin.WIN64.zip && ren glfw-3.2.1.bin.WIN64 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
+
 # OVR SDK
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.4.0_public.zip appveyor DownloadFile https://static.oculus.com/sdk-downloads/1.4.0/Public/1463687419/ovr_sdk_win_1.4.0_public.zip
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.4.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
@@ -97,3 +103,4 @@ cache:
 - SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.4.0_public.zip -> package/ci/appveyor-cache-reset.txt
 - x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z -> package/ci/appveyor-cache-reset.txt
+- glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt

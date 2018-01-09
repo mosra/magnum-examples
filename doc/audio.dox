@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -29,7 +30,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html audio/audio.png
+@image html audio.png
 
 The audio scene includes a 3D sound source and a (default) listener, which are
 visualized as a sphere and a box respectively, the listener initially facing

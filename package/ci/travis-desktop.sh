@@ -21,7 +21,6 @@ cd magnum
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_PREFIX_PATH=$HOME/sdl2 \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO=ON \
     -DWITH_DEBUGTOOLS=ON \
@@ -31,6 +30,7 @@ cmake .. \
     -DWITH_SHAPES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
+    -DWITH_${PLATFORM_GL_API}CONTEXT=ON \
     -DWITH_SDL2APPLICATION=ON \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 make -j install
@@ -43,15 +43,16 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_BULLET=ON\
+    -DWITH_BULLET=ON \
     -DWITH_OVR=OFF
 make -j install
 cd ../..
 
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_PREFIX_PATH=$HOME/deps \
+    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/glfw" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_AREALIGHTS_EXAMPLE=ON \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=ON \
@@ -63,6 +64,7 @@ cmake .. \
     -DWITH_TEXT_EXAMPLE=ON \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4

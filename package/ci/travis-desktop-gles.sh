@@ -20,7 +20,6 @@ cd magnum
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_PREFIX_PATH=$HOME/sdl2 \
     -DCMAKE_BUILD_TYPE=Release \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
@@ -53,6 +52,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_AREALIGHTS_EXAMPLE=OFF \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
@@ -64,6 +64,7 @@ cmake .. \
     -DWITH_TEXT_EXAMPLE=ON \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=ON
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4

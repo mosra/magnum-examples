@@ -38,6 +38,10 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
+if(WITH_AREALIGHTS_EXAMPLE)
+    add_subdirectory(arealights)
+endif()
+
 if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
@@ -80,6 +84,10 @@ endif()
 
 if(WITH_TRIANGLE_EXAMPLE)
     add_subdirectory(triangle)
+endif()
+
+if(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
+    add_subdirectory(triangle-plain-glfw)
 endif()
 
 if(WITH_VIEWER_EXAMPLE)

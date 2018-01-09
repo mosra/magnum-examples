@@ -50,13 +50,17 @@ namespace Magnum {
 -   WebAssembly support when building for Emscripten
 -   WebGL 2.0 support
 -   New examples:
+    -   @ref examples-arealights example showing a basic Area Lights
+        implementation
+    -   @ref examples-audio example showing usage of the @ref Audio library and
+        integration with @ref SceneGraph
     -   @ref examples-ovr example showing integration with Oculus VR using
         @ref OvrIntegration
     -   @ref examples-picking example showing object picking using mouse cursor
         and @ref Framebuffer readout
-    -   @ref examples-audio example showing usage of the @ref Audio library and
-        integration with @ref SceneGraph
     -   @ref examples-shadows example implementing cascaded shadow mapping
+    -   @ref examples-triangle-plain-glfw example showing integration into
+        custom platform toolkits
 -   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch
     contains a subset of the examples ported to mobile devices and HTML5
 
@@ -86,6 +90,20 @@ namespace Magnum {
 -   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
 -   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
     up initial CMake run
+
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   Fixed depth issues in the @ref examples-viewer example when running with
+    16bit depth buffer ([possibly related Firefox bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1202387))
+-   Fixed Greek text in the @ref examples-text example
+
+@subsection changelog-examples-latest-documentation Documentation
+
+-   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
+    related massive updates of *everything*
+-   All examples, even the ones without a tutorial, have now their dedicated
+    documentation page with a screenshot, source listing and possibly a link
+    to the live web version
 
 @section changelog-examples-2015-05 2015-05 snapshot
 

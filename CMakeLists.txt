@@ -29,14 +29,12 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
-# macro called from FindX11)
-if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
-    set(LANG CXX)
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
 endif()
-project(MagnumExamples ${LANG})
-
-# CMake policies: don't treat imported targets with :: as files
+# Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
@@ -49,10 +47,18 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
+# macro called from FindX11)
+if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
+    set(LANG CXX)
+endif()
+project(MagnumExamples ${LANG})
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Magnum REQUIRED)
 
 include(CMakeDependentOption)
+option(WITH_AREALIGHTS_EXAMPLE "Build arealights example" OFF)
 option(WITH_AUDIO_EXAMPLE "Build audio example (requires Magnum Audio library)" OFF)
 option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletIntegration library)" OFF)
 option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires StbImageImporter plugin)" OFF)
@@ -64,6 +70,7 @@ option(WITH_SHADOWS_EXAMPLE "Build shadow mapping example" OFF)
 option(WITH_TEXT_EXAMPLE "Build Text example (requires FreeTypeFont plugin)" OFF)
 option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF)
 option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
+option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" ON)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
 
 add_subdirectory(src)

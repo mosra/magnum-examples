@@ -5,7 +5,6 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2013 — Jan Dupal <dupal.j@gmail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -48,25 +47,28 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(MagnumBulletExample)
+project(MagnumTrianglePlainGlfwExample)
 
-find_package(Magnum REQUIRED
-    DebugTools
-    SceneGraph
-    Shapes
-    Sdl2Application)
-find_package(MagnumIntegration REQUIRED
-    Bullet)
+find_package(GLFW REQUIRED)
+
+find_package(Magnum REQUIRED Shaders)
+if(CORRADE_TARGET_APPLE)
+    find_package(Magnum REQUIRED CglContext)
+elseif(CORRADE_TARGET_UNIX)
+    find_package(Magnum REQUIRED GlxContext)
+elseif(CORRADE_TARGET_WINDOWS)
+    find_package(Magnum REQUIRED WglContext)
+else()
+    message(FATAL_ERROR "No context handler available on this platform")
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-bullet BulletExample.cpp)
-target_link_libraries(magnum-bullet
-    Magnum::Application
-    Magnum::DebugTools
+add_executable(magnum-triangle-plain-glfw main.cpp)
+target_link_libraries(magnum-triangle-plain-glfw
+    GLFW::GLFW
+    Magnum::Context
     Magnum::Magnum
-    Magnum::SceneGraph
-    Magnum::Shapes
-    MagnumIntegration::Bullet)
+    Magnum::Shaders)
 
-install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(TARGETS magnum-triangle-plain-glfw DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

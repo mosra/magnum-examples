@@ -20,6 +20,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_AREALIGHTS_EXAMPLE=ON \
         -DWITH_AUDIO_EXAMPLE=ON \
         -DWITH_BULLET_EXAMPLE=ON \
         -DWITH_CUBEMAP_EXAMPLE=ON \
@@ -30,6 +31,7 @@ build() {
         -DWITH_TEXT_EXAMPLE=ON \
         -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
         -DWITH_TRIANGLE_EXAMPLE=ON \
+        -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
         -DWITH_VIEWER_EXAMPLE=ON \
         -G Ninja
     ninja

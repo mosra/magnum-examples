@@ -28,9 +28,13 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
-project(MagnumPickingExample)
 
-# CMake policies: don't treat imported targets with :: as files
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
+endif()
+# Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
@@ -48,6 +52,8 @@ find_package(Magnum REQUIRED
     Primitives
     SceneGraph
     Sdl2Application)
+
+project(MagnumPickingExample)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -79,5 +85,4 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 # Installation for desktop
 else()
     install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-picking.md)
 endif()

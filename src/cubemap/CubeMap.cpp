@@ -91,7 +91,7 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
         /* Configure texture storage using size of first image */
         importer->openFile(prefix + "+x.jpg");
-        std::optional<Trade::ImageData2D> image = importer->image2D(0);
+        Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_INTERNAL_ASSERT(image);
         Vector2i size = image->size();
         cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size)

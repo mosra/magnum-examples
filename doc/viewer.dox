@@ -30,8 +30,7 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@image html viewer/viewer.png
-@image latex viewer/viewer.png
+@image html viewer.png
 
 In this example we will import 3D scene file and display it interactively on
 the screen. It covers these new features:

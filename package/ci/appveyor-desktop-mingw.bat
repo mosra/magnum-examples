@@ -46,6 +46,7 @@ cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" ^
+    -DWITH_AREALIGHTS_EXAMPLE=ON ^
     -DWITH_AUDIO=ON ^
     -DWITH_DEBUGTOOLS=ON ^
     -DWITH_MESHTOOLS=ON ^
@@ -56,6 +57,7 @@ cmake .. ^
     -DWITH_TEXT=ON ^
     -DWITH_TEXTURETOOLS=ON ^
     -DWITH_SDL2APPLICATION=ON ^
+    -DWITH_WGLCONTEXT=ON ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b
 cmake --build . --target install -- -j || exit /b
@@ -96,6 +98,7 @@ cmake .. ^
     -DWITH_TEXT_EXAMPLE=ON ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
+    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G "MinGW Makefiles" || exit /b
 cmake --build . -- -j || exit /b

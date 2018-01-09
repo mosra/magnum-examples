@@ -29,7 +29,7 @@ namespace Magnum {
 
 @m_footernavigation
 
-@image html triangle/triangle.png
+@image html triangle.png
 
 The Hello World of 3D graphics, rendering a single colored triangle.
 
@@ -143,6 +143,13 @@ contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
 @ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
 support that aren't present in `master` in order to keep the example code as
 simple as possible.
+
+@m_div{m-note m-success} There's also an alternative version of this example
+that sidesteps the @ref Platform::Sdl2Application "Platform::Application"
+wrapper classes to show that it's possible to hook into OpenGL context and
+window surface provided by a third party library. See @ref examples-triangle-plain-glfw
+for details.
+@m_enddiv
 
 @example triangle/CMakeLists.txt @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation
 @example triangle/TriangleExample.cpp @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation

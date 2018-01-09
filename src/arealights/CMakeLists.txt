@@ -5,7 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2013 — Jan Dupal <dupal.j@gmail.com>
+#       2017 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -29,44 +29,37 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
+project(MagnumAreaLightsExample)
 
-# CMake policies. 0025 needs to be before project(), so putting all there.
-# Use AppleClang instead of Clang on Apple
-if(POLICY CMP0025)
-    cmake_policy(SET CMP0025 NEW)
+# CMake policies: enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
 endif()
 # Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
-# Enable MACOSX_RPATH by default
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW)
-endif()
-# Quoted variables should not be dereferenced
-if(POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-project(MagnumBulletExample)
 
 find_package(Magnum REQUIRED
-    DebugTools
-    SceneGraph
-    Shapes
+    MeshTools
+    Primitives
+    Shaders
     Sdl2Application)
-find_package(MagnumIntegration REQUIRED
-    Bullet)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-bullet BulletExample.cpp)
-target_link_libraries(magnum-bullet
-    Magnum::Application
-    Magnum::DebugTools
-    Magnum::Magnum
-    Magnum::SceneGraph
-    Magnum::Shapes
-    MagnumIntegration::Bullet)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+corrade_add_resource(AreaLights_RESOURCES resources.conf)
+
+add_executable(magnum-arealights AreaLightsExample.cpp ${AreaLights_RESOURCES})
+target_include_directories(magnum-arealights PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(magnum-arealights
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders)
+
+install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

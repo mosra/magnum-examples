@@ -52,9 +52,11 @@ tutorials:
     --- @copybrief examples-textured-triangle
 -   @subpage examples-viewer @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-viewer
+-   @subpage examples-triangle-plain-glfw --- @copybrief examples-triangle-plain-glfw
 
 The following consist of documented source code only:
 
+-   @subpage examples-arealights --- @copybrief examples-arealights
 -   @subpage examples-audio @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-audio
 -   @subpage examples-bullet --- @copybrief examples-bullet
@@ -69,9 +71,9 @@ The following consist of documented source code only:
 There are also @ref corrade-example-index "examples for the Corrade library"
 itself.
 
-While Magnum itself and its documentation is licensed under MIT/Expat license,
-all example code is put into public domain (or UNLICENSE) to free you from any
-legal obstacles when reusing the code in your apps:
+While Magnum itself and its documentation is licensed under the MIT/Expat
+license, all example code is put into public domain (or UNLICENSE) to free you
+from any legal obstacles when reusing the code in your apps:
 
 >
 >   This is free and unencumbered software released into the public domain.

@@ -28,9 +28,13 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
-project(MagnumCubeMapExample)
 
-# CMake policies: don't treat imported targets with :: as files
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
+endif()
+# Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
@@ -42,6 +46,8 @@ endif()
 if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
+
+project(MagnumCubeMapExample)
 
 find_package(Magnum REQUIRED
     MeshTools
@@ -111,6 +117,5 @@ endif()
 # Installation for desktop
 if(NOT CORRADE_TARGET_IOS)
     install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    install(FILES README.md DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples RENAME README-cubemap.md)
     install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/cubemap)
 endif()

@@ -46,25 +46,28 @@ By default only *Triangle* example is built. Some examples depend on plugins
 and integration libraries, see @ref building-plugins and @ref building-integration
 for more information.
 
--   `WITH_AUDIO_EXAMPLE` --- Build Audio example. Requires @ref Audio library
-    and @ref Audio::WavImporter "WavAudioImporter" plugin.
--   `WITH_BULLET_EXAMPLE` --- Build Bullet example. Requires @ref BulletIntegration
-    library.
--   `WITH_CUBEMAP_EXAMPLE` --- Build Cube Map example. Requires
+-   `WITH_AREALIGHTS_EXAMPLE` -- Build @ref examples-arealights example.
+-   `WITH_AUDIO_EXAMPLE` --- Build @ref examples-audio example. Requires
+    @ref Audio library and @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
+-   `WITH_BULLET_EXAMPLE` --- Build @ref examples-bullet example. Requires
+    @ref BulletIntegration library.
+-   `WITH_CUBEMAP_EXAMPLE` --- Build @ref examples-cubemap example. Requires
     @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL ES.
--   `WITH_MOTIONBLUR_EXAMPLE` --- Build Motion Blur example. Not available on
-    OpenGL ES.
--   `WITH_OVR_EXAMPLE` --- Build Oculus VR example. Requires @ref OvrIntegration
-    library.
--   `WITH_PICKING_EXAMPLE` --- Build Object Picking example.
+-   `WITH_MOTIONBLUR_EXAMPLE` --- Build @ref examples-motionblur example. Not
+    available on OpenGL ES.
+-   `WITH_OVR_EXAMPLE` --- Build @ref examples-ovr example. Requires
+    @ref OvrIntegration library.
+-   `WITH_PICKING_EXAMPLE` --- Build @ref examples-picking example.
 -   `WITH_PRIMITIVES_EXAMPLE` --- Build @ref examples-primitives "Primitives" example.
--   `WITH_SHADOWS_EXAMPLE` --- Build Shadows example.
--   `WITH_TEXT_EXAMPLE` --- Build Text example. Requires @ref Text::FreeTypeFont "FreeTypeFont"
-    plugin.
--   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build @ref examples-textured-triangle "Textured Triangle"
+-   `WITH_SHADOWS_EXAMPLE` --- Build @ref examples-shadows example.
+-   `WITH_TEXT_EXAMPLE` --- Build @ref examples-text example. Requires
+    @ref Text library and @ref Text::FreeTypeFont "FreeTypeFont" plugin.
+-   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build @ref examples-textured-triangle
     example. Requires @ref Trade::JpegImporter "JpegImporter" plugin, not
     available in OpenGL ES.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build @ref examples-triangle "Triangle" example.
+-   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build @ref examples-triangle-plain-glfw "Plain GLFW Triangle"
+    example.
 -   `WITH_VIEWER_EXAMPLE` --- Build @ref examples-viewer "Viewer" example.
     Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 

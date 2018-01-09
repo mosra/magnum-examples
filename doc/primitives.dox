@@ -30,7 +30,7 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@image html primitives/primitives.png
+@image html primitives.png
 
 This example shows how to create indexed meshes from imported data and do some
 basic user interaction, introducing these new features:
