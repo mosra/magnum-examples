@@ -238,8 +238,7 @@ class AreaLightsExample: public Platform::Application {
 AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     Platform::Application{arguments,
         Configuration{}.setTitle("Magnum Area Lights Example")
-                       .setSampleCount(8)
-                       .setVersion(Version::GL430)}
+                       .setSampleCount(8)}
 {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::disable(Renderer::Feature::FaceCulling);
