@@ -290,7 +290,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
         std::exit(2);
 
     /* Set texture data and parameters */
-    std::optional<Trade::ImageData2D> image = importer->image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
     _ltcAmp.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
