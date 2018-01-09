@@ -25,6 +25,7 @@ build() {
     cmake "$srcdir/${pkgname%-git}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_AREALIGHTS_EXAMPLE=ON \
         -DWITH_AUDIO_EXAMPLE=ON \
         -DWITH_BULLET_EXAMPLE=ON \
         -DWITH_CUBEMAP_EXAMPLE=ON \

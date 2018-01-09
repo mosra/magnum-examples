@@ -52,6 +52,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/glfw" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_AREALIGHTS_EXAMPLE=ON \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=ON \
