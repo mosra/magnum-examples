@@ -46,6 +46,7 @@ By default only *Triangle* example is built. Some examples depend on plugins
 and integration libraries, see @ref building-plugins and @ref building-integration
 for more information.
 
+-   `WITH_AREALIGHTS_EXAMPLE` -- Build @ref examples-arealights example.
 -   `WITH_AUDIO_EXAMPLE` --- Build @ref examples-audio example. Requires
     @ref Audio library and @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
 -   `WITH_BULLET_EXAMPLE` --- Build @ref examples-bullet example. Requires

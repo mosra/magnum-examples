@@ -56,6 +56,7 @@ tutorials:
 
 The following consist of documented source code only:
 
+-   @subpage examples-arealights --- @copybrief examples-arealights
 -   @subpage examples-audio @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-audio
 -   @subpage examples-bullet --- @copybrief examples-bullet
