@@ -195,8 +195,6 @@ class AreaLightsExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        void viewportEvent(const Vector2i& size) override;
-
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
@@ -347,10 +345,6 @@ void AreaLightsExample::drawEvent() {
 
     swapBuffers();
     redraw();
-}
-
-void AreaLightsExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
 }
 
 void AreaLightsExample::mousePressEvent(MouseEvent& event) {
