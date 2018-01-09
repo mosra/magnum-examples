@@ -28,39 +28,35 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/Resource.h>
 #include <Corrade/PluginManager/PluginManager.h>
-
+#include <Corrade/Utility/Resource.h>
 #include <Magnum/AbstractShaderProgram.h>
 #include <Magnum/Buffer.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Extensions.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Shader.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
+#include <Magnum/Version.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Plane.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Shader.h>
 #include <Magnum/Shaders/Flat.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData3D.h>
-#include <Magnum/Version.h>
 
 #include "configure.h"
 
-
-namespace Magnum {
-
-namespace Shaders {
+namespace Magnum { namespace Examples {
 
 /* Class for the area light shader */
-class AreaLight: public AbstractShaderProgram {
+class AreaLightShader: public AbstractShaderProgram {
     public:
-        explicit AreaLight() {
+        explicit AreaLightShader() {
             const Version version = Context::current().supportedVersion({Version::GL430});
             CORRADE_ASSERT(version != Version::None, "Minimum required version OpenGL 4.3 not supported.", );
 
@@ -98,88 +94,83 @@ class AreaLight: public AbstractShaderProgram {
 
         /* Matrices: view, transformation, projection, normal */
 
-        AreaLight& setTransformationMatrix(const Matrix4& matrix) {
+        AreaLightShader& setTransformationMatrix(const Matrix4& matrix) {
             setUniform(_transformationMatrixUniform, matrix);
             return *this;
         }
 
-        AreaLight& setProjectionMatrix(const Matrix4& matrix) {
+        AreaLightShader& setProjectionMatrix(const Matrix4& matrix) {
             setUniform(_projectionMatrixUniform, matrix);
             return *this;
         }
 
-        AreaLight& setViewMatrix(const Matrix4& matrix) {
+        AreaLightShader& setViewMatrix(const Matrix4& matrix) {
             setUniform(_viewMatrixUniform, matrix);
             return *this;
         }
 
-        AreaLight& setNormalMatrix(const Matrix3& matrix) {
+        AreaLightShader& setNormalMatrix(const Matrix3& matrix) {
             setUniform(_normalMatrixUniform, matrix);
             return *this;
         }
 
         /* View position */
 
-        AreaLight& setViewPosition(const Vector4& pos) {
+        AreaLightShader& setViewPosition(const Vector4& pos) {
             setUniform(_viewPositionUniform, pos);
             return *this;
         }
 
         /* Material properties */
 
-        AreaLight& setBaseColor(const Color3& color) {
+        AreaLightShader& setBaseColor(const Color3& color) {
             setUniform(_baseColorUniform, color);
             return *this;
         }
 
-        AreaLight& setMetallic(float v) {
+        AreaLightShader& setMetallic(Float v) {
             setUniform(_metallicUniform, v);
             return *this;
         }
 
-        AreaLight& setRoughness(float v) {
+        AreaLightShader& setRoughness(Float v) {
             setUniform(_roughnessUniform, v);
             return *this;
         }
 
-        AreaLight& setF0(float f0) {
+        AreaLightShader& setF0(Float f0) {
             setUniform(_f0Uniform, f0);
             return *this;
         }
 
         /* Light properties */
 
-        AreaLight& setLightIntensity(float i) {
+        AreaLightShader& setLightIntensity(Float i) {
             setUniform(_lightIntensityUniform, i);
             return *this;
         }
 
-        AreaLight& setTwoSided(bool b) {
+        AreaLightShader& setTwoSided(bool b) {
             setUniform(_twoSidedUniform, b ? 1.0f : 0.0f);
             return *this;
         }
 
-        AreaLight& setLightQuad(Containers::ArrayView<Vector4> quadPoints) {
+        AreaLightShader& setLightQuad(Containers::ArrayView<Vector4> quadPoints) {
             setUniform(_lightQuadUniform, quadPoints);
             return *this;
         }
 
         /* LTC lookup textures */
 
-        AreaLight& bindLtcAmpTexture(Texture2D& ltcAmp) {
-            ltcAmp.bind(Int(TextureLayers::LtcAmp));
+        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
+            ltcAmp.bind(1);
             return *this;
         }
 
-        AreaLight& bindLtcMatTexture(Texture2D& ltcMat) {
-            ltcMat.bind(Int(TextureLayers::LtcMat));
+        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
+            ltcMat.bind(0);
             return *this;
         }
-
-        enum class TextureLayers: Int {
-            LtcMat = 0,
-            LtcAmp = 1,
-        };
 
     private:
         Int _transformationMatrixUniform,
@@ -196,11 +187,7 @@ class AreaLight: public AbstractShaderProgram {
             _lightQuadUniform;
 };
 
-}
-
-namespace Examples {
-
-using namespace Magnum::Math::Literals;
+using namespace Math::Literals;
 
 class AreaLightsExample: public Platform::Application {
     public:
@@ -216,7 +203,7 @@ class AreaLightsExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
 
-        Shaders::AreaLight _shader;
+        AreaLightShader _shader;
         Matrix4 _lightTransform;
 
         /* Floor plane mesh data */
@@ -236,14 +223,14 @@ class AreaLightsExample: public Platform::Application {
         Matrix4 _transformation, _projection, _view;
         Vector2i _previousMousePosition;
 
-        Vector3 _cameraPosition = {1.0f, -5.0f, -6.0f};
+        Vector3 _cameraPosition{1.0f, -5.0f, -6.0f};
         Vector3 _cameraDirection;
-        Vector2 _cameraRotation = {0.4f, 0.4f};
+        Vector2 _cameraRotation{0.4f, 0.4f};
 
         /* Material properties */
-        float _metallic = 0.5f;
-        float _roughness = 0.25f;
-        float _f0 = 0.5f; /* Specular reflection coefficient */
+        Float _metallic = 0.5f;
+        Float _roughness = 0.25f;
+        Float _f0 = 0.5f; /* Specular reflection coefficient */
 };
 
 AreaLightsExample::AreaLightsExample(const Arguments& arguments):
@@ -263,7 +250,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
         .setCount(plane.positions(0).size());
 
     /* Setup project and floor plane tranformation matrix */
-    const float aspectRatio = Vector2{defaultFramebuffer.viewport().size()}.aspectRatio();
+    const Float aspectRatio = Vector2{defaultFramebuffer.viewport().size()}.aspectRatio();
     _projection = Matrix4::perspectiveProjection(60.0_degf, aspectRatio, 0.01f, 100.0f);
 
     _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
@@ -411,7 +398,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
         }
         _shader.setMetallic(_metallic);
     } else if(event.key() == KeyEvent::Key::F) {
-        /* Increase/decrease metallic */
+        /* Increase/decrease f0 */
         if(event.modifiers() & KeyEvent::Modifier::Shift) {
             _f0 = Math::max(0.1f, _f0 - 0.1f);
         } else {
@@ -422,18 +409,18 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
         exit();
     }
 
-#ifdef CORRADE_IS_DEBUG_BUILD
+    #ifdef CORRADE_IS_DEBUG_BUILD
     if(event.key() == KeyEvent::Key::F5) {
         /* Reload shader */
         Utility::Resource::overrideGroup("arealights-data", "../src/arealights/resources.conf");
-        _shader = Shaders::AreaLight{};
+        _shader = AreaLightShader{};
     }
-#endif
+    #endif
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::W || event.key() == KeyEvent::Key::S
-        || event.key() == KeyEvent::Key::A || event.key() == KeyEvent::Key::D) {
+    if(event.key() == KeyEvent::Key::W || event.key() == KeyEvent::Key::S ||
+       event.key() == KeyEvent::Key::A || event.key() == KeyEvent::Key::D) {
         _cameraDirection = {};
     }
 }
