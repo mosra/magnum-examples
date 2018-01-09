@@ -164,7 +164,7 @@ After the image is loaded, we create a texture from it. Note that we have to
 explicitly set all required texture parameters, otherwise the texture will be
 incomplete.
 
-@skip std::optional<Trade::ImageData2D>
+@skip Containers::Optional<Trade::ImageData2D>
 @until }
 @until }
 

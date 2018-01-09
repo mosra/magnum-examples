@@ -181,7 +181,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
         Debug{} << "Importing texture" << i << importer->textureName(i);
 
-        std::optional<Trade::TextureData> textureData = importer->texture(i);
+        Containers::Optional<Trade::TextureData> textureData = importer->texture(i);
         if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D) {
             Warning{} << "Cannot load texture, skipping";
             continue;
@@ -189,7 +189,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
         Debug{} << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
 
-        std::optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
+        Containers::Optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
         if(!imageData || (imageData->format() != PixelFormat::RGB
             #ifndef MAGNUM_TARGET_GLES
             && imageData->format() != PixelFormat::BGR
@@ -217,7 +217,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
         Debug{} << "Importing mesh" << i << importer->mesh3DName(i);
 
-        std::optional<Trade::MeshData3D> meshData = importer->mesh3D(i);
+        Containers::Optional<Trade::MeshData3D> meshData = importer->mesh3D(i);
         if(!meshData || !meshData->hasNormals() || meshData->primitive() != MeshPrimitive::Triangles) {
             Warning{} << "Cannot load mesh, skipping";
             continue;
@@ -242,7 +242,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     if(importer->defaultScene() != -1) {
         Debug{} << "Adding default scene" << importer->sceneName(importer->defaultScene());
 
-        std::optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
+        Containers::Optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
         if(!sceneData) {
             Error{} << "Cannot load scene, exiting";
             return;
