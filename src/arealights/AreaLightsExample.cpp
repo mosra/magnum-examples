@@ -161,17 +161,22 @@ class AreaLightShader: public AbstractShaderProgram {
 
         /* LTC lookup textures */
 
-        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
-            ltcAmp.bind(1);
+        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
+            ltcMat.bind(LtcMatTextureUnit);
             return *this;
         }
 
-        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
-            ltcMat.bind(0);
+        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
+            ltcAmp.bind(LtcAmpTextureUnit);
             return *this;
         }
 
     private:
+        enum: Int {
+            LtcMatTextureUnit = 0,
+            LtcAmpTextureUnit = 1
+        };
+
         Int _transformationMatrixUniform,
             _projectionMatrixUniform,
             _viewMatrixUniform,
