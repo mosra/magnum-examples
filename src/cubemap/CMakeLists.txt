@@ -47,13 +47,13 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+project(MagnumCubeMapExample)
+
 find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
     Sdl2Application)
-
-project(MagnumCubeMapExample)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
