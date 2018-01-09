@@ -28,6 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+precision highp float;
+
 layout(location = 0) in vec4 position;
 layout(location = 2) in vec3 normal;
 
@@ -40,7 +42,7 @@ uniform mat4 u_viewMatrix;
 uniform mat3 u_normalMatrix;
 
 void main() {
-    const vec4 pos = u_transformationMatrix*position;
+    vec4 pos = u_transformationMatrix*position;
     v_position = pos;
     v_normal = normalize(u_normalMatrix*normal);
     gl_Position = u_projectionMatrix*u_viewMatrix*pos;

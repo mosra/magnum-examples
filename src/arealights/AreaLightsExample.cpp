@@ -57,13 +57,13 @@ namespace Magnum { namespace Examples {
 class AreaLightShader: public AbstractShaderProgram {
     public:
         explicit AreaLightShader() {
-            MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL430);
+            MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GLES300);
 
             /* Load and compile shaders from compiled-in resource */
             Utility::Resource rs("arealights-data");
 
-            Shader vert{Version::GL430, Shader::Type::Vertex};
-            Shader frag{Version::GL430, Shader::Type::Fragment};
+            Shader vert{Version::GLES300, Shader::Type::Vertex};
+            Shader frag{Version::GLES300, Shader::Type::Fragment};
 
             vert.addSource(rs.get("AreaLights.vert"));
             frag.addSource(rs.get("AreaLights.frag"));
@@ -73,6 +73,9 @@ class AreaLightShader: public AbstractShaderProgram {
             attachShaders({vert, frag});
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+
+            setUniform(uniformLocation("s_texLTCMat"), LtcMatTextureUnit);
+            setUniform(uniformLocation("s_texLTCAmp"), LtcAmpTextureUnit);
 
             /* Get uniform locations */
             _transformationMatrixUniform = uniformLocation("u_transformationMatrix");
