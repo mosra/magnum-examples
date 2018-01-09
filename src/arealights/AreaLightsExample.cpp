@@ -367,35 +367,35 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::W) {
-        _cameraDirection = _view.inverted().backward();
+        _cameraDirection = _view.inverted().backward()*0.01f;
     } else if(event.key() == KeyEvent::Key::S) {
-        _cameraDirection = -_view.inverted().backward();
+        _cameraDirection = -_view.inverted().backward()*0.01f;
     } else if (event.key() == KeyEvent::Key::A) {
-        _cameraDirection = -Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0});
+        _cameraDirection = -Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
     } else if (event.key() == KeyEvent::Key::D) {
-        _cameraDirection = Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 });
+        _cameraDirection = Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
     } else if(event.key() == KeyEvent::Key::R) {
         /* Increase/decrease roughness */
         if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _roughness = Math::max(0.1f, _roughness - 0.1f);
+            _roughness = Math::max(0.1f, _roughness - 0.01f);
         } else {
-            _roughness = Math::min(1.0f, _roughness + 0.1f);
+            _roughness = Math::min(1.0f, _roughness + 0.01f);
         }
         _shader.setRoughness(_roughness);
     } else if(event.key() == KeyEvent::Key::M) {
         /* Increase/decrease metallic */
         if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _metallic = Math::max(0.1f, _metallic - 0.1f);
+            _metallic = Math::max(0.1f, _metallic - 0.01f);
         } else {
-            _metallic = Math::min(1.0f, _metallic + 0.1f);
+            _metallic = Math::min(1.0f, _metallic + 0.01f);
         }
         _shader.setMetallic(_metallic);
     } else if(event.key() == KeyEvent::Key::F) {
         /* Increase/decrease f0 */
         if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _f0 = Math::max(0.1f, _f0 - 0.1f);
+            _f0 = Math::max(0.1f, _f0 - 0.01f);
         } else {
-            _f0 = Math::min(1.0f, _f0 + 0.1f);
+            _f0 = Math::min(1.0f, _f0 + 0.01f);
         }
         _shader.setF0(_f0);
     } else if(event.key() == KeyEvent::Key::Esc) {
