@@ -57,14 +57,13 @@ namespace Magnum { namespace Examples {
 class AreaLightShader: public AbstractShaderProgram {
     public:
         explicit AreaLightShader() {
-            const Version version = Context::current().supportedVersion({Version::GL430});
-            CORRADE_ASSERT(version != Version::None, "Minimum required version OpenGL 4.3 not supported.", );
+            MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL430);
 
             /* Load and compile shaders from compiled-in resource */
             Utility::Resource rs("arealights-data");
 
-            Shader vert{version, Shader::Type::Vertex};
-            Shader frag{version, Shader::Type::Fragment};
+            Shader vert{Version::GL430, Shader::Type::Vertex};
+            Shader frag{Version::GL430, Shader::Type::Fragment};
 
             vert.addSource(rs.get("AreaLights.vert"));
             frag.addSource(rs.get("AreaLights.frag"));
