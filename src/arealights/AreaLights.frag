@@ -28,8 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-layout(location = 0) in vec4 v_position;
-layout(location = 1) in vec3 v_normal;
+in vec4 v_position;
+in vec3 v_normal;
 
 uniform vec4 u_viewPosition;
 

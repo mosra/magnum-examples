@@ -31,8 +31,8 @@
 layout(location = 0) in vec4 position;
 layout(location = 2) in vec3 normal;
 
-layout(location = 0) out vec4 v_position;
-layout(location = 1) out vec3 v_normal;
+out vec4 v_position;
+out vec3 v_normal;
 
 uniform mat4 u_transformationMatrix;
 uniform mat4 u_projectionMatrix;
