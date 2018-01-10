@@ -28,8 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-layout(location = 0) in vec4 v_position;
-layout(location = 1) in vec3 v_normal;
+in vec4 v_position;
+in vec3 v_normal;
 
 uniform vec4 u_viewPosition;
 
@@ -63,7 +63,7 @@ vec2 ltcCoords(float cosTheta, float roughness) {
 
 /** Get inverse matrix from LTC lookup texture */
 mat3 ltcMatrix(sampler2D tex, vec2 coord) {
-    const vec4 t = texture2D(tex, coord);
+    const vec4 t = texture(tex, coord);
     mat3 Minv = mat3(
         vec3(  1,   0, t.y),
         vec3(  0, t.z,   0),
@@ -235,7 +235,7 @@ void main() {
     float Lo_i = ltcEvaluate(v_normal, viewDir, pos, invMat, u_quadPoints, u_twoSided > 0.0);
 
     /* Apply BRDF scale terms (BRDF magnitude and Schlick Fresnel) */
-    const vec2 schlick = texture2D(s_texLTCAmp, coords).xy;
+    const vec2 schlick = texture(s_texLTCAmp, coords).xy;
     vec3 color = (u_lightIntensity*Lo_i)*(specColor*schlick.x + (1.0 - specColor)*schlick.y);
 
     /* Normalize */

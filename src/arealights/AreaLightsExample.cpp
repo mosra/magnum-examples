@@ -161,17 +161,22 @@ class AreaLightShader: public AbstractShaderProgram {
 
         /* LTC lookup textures */
 
-        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
-            ltcAmp.bind(1);
+        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
+            ltcMat.bind(LtcMatTextureUnit);
             return *this;
         }
 
-        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
-            ltcMat.bind(0);
+        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
+            ltcAmp.bind(LtcAmpTextureUnit);
             return *this;
         }
 
     private:
+        enum: Int {
+            LtcMatTextureUnit = 0,
+            LtcAmpTextureUnit = 1
+        };
+
         Int _transformationMatrixUniform,
             _projectionMatrixUniform,
             _viewMatrixUniform,
@@ -233,8 +238,7 @@ class AreaLightsExample: public Platform::Application {
 AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     Platform::Application{arguments,
         Configuration{}.setTitle("Magnum Area Lights Example")
-                       .setSampleCount(8)
-                       .setVersion(Version::GL430)}
+                       .setSampleCount(8)}
 {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::disable(Renderer::Feature::FaceCulling);
