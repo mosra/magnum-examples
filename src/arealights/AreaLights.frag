@@ -5,7 +5,9 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2017 — Jonathan Hale <squareys@googlemail.com>
+        2017 — Jonathan Hale <squareys@googlemail.com>, based on "Real-Time
+            Polygonal-Light Shading with Linearly Transformed Cosines", by Eric
+            Heitz et al, https://eheitzresearch.wordpress.com/415-2/
 
     This is free and unencumbered software released into the public domain.
 
