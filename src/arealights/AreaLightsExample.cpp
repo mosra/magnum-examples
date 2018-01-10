@@ -51,6 +51,14 @@
 
 #include "configure.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+/* Import plugins in static build */
+static int importStaticPlugins() {
+    CORRADE_PLUGIN_IMPORT(DdsImporter)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
+#endif
+
 namespace Magnum { namespace Examples {
 
 /* Class for the area light shader */

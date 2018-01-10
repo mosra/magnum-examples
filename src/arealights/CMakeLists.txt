@@ -46,6 +46,10 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(MagnumPlugins REQUIRED DdsImporter)
+endif()
+
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -62,4 +66,24 @@ target_link_libraries(magnum-arealights
     Magnum::Primitives
     Magnum::Shaders)
 
-install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+if(CORRADE_TARGET_EMSCRIPTEN)
+    target_link_libraries(magnum-arealights MagnumPlugins::DdsImporter)
+endif()
+
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES arealights.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights RENAME index.html)
+    install(TARGETS magnum-arealights DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-arealights.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-arealights.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
