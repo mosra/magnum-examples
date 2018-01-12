@@ -350,25 +350,28 @@ void AreaLightsExample::drawEvent() {
     _lightPlane.draw(_flatShader);
 
     swapBuffers();
-    redraw();
+
+    /* Redraw if moving somewhere */
+    if(!_cameraDirection.isZero()) redraw();
 }
 
 void AreaLightsExample::mousePressEvent(MouseEvent& event) {
-    if((event.button() == MouseEvent::Button::Left)) {
+    if((event.button() == MouseEvent::Button::Left))
         _previousMousePosition = event.position();
-    }
+    else return;
+
+    redraw();
 }
 
 void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    // TODO: size is 0,0 ?
     const Vector2 delta = 3.0f*
         Vector2{event.position() - _previousMousePosition}/Vector2{defaultFramebuffer.viewport().size()};
     _cameraRotation += delta;
 
     _previousMousePosition = event.position();
-    event.setAccepted();
+    redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
@@ -406,22 +409,26 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
         _shader.setF0(_f0);
     } else if(event.key() == KeyEvent::Key::Esc) {
         exit();
-    }
-
     #ifdef CORRADE_IS_DEBUG_BUILD
-    if(event.key() == KeyEvent::Key::F5) {
+    } else if(event.key() == KeyEvent::Key::F5) {
         /* Reload shader */
         Utility::Resource::overrideGroup("arealights-data", "../src/arealights/resources.conf");
         _shader = AreaLightShader{};
-    }
+    } else {
     #endif
+        return;
+    }
+
+    redraw();
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::W || event.key() == KeyEvent::Key::S ||
-       event.key() == KeyEvent::Key::A || event.key() == KeyEvent::Key::D) {
+       event.key() == KeyEvent::Key::A || event.key() == KeyEvent::Key::D)
         _cameraDirection = {};
-    }
+    else return;
+
+    redraw();
 }
 
 }}
