@@ -25,7 +25,7 @@
 
 namespace Magnum {
 /** @page building-examples Downloading and building examples
-@brief Guide how to download and build examples for Magnum engine.
+@brief Guide how to download and build examples for the Magnum engine.
 
 @tableofcontents
 @m_footernavigation
@@ -34,93 +34,182 @@ Examples demonstrate Magnum features, usage and capabilities. They are not
 needed for essential usage, but are useful for learning purposes in addition to
 the documentation itself.
 
+@section building-examples-packages Prepared packages
+
+The easiest way to install Magnum Examples is to use one of the ready-made
+packages for your platform of choice. See @ref building-examples-manual if you
+want to have more control. Cross-compiling is very similar to
+@ref building-cross "cross-compiling of Magnum itself".
+
+-   @ref building-examples-packages-arch
+-   @ref building-examples-packages-deb
+-   @ref building-examples-packages-gentoo
+-   @ref building-examples-packages-brew
+
+@subsection building-examples-packages-arch ArchLinux packages
+
+In `package/archlinux/magnum-examples-git` there is a package for Git
+development build. The package is also in AUR as The package is also in AUR as
+[magnum-examples-git](https://aur.archlinux.org/packages/magnum-examples-git/).
+It depends on @ref building-corrade-packages-arch "Corrade",
+@ref building-packages-arch "Magnum",
+@ref building-plugins-packages-arch "Magnum Plugins",
+@ref building-integration-packages-arch "Magnum Integration" and
+@ref building-extras-packages-arch "Magnum Extras" ArchLinux packages.
+
+There are also quite a few development packages for native builds or
+cross-compilation for Emscripten, Android and MinGW. See the PKGBUILD files in
+the `package/archlinux` directory. They allow you to build and install the
+package directly from the source tree. Example usage:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+cd package/archlinux
+makepkg -fp PKGBUILD # or any other PKGBUILD file
+@endcode
+
+Once built, install the package using `pacman`:
+
+@code{.sh}
+sudo pacman -U magnum-examples-*.pkg.tar.xz
+@endcode
+
+Edit the PKGBUILDs if you want to pass additional flags to CMake or
+@ref building-examples-features "enable / disable additional features".
+
+@subsection building-examples-packages-deb Packages for Debian, Ubuntu and derivatives
+
+The `package/debian/` directory contains all files needed for building Debian
+packages. You need @ref building-corrade-packages-deb "Corrade",
+@ref building-packages-deb "Magnum",
+@ref building-plugins-packages-deb "Magnum Plugins",
+@ref building-integration-packages-deb "Magnum Integration" and
+@ref building-extras-packages-deb "Magnum Extras" Debian packages installed and
+in addition also the `dpkg-dev` and `debhelper` packages. Building is easy,
+just change directory to package root, link or copy the `package/debian`
+directory there and run `dpkg-buildpackage`:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+ln -s package/debian .
+dpkg-buildpackage
+@endcode
+
+This will compile binary and development packages, which will then appear in a
+parent directory. Install them using `dpkg`:
+
+@code{.sh}
+sudo dpkg -i ../magnum-examples*.deb
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-examples-features "enable / disable additional features", add
+them to `dh_auto_configure` at the bottom of `debian/rules`. Watch out, as
+indentation has to be done using tabs, not spaces.
+
+@subsection building-examples-packages-gentoo Gentoo Linux ebuilds
+
+Gentoo Git ebuild is available in the `package/gentoo` directory. Get the
+@ref building-corrade-packages-gentoo "Corrade",
+@ref building-packages-gentoo "Magnum",
+@ref building-plugins-packages-gentoo "Magnum Plugins",
+@ref building-integration-packages-gentoo "Magnum Integration" and
+@ref building-extras-packages-gentoo "Magnum Extras" Gentoo packages first and
+then build and install Magnum Examples like this:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+cd package/gentoo
+sudo ebuild dev-libs/magnum-examples/magnum-examples-99999.ebuild manifest clean merge
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-examples-features "enable / disable additional features", add
+them to `mycmakeargs` in the `*.ebuild` file.
+
+@subsection building-examples-packages-brew Homebrew formulas for macOS
+
+macOS [Homebrew](https://brew.sh) formulas building the latest Git revision are
+in the `package/homebrew` directory. Either use the `*.rb` files directly or
+use the tap at https://github.com/mosra/homebrew-magnum. When installing from
+the `*.rb` files you need to install the @ref building-corrade-packages-brew "Corrade",
+@ref building-packages-brew "Magnum",
+@ref building-plugins-packages-brew "Magnum Plugins",
+@ref building-integration-packages-brew "Magnum Integration" and
+@ref building-extras-packages-brew "Magnum Extras" Homebrew packages first,
+otherwise you can do just this:
+
+@code{.sh}
+brew install --HEAD mosra/magnum/corrade
+brew install --HEAD mosra/magnum/magnum
+brew install --HEAD mosra/magnum/magnum-plugins
+brew install --HEAD mosra/magnum/magnum-integration
+brew install --HEAD mosra/magnum/magnum-extras
+brew install --HEAD mosra/magnum/magnum-examples
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-examples-features "enable / disable additional features", edit
+the `*.rb` file.
+
+@section building-examples-manual Manual build
+
 The source is available on GitHub: https://github.com/mosra/magnum-examples.
-Building integration libraries is very similar to building Magnum itself. See
-@ref building for additonal information about building, crosscompiling and
+Building the examples is very similar to building Magnum itself. See
+@ref building for additonal information about building, cross-compiling and
 platform-specific issues. Unlike other Magnum repositories, ports to mobile and
 web platforms are provided in the [ports branch](https://github.com/mosra/magnum-examples/tree/ports)
 and not present in `master` in order to keep the example code as simple as
 possible.
 
-By default only *Triangle* example is built. Some examples depend on plugins
-and integration libraries, see @ref building-plugins and @ref building-integration
-for more information.
+@subsection building-examples-features Enabling or disabling features
 
--   `WITH_AREALIGHTS_EXAMPLE` -- Build @ref examples-arealights example.
--   `WITH_AUDIO_EXAMPLE` --- Build @ref examples-audio example. Requires
-    @ref Audio library and @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
--   `WITH_BULLET_EXAMPLE` --- Build @ref examples-bullet example. Requires
-    @ref BulletIntegration library.
--   `WITH_CUBEMAP_EXAMPLE` --- Build @ref examples-cubemap example. Requires
-    @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL ES.
--   `WITH_MOTIONBLUR_EXAMPLE` --- Build @ref examples-motionblur example. Not
-    available on OpenGL ES.
--   `WITH_OVR_EXAMPLE` --- Build @ref examples-ovr example. Requires
-    @ref OvrIntegration library.
--   `WITH_PICKING_EXAMPLE` --- Build @ref examples-picking example.
--   `WITH_PRIMITIVES_EXAMPLE` --- Build @ref examples-primitives "Primitives" example.
--   `WITH_SHADOWS_EXAMPLE` --- Build @ref examples-shadows example.
--   `WITH_TEXT_EXAMPLE` --- Build @ref examples-text example. Requires
-    @ref Text library and @ref Text::FreeTypeFont "FreeTypeFont" plugin.
--   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build @ref examples-textured-triangle
-    example. Requires @ref Trade::JpegImporter "JpegImporter" plugin, not
-    available in OpenGL ES.
--   `WITH_TRIANGLE_EXAMPLE` --- Build @ref examples-triangle "Triangle" example.
--   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build @ref examples-triangle-plain-glfw "Plain GLFW Triangle"
+By default only the *Triangle* example is built. All examples depend on various
+libraries from the core Magnum repository and the @ref Platform::Sdl2Application
+class, unless said otherwise  Some examples depend on plugins, extras and
+integration libraries, see @ref building-plugins, @ref building-integration and
+@ref building-extras for more information.
+
+-   `WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights example.
+-   `WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example. Requires
+    the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
+-   `WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example. Requires
+    the @ref BulletIntegration library.
+-   `WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example. Requires
+    the @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL
+    ES.
+-   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
+    Not available on OpenGL ES.
+-   `WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
+    the @ref OvrIntegration library.
+-   `WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
+-   `WITH_PRIMITIVES_EXAMPLE` --- Build the @ref examples-primitives "Primitives"
     example.
--   `WITH_VIEWER_EXAMPLE` --- Build @ref examples-viewer "Viewer" example.
-    Requires @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
+-   `WITH_SHADOWS_EXAMPLE` --- Build the @ref examples-shadows example.
+-   `WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example. Requires
+    the @ref Text library and the @ref Text::FreeTypeFont "FreeTypeFont" plugin.
+-   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build the @ref examples-textured-triangle
+    example. Requires the @ref Trade::JpegImporter "JpegImporter" plugin, not
+    available in OpenGL ES.
+-   `WITH_TRIANGLE_EXAMPLE` --- Build the @ref examples-triangle "Triangle"
+    example. Enabled by default.
+-   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
+    @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example. Depends on
+    [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
+-   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
+    Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 
-@section building-examples-doc Building Examples documentation
+@section building-examples-doc Building documentation
 
-The documentation is built as part of of the main Magnum documentation. Clone
-the projects next to each other and continue as described in @ref building-doc.
-
-@section building-examples-arch Building ArchLinux packages
-
-In `package/archlinux` directory is currently one package for Git development
-build. The package is also in AUR under the same name.
-
-There are also a few development PKGBUILDs in `package/archlinux`, which allow
-you to build and install the package directly from source tree without
-downloading anything.
-
-@section building-examples-gentoo Gentoo ebuilds
-
-Gentoo Git ebuild is available in `package/gentoo` directory.
-
-@section building-examples-deb Building DEB packages
-
-There is also `package/debian/` directory with all files needed for building
-Debian packages. You need to have `corrade-dev`, `magnum-dev`,
-`magnum-integration-dev` and `magnum-plugins-dev` DEB packages installed and in
-addition also `dpkg-dev` and `debhelper` packages. Building is easy, just
-change directory to package root, link or copy `package/debian` directory there
-and run `dpkg-buildpackage`:
-
-@code{.sh}
-ln -s package/debian .
-dpkg-buildpackage
-@endcode
-
-This will compile binary and development packages, which will then appear in
-parent directory. If you need to modify CMake flags (enabling/disabling some
-examples, for example), modify the last entry in `debian/rules`.
-
-@subsection building-examples-brew Homebrew formulas
-
-macOS Homebrew formulas are in `package/homebrew` directory. Either use the
-`*.rb` files directly or use the tap at https://github.com/mosra/homebrew-magnum :
-
-@code{.sh}
-brew install --HEAD mosra/magnum/magnum-examples
-@endcode
+The documentation for examples is built as part of of the main Magnum
+documentation. Clone the projects next to each other and continue as described
+in @ref building-doc.
 
 @section building-examples-ci Continuous Integration
 
 @subsection building-examples-ci-travis Travis
 
-In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS Clang,
+In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS,
 Linux desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2 and
 Android GLES2/GLES3 configuration. Online at https://travis-ci.org/mosra/magnum-examples.
 
