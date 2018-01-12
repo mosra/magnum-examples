@@ -37,12 +37,12 @@
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Extensions.h>
+#include <Magnum/Mesh.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Shader.h>
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Version.h>
-#include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Plane.h>
