@@ -244,6 +244,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
 {
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::disable(Renderer::Feature::FaceCulling);
+    Renderer::setClearColor(0x000000_rgbf);
 
     /* Setup floor plane mesh */
     const Trade::MeshData3D plane = Primitives::Plane::solid();
