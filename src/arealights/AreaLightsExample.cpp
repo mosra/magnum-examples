@@ -43,9 +43,7 @@
 #include <Magnum/Texture.h>
 #include <Magnum/TextureFormat.h>
 #include <Magnum/Version.h>
-#include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Primitives/Plane.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
@@ -117,7 +115,7 @@ class AreaLightShader: public AbstractShaderProgram {
 
         /* View position */
 
-        AreaLightShader& setViewPosition(const Vector4& pos) {
+        AreaLightShader& setViewPosition(const Vector3& pos) {
             setUniform(_viewPositionUniform, pos);
             return *this;
         }
@@ -156,20 +154,15 @@ class AreaLightShader: public AbstractShaderProgram {
             return *this;
         }
 
-        AreaLightShader& setLightQuad(Containers::ArrayView<Vector4> quadPoints) {
+        AreaLightShader& setLightQuad(Containers::StaticArrayView<4, Vector3> quadPoints) {
             setUniform(_lightQuadUniform, quadPoints);
             return *this;
         }
 
         /* LTC lookup textures */
 
-        AreaLightShader& bindLtcMatTexture(Texture2D& ltcMat) {
-            ltcMat.bind(LtcMatTextureUnit);
-            return *this;
-        }
-
-        AreaLightShader& bindLtcAmpTexture(Texture2D& ltcAmp) {
-            ltcAmp.bind(LtcAmpTextureUnit);
+        AreaLightShader& bindTextures(Texture2D& ltcMat, Texture2D& ltcAmp) {
+            Texture2D::bind(LtcMatTextureUnit, {&ltcMat, &ltcAmp});
             return *this;
         }
 
@@ -207,16 +200,36 @@ class AreaLightsExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
 
-        AreaLightShader _shader;
-        Matrix4 _lightTransform;
+        Matrix4 _lightTransform[3]{
+            Matrix4::translation({-3.25f, 2.0f, -2.1f})*
+            Matrix4::rotationY(30.0_degf)*
+            Matrix4::rotationX(-15.0_degf)*
+            Matrix4::rotationZ(10.0_degf)*
+            Matrix4::scaling({0.5f, 1.75f, 1.0f}),
 
-        /* Floor plane mesh data */
-        Buffer _vertexBuffer;
-        Mesh _floorPlane;
+            Matrix4::translation({0.0f, 1.8f, -2.5f})*
+            Matrix4::rotationX(-5.0_degf)*
+            Matrix4::rotationZ(30.0_degf)*
+            Matrix4::scaling({1.25f, 1.25f, 1.0f}),
 
-        /* For light visualization */
-        Buffer _lightVertexBuffer;
-        Mesh _lightPlane;
+            Matrix4::translation({3.25f, 2.0f, -2.1f})*
+            Matrix4::rotationY(-30.0_degf)*
+            Matrix4::rotationX(5.0_degf)*
+            Matrix4::rotationZ(-10.0_degf)*
+            Matrix4::scaling({0.75f, 1.25f, 1.0f})};
+
+        Color3 _lightColor[3]{0xc7cf2f_rgbf, 0x2f83cc_rgbf, 0x3bd267_rgbf};
+
+        Float _lightIntensity[3]{1.0f, 1.5f, 1.0f};
+
+        bool _lightTwoSided[3]{true, false, true};
+
+        /* Plane mesh */
+        Buffer _vertices;
+        Mesh _plane;
+
+        /* Shaders */
+        AreaLightShader _areaLightShader;
         Shaders::Flat3D _flatShader;
 
         /* Look Up Textures for arealights shader */
@@ -227,9 +240,9 @@ class AreaLightsExample: public Platform::Application {
         Matrix4 _transformation, _projection, _view;
         Vector2i _previousMousePosition;
 
-        Vector3 _cameraPosition{1.0f, -5.0f, -6.0f};
+        Vector3 _cameraPosition{0.0f, 1.0f, 6.0f};
         Vector3 _cameraDirection;
-        Vector2 _cameraRotation{0.4f, 0.4f};
+        Vector2 _cameraRotation;
 
         /* Material properties */
         Float _metallic = 0.5f;
@@ -237,55 +250,36 @@ class AreaLightsExample: public Platform::Application {
         Float _f0 = 0.5f; /* Specular reflection coefficient */
 };
 
+constexpr struct {
+    Vector3 position;
+    Vector3 normal;
+} LightVertices[] = {
+    {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    {{ 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    {{ 1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+    {{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+};
+
 AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     Platform::Application{arguments,
         Configuration{}.setTitle("Magnum Area Lights Example")
                        .setSampleCount(8)}
 {
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::disable(Renderer::Feature::FaceCulling);
+    /* Make it all DARK, eanble face culling so one-sided lights are properly
+       visualized */
+    Renderer::enable(Renderer::Feature::FaceCulling);
     Renderer::setClearColor(0x000000_rgbf);
 
-    /* Setup floor plane mesh */
-    const Trade::MeshData3D plane = Primitives::Plane::solid();
-    _vertexBuffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), BufferUsage::StaticDraw);
-    _floorPlane.setPrimitive(plane.primitive())
-        .addVertexBuffer(_vertexBuffer, 0, Shaders::Generic3D::Position{}, Shaders::Generic3D::Normal{})
-        .setCount(plane.positions(0).size());
+    /* Setup the plane mesh, which will be used for both the floor and light
+       visualization */
+    _vertices.setData(LightVertices, BufferUsage::StaticDraw);
+    _plane.setPrimitive(MeshPrimitive::TriangleFan)
+        .addVertexBuffer(_vertices, 0, Shaders::Generic3D::Position{}, Shaders::Generic3D::Normal{})
+        .setCount(Containers::arraySize(LightVertices));
 
     /* Setup project and floor plane tranformation matrix */
-    const Float aspectRatio = Vector2{defaultFramebuffer.viewport().size()}.aspectRatio();
-    _projection = Matrix4::perspectiveProjection(60.0_degf, aspectRatio, 0.01f, 100.0f);
-
+    _projection = Matrix4::perspectiveProjection(60.0_degf, 4.0f/3.0f, 0.1f, 50.0f);
     _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
-
-    /* Setup light transform and buffers */
-    const Vector2 scale{3.0f, 3.0f};
-    const Vector3 lightPosition{3.0f, 3.0f, -3.0f};
-    _lightTransform = Matrix4::translation(lightPosition)*
-                  Matrix4::rotationX(0.0_degf)*
-                  Matrix4::rotationY(-45.0_degf)*
-                  Matrix4::rotationZ(0.0_degf)*
-                  Matrix4::scaling(Vector3(0.5f*scale, 1.0f));
-
-    constexpr Vector3 lightVertices[] = {
-        {-1.0f,  1.0f, 0.0f},
-        { 1.0f,  1.0f, 0.0f},
-        { 1.0f, -1.0f, 0.0f},
-        {-1.0f, -1.0f, 0.0f}
-    };
-
-    Vector4 quadPoints[4];
-    for(int i : {0, 1, 2, 3}) {
-        quadPoints[i] = _lightTransform*Vector4{lightVertices[i], 1.0f};
-    }
-
-    /* Setup mesh for light visualization */
-    _lightVertexBuffer.setData(lightVertices, BufferUsage::StaticDraw);
-    _lightPlane
-        .setPrimitive(MeshPrimitive::TriangleFan)
-        .addVertexBuffer(_lightVertexBuffer, 0, Shaders::Flat3D::Position{})
-        .setCount(4);
 
     /* Load LTC matrix and BRDF textures */
     PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
@@ -317,42 +311,59 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
         .setStorage(1, TextureFormat::RGBA32F, image->size())
         .setSubImage(0, {}, *image);
 
-    _shader.bindLtcAmpTexture(_ltcAmp)
-        .bindLtcMatTexture(_ltcMat)
-        .setBaseColor(0xcccccc_rgbf)
+    _areaLightShader
+        .bindTextures(_ltcMat, _ltcAmp)
         .setMetallic(_metallic)
         .setRoughness(_roughness)
-        .setF0(_f0)
-        .setLightIntensity(1.0f)
-        .setTwoSided(true)
-        .setLightQuad({quadPoints, 4});
+        .setF0(_f0);
 }
 
 void AreaLightsExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+    defaultFramebuffer.clear(FramebufferClear::Color);
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
     _view = Matrix4::rotationX(Rad{_cameraRotation.y()})*
             Matrix4::rotationY(Rad{_cameraRotation.x()})*
-            Matrix4::translation(_cameraPosition);
+            Matrix4::translation(-_cameraPosition);
 
-    /* Draw floor plane */
-    _shader.setTransformationMatrix(_transformation)
-           .setProjectionMatrix(_projection)
-           .setViewMatrix(_view)
-           .setNormalMatrix(_transformation.rotationScaling())
-        .setViewPosition(Vector4{ _view.inverted().transformPoint({}), 1.0f });
-    _floorPlane.draw(_shader);
+    /* Draw light on the floor. Cheat a bit and just add everything together.
+       Will work as long as the background is black. */
+    Renderer::enable(Renderer::Feature::Blending);
+    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
+    for(std::size_t i: {0, 1, 2}) {
+        Vector3 quadPoints[4];
+        for(std::size_t p: {0, 1, 2, 3})
+            quadPoints[p] = _lightTransform[i].transformPoint(LightVertices[p].position);
 
-    /* Draw light */
-    _flatShader.setTransformationProjectionMatrix(_projection*_view*_lightTransform)
-        .setColor(Color3{1.0f, 1.0f, 1.0f});
-    _lightPlane.draw(_flatShader);
+        _areaLightShader
+            .setTransformationMatrix(_transformation)
+            .setProjectionMatrix(_projection)
+            .setViewMatrix(_view)
+            .setNormalMatrix(_transformation.rotationScaling())
+            .setViewPosition(_view.invertedRigid().translation())
+            .setLightQuad(quadPoints)
+            .setBaseColor(_lightColor[i])
+            .setLightIntensity(_lightIntensity[i])
+            .setTwoSided(_lightTwoSided[i]);
+        _plane.draw(_areaLightShader);
+    }
+    Renderer::disable(Renderer::Feature::Blending);
 
+    /* Draw light visualization. Draw twice for two-sided lights. */
+    for(std::size_t i: {0, 1, 2}) {
+        _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*0.75f)
+            .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]);
+        _plane.draw(_flatShader);
+
+        if(_lightTwoSided[i]) {
+            _flatShader.setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]*Matrix4::scaling(Vector3::xScale(-1.0f)));
+            _plane.draw(_flatShader);
+        }
+    }
+
+    /* Redraw only if moving somewhere */
     swapBuffers();
-
-    /* Redraw if moving somewhere */
     if(!_cameraDirection.isZero()) redraw();
 }
 
@@ -376,49 +387,42 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
+    /* Movement */
     if(event.key() == KeyEvent::Key::W) {
-        _cameraDirection = _view.inverted().backward()*0.01f;
-    } else if(event.key() == KeyEvent::Key::S) {
         _cameraDirection = -_view.inverted().backward()*0.01f;
+    } else if(event.key() == KeyEvent::Key::S) {
+        _cameraDirection = _view.inverted().backward()*0.01f;
     } else if (event.key() == KeyEvent::Key::A) {
-        _cameraDirection = -Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
+        _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
     } else if (event.key() == KeyEvent::Key::D) {
-        _cameraDirection = Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
+        _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
+
+    /* Increase/decrease roughness */
     } else if(event.key() == KeyEvent::Key::R) {
-        /* Increase/decrease roughness */
-        if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _roughness = Math::max(0.1f, _roughness - 0.01f);
-        } else {
-            _roughness = Math::min(1.0f, _roughness + 0.01f);
-        }
-        _shader.setRoughness(_roughness);
+        _areaLightShader.setRoughness(_roughness = Math::clamp(
+            _roughness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            0.1f, 1.0f));
+
+    /* Increase/decrease metallic */
     } else if(event.key() == KeyEvent::Key::M) {
-        /* Increase/decrease metallic */
-        if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _metallic = Math::max(0.1f, _metallic - 0.01f);
-        } else {
-            _metallic = Math::min(1.0f, _metallic + 0.01f);
-        }
-        _shader.setMetallic(_metallic);
+        _areaLightShader.setMetallic(_metallic = Math::clamp(
+            _metallic + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            0.1f, 1.0f));
+
+    /* Increase/decrease f0 */
     } else if(event.key() == KeyEvent::Key::F) {
-        /* Increase/decrease f0 */
-        if(event.modifiers() & KeyEvent::Modifier::Shift) {
-            _f0 = Math::max(0.1f, _f0 - 0.01f);
-        } else {
-            _f0 = Math::min(1.0f, _f0 + 0.01f);
-        }
-        _shader.setF0(_f0);
-    } else if(event.key() == KeyEvent::Key::Esc) {
-        exit();
-    #ifdef CORRADE_IS_DEBUG_BUILD
+        _areaLightShader.setF0(_f0 = Math::clamp(
+            _f0 + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            0.1f, 1.0f));
+
+    /* Reload shader */
     } else if(event.key() == KeyEvent::Key::F5) {
-        /* Reload shader */
+        #ifdef CORRADE_IS_DEBUG_BUILD
         Utility::Resource::overrideGroup("arealights-data", "../src/arealights/resources.conf");
-        _shader = AreaLightShader{};
-    } else {
-    #endif
-        return;
-    }
+        _areaLightShader = AreaLightShader{};
+        #endif
+
+    } else return;
 
     redraw();
 }
