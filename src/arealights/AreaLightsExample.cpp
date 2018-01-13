@@ -455,7 +455,7 @@ void AreaLightsExample::drawEvent() {
 
     /* Draw light visualization. Draw twice for two-sided lights. */
     for(std::size_t i: {0, 1, 2}) {
-        _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*0.75f)
+        _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
             .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]);
         _plane.draw(_flatShader);
 
