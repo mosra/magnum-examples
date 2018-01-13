@@ -48,6 +48,17 @@ cmake .. \
 make -j install
 cd ../..
 
+# Crosscompile Magnum Extras
+git clone --depth 1 git://github.com/mosra/magnum-extras.git
+cd magnum-extras
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_UI=OFF
+make -j install
+cd ../..
+
 mkdir build && cd build
 cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/deps \

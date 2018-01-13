@@ -30,7 +30,7 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DWITH_INTERCONNECT=OFF ^
+    -DWITH_INTERCONNECT=ON ^
     -DWITH_TESTSUITE=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
@@ -71,6 +71,19 @@ cmake .. ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DWITH_BULLET=ON ^
     -DWITH_OVR=ON ^
+    -G Ninja || exit /b
+cmake --build . || exit /b
+cmake --build . --target install || exit /b
+cd .. && cd ..
+
+rem Build Magnum Extras
+git clone --depth 1 git://github.com/mosra/magnum-extras.git || exit /b
+cd magnum-extras || exit /b
+mkdir build && cd build || exit /b
+cmake .. ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DWITH_UI=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b

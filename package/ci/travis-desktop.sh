@@ -9,7 +9,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF \
+    -DWITH_INTERCONNECT=ON \
     -DWITH_TESTSUITE=OFF \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 make -j install
@@ -45,6 +45,17 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_BULLET=ON \
     -DWITH_OVR=OFF
+make -j install
+cd ../..
+
+# Crosscompile Magnum Extras
+git clone --depth 1 git://github.com/mosra/magnum-extras.git
+cd magnum-extras
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_UI=ON
 make -j install
 cd ../..
 
