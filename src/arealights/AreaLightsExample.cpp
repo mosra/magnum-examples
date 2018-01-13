@@ -514,13 +514,13 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 
     /* Movement */
     } else if(event.key() == KeyEvent::Key::W) {
-        _cameraDirection = -_view.inverted().backward()*0.01f;
+        _cameraDirection = -_view.inverted().backward()*0.1f;
     } else if(event.key() == KeyEvent::Key::S) {
-        _cameraDirection = _view.inverted().backward()*0.01f;
+        _cameraDirection = _view.inverted().backward()*0.1f;
     } else if (event.key() == KeyEvent::Key::A) {
-        _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
+        _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.1f;
     } else if (event.key() == KeyEvent::Key::D) {
-        _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
+        _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.1f;
 
     /* Increase/decrease roughness */
     } else if(event.key() == KeyEvent::Key::R) {
