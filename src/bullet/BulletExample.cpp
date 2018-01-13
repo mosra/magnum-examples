@@ -136,7 +136,9 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     setMinimalLoopPeriod(16);
+    #endif
     _timeline.start();
 
     redraw();

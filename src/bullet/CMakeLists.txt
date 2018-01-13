@@ -70,3 +70,21 @@ target_link_libraries(magnum-bullet
     MagnumIntegration::Bullet)
 
 install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES bullet.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet RENAME index.html)
+    install(TARGETS magnum-bullet DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet)
+    install(FILES
+        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-bullet.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-bullet.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
