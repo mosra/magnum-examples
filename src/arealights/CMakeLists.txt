@@ -43,6 +43,7 @@ endif()
 find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
+find_package(MagnumExtras REQUIRED Ui)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -56,6 +57,7 @@ target_include_directories(magnum-arealights PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 target_link_libraries(magnum-arealights
     Magnum::Application
     Magnum::Magnum
-    Magnum::Shaders)
+    Magnum::Shaders
+    MagnumExtras::Ui)
 
 install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

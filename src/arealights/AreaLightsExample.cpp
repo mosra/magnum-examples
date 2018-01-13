@@ -30,6 +30,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <iomanip>
+#include <sstream>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/AbstractShaderProgram.h>
@@ -45,9 +49,16 @@
 #include <Magnum/Version.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/Flat.h>
+#include <Magnum/Text/Alignment.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Ui/Anchor.h>
+#include <Magnum/Ui/Button.h>
+#include <Magnum/Ui/Label.h>
+#include <Magnum/Ui/Plane.h>
+#include <Magnum/Ui/UserInterface.h>
+#include <Magnum/Ui/ValidatedInput.h>
 
 #include "configure.h"
 
@@ -186,19 +197,55 @@ class AreaLightShader: public AbstractShaderProgram {
             _lightQuadUniform;
 };
 
+/* Base UI plane */
+constexpr Vector2 WidgetSize{80, 32};
+const std::regex FloatValidator{R"(-?\d+(\.\d+)?)"};
+
+struct BaseUiPlane: Ui::Plane {
+    explicit BaseUiPlane(Ui::UserInterface& ui):
+        Ui::Plane{ui, Ui::Snap::Top|Ui::Snap::Bottom|Ui::Snap::Left|Ui::Snap::Right, 0, 16, 128},
+        metallic{*this, {Ui::Snap::Top|Ui::Snap::Right, WidgetSize}, FloatValidator, "0.5", 5},
+        roughness{*this, {Ui::Snap::Bottom, metallic, WidgetSize}, FloatValidator, "0.25", 5},
+        f0{*this, {Ui::Snap::Bottom, roughness, WidgetSize}, FloatValidator, "0.25", 5},
+
+        apply{*this, {Ui::Snap::Bottom|Ui::Snap::Right, WidgetSize}, "Apply", Ui::Style::Primary},
+        reset{*this, {Ui::Snap::Top, apply, WidgetSize}, "Reset", Ui::Style::Danger}
+    {
+        Ui::Label{*this, {Ui::Snap::Left, metallic}, "Metallic", Text::Alignment::MiddleRight};
+        Ui::Label{*this, {Ui::Snap::Left, roughness}, "Roughness", Text::Alignment::MiddleRight};
+        Ui::Label{*this, {Ui::Snap::Left, f0}, "ƒ₀", Text::Alignment::MiddleRight};
+
+        Ui::Label{*this, {Ui::Snap::Bottom|Ui::Snap::Left, WidgetSize},
+            "Use WASD + mouse to move, (Shift +) M/R/F to change parameters.",
+            Text::Alignment::MiddleLeft};
+    }
+
+    Ui::ValidatedInput metallic,
+        roughness,
+        f0;
+    Ui::Button apply,
+        reset;
+};
+
 using namespace Math::Literals;
 
-class AreaLightsExample: public Platform::Application {
+class AreaLightsExample: public Platform::Application, public Interconnect::Receiver {
     public:
         explicit AreaLightsExample(const Arguments& arguments);
+
+        void enableApplyButton(const std::string&);
+        void apply();
+        void reset();
 
     private:
         void drawEvent() override;
 
         void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
+        void textInputEvent(TextInputEvent& event) override;
 
         Matrix4 _lightTransform[3]{
             Matrix4::translation({-3.25f, 2.0f, -2.1f})*
@@ -248,6 +295,10 @@ class AreaLightsExample: public Platform::Application {
         Float _metallic = 0.5f;
         Float _roughness = 0.25f;
         Float _f0 = 0.5f; /* Specular reflection coefficient */
+
+        /* UI */
+        Containers::Optional<Ui::UserInterface> _ui;
+        Containers::Optional<BaseUiPlane> _baseUiPlane;
 };
 
 constexpr struct {
@@ -311,11 +362,62 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
         .setStorage(1, TextureFormat::RGBA32F, image->size())
         .setSubImage(0, {}, *image);
 
-    _areaLightShader
-        .bindTextures(_ltcMat, _ltcAmp)
-        .setMetallic(_metallic)
+    /* Create the UI */
+    _ui.emplace(Vector2{windowSize()}, windowSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
+    Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetFocused, *this, &AreaLightsExample::startTextInput);
+    Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetBlurred, *this, &AreaLightsExample::stopTextInput);
+
+    /* Base UI plane */
+    _baseUiPlane.emplace(*_ui);
+    Interconnect::connect(_baseUiPlane->metallic, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
+    Interconnect::connect(_baseUiPlane->roughness, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
+    Interconnect::connect(_baseUiPlane->f0, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
+    Interconnect::connect(_baseUiPlane->apply, &Ui::Button::tapped, *this, &AreaLightsExample::apply);
+    Interconnect::connect(_baseUiPlane->reset, &Ui::Button::tapped, *this, &AreaLightsExample::reset);
+
+    /* Apply the default values */
+    apply();
+}
+
+void AreaLightsExample::enableApplyButton(const std::string&) {
+    _baseUiPlane->apply.setEnabled(Ui::ValidatedInput::allValid({
+        _baseUiPlane->metallic,
+        _baseUiPlane->roughness,
+        _baseUiPlane->f0}));
+}
+
+namespace {
+    std::string toStringWithReasonablePrecision(Float f) { /* :( */
+        std::stringstream out;
+        out << std::setprecision(5) << f;
+        return out.str();
+    }
+}
+
+void AreaLightsExample::apply() {
+    _metallic = Math::clamp(std::stof(_baseUiPlane->metallic.value()), 0.1f, 1.0f);
+    _roughness = Math::clamp(std::stof(_baseUiPlane->roughness.value()), 0.1f, 1.0f);
+    _f0 = Math::clamp(std::stof(_baseUiPlane->f0.value()), 0.1f, 1.0f);
+
+    _areaLightShader.setMetallic(_metallic)
         .setRoughness(_roughness)
         .setF0(_f0);
+
+    /* Set the clamped values back */
+    _baseUiPlane->metallic.setValue(toStringWithReasonablePrecision(_metallic));
+    _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
+    _baseUiPlane->f0.setValue(toStringWithReasonablePrecision(_f0));
+}
+
+void AreaLightsExample::reset() {
+    _baseUiPlane->metallic.setValue("0.5");
+    _baseUiPlane->roughness.setValue("0.25");
+    _baseUiPlane->f0.setValue("0.25");
+
+    _cameraRotation = {};
+    _cameraPosition = {0.0f, 1.0f, 6.0f};
+
+    apply();
 }
 
 void AreaLightsExample::drawEvent() {
@@ -331,6 +433,7 @@ void AreaLightsExample::drawEvent() {
        Will work as long as the background is black. */
     Renderer::enable(Renderer::Feature::Blending);
     Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
+    _areaLightShader.bindTextures(_ltcMat, _ltcAmp);
     for(std::size_t i: {0, 1, 2}) {
         Vector3 quadPoints[4];
         for(std::size_t p: {0, 1, 2, 3})
@@ -362,6 +465,13 @@ void AreaLightsExample::drawEvent() {
         }
     }
 
+    /* Draw the UI */
+    Renderer::enable(Renderer::Feature::Blending);
+    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
+    _ui->draw();
+    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
+    Renderer::disable(Renderer::Feature::Blending);
+
     /* Redraw only if moving somewhere */
     swapBuffers();
     if(!_cameraDirection.isZero()) redraw();
@@ -370,25 +480,40 @@ void AreaLightsExample::drawEvent() {
 void AreaLightsExample::mousePressEvent(MouseEvent& event) {
     if((event.button() == MouseEvent::Button::Left))
         _previousMousePosition = event.position();
-    else return;
+
+    if(!_ui->handlePressEvent(event.position())) return;
 
     redraw();
 }
 
+void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
+    if(_ui->handleReleaseEvent(event.position()))
+        redraw();
+}
+
 void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    if(_ui->handleMoveEvent(event.position())) {
+        /* UI handles it */
 
-    const Vector2 delta = 3.0f*
-        Vector2{event.position() - _previousMousePosition}/Vector2{defaultFramebuffer.viewport().size()};
-    _cameraRotation += delta;
+    } else if((event.buttons() & MouseMoveEvent::Button::Left)) {
+        const Vector2 delta = 3.0f*
+            Vector2{event.position() - _previousMousePosition}/Vector2{defaultFramebuffer.viewport().size()};
+        _cameraRotation += delta;
 
-    _previousMousePosition = event.position();
+        _previousMousePosition = event.position();
+
+    } else return;
+
     redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
+    /* If an input is focused, pass the events only to the UI */
+    if(isTextInputActive() && _ui->focusedInputWidget()) {
+        if(!_ui->focusedInputWidget()->handleKeyPress(event)) return;
+
     /* Movement */
-    if(event.key() == KeyEvent::Key::W) {
+    } else if(event.key() == KeyEvent::Key::W) {
         _cameraDirection = -_view.inverted().backward()*0.01f;
     } else if(event.key() == KeyEvent::Key::S) {
         _cameraDirection = _view.inverted().backward()*0.01f;
@@ -399,21 +524,27 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 
     /* Increase/decrease roughness */
     } else if(event.key() == KeyEvent::Key::R) {
-        _areaLightShader.setRoughness(_roughness = Math::clamp(
+        _roughness = Math::clamp(
             _roughness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f));
+            0.1f, 1.0f);
+        _areaLightShader.setRoughness(_roughness);
+        _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
 
     /* Increase/decrease metallic */
     } else if(event.key() == KeyEvent::Key::M) {
-        _areaLightShader.setMetallic(_metallic = Math::clamp(
+        _metallic = Math::clamp(
             _metallic + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f));
+            0.1f, 1.0f);
+        _areaLightShader.setMetallic(_metallic);
+        _baseUiPlane->metallic.setValue(toStringWithReasonablePrecision(_metallic));
 
     /* Increase/decrease f0 */
     } else if(event.key() == KeyEvent::Key::F) {
-        _areaLightShader.setF0(_f0 = Math::clamp(
+        _f0 = Math::clamp(
             _f0 + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f));
+            0.1f, 1.0f);
+        _areaLightShader.setF0(_f0);
+        _baseUiPlane->f0.setValue(toStringWithReasonablePrecision(_f0));
 
     /* Reload shader */
     } else if(event.key() == KeyEvent::Key::F5) {
@@ -434,6 +565,11 @@ void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
     else return;
 
     redraw();
+}
+
+void AreaLightsExample::textInputEvent(TextInputEvent& event) {
+    if(isTextInputActive() && _ui->focusedInputWidget() && _ui->focusedInputWidget()->handleTextInput(event))
+        redraw();
 }
 
 }}

@@ -171,6 +171,7 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 
 -   `WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights example.
+    Requires the @ref Ui library and some `TrueTypeFont` plugin.
 -   `WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example. Requires
     the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
 -   `WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example. Requires
