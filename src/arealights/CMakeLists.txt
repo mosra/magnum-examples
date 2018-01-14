@@ -46,7 +46,9 @@ find_package(Magnum REQUIRED
 find_package(MagnumExtras REQUIRED Ui)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(MagnumPlugins REQUIRED DdsImporter)
+    find_package(MagnumPlugins REQUIRED
+        DdsImporter
+        StbTrueTypeFont)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -65,7 +67,9 @@ target_link_libraries(magnum-arealights
     MagnumExtras::Ui)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-arealights MagnumPlugins::DdsImporter)
+    target_link_libraries(magnum-arealights
+        MagnumPlugins::DdsImporter
+        MagnumPlugins::StbTrueTypeFont)
 endif()
 
 # Installation for Emscripten

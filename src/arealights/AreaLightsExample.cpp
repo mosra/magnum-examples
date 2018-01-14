@@ -66,6 +66,7 @@
 /* Import plugins in static build */
 static int importStaticPlugins() {
     CORRADE_PLUGIN_IMPORT(DdsImporter)
+    CORRADE_PLUGIN_IMPORT(StbTrueTypeFont)
     return 0;
 } CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
 #endif
