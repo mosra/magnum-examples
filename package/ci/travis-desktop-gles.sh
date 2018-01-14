@@ -9,7 +9,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF \
+    -DWITH_INTERCONNECT=$TARGET_GLES3 \
     -DWITH_TESTSUITE=OFF
 make -j install
 cd ../..
@@ -55,7 +55,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_UI=OFF
+    -DWITH_UI=$TARGET_GLES3
 make -j install
 cd ../..
 
@@ -63,7 +63,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_AREALIGHTS_EXAMPLE=OFF \
+    -DWITH_AREALIGHTS_EXAMPLE=$TARGET_GLES3 \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
