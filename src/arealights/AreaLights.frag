@@ -36,7 +36,7 @@ in vec3 v_normal;
 uniform vec3 u_viewPosition;
 
 uniform vec3 u_baseColor;
-uniform float u_metallic;
+uniform float u_metalness;
 uniform float u_roughness;
 uniform float u_f0;
 
@@ -225,8 +225,8 @@ void main() {
     const vec3 pos = v_position.xyz;
     const vec3 viewDir = normalize(u_viewPosition - pos);
 
-    const vec3 diffColor = u_baseColor*(1.0 - u_metallic);
-    const vec3 specColor = mix(vec3(u_f0, u_f0, u_f0), u_baseColor, u_metallic);
+    const vec3 diffColor = u_baseColor*(1.0 - u_metalness);
+    const vec3 specColor = mix(vec3(u_f0, u_f0, u_f0), u_baseColor, u_metalness);
 
     /* Create coords into LTC LUT, get inverse matrix from texture and compute radiance of light */
     const vec2 coords = ltcCoords(dot(viewDir, v_normal), u_roughness);

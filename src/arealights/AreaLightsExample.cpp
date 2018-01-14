@@ -93,7 +93,7 @@ class AreaLightShader: public AbstractShaderProgram {
             _viewPositionUniform = uniformLocation("u_viewPosition");
 
             _baseColorUniform = uniformLocation("u_baseColor");
-            _metallicUniform = uniformLocation("u_metallic");
+            _metalnessUniform = uniformLocation("u_metalness");
             _roughnessUniform = uniformLocation("u_roughness");
             _f0Uniform = uniformLocation("u_f0");
 
@@ -138,8 +138,8 @@ class AreaLightShader: public AbstractShaderProgram {
             return *this;
         }
 
-        AreaLightShader& setMetallic(Float v) {
-            setUniform(_metallicUniform, v);
+        AreaLightShader& setMetalness(Float v) {
+            setUniform(_metalnessUniform, v);
             return *this;
         }
 
@@ -189,7 +189,7 @@ class AreaLightShader: public AbstractShaderProgram {
             _normalMatrixUniform,
             _viewPositionUniform,
             _baseColorUniform,
-            _metallicUniform,
+            _metalnessUniform,
             _roughnessUniform,
             _f0Uniform,
             _lightIntensityUniform,
@@ -204,14 +204,14 @@ const std::regex FloatValidator{R"(-?\d+(\.\d+)?)"};
 struct BaseUiPlane: Ui::Plane {
     explicit BaseUiPlane(Ui::UserInterface& ui):
         Ui::Plane{ui, Ui::Snap::Top|Ui::Snap::Bottom|Ui::Snap::Left|Ui::Snap::Right, 0, 16, 128},
-        metallic{*this, {Ui::Snap::Top|Ui::Snap::Right, WidgetSize}, FloatValidator, "0.5", 5},
-        roughness{*this, {Ui::Snap::Bottom, metallic, WidgetSize}, FloatValidator, "0.25", 5},
+        metalness{*this, {Ui::Snap::Top|Ui::Snap::Right, WidgetSize}, FloatValidator, "0.5", 5},
+        roughness{*this, {Ui::Snap::Bottom, metalness, WidgetSize}, FloatValidator, "0.25", 5},
         f0{*this, {Ui::Snap::Bottom, roughness, WidgetSize}, FloatValidator, "0.25", 5},
 
         apply{*this, {Ui::Snap::Bottom|Ui::Snap::Right, WidgetSize}, "Apply", Ui::Style::Primary},
         reset{*this, {Ui::Snap::Top, apply, WidgetSize}, "Reset", Ui::Style::Danger}
     {
-        Ui::Label{*this, {Ui::Snap::Left, metallic}, "Metallic", Text::Alignment::MiddleRight};
+        Ui::Label{*this, {Ui::Snap::Left, metalness}, "Metalness", Text::Alignment::MiddleRight};
         Ui::Label{*this, {Ui::Snap::Left, roughness}, "Roughness", Text::Alignment::MiddleRight};
         Ui::Label{*this, {Ui::Snap::Left, f0}, "ƒ₀", Text::Alignment::MiddleRight};
 
@@ -220,7 +220,7 @@ struct BaseUiPlane: Ui::Plane {
             Text::Alignment::MiddleLeft};
     }
 
-    Ui::ValidatedInput metallic,
+    Ui::ValidatedInput metalness,
         roughness,
         f0;
     Ui::Button apply,
@@ -292,7 +292,7 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
         Vector2 _cameraRotation;
 
         /* Material properties */
-        Float _metallic = 0.5f;
+        Float _metalness = 0.5f;
         Float _roughness = 0.25f;
         Float _f0 = 0.5f; /* Specular reflection coefficient */
 
@@ -369,7 +369,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
 
     /* Base UI plane */
     _baseUiPlane.emplace(*_ui);
-    Interconnect::connect(_baseUiPlane->metallic, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
+    Interconnect::connect(_baseUiPlane->metalness, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
     Interconnect::connect(_baseUiPlane->roughness, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
     Interconnect::connect(_baseUiPlane->f0, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
     Interconnect::connect(_baseUiPlane->apply, &Ui::Button::tapped, *this, &AreaLightsExample::apply);
@@ -381,7 +381,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
 
 void AreaLightsExample::enableApplyButton(const std::string&) {
     _baseUiPlane->apply.setEnabled(Ui::ValidatedInput::allValid({
-        _baseUiPlane->metallic,
+        _baseUiPlane->metalness,
         _baseUiPlane->roughness,
         _baseUiPlane->f0}));
 }
@@ -395,22 +395,22 @@ namespace {
 }
 
 void AreaLightsExample::apply() {
-    _metallic = Math::clamp(std::stof(_baseUiPlane->metallic.value()), 0.1f, 1.0f);
+    _metalness = Math::clamp(std::stof(_baseUiPlane->metalness.value()), 0.1f, 1.0f);
     _roughness = Math::clamp(std::stof(_baseUiPlane->roughness.value()), 0.1f, 1.0f);
     _f0 = Math::clamp(std::stof(_baseUiPlane->f0.value()), 0.1f, 1.0f);
 
-    _areaLightShader.setMetallic(_metallic)
+    _areaLightShader.setMetalness(_metalness)
         .setRoughness(_roughness)
         .setF0(_f0);
 
     /* Set the clamped values back */
-    _baseUiPlane->metallic.setValue(toStringWithReasonablePrecision(_metallic));
+    _baseUiPlane->metalness.setValue(toStringWithReasonablePrecision(_metalness));
     _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
     _baseUiPlane->f0.setValue(toStringWithReasonablePrecision(_f0));
 }
 
 void AreaLightsExample::reset() {
-    _baseUiPlane->metallic.setValue("0.5");
+    _baseUiPlane->metalness.setValue("0.5");
     _baseUiPlane->roughness.setValue("0.25");
     _baseUiPlane->f0.setValue("0.25");
 
@@ -514,13 +514,13 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 
     /* Movement */
     } else if(event.key() == KeyEvent::Key::W) {
-        _cameraDirection = -_view.inverted().backward()*0.1f;
+        _cameraDirection = -_view.inverted().backward()*0.01f;
     } else if(event.key() == KeyEvent::Key::S) {
-        _cameraDirection = _view.inverted().backward()*0.1f;
+        _cameraDirection = _view.inverted().backward()*0.01f;
     } else if (event.key() == KeyEvent::Key::A) {
-        _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.1f;
+        _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
     } else if (event.key() == KeyEvent::Key::D) {
-        _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.1f;
+        _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
 
     /* Increase/decrease roughness */
     } else if(event.key() == KeyEvent::Key::R) {
@@ -530,13 +530,13 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
         _areaLightShader.setRoughness(_roughness);
         _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
 
-    /* Increase/decrease metallic */
+    /* Increase/decrease metalness */
     } else if(event.key() == KeyEvent::Key::M) {
-        _metallic = Math::clamp(
-            _metallic + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+        _metalness = Math::clamp(
+            _metalness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
-        _areaLightShader.setMetallic(_metallic);
-        _baseUiPlane->metallic.setValue(toStringWithReasonablePrecision(_metallic));
+        _areaLightShader.setMetalness(_metalness);
+        _baseUiPlane->metalness.setValue(toStringWithReasonablePrecision(_metalness));
 
     /* Increase/decrease f0 */
     } else if(event.key() == KeyEvent::Key::F) {
