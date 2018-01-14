@@ -63,7 +63,8 @@ The following consist of documented source code only:
 -   @subpage examples-cubemap --- @copybrief examples-cubemap
 -   @subpage examples-motionblur --- @copybrief examples-motionblur
 -   @subpage examples-ovr --- @copybrief examples-ovr
--   @subpage examples-picking --- @copybrief examples-picking
+-   @subpage examples-picking @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-picking
 -   @subpage examples-shadows --- @copybrief examples-shadows
 -   @subpage examples-text @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-text
