@@ -86,7 +86,7 @@ namespace Magnum {
     instead of looking for it in system-wide locations.
 -   CMake targets are now organized in folders for better development
     experience in IDEs such as Visual Studio or Xcode
--   Added @ref building-examples-brew "Homebrew package"
+-   Added a @ref building-examples-packages-brew "Homebrew package"
 -   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
 -   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
     up initial CMake run

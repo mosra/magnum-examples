@@ -18,8 +18,9 @@ IUSE=""
 
 RDEPEND="
 	dev-libs/magnum
-	dev-libs/magnum-integration
 	dev-libs/magnum-plugins
+	dev-libs/magnum-integration
+	dev-libs/magnum-extras
 	media-libs/openal
 	sci-physics/bullet
 "

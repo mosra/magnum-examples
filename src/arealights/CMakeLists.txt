@@ -41,10 +41,9 @@ if(POLICY CMP0028)
 endif()
 
 find_package(Magnum REQUIRED
-    MeshTools
-    Primitives
     Shaders
     Sdl2Application)
+find_package(MagnumExtras REQUIRED Ui)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     find_package(MagnumPlugins REQUIRED DdsImporter)
@@ -62,9 +61,8 @@ target_include_directories(magnum-arealights PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 target_link_libraries(magnum-arealights
     Magnum::Application
     Magnum::Magnum
-    Magnum::MeshTools
-    Magnum::Primitives
-    Magnum::Shaders)
+    Magnum::Shaders
+    MagnumExtras::Ui)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     target_link_libraries(magnum-arealights MagnumPlugins::DdsImporter)

@@ -5,7 +5,9 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2017 — Jonathan Hale <squareys@googlemail.com>
+        2017 — Jonathan Hale <squareys@googlemail.com>, based on "Real-Time
+            Polygonal-Light Shading with Linearly Transformed Cosines", by Eric
+            Heitz et al, https://eheitzresearch.wordpress.com/415-2/
 
     This is free and unencumbered software released into the public domain.
 
@@ -33,7 +35,7 @@ precision highp float;
 in vec4 v_position;
 in vec3 v_normal;
 
-uniform vec4 u_viewPosition;
+uniform vec3 u_viewPosition;
 
 uniform vec3 u_baseColor;
 uniform float u_metallic;
@@ -42,7 +44,7 @@ uniform float u_f0;
 
 uniform float u_lightIntensity;
 uniform float u_twoSided;
-uniform vec4 u_quadPoints[4];
+uniform vec3 u_quadPoints[4];
 
 uniform sampler2D s_texLTCMat;
 uniform sampler2D s_texLTCAmp;
@@ -176,7 +178,7 @@ int clipQuadToHorizon(inout vec3 L[5]) {
  * @param points Light quad vertices
  * @param twoSided Whether the light is two sided
  */
-float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec4 points[4], bool twoSided) {
+float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool twoSided) {
     /* Construct orthonormal basis around N */
     vec3 T1 = normalize(V - N*dot(V, N));
     vec3 T2 = cross(N, T1);
@@ -187,10 +189,10 @@ float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec4 points[4], bool twoSid
     /* Allocate 5 vertices for polygon (one additional which may result from
      * clipping) */
     vec3 L[5];
-    L[0] = Minv*(points[0].xyz - P);
-    L[1] = Minv*(points[1].xyz - P);
-    L[2] = Minv*(points[2].xyz - P);
-    L[3] = Minv*(points[3].xyz - P);
+    L[0] = Minv*(points[0] - P);
+    L[1] = Minv*(points[1] - P);
+    L[2] = Minv*(points[2] - P);
+    L[3] = Minv*(points[3] - P);
 
     /* Clip light quad so that the part behind the surface does not affect the
      * lighting of the point */
@@ -222,9 +224,8 @@ float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec4 points[4], bool twoSid
 }
 
 void main() {
-    vec3 viewPos = u_viewPosition.xyz;
     vec3 pos = v_position.xyz;
-    vec3 viewDir = normalize(viewPos - pos);
+    vec3 viewDir = normalize(u_viewPosition - pos);
 
     vec3 diffColor = u_baseColor*(1.0 - u_metallic);
     vec3 specColor = mix(vec3(u_f0, u_f0, u_f0), u_baseColor, u_metallic);

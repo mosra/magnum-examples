@@ -9,6 +9,7 @@ class MagnumExamples < Formula
   depends_on "magnum"
   depends_on "magnum-plugins"
   depends_on "magnum-integration"
+  depends_on "magnum-extras"
 
   def install
     system "mkdir build"

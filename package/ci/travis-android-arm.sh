@@ -70,6 +70,20 @@ ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
 make -j install
 cd ../..
 
+# Crosscompile Magnum Extras
+git clone --depth 1 git://github.com/mosra/magnum-extras.git
+cd magnum-extras
+mkdir build-android-arm && cd build-android-arm
+ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    -DWITH_UI=OFF
+make -j install
+cd ../..
+
 # Crosscompile
 mkdir build-android-arm && cd build-android-arm
 ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \

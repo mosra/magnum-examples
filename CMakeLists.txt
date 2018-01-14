@@ -70,7 +70,7 @@ option(WITH_SHADOWS_EXAMPLE "Build shadow mapping example" OFF)
 option(WITH_TEXT_EXAMPLE "Build Text example (requires FreeTypeFont plugin)" OFF)
 option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF)
 option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
-option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" ON)
+option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" OFF)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
 
 add_subdirectory(src)
