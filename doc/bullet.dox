@@ -34,6 +34,8 @@ Shows a rotating table full of cubes that you can shoot down.
 
 @image html bullet.png
 
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/bullet/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+
 @section examples-bullet-controls Key controls
 
 @m_class{m-label m-default} **Arrow keys** *rotate* the camera around,

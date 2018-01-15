@@ -248,21 +248,21 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     }
 
     /* Set up objects */
-    (*(_objects[0] = new PickableObject{1, _shader, Color3::fromHsv(25.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
+    (*(_objects[0] = new PickableObject{1, _shader, 0x3bd267_rgbf, _cube, _scene, _drawables}))
         .rotate(34.0_degf, Vector3(1.0f).normalized())
         .translate({1.0f, 0.3f, -1.2f});
-    (*(_objects[1] = new PickableObject{2, _shader, Color3::fromHsv(54.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[1] = new PickableObject{2, _shader, 0x2f83cc_rgbf, _sphere, _scene, _drawables}))
         .translate({-1.2f, -0.3f, -0.2f});
-    (*(_objects[2] = new PickableObject{3, _shader, Color3::fromHsv(105.0_degf, 0.9f, 0.9f), _plane, _scene, _drawables}))
-        .rotate(254.0_degf, Vector3(1.0f).normalized())
+    (*(_objects[2] = new PickableObject{3, _shader, 0xdcdcdc_rgbf, _plane, _scene, _drawables}))
+        .rotate(278.0_degf, Vector3(1.0f).normalized())
         .scale(Vector3(0.45f))
-        .translate({0.5f, 1.3f, 1.5f});
-    (*(_objects[3] = new PickableObject{4, _shader, Color3::fromHsv(162.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+        .translate({-1.0f, 1.2f, 1.5f});
+    (*(_objects[3] = new PickableObject{4, _shader, 0xc7cf2f_rgbf, _sphere, _scene, _drawables}))
         .translate({-0.2f, -1.7f, -2.7f});
-    (*(_objects[4] = new PickableObject{5, _shader, Color3::fromHsv(210.0_degf, 0.9f, 0.9f), _sphere, _scene, _drawables}))
+    (*(_objects[4] = new PickableObject{5, _shader, 0xcd3431_rgbf, _sphere, _scene, _drawables}))
         .translate({0.7f, 0.6f, 2.2f})
         .scale(Vector3(0.75f));
-    (*(_objects[5] = new PickableObject{6, _shader, Color3::fromHsv(280.0_degf, 0.9f, 0.9f), _cube, _scene, _drawables}))
+    (*(_objects[5] = new PickableObject{6, _shader, 0xa5c9ea_rgbf, _cube, _scene, _drawables}))
         .rotate(-92.0_degf, Vector3(1.0f).normalized())
         .scale(Vector3(0.25f))
         .translate({-0.5f, -0.3f, 1.8f});

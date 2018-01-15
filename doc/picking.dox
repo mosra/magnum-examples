@@ -33,7 +33,9 @@ namespace Magnum {
 
 One attachment is used for color output, the other contains object IDs. The
 color buffer is blit to window framebuffer, a pixel from the other is read
-after mouse click to retrieve object ID. Requires OpenGL 3.3+.
+after mouse click to retrieve object ID.
+
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/picking/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
 
 @section examples-picking-controls Key controls
 

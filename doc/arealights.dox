@@ -33,15 +33,17 @@ namespace Magnum {
 @image html arealights.png
 
 This example is a basic implementation of Real-Time Polygonal-Light Shading
-with Linearly Transformed Cosines. It displays an untextured rectangular area
-light and a ground plane.
+with Linearly Transformed Cosines. Three lights are displayed, each with
+different orientation and parameters.
 
-@section examples-arealights-controls Key controls
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/arealights/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+
+@section examples-arealights-controls Controls
 
 -   @m_class{m-label m-default} **W** / @m_class{m-label m-default} **A** /
     @m_class{m-label m-default} **S** / @m_class{m-label m-default} **D** ---
     move camera
--   @m_class{m-label m-default} **Mouse drag** --- Look around
+-   @m_class{m-label m-default} **Mouse drag** --- look around
 -   @m_class{m-label m-default} **R** / @m_class{m-label m-warning} **Shift**
     @m_class{m-label m-default} **R** --- increase / decrease roughness of the
     plane
@@ -51,8 +53,9 @@ light and a ground plane.
 -   @m_class{m-label m-default} **F** / @m_class{m-label m-warning} **Shift**
     @m_class{m-label m-default} **F** --- increase / decrease @f$ f_0 @f$
     (specular reflection coefficient) of the plane
--   @m_class{m-label m-default} **F5** --- reload shaders (only if compiled in
-    `Debug` configuration)
+-   @m_class{m-label m-default} **F5** --- reload shaders
+
+Roughness, metallness and @f$ f_0 @f$ can be also configured through the UI.
 
 @section examples-arealights-credits Credits
 
