@@ -287,7 +287,7 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
         Matrix4 _transformation, _projection, _view;
         Vector2i _previousMousePosition;
 
-        Vector3 _cameraPosition{0.0f, 1.0f, 6.0f};
+        Vector3 _cameraPosition{0.0f, 1.0f, 7.6f};
         Vector3 _cameraDirection;
         Vector2 _cameraRotation;
 
