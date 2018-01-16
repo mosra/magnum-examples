@@ -2,7 +2,7 @@
 pkgname=magnum-examples
 pkgver=dev
 pkgrel=1
-pkgdesc="Examples for Magnum OpenGL graphics engine"
+pkgdesc="Examples for the Magnum C++11/C++14 graphics engine"
 arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('custom:Public Domain')
