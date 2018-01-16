@@ -53,6 +53,11 @@ Full source code is linked below and also available in the
 -   @ref bullet/BulletExample.cpp "BulletExample.cpp"
 -   @ref bullet/CMakeLists.txt "CMakeLists.txt"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/bullet)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example bullet/BulletExample.cpp @m_examplenavigation{examples-bullet,bullet/} @m_footernavigation
 @example bullet/CMakeLists.txt @m_examplenavigation{examples-bullet,bullet/} @m_footernavigation
 
