@@ -104,6 +104,8 @@ namespace Magnum {
 -   All examples, even the ones without a tutorial, have now their dedicated
     documentation page with a screenshot, source listing and possibly a link
     to the live web version
+-   The @ref building-examples documentation now prefers package installation
+    instead of manual build
 
 @section changelog-examples-2015-05 2015-05 snapshot
 
