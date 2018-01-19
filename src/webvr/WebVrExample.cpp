@@ -59,6 +59,7 @@ class WebVrExample: public Platform::Application {
         void onClick(const EmscriptenMouseEvent& evt);
         void displayRender();
         void displayPresent();
+        void vrReady();
 
     private:
         void drawEvent() override;
@@ -94,15 +95,15 @@ static void displayPresentCallback(void* app) {
     static_cast<WebVrExample*>(app)->displayPresent();
 }
 
+#if EMSCRIPTEN_VR_API_VERSION >= 10101
+static void initVrCallback(void* app) {
+    static_cast<WebVrExample*>(app)->vrReady();
+}
+#endif
+
 WebVrExample::WebVrExample(const Arguments& arguments):
     Platform::Application(arguments, Configuration{}.setSampleCount(4))
 {
-    emscripten_vr_init();
-    Debug() << "Browser is running WebVR version"
-            << emscripten_vr_version_major()
-            << Debug::nospace << "." << Debug::nospace
-            << emscripten_vr_version_minor();
-
     Renderer::enable(Renderer::Feature::DepthTest);
 
     /* Setup cube mesh */
@@ -136,35 +137,33 @@ WebVrExample::WebVrExample(const Arguments& arguments):
 
     _shader.setSpecularColor(Color3(1.0f))
           .setShininess(20);
+
+    /* Initialize the VR API of emscripten */
+#if EMSCRIPTEN_VR_API_VERSION >= 10101
+    /* This version of the emscripten WebVR API uses callbacks
+     * instead of busy polling of emscripten_vr_ready() to notify
+     * when the API has finished initializing. */
+    emscripten_vr_init(initVrCallback, this);
+#else
+    emscripten_vr_init();
+#endif
+
+    Debug() << "Browser is running WebVR version"
+            << emscripten_vr_version_major()
+            << Debug::nospace << "." << Debug::nospace
+            << emscripten_vr_version_minor();
 }
 
 WebVrExample::~WebVrExample() {
     emscripten_vr_cancel_display_render_loop(_displayHandle);
+
+#if EMSCRIPTEN_VR_API_VERSION >= 10101
+    emscripten_vr_deinit();
+#endif
 }
 
-void WebVrExample::displayPresent() {
-    Debug() << "Presenting to VR display.";
-
-    VREyeParameters eyeLeft, eyeRight;
-    emscripten_vr_get_eye_parameters(_displayHandle, VREyeLeft, &eyeLeft);
-    emscripten_vr_get_eye_parameters(_displayHandle, VREyeRight, &eyeRight);
-
-    _displayResolution = {2*int(Math::max(eyeLeft.renderWidth, eyeRight.renderWidth)), int(eyeLeft.renderHeight)};
-    emscripten_set_canvas_size(_displayResolution.x(), _displayResolution.y());
-
-    Debug() << "Set canvas size to" << _displayResolution;
-}
-
-void WebVrExample::drawEvent() {
-    /* Only initialize once */
-    if(_vrInitialized) return;
-
-    /* Has navigator.getVRDisplays returned yet? */
-    if(!emscripten_vr_ready()) {
-        /* Cannot initialize yet */
-        redraw();
-        return;
-    }
+void WebVrExample::vrReady() {
+    Debug() << "";
 
     const int numDisplays = emscripten_vr_count_displays();
     if(numDisplays <= 0) {
@@ -188,6 +187,35 @@ void WebVrExample::drawEvent() {
     emscripten_set_click_callback("#module", this, true, clickCallback);
 
     _vrInitialized = true;
+}
+
+void WebVrExample::displayPresent() {
+    Debug() << "Presenting to VR display.";
+
+    VREyeParameters eyeLeft, eyeRight;
+    emscripten_vr_get_eye_parameters(_displayHandle, VREyeLeft, &eyeLeft);
+    emscripten_vr_get_eye_parameters(_displayHandle, VREyeRight, &eyeRight);
+
+    _displayResolution = {2*int(Math::max(eyeLeft.renderWidth, eyeRight.renderWidth)), int(eyeLeft.renderHeight)};
+    emscripten_set_canvas_size(_displayResolution.x(), _displayResolution.y());
+
+    Debug() << "Set canvas size to" << _displayResolution;
+}
+
+void WebVrExample::drawEvent() {
+#if EMSCRIPTEN_VR_API_VERSION < 10101
+    /* Only initialize once */
+    if(_vrInitialized) return;
+
+    /* Has navigator.getVRDisplays returned yet? */
+    if(!emscripten_vr_ready()) {
+        /* Cannot initialize yet */
+        redraw();
+        return;
+    }
+
+    vrReady();
+#endif
 }
 
 void WebVrExample::displayRender() {
