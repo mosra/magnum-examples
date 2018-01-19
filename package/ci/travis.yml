@@ -67,18 +67,18 @@ matrix:
     #- JOBID=ios-es3
     #- TARGET=ios-simulator
     #- TARGET_GLES2=OFF
-  #- language: cpp
-    #os: osx
-    #env:
-    #- JOBID=emscripten-webgl1
-    #- TARGET=emscripten
-    #- TARGET_GLES2=ON
-  #- language: cpp
-    #os: osx
-    #env:
-    #- JOBID=emscripten-webgl2
-    #- TARGET=emscripten
-    #- TARGET_GLES2=OFF
+  - language: cpp
+    os: osx
+    env:
+    - JOBID=emscripten-webgl1
+    - TARGET=emscripten
+    - TARGET_GLES2=ON
+  - language: cpp
+    os: osx
+    env:
+    - JOBID=emscripten-webgl2
+    - TARGET=emscripten
+    - TARGET_GLES2=OFF
   #- language: android
     #os: linux
     #dist: precise
