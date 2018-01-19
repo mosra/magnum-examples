@@ -3,9 +3,9 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2017 — Jonathan Hale <squareys@googlemail.com>
+#       2017, 2018 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -29,16 +29,26 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
-project(MagnumWebVrExample)
 
-# CMake policies: enable MACOSX_RPATH by default
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW)
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
 endif()
 # Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
+# Enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
+endif()
+# Quoted variables should not be dereferenced
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif()
+
+project(MagnumWebVrExample)
 
 include(CheckSymbolExists)
 check_symbol_exists(EMSCRIPTEN_VR_API_VERSION "emscripten/vr.h" HAS_WEBVR_1_1)
@@ -63,9 +73,13 @@ target_link_libraries(magnum-webvr
     Magnum::Primitives
     Magnum::Shaders)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.wasm
-            DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
-install(FILES webvr-emscripten.html EmscriptenApplication.js WebApplication.css DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(TARGETS magnum-webvr DESTINATION ${CMAKE_INSTALL_PREFIX})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+install(FILES webvr.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr RENAME index.html)
+install(TARGETS magnum-webvr DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
+install(FILES
+    ${CMAKE_SOURCE_DIR}/src/WebApplication.css
+    ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem
+    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.wasm
+    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr OPTIONAL)

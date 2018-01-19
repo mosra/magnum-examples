@@ -72,6 +72,8 @@ cmake_dependent_option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle exa
 option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
 option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" OFF)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
-option(WITH_WEBVR_EXAMPLE "Build WebVR example" OFF)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    option(WITH_WEBVR_EXAMPLE "Build WebVR example" OFF)
+endif()
 
 add_subdirectory(src)

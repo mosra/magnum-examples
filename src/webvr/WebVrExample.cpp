@@ -3,9 +3,9 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2017 — Jonathan Hale <squareys@googlemail.com>
+        2017, 2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -78,8 +78,9 @@ class WebVrExample: public Platform::Application {
         Vector2i _displayResolution;
 };
 
+namespace {
 /* Click callback for requesting present */
-static EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void* app) {
+EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void* app) {
     if(!e || eventType != EMSCRIPTEN_EVENT_CLICK) return EM_FALSE;
 
     static_cast<WebVrExample*>(app)->onClick(*e);
@@ -87,22 +88,18 @@ static EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void*
 }
 
 /* Render loop callback for the VR display */
-static void displayRenderCallback(void* app) {
+void displayRenderCallback(void* app) {
     static_cast<WebVrExample*>(app)->displayRender();
 }
 
-static void displayPresentCallback(void* app) {
+void displayPresentCallback(void* app) {
     static_cast<WebVrExample*>(app)->displayPresent();
 }
 
-#if EMSCRIPTEN_VR_API_VERSION >= 10101
-static void initVrCallback(void* app) {
-    static_cast<WebVrExample*>(app)->vrReady();
 }
-#endif
 
 WebVrExample::WebVrExample(const Arguments& arguments):
-    Platform::Application(arguments, Configuration{}.setSampleCount(4))
+    Platform::Application(arguments, Configuration{}.setSampleCount(4).setSize({640, 320}))
 {
     Renderer::enable(Renderer::Feature::DepthTest);
 
@@ -143,12 +140,14 @@ WebVrExample::WebVrExample(const Arguments& arguments):
     /* This version of the emscripten WebVR API uses callbacks
      * instead of busy polling of emscripten_vr_ready() to notify
      * when the API has finished initializing. */
-    emscripten_vr_init(initVrCallback, this);
+    emscripten_vr_init([](void* app) {
+        static_cast<WebVrExample*>(app)->vrReady();
+    }, this);
 #else
     emscripten_vr_init();
 #endif
 
-    Debug() << "Browser is running WebVR version"
+    Debug{} << "Browser is running WebVR version"
             << emscripten_vr_version_major()
             << Debug::nospace << "." << Debug::nospace
             << emscripten_vr_version_minor();
@@ -163,43 +162,47 @@ WebVrExample::~WebVrExample() {
 }
 
 void WebVrExample::vrReady() {
-    Debug() << "";
+    Debug{} << "";
 
     const int numDisplays = emscripten_vr_count_displays();
     if(numDisplays <= 0) {
-        Error() << "No VR displays found, exiting."; exit();
+        Fatal{} << "No VR displays found, exiting.";
+        exit();
     }
 
-    Debug() << "Found" << numDisplays << "VR displays.";
+    Debug{} << "Found" << numDisplays << "VR displays.";
 
     /* Use first of the available display */
     _displayHandle = emscripten_vr_get_display_handle(0);
 
     const char* devName = emscripten_vr_get_display_name(_displayHandle);
-    Debug() << "Using VRDisplay with name: " << devName;
+    Debug{} << "Using VRDisplay with name: " << devName;
 
     if(!emscripten_vr_set_display_render_loop_arg(_displayHandle, displayRenderCallback, this)) {
-        Error() << "Failed to set display render loop for VR display!";
+        Fatal{} << "Failed to set display render loop for VR display!";
         exit();
     }
 
     /* Set callback for getting present permission for the VR display */
-    emscripten_set_click_callback("#module", this, true, clickCallback);
+    emscripten_set_click_callback("#canvas", this, true, clickCallback);
 
     _vrInitialized = true;
 }
 
 void WebVrExample::displayPresent() {
-    Debug() << "Presenting to VR display.";
+    Debug{} << "Presenting to VR display.";
 
     VREyeParameters eyeLeft, eyeRight;
     emscripten_vr_get_eye_parameters(_displayHandle, VREyeLeft, &eyeLeft);
     emscripten_vr_get_eye_parameters(_displayHandle, VREyeRight, &eyeRight);
 
     _displayResolution = {2*int(Math::max(eyeLeft.renderWidth, eyeRight.renderWidth)), int(eyeLeft.renderHeight)};
-    emscripten_set_canvas_size(_displayResolution.x(), _displayResolution.y());
+   if(emscripten_set_canvas_element_size("#canvas", _displayResolution.x(), _displayResolution.y()) != EMSCRIPTEN_RESULT_SUCCESS) {
+       Fatal{} << "Could not set canvas element size to " << _displayResolution;
+       exit();
+   }
 
-    Debug() << "Set canvas size to" << _displayResolution;
+    Debug{} << "Set canvas size to" << _displayResolution;
 }
 
 void WebVrExample::drawEvent() {
@@ -227,11 +230,14 @@ void WebVrExample::displayRender() {
     VRFrameData fd;
     emscripten_vr_get_frame_data(_displayHandle, &fd);
 
-    const Matrix4 viewMatrix[2] = {Matrix4::from(fd.leftViewMatrix), Matrix4::from(fd.rightViewMatrix)};
-    const Matrix4 projMatrix[2] = {Matrix4::from(fd.leftProjectionMatrix), Matrix4::from(fd.rightProjectionMatrix)};
-
     const bool inVR = emscripten_vr_display_presenting(_displayHandle);
-    const int views = inVR ? 2 : 1;
+
+    const Matrix4 viewMatrix[2] = {
+        Matrix4::from(fd.leftViewMatrix),
+        Matrix4::from(fd.rightViewMatrix)};
+    const Matrix4 projMatrix[2] = {
+        inVR ? Matrix4::from(fd.leftProjectionMatrix) : Matrix4::perspectiveProjection(Deg(90.0f), 2.0f, 0.001, 100.0f),
+        Matrix4::from(fd.rightProjectionMatrix)};
 
     const int halfWidth = 0.5f*_displayResolution.x();
     Range2Di viewport[2] = {
@@ -239,6 +245,7 @@ void WebVrExample::displayRender() {
         {{halfWidth, 0}, _displayResolution}
     };
 
+    const int views = inVR ? 2 : 1;
     for (int eye = 0; eye < views; ++eye) {
         _shader.setLightPosition(viewMatrix[eye].transformPoint(lightPos))
                .setProjectionMatrix(projMatrix[eye]);
@@ -260,25 +267,23 @@ void WebVrExample::displayRender() {
 }
 
 void WebVrExample::keyPressEvent(KeyEvent& e) {
-    if(e.key() == KeyEvent::Key::Esc) {
-        if(emscripten_vr_display_presenting(_displayHandle)) {
-            emscripten_vr_exit_present(_displayHandle);
-        }
+    if(e.key() == KeyEvent::Key::Esc &&
+       emscripten_vr_display_presenting(_displayHandle))
+    {
+        emscripten_vr_exit_present(_displayHandle);
     }
 }
 
 void WebVrExample::onClick(const EmscriptenMouseEvent&) {
-    if(emscripten_vr_display_presenting(_displayHandle)) {
-        return;
-    }
+    if(emscripten_vr_display_presenting(_displayHandle)) return;
 
-    Debug() << "Requesting present for VR display";
+    Debug{} << "Requesting present for VR display";
 
     /* Request present on emscripten default canvas */
     VRLayerInit init = {0, VR_LAYER_DEFAULT_LEFT_BOUNDS, VR_LAYER_DEFAULT_RIGHT_BOUNDS};
 
     if (!emscripten_vr_request_present(_displayHandle, &init, 1, displayPresentCallback, this)) {
-        Error() << "Error while requesting present permission for VR display.";
+        Error{} << "Error while requesting present permission for VR display.";
         exit();
     }
 }
