@@ -1,0 +1,51 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=emscripten-magnum-examples
+pkgver=dev
+pkgrel=1
+pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('emscripten-magnum=dev')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
+
+build() {
+    if [ ! -d "$_rootdir/build-emscripten" ] ; then
+        mkdir "$_rootdir/build-emscripten"
+        cd "$_rootdir/build-emscripten"
+
+        cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+            -G Ninja
+    fi
+
+    cd "$_rootdir/build-emscripten"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
+        -DWITH_AREALIGHTS_EXAMPLE=OFF \
+        -DWITH_AUDIO_EXAMPLE=OFF \
+        -DWITH_BULLET_EXAMPLE=OFF \
+        -DWITH_CUBEMAP_EXAMPLE=OFF \
+        -DWITH_MOTIONBLUR_EXAMPLE=OFF \
+        -DWITH_PRIMITIVES_EXAMPLE=OFF \
+        -DWITH_PICKING_EXAMPLE=OFF \
+        -DWITH_SHADOWS_EXAMPLE=OFF \
+        -DWITH_TEXT_EXAMPLE=OFF \
+        -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
+        -DWITH_TRIANGLE_EXAMPLE=OFF \
+        -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
+        -DWITH_VIEWER_EXAMPLE=OFF \
+        -DWITH_WEBVR_EXAMPLE=ON
+    ninja
+}
+
+package() {
+  cd "$_rootdir/build-emscripten"
+  DESTDIR="$pkgdir/" ninja install
+}
