@@ -56,7 +56,7 @@ class WebVrExample: public Platform::Application {
         explicit WebVrExample(const Arguments& arguments);
         ~WebVrExample();
 
-        void onClick(const EmscriptenMouseEvent& evt);
+        void onClick();
         void displayRender();
         void displayPresent();
         void vrReady();
@@ -83,7 +83,15 @@ namespace {
 EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void* app) {
     if(!e || eventType != EMSCRIPTEN_EVENT_CLICK) return EM_FALSE;
 
-    static_cast<WebVrExample*>(app)->onClick(*e);
+    static_cast<WebVrExample*>(app)->onClick();
+    return EM_FALSE;
+}
+
+/* Touch callback for requesting present on mobile */
+EM_BOOL touchCallback(int eventType, const EmscriptenTouchEvent* e, void* app) {
+    if(!e || eventType != EMSCRIPTEN_EVENT_TOUCHSTART) return EM_FALSE;
+
+    static_cast<WebVrExample*>(app)->onClick();
     return EM_FALSE;
 }
 
@@ -183,8 +191,9 @@ void WebVrExample::vrReady() {
         exit();
     }
 
-    /* Set callback for getting present permission for the VR display */
+    /* Set callbacks for getting present permission for the VR display */
     emscripten_set_click_callback("#canvas", this, true, clickCallback);
+    emscripten_set_touchstart_callback("#canvas", this, true, touchCallback);
 
     _vrInitialized = true;
 }
@@ -274,7 +283,7 @@ void WebVrExample::keyPressEvent(KeyEvent& e) {
     }
 }
 
-void WebVrExample::onClick(const EmscriptenMouseEvent&) {
+void WebVrExample::onClick() {
     if(emscripten_vr_display_presenting(_displayHandle)) return;
 
     Debug{} << "Requesting present for VR display";
