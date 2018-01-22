@@ -36,14 +36,20 @@ This example is a basic demonstration of how to use the
 [Emscripten VR API](https://kripken.github.io/emscripten-site/docs/api_reference/vr.h.html)
 with Magnum.
 
-For the full experience, this example requires a WebVR 1.1 capable browser and a VR headset.
+For the full experience, this example requires a WebVR 1.1 capable browser and
+a VR headset. Note that Emscripten currently has
+[a pending API change](https://github.com/kripken/emscripten/pull/5640), the
+code of this example is modified to support both current and the next API
+version.
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/webvr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
+Note that there is also a @ref examples-ovr "Oculus VR example".
+
 @section examples-webvr-controls Controls
 
--   @m_class{m-label m-default} **Mouse click** --- Enter VR
--   @m_class{m-label m-default} **Esc** --- Exit VR
+-   @m_class{m-label m-default} **Mouse click** --- enter VR
+-   @m_class{m-label m-default} **Esc** --- exit VR
 
 @section examples-webvr-credits Credits
 
@@ -57,8 +63,8 @@ Full source code is linked below and together with assets also available in the
 -   @ref webvr/CMakeLists.txt "CMakeLists.txt"
 -   @ref webvr/WebVrExample.cpp "WebVrExample.cpp"
 
-@example webvr/WebVrExample.cpp @m_examplenavigation{examples-webvr,webvr/} @m_footernavigation
 @example webvr/CMakeLists.txt @m_examplenavigation{examples-webvr,webvr/} @m_footernavigation
+@example webvr/WebVrExample.cpp @m_examplenavigation{examples-webvr,webvr/} @m_footernavigation
 
 */
 }

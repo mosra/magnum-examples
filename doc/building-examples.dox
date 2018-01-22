@@ -199,6 +199,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
+-   `WITH_WEBVRE_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
+    Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 
 @section building-examples-doc Building documentation
 
