@@ -164,7 +164,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     /* Print hrft status information */
     Debug() << "Hrtf status:" << _context.hrtfStatus();
     Debug() << "Hrtf enabled:" << _context.isHrtfEnabled();
-    Debug() << "Hrtf specifier:" << _context.hrtfSpecifier();
+    Debug() << "Hrtf specifier:" << _context.hrtfSpecifierString();
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
