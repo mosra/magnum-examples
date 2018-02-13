@@ -70,7 +70,7 @@ cmake .. ^
     -DWITH_MESHTOOLS=OFF ^
     -DWITH_PRIMITIVES=OFF ^
     -DWITH_SCENEGRAPH=OFF ^
-    -DWITH_SHADERS=OFF ^
+    -DWITH_SHADERS=ON ^
     -DWITH_SHAPES=OFF ^
     -DWITH_TEXT=OFF ^
     -DWITH_TEXTURETOOLS=OFF ^
@@ -124,6 +124,8 @@ rem Crosscompile
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DEGL_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libEGL.lib ^
+    -DEGL_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
     -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
     -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
     -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
@@ -141,7 +143,7 @@ cmake .. ^
     -DWITH_SHADOWS_EXAMPLE=OFF ^
     -DWITH_TEXT_EXAMPLE=OFF ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF ^
-    -DWITH_TRIANGLE_EXAMPLE=OFF ^
+    -DWITH_TRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF ^
     -DWITH_VIEWER_EXAMPLE=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
