@@ -161,10 +161,10 @@ AudioExample::AudioExample(const Arguments& arguments):
     /* Enable depth testing for correct overlap of shapes */
     Renderer::enable(Renderer::Feature::DepthTest);
 
-    /* Print hrft status information */
-    Debug() << "Hrtf status:" << _context.hrtfStatus();
-    Debug() << "Hrtf enabled:" << _context.isHrtfEnabled();
-    Debug() << "Hrtf specifier:" << _context.hrtfSpecifierString();
+    /* Print HRTF status information */
+    Debug() << "HRTF status:" << _context.hrtfStatus();
+    Debug() << "HRTF enabled:" << _context.isHrtfEnabled();
+    Debug() << "HRTF specifier:" << _context.hrtfSpecifierString();
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
