@@ -36,22 +36,23 @@ environment:
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: ports-windows-es3-msvc2017
-  - TARGET: rt
-    TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2015
-  - TARGET: rt
-    TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2017
-  - TARGET: rt
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2015
-  - TARGET: rt
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2017
+  # Disabled because SDL_WinRTRunApp: identifier not found
+  #- TARGET: rt
+    #TARGET_GLES2: ON
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2015
+  #- TARGET: rt
+    #TARGET_GLES2: ON
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2017
+  #- TARGET: rt
+    #TARGET_GLES2: OFF
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2015
+  #- TARGET: rt
+    #TARGET_GLES2: OFF
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2017
 
 notifications:
 - provider: Webhook
