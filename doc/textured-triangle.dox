@@ -237,12 +237,12 @@ Full source code is also available in the
 
 -   @ref textured-triangle/CMakeLists.txt "CMakeLists.txt"
 -   @ref textured-triangle/configure.h.cmake "configure.h.cmake"
+-   @ref textured-triangle/resources.conf "resources.conf"
 -   @ref textured-triangle/TexturedTriangleExample.cpp "TexturedTriangleExample.cpp"
 -   @ref textured-triangle/TexturedTriangleShader.cpp "TexturedTriangleShader.cpp"
 -   @ref textured-triangle/TexturedTriangleShader.frag "TexturedTriangleShader.frag"
 -   @ref textured-triangle/TexturedTriangleShader.h "TexturedTriangleShader.h"
 -   @ref textured-triangle/TexturedTriangleShader.vert "TexturedTriangleShader.vert"
--   @ref textured-triangle/resources.conf "resources.conf"
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/textured-triangle)
 contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
@@ -252,12 +252,12 @@ simple as possible.
 
 @example textured-triangle/CMakeLists.txt @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/configure.h.cmake @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
+@example textured-triangle/resources.conf @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleExample.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleShader.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleShader.frag @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleShader.h @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleShader.vert @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
-@example textured-triangle/resources.conf @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 
 */
 }

@@ -14,8 +14,9 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH=$HOME/deps-native/lib \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF
-make -j install
+    -DWITH_TESTSUITE=OFF \
+    -G Ninja
+ninja install
 cd ..
 
 # Crosscompile Corrade
@@ -29,8 +30,9 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DWITH_INTERCONNECT=$TARGET_GLES3 \
-    -DWITH_TESTSUITE=OFF
-make -j install
+    -DWITH_TESTSUITE=OFF \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile Bullet
@@ -57,8 +59,9 @@ cmake .. \
     -DINSTALL_CMAKE_FILES=OFF \
     -DUSE_GLUT=OFF \
     -DUSE_GRAPHICAL_BENCHMARK=OFF \
-    -D_FIND_LIB_PYTHON_PY=$TRAVIS_BUILD_DIR/bullet3-2.87/build3/cmake/FindLibPython.py
-make -j install
+    -D_FIND_LIB_PYTHON_PY=$TRAVIS_BUILD_DIR/bullet3-2.87/build3/cmake/FindLibPython.py \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile Magnum
@@ -88,8 +91,9 @@ cmake .. \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_MAGNUMFONT=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
-    -DTARGET_GLES2=$TARGET_GLES2
-make -j install
+    -DTARGET_GLES2=$TARGET_GLES2 \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile Magnum Plugins
@@ -127,8 +131,9 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DWITH_BULLET=ON \
-    -DWITH_OVR=OFF
-make -j install
+    -DWITH_OVR=OFF \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile Magnum Extras
@@ -144,8 +149,9 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
-    -DWITH_UI=$TARGET_GLES3
-make -j install
+    -DWITH_UI=$TARGET_GLES3 \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile
@@ -172,6 +178,8 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
-    -DWITH_VIEWER_EXAMPLE=ON
+    -DWITH_VIEWER_EXAMPLE=ON \
+    -DWITH_WEBVR_EXAMPLE=ON \
+    -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
-make -j4
+ninja -j4

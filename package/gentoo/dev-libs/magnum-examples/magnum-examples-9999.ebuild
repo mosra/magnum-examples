@@ -1,14 +1,10 @@
-# Copyright 1999-2014 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
-# $Header: $
-
 EAPI=5
 
 EGIT_REPO_URI="git://github.com/mosra/magnum-examples.git"
 
 inherit cmake-utils git-r3
 
-DESCRIPTION="Examples for Magnum OpenGL graphics engine"
+DESCRIPTION="Examples for the Magnum C++11/C++14 graphics engine"
 HOMEPAGE="http://magnum.graphics"
 
 LICENSE="public-domain"

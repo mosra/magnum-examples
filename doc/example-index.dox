@@ -70,6 +70,8 @@ The following consist of documented source code only:
 -   @subpage examples-shadows --- @copybrief examples-shadows
 -   @subpage examples-text @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-text
+-   @subpage examples-webvr @m_span{m-label m-default m-flat} live web demo @m_endspan
+    --- @copybrief examples-webvr
 
 There are also @ref corrade-example-index "examples for the Corrade library"
 itself.

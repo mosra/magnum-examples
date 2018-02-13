@@ -32,6 +32,8 @@ namespace Magnum {
 
 @image html ovr.png
 
+Note that there is also a @ref examples-webvr "WebVR example".
+
 @section examples-ovr-usage Usage
 
 This example requires you to have the Oculus Runtime 1.3.0 or newer installed.

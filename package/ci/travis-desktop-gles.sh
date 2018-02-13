@@ -10,8 +10,9 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INTERCONNECT=$TARGET_GLES3 \
-    -DWITH_TESTSUITE=OFF
-make -j install
+    -DWITH_TESTSUITE=OFF \
+    -G Ninja
+ninja install
 cd ../..
 
 # Magnum
@@ -32,8 +33,9 @@ cmake .. \
     -DWITH_SHAPES=ON \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
-    -DWITH_SDL2APPLICATION=ON
-make -j install
+    -DWITH_SDL2APPLICATION=ON \
+    -G Ninja
+ninja install
 cd ../..
 
 # Magnum Integration
@@ -44,8 +46,9 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_BULLET=ON \
-    -DWITH_OVR=OFF
-make -j install
+    -DWITH_OVR=OFF \
+    -G Ninja
+ninja install
 cd ../..
 
 # Crosscompile Magnum Extras
@@ -55,8 +58,9 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_UI=$TARGET_GLES3
-make -j install
+    -DWITH_UI=$TARGET_GLES3 \
+    -G Ninja
+ninja install
 cd ../..
 
 mkdir build && cd build
@@ -76,6 +80,7 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
-    -DWITH_VIEWER_EXAMPLE=ON
+    -DWITH_VIEWER_EXAMPLE=ON \
+    -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
-make -j4
+ninja -j4

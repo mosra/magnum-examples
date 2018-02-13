@@ -1,21 +1,29 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-examples
-pkgver=dev
+pkgver=dev.clang
 pkgrel=1
-pkgdesc="Examples for the Magnum C++11/C++14 graphics engine"
+pkgdesc="Examples for the Magnum C++11/C++14 graphics engine (built with Clang)"
 arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('custom:Public Domain')
 depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal')
-makedepends=('cmake' 'ninja')
+makedepends=('cmake' 'ninja' 'clang')
 options=(!strip)
 provides=('magnum-examples-git')
 
 _rootdir=$startdir/../../
 
 build() {
-    mkdir -p "$_rootdir/build"
-    cd "$_rootdir/build"
+    if [ ! -d "$_rootdir/build-clang" ] ; then
+        mkdir "$_rootdir/build-clang"
+        cd "$_rootdir/build-clang"
+
+        cmake .. \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -G Ninja
+    fi
+
+    cd "$_rootdir/build-clang"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -32,13 +40,12 @@ build() {
         -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
         -DWITH_TRIANGLE_EXAMPLE=ON \
         -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
-        -DWITH_VIEWER_EXAMPLE=ON \
-        -G Ninja
+        -DWITH_VIEWER_EXAMPLE=ON
     ninja
 }
 
 package() {
-    cd "$_rootdir/build"
+    cd "$_rootdir/build-clang"
     DESTDIR="$pkgdir/" ninja install
 
     # Install the UNLICENSE because Arch has no pre-defined license for Public
