@@ -14,7 +14,7 @@ environment:
     APPVEYOR_JOB_NAME: windows-desktop-msvc2017
   - TARGET: desktop
     COMPILER: mingw
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-desktop-mingw
   - TARGET: desktop-gles
     COMPILER: msvc
@@ -63,12 +63,6 @@ notifications:
 install:
 - cinst ninja
 - set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
-# `cinst mingw` fails with 404 since Dec 2016, `appveyor Downloadfile` fails
-# with "Message string length exceeds 32k characters" so I have to call a
-# fucking powershell command in order to download a file. Oh and %20 in the URL
-# somehow gives a 404 ALSO so I have to explicitly use spaces. WHAT THE FUCK!
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z powershell -Command "(new-object System.Net.WebClient).Downloadfile('https://sourceforge.net/projects/mingw-w64/files/Toolchains targetting Win64/Personal Builds/mingw-builds/6.3.0/threads-posix/seh/x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z', 'x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z')"
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cd C:\tools && 7z x %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z && cd %APPVEYOR_BUILD_FOLDER%
 - IF "%TARGET_GLES2%" == "ON" set TARGET_GLES3=OFF
 - IF "%TARGET_GLES2%" == "OFF" set TARGET_GLES3=ON
 
@@ -102,5 +96,4 @@ cache:
 - openal-soft-1.17.2-bin.zip -> package/ci/appveyor-cache-reset.txt
 - SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.4.0_public.zip -> package/ci/appveyor-cache-reset.txt
-- x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
