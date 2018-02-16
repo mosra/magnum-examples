@@ -30,9 +30,12 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2015-05 snapshot
+@section changelog-examples-2018-02 2018.02
 
-@subsection changelog-examples-latest-dependencies Dependency changes
+Released 2018-02-15, tagged as
+[v2018.02](https://github.com/mosra/magnum-examples/releases/tag/v2018.02).
+
+@subsection changelog-examples-2018-02-dependencies Dependency changes
 
 -   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
 -   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
@@ -41,7 +44,7 @@ namespace Magnum {
 -   Dropped the `compatibility` branch and all support for MSVC 2013 and GCC <
     4.7
 
-@subsection changelog-examples-latest-new New features
+@subsection changelog-examples-2018-02-new New features
 
 -   MSVC 2015 and MSVC 2017 support in `master` branch
 -   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
@@ -51,21 +54,39 @@ namespace Magnum {
 -   WebGL 2.0 support
 -   New examples:
     -   @ref examples-arealights example showing a basic Area Lights
-        implementation
+        implementation (see
+        [mosra/magnum-examples#31](https://github.com/mosra/magnum-examples/pull/31))
     -   @ref examples-audio example showing usage of the @ref Audio library and
-        integration with @ref SceneGraph
+        integration with @ref SceneGraph (see
+        [mosra/magnum-examples#14](https://github.com/mosra/magnum-examples/pull/14),
+        [mosra/magnum-examples#18](https://github.com/mosra/magnum-examples/pull/18),
+        [mosra/magnum-examples#21](https://github.com/mosra/magnum-examples/pull/21),
+        [mosra/magnum-examples#32](https://github.com/mosra/magnum-examples/pull/32))
     -   @ref examples-ovr example showing integration with Oculus VR using
-        @ref OvrIntegration
+        @ref OvrIntegration (see
+        [mosra/magnum-examples#10](https://github.com/mosra/magnum-examples/pull/10),
+        [mosra/magnum-examples#11](https://github.com/mosra/magnum-examples/pull/11),
+        [mosra/magnum-examples#13](https://github.com/mosra/magnum-examples/pull/13),
+        [mosra/magnum-examples#15](https://github.com/mosra/magnum-examples/pull/15),
+        [mosra/magnum-examples#16](https://github.com/mosra/magnum-examples/pull/16),
+        [mosra/magnum-examples#19](https://github.com/mosra/magnum-examples/pull/19),
+        [mosra/magnum-examples#22](https://github.com/mosra/magnum-examples/pull/22),
+        [mosra/magnum-examples#26](https://github.com/mosra/magnum-examples/pull/26))
     -   @ref examples-picking example showing object picking using mouse cursor
-        and @ref Framebuffer readout
-    -   @ref examples-shadows example implementing cascaded shadow mapping
+        and @ref Framebuffer readout (see
+        [mosra/magnum-examples#12](https://github.com/mosra/magnum-examples/issues/12),
+        [mosra/magnum-examples#17](https://github.com/mosra/magnum-examples/issues/17))
+    -   @ref examples-shadows example implementing cascaded shadow mapping (see
+        [mosra/magnum-examples#24](https://github.com/mosra/magnum-examples/pull/24))
     -   @ref examples-triangle-plain-glfw example showing integration into
         custom platform toolkits
-    -   @ref examples-webvr example showing basic usage of WebVR
+    -   @ref examples-webvr example showing basic usage of WebVR (see
+        [mosra/magnum-examples#33](https://github.com/mosra/magnum-examples/pull/33),
+        [mosra/magnum-examples#36](https://github.com/mosra/magnum-examples/pull/36))
 -   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch
     contains a subset of the examples ported to mobile devices and HTML5
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2018-02-changes Changes and improvements
 
 -   Relicensed all examples from MIT to public domain / UNLICENSE to allow
     their unencumered use in derived projects
@@ -74,7 +95,7 @@ namespace Magnum {
 -   The @ref examples-motionblur example now uses VSync and
     minimal frame time to avoid being a CPU hog
 
-@subsection changelog-examples-latest-buildsystem Build system
+@subsection changelog-examples-2018-02-buildsystem Build system
 
 -   Continuous testing for Linux, macOS, Windows MSVC, Windows MinGW, Windows RT,
     iOS, Android and Emscripten on [Travis CI](https://travis-ci.org/mosra/magnum-examples)
@@ -92,13 +113,15 @@ namespace Magnum {
 -   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
     up initial CMake run
 
-@subsection changelog-examples-latest-bugfixes Bug fixes
+@subsection changelog-examples-2018-02-bugfixes Bug fixes
 
 -   Fixed depth issues in the @ref examples-viewer example when running with
-    16bit depth buffer ([possibly related Firefox bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1202387))
--   Fixed Greek text in the @ref examples-text example
+    16bit depth buffer ([possibly related Firefox bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1202387),
+    see [mosra/magnum-examples#34](https://github.com/mosra/magnum-examples/issues/34))
+-   Fixed Greek text in the @ref examples-text example (see
+    [mosra/magnum-examples#35](https://github.com/mosra/magnum-examples/pull/35))
 
-@subsection changelog-examples-latest-documentation Documentation
+@subsection changelog-examples-2018-02-documentation Documentation
 
 -   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
     related massive updates of *everything*
@@ -108,25 +131,49 @@ namespace Magnum {
 -   The @ref building-examples documentation now prefers package installation
     instead of manual build
 
-@section changelog-examples-2015-05 2015-05 snapshot
+@section changelog-examples-2015-05 2015.05
 
-See the [release notes and full changelog](http://blog.magnum.graphics/announcements/may-2015-updates/#magnum-examples).
+Released 2015-05-09, tagged as
+[v2015.05](https://github.com/mosra/magnum-examples/releases/tag/v2015.05). See
+the [release announcement](http://blog.magnum.graphics/announcements/may-2015-updates/)
+for a high-level overview.
 
-@section changelog-examples-2014-06 2014-06 snapshot
+@subsection changelog-examples-2015-05-changes Changes
 
-See the [release notes and full changelog](http://blog.magnum.graphics/announcements/june-2014-updates/#magnum-examples).
+-   Reworked and simplified the @ref examples-viewer "Viewer example", updated
+    it to work with virtually any file format.
 
-@section changelog-examples-2014-01 2014-01 snapshot
+@subsection changelog-examples-2015-05-bugfixes Bug fixes
 
-See the [release notes and full changelog](http://blog.magnum.graphics/announcements/january-2014-updates/#magnum-examples).
+-   Removed unneeded requirement for @extension{ARB,invalidate_subdata} from
+    the @ref examples-cubemap "Cube Map example" (see
+    [mosra/magnum#63](https://github.com/mosra/magnum/issues/63)).
 
-@section changelog-examples-2013-10 2013-10 snapshot
+@subsection changelog-examples-2015-05-buildsystem Build system
 
-See the [release notes and full changelog](http://blog.magnum.graphics/announcements/october-2013-updates/#magnum-examples).
+-   All examples are now installable in a way similar to Magnum itself.
+-   Displaying all header files, plugin metadata files and resource files in
+    project view to make use of some IDEs less painful (such as QtCreator).
+-   Added ArchLinux, Debian and Gentoo packages (see
+    [mosra/magnum-examples#8](https://github.com/mosra/magnum/issues/8)).
 
-@section changelog-examples-initial Initial release
+@subsection changelog-examples-2015-05-documentation Documentation
 
-See the [Magnum project announcement](http://blog.magnum.graphics/announcements/introducing-magnum/).
+-   Various documentation fixes (see
+    [mosra/magnum-examples#7](https://github.com/mosra/magnum-examples/issues/7)
+
+@section changelog-examples-2014-06 2014.06
+
+Released 2014-06-30, tagged as
+[v2014.06](https://github.com/mosra/magnum-examples/releases/tag/v2014.06). See
+the [release announcement](http://blog.magnum.graphics/announcements/june-2014-updates/)
+for a high-level overview.
+
+@subsection changelog-examples-2014-06-bugfixes Bug fixes
+
+-   Fixed order-dependent linking errors (see
+    [mosra/magnum-examples#6](https://github.com/mosra/magnum-examples/pull/6))
+-
 
 */
 
