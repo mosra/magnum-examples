@@ -1,3 +1,9 @@
+magnum-examples (2018.02-1) unstable; urgency=low
+
+  * Version 2018.02
+
+ -- Vladimír Vondruš <mosra@centrum.cz>  Fri, 16 Feb 2018 01:12:41 +0100
+
 magnum-examples (2015.05-1) unstable; urgency=low
 
   * Version 2015.05
