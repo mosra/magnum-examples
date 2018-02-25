@@ -6,7 +6,7 @@ pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
-depends=('emscripten-magnum=dev.webgl2' 'emscripten-magnum-plugins=dev.webgl2' 'emscripten-bullet')
+depends=('emscripten-magnum=dev.webgl2' 'emscripten-magnum-plugins=dev.webgl2' 'emscripten-bullet' 'emscripten-magnum-integration=dev.webgl2')
 makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
