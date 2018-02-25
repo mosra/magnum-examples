@@ -60,6 +60,11 @@
 #include <Magnum/Ui/UserInterface.h>
 #include <Magnum/Ui/ValidatedInput.h>
 
+#ifdef MAGNUM_TARGET_GLES
+#include <Magnum/PixelFormat.h>
+#include <Magnum/Math/Half.h>
+#endif
+
 #include "configure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
@@ -358,9 +363,24 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     CORRADE_INTERNAL_ASSERT(image);
     _ltcAmp.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RG32F, image->size())
-        .setSubImage(0, {}, *image);
+        .setMinificationFilter(Sampler::Filter::Linear);
+
+    /* Convert to half-float in case we can't filter float textures */
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_float_linear>()) {
+        CORRADE_INTERNAL_ASSERT(!(image->size().x()%2)); /* so we don't have to think about alignment */
+        auto floats = Containers::arrayCast<Float>(image->data());
+        Containers::Array<Half> halves{std::size_t(image->size().product()*2)};
+        for(std::size_t i = 0; i != floats.size(); ++i)
+            halves[i] = Half{floats[i]};
+        _ltcAmp.setStorage(1, TextureFormat::RG16F, image->size())
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RG, PixelType::HalfFloat, image->size(), halves});
+    } else
+    #endif
+    {
+        _ltcAmp.setStorage(1, TextureFormat::RG32F, image->size())
+            .setSubImage(0, {}, *image);
+    }
 
     if(!importer->openData(rs.getRaw("ltc_mat.dds")))
         std::exit(2);
@@ -370,9 +390,23 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     CORRADE_INTERNAL_ASSERT(image);
     _ltcMat.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RGBA32F, image->size())
-        .setSubImage(0, {}, *image);
+        .setMinificationFilter(Sampler::Filter::Linear);
+
+    /* Convert to half-float in case we can't filter float textures */
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_float_linear>()) {
+        auto floats = Containers::arrayCast<Float>(image->data());
+        Containers::Array<Half> halves{std::size_t(image->size().product()*4)};
+        for(std::size_t i = 0; i != floats.size(); ++i)
+            halves[i] = Half{floats[i]};
+        _ltcMat.setStorage(1, TextureFormat::RGBA16F, image->size())
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::HalfFloat, image->size(), halves});
+    } else
+    #endif
+    {
+        _ltcMat.setStorage(1, TextureFormat::RGBA32F, image->size())
+            .setSubImage(0, {}, *image);
+    }
 
     /* Create the UI */
     _ui.emplace(Vector2{windowSize()}, windowSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
