@@ -1,5 +1,17 @@
-magnum-examples (1.0) UNRELEASED; urgency=low
+magnum-examples (2018.02-1) unstable; urgency=low
 
-  * Latest upstream version
+  * Version 2018.02
 
- -- Vladimír Vondruš <mosra@centrum.cz>  Fri, 03 Apr 2015 22:18:44 +0200
+ -- Vladimír Vondruš <mosra@centrum.cz>  Fri, 16 Feb 2018 01:12:41 +0100
+
+magnum-examples (2015.05-1) unstable; urgency=low
+
+  * Version 2015.05
+
+ -- Vladimír Vondruš <mosra@centrum.cz>  Sat, 09 May 2015 11:43:43 +0200
+
+magnum-examples (2014.06-1) unstable; urgency=low
+
+  * Version 2014.06
+
+ -- Vladimír Vondruš <mosra@centrum.cz>  Mon, 30 Jun 2014 01:21:04 +0200
