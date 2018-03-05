@@ -106,6 +106,10 @@ if(WITH_TRIANGLE_SOKOL_EXAMPLE)
     add_subdirectory(triangle-sokol)
 endif()
 
+if(WITH_TRIANGLE_VULKAN_EXAMPLE)
+    add_subdirectory(triangle-vulkan)
+endif()
+
 if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()

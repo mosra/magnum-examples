@@ -75,6 +75,7 @@ The following consist of documented source code only:
 -   @subpage examples-shadows --- @copybrief examples-shadows
 -   @subpage examples-text @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-text
+-   @subpage examples-triangle-vulkan --- @copybrief examples-triangle-vulkan
 -   @subpage examples-webvr @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-webvr
 
