@@ -89,7 +89,7 @@ EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void* app) {
 
 /* Touch callback for requesting present on mobile */
 EM_BOOL touchCallback(int eventType, const EmscriptenTouchEvent* e, void* app) {
-    if(!e || eventType != EMSCRIPTEN_EVENT_TOUCHSTART) return EM_FALSE;
+    if(!e || eventType != EMSCRIPTEN_EVENT_TOUCHEND) return EM_FALSE;
 
     static_cast<WebVrExample*>(app)->onClick();
     return EM_FALSE;
@@ -193,7 +193,7 @@ void WebVrExample::vrReady() {
 
     /* Set callbacks for getting present permission for the VR display */
     emscripten_set_click_callback("#canvas", this, true, clickCallback);
-    emscripten_set_touchstart_callback("#canvas", this, true, touchCallback);
+    emscripten_set_touchend_callback("#canvas", this, true, touchCallback);
 
     _vrInitialized = true;
 }
