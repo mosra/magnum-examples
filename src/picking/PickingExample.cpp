@@ -213,7 +213,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
 
     /* Set up meshes */
     {
-        Trade::MeshData3D data = Primitives::Cube::solid();
+        Trade::MeshData3D data = Primitives::cubeSolid();
         _cubeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
         _cubeIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), BufferUsage::StaticDraw);
         _cube.setCount(data.indices().size())
@@ -221,7 +221,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
             .addVertexBuffer(_cubeVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
             .setIndexBuffer(_cubeIndices, 0, Mesh::IndexType::UnsignedShort);
     } {
-        Trade::MeshData3D data = Primitives::UVSphere::solid(16, 32);
+        Trade::MeshData3D data = Primitives::uvSphereSolid(16, 32);
         _sphereVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
         _sphereIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), BufferUsage::StaticDraw);
         _sphere.setCount(data.indices().size())
@@ -229,7 +229,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
             .addVertexBuffer(_sphereVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
             .setIndexBuffer(_sphereIndices, 0, Mesh::IndexType::UnsignedShort);
     } {
-        Trade::MeshData3D data = Primitives::Plane::solid();
+        Trade::MeshData3D data = Primitives::planeSolid();
         _planeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
         _plane.setCount(data.positions(0).size())
             .setPrimitive(data.primitive())

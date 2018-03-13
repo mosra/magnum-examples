@@ -112,7 +112,7 @@ void TextExample::viewportEvent(const Vector2i& size) {
 void TextExample::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
 
-    _shader.setVectorTexture(_cache.texture());
+    _shader.bindVectorTexture(_cache.texture());
 
     _shader.setTransformationProjectionMatrix(_projection * _transformation)
         .setColor(Color3::fromHsv(216.0_degf, 0.85f, 1.0f))
