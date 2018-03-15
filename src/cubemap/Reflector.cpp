@@ -52,7 +52,7 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
 
     /* Sphere mesh */
     if(!(_sphere = resourceManager.get<Mesh>("sphere"))) {
-        Trade::MeshData3D sphereData = Primitives::UVSphere::solid(16, 32, Primitives::UVSphere::TextureCoords::Generate);
+        Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32, Primitives::UVSphereTextureCoords::Generate);
 
         Buffer* buffer = new Buffer;
         buffer->setData(MeshTools::interleave(sphereData.positions(0), sphereData.textureCoords2D(0)), BufferUsage::StaticDraw);

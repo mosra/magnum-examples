@@ -73,7 +73,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
-    const Trade::MeshData3D data = Primitives::Icosphere::solid(3);
+    const Trade::MeshData3D data = Primitives::icosphereSolid(3);
 
     buffer.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
 

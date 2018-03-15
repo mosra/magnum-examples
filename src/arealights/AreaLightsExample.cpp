@@ -81,6 +81,8 @@ namespace Magnum { namespace Examples {
 /* Class for the area light shader */
 class AreaLightShader: public AbstractShaderProgram {
     public:
+        explicit AreaLightShader(NoCreateT): AbstractShaderProgram{NoCreate} {}
+
         explicit AreaLightShader() {
             MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GLES300);
 
@@ -289,16 +291,16 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
         bool _lightTwoSided[3]{true, false, true};
 
         /* Plane mesh */
-        Buffer _vertices;
-        Mesh _plane;
+        Buffer _vertices{NoCreate};
+        Mesh _plane{NoCreate};
 
         /* Shaders */
-        AreaLightShader _areaLightShader;
-        Shaders::Flat3D _flatShader;
+        AreaLightShader _areaLightShader{NoCreate};
+        Shaders::Flat3D _flatShader{NoCreate};
 
         /* Look Up Textures for arealights shader */
-        Texture2D _ltcAmp;
-        Texture2D _ltcMat;
+        Texture2D _ltcAmp{NoCreate};
+        Texture2D _ltcMat{NoCreate};
 
         /* Camera and interaction */
         Matrix4 _transformation, _projection, _view;
@@ -328,11 +330,15 @@ constexpr struct {
     {{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
 };
 
-AreaLightsExample::AreaLightsExample(const Arguments& arguments):
-    Platform::Application{arguments,
-        Configuration{}.setTitle("Magnum Area Lights Example")
-                       .setSampleCount(8)}
-{
+AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    /* Try to create multisampled context, but be nice and fall back if not
+       available */
+    Configuration conf;
+    conf.setTitle("Magnum Area Lights Example")
+        .setSampleCount(8);
+    if(!tryCreateContext(conf))
+        createContext(conf.setSampleCount(0));
+
     /* Make it all DARK, eanble face culling so one-sided lights are properly
        visualized */
     Renderer::enable(Renderer::Feature::FaceCulling);
@@ -340,7 +346,9 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
 
     /* Setup the plane mesh, which will be used for both the floor and light
        visualization */
+    _vertices = Buffer{};
     _vertices.setData(LightVertices, BufferUsage::StaticDraw);
+    _plane = Mesh{};
     _plane.setPrimitive(MeshPrimitive::TriangleFan)
         .addVertexBuffer(_vertices, 0, Shaders::Generic3D::Position{}, Shaders::Generic3D::Normal{})
         .setCount(Containers::arraySize(LightVertices));
@@ -361,6 +369,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     /* Set texture data and parameters */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
+    _ltcAmp = Texture2D{};
     _ltcAmp.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear);
@@ -388,6 +397,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
     /* Set texture data and parameters */
     image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
+    _ltcMat = Texture2D{};
     _ltcMat.setWrapping(Sampler::Wrapping::ClampToEdge)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setMinificationFilter(Sampler::Filter::Linear);
@@ -407,6 +417,10 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments):
         _ltcMat.setStorage(1, TextureFormat::RGBA32F, image->size())
             .setSubImage(0, {}, *image);
     }
+
+    /* Compile shaders */
+    _areaLightShader = AreaLightShader{};
+    _flatShader = Shaders::Flat3D{};
 
     /* Create the UI */
     _ui.emplace(Vector2{windowSize()}, windowSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");

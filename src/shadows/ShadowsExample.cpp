@@ -136,9 +136,9 @@ ShadowsExample::ShadowsExample(const Arguments& arguments):
     Renderer::enable(Renderer::Feature::DepthTest);
     Renderer::enable(Renderer::Feature::FaceCulling);
 
-    addModel(Primitives::Cube::solid());
-    addModel(Primitives::Capsule3D::solid(1, 1, 4, 1.0f));
-    addModel(Primitives::Capsule3D::solid(6, 1, 9, 1.0f));
+    addModel(Primitives::cubeSolid());
+    addModel(Primitives::capsule3DSolid(1, 1, 4, 1.0f));
+    addModel(Primitives::capsule3DSolid(6, 1, 9, 1.0f));
 
     Object3D* ground = createSceneObject(_models[0], false, true);
     ground->setTransformation(Matrix4::scaling({100,1,100}));

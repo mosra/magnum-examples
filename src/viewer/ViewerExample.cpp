@@ -431,13 +431,13 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera
 
 void TexturedObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setAmbientColor(_ambientColor)
-        .setDiffuseTexture(*_diffuseTexture)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
         .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.rotation())
-        .setProjectionMatrix(camera.projectionMatrix());
+        .setProjectionMatrix(camera.projectionMatrix())
+        .bindDiffuseTexture(*_diffuseTexture);
 
     _mesh->draw(*_shader);
 }

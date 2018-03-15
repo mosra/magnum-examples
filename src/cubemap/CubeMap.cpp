@@ -54,7 +54,7 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
 
     /* Cube mesh */
     if(!(_cube = resourceManager.get<Mesh>("cube"))) {
-        Trade::MeshData3D cubeData = Primitives::Cube::solid();
+        Trade::MeshData3D cubeData = Primitives::cubeSolid();
         MeshTools::flipFaceWinding(cubeData.indices());
 
         Buffer* buffer = new Buffer;
