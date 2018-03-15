@@ -30,6 +30,16 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@section changelog-examples-latest Changes since 2018.02
+
+@subsection changelog-examples-latest-dependencies Dependency changes
+
+-   Building for Android now requires CMake 3.7 with builtin Android
+    crosscompilation support, the old toolchains were removed. Only the Clang
+    and libc++ toolchain is now supported, support for GCC and libstdc++ was
+    dropped, as it was still missing some important C++11 functionality. See
+    @ref building-cross-android for more information.
+
 @section changelog-examples-2018-02 2018.02
 
 Released 2018-02-15, tagged as

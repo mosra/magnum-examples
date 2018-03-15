@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ev
 
-git submodule update --init
-
 git clone --depth 1 git://github.com/mosra/corrade.git
 cd corrade
 
@@ -21,11 +19,17 @@ cd ..
 
 # Crosscompile Corrade
 mkdir build-android-arm && cd build-android-arm
-ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DCORRADE_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_TESTSUITE=OFF \
     -G Ninja
@@ -36,12 +40,17 @@ cd ../..
 git clone --depth 1 git://github.com/mosra/magnum.git
 cd magnum
 mkdir build-android-arm && cd build-android-arm
-ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DWITH_AUDIO=OFF \
     -DWITH_DEBUGTOOLS=ON \
     -DWITH_MESHTOOLS=ON \
@@ -62,12 +71,17 @@ cd ../..
 git clone --depth 1 git://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build-android-arm && cd build-android-arm
-ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DWITH_BULLET=OFF \
     -DWITH_OVR=OFF \
     -G Ninja
@@ -78,39 +92,22 @@ cd ../..
 git clone --depth 1 git://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build-android-arm && cd build-android-arm
-ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DWITH_UI=OFF \
     -G Ninja
 ninja install
 cd ../..
 
-# Crosscompile
-mkdir build-android-arm && cd build-android-arm
-ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-ARM.cmake \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
-    -DWITH_AREALIGHTS_EXAMPLE=OFF \
-    -DWITH_AUDIO_EXAMPLE=OFF \
-    -DWITH_BULLET_EXAMPLE=OFF \
-    -DWITH_CUBEMAP_EXAMPLE=OFF \
-    -DWITH_MOTIONBLUR_EXAMPLE=OFF \
-    -DWITH_OVR_EXAMPLE=OFF \
-    -DWITH_PICKING_EXAMPLE=OFF \
-    -DWITH_PRIMITIVES_EXAMPLE=OFF \
-    -DWITH_SHADOWS_EXAMPLE=OFF \
-    -DWITH_TEXT_EXAMPLE=OFF \
-    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
-    -DWITH_TRIANGLE_EXAMPLE=OFF \
-    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
-    -DWITH_VIEWER_EXAMPLE=OFF \
-    -G Ninja
-# Otherwise the job gets killed (probably because using too much memory)
-ninja -j4
+export ANDROID_NDK_HOME=$TRAVIS_BUILD_DIR/android-ndk-r16b
+export CMAKE_PREFIX_PATH=$HOME/deps-native/
