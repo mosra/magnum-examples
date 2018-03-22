@@ -128,7 +128,7 @@ void TexturedTriangleExample::drawEvent() {
 
     _shader.setTransformationProjectionMatrix({})
         .setColor(0xffb2b2_rgbf)
-        .setTexture(_texture);
+        .bindTexture(_texture);
     _mesh.draw(_shader);
 
     swapBuffers();
