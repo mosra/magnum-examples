@@ -49,6 +49,11 @@ endif()
 
 project(MagnumPrimitivesExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 find_package(Magnum REQUIRED
     MeshTools
     Primitives
@@ -65,8 +70,6 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 if(NOT CORRADE_TARGET_ANDROID)
     add_executable(magnum-primitives PrimitivesExample.cpp)
 else()
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
     add_library(magnum-primitives SHARED PrimitivesExample.cpp)
 endif()
 target_link_libraries(magnum-primitives

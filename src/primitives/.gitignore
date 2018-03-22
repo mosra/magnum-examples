@@ -1,6 +1,3 @@
-bin/
-libs/
-build.xml
-local.properties
-proguard-project.txt
-project.properties
+.externalNativeBuild/
+.gradle/
+build/
