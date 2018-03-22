@@ -111,3 +111,13 @@ cd ../..
 
 export ANDROID_NDK_HOME=$TRAVIS_BUILD_DIR/android-ndk-r16b
 export CMAKE_PREFIX_PATH=$HOME/deps-native/
+
+# Build the Triangle example
+cd src/triangle
+gradle build
+cd ../..
+
+# Build the Primitives example
+cd src/primitives
+gradle build
+cd ../..
