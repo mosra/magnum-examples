@@ -41,17 +41,6 @@
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
 #include <Magnum/Text/Renderer.h>
 
-#include "configure.h"
-
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(MagnumFont)
-    CORRADE_PLUGIN_IMPORT(TgaImporter)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
-
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::Math::Literals;
@@ -81,7 +70,7 @@ class TextExample: public Platform::Application {
         Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _importerManager(MAGNUM_PLUGINS_IMPORTER_DIR), _manager(MAGNUM_PLUGINS_FONT_DIR), _text{NoCreate}, _vertices(Buffer::TargetHint::Array), _indices(Buffer::TargetHint::ElementArray) {
+TextExample::TextExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Text Example")}, _text{NoCreate}, _vertices(Buffer::TargetHint::Array), _indices(Buffer::TargetHint::ElementArray) {
     /* Load MagnumFont plugin */
     _font = _manager.loadAndInstantiate("MagnumFont");
     if(!_font) std::exit(1);

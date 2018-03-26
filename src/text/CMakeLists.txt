@@ -60,15 +60,11 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
 add_executable(magnum-text
     TextExample.cpp
     ${TextExample_RESOURCES})
-target_include_directories(magnum-text PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-text
     Magnum::Application
     Magnum::Magnum

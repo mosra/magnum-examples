@@ -43,16 +43,6 @@
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 
-#include "configure.h"
-
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(TgaImporter)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
-
 namespace Magnum { namespace Examples {
 
 class TexturedTriangleExample: public Platform::Application {
@@ -94,7 +84,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
             Shaders::Flat2D::TextureCoordinates{});
 
     /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
     if(!importer) std::exit(1);
 

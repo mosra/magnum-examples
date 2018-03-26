@@ -65,9 +65,6 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 corrade_add_resource(TexturedTriangle_RESOURCES resources.conf)
 
 if(NOT CORRADE_TARGET_ANDROID)
@@ -81,7 +78,6 @@ else()
         TexturedTriangleExample.cpp
         ${TexturedTriangle_RESOURCES})
 endif()
-target_include_directories(magnum-textured-triangle PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-textured-triangle
     Magnum::Application
     Magnum::Magnum

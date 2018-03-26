@@ -65,17 +65,6 @@
 #include <Magnum/Math/Half.h>
 #endif
 
-#include "configure.h"
-
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(DdsImporter)
-    CORRADE_PLUGIN_IMPORT(StbTrueTypeFont)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
-
 namespace Magnum { namespace Examples {
 
 /* Class for the area light shader */
@@ -358,7 +347,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
 
     /* Load LTC matrix and BRDF textures */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
     if(!importer) std::exit(1);
 

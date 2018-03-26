@@ -46,7 +46,6 @@
 #include "CubeMap.h"
 #include "Reflector.h"
 #include "Types.h"
-#include "configure.h"
 
 #ifdef MAGNUM_BUILD_STATIC
 /* Import plugins in static build */
@@ -96,7 +95,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         .setViewport(defaultFramebuffer.viewport().size());
 
     /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
     if(!importer) std::exit(1);
 

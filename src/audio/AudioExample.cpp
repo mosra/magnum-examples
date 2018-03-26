@@ -56,16 +56,6 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/DualQuaternionTransformation.h>
 
-#include "configure.h"
-
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(StbVorbisAudioImporter)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
-
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::SceneGraph;
@@ -131,7 +121,7 @@ AudioExample::AudioExample(const Arguments& arguments):
            .setViewport(defaultFramebuffer.viewport().size());
 
     /* Load importer plugin */
-    PluginManager::Manager<Audio::AbstractImporter> audioManager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR};
+    PluginManager::Manager<Audio::AbstractImporter> audioManager;
     std::unique_ptr<Audio::AbstractImporter> importer = audioManager.loadAndInstantiate("StbVorbisAudioImporter");
     if(!importer)
         std::exit(1);

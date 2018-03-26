@@ -51,17 +51,6 @@
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>
 
-#include "configure.h"
-
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(AnyImageImporter)
-    CORRADE_PLUGIN_IMPORT(OpenGexImporter)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
-
 namespace Magnum { namespace Examples {
 
 typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
@@ -155,7 +144,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     Renderer::enable(Renderer::Feature::FaceCulling);
 
     /* Load scene importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
     if(!importer) std::exit(1);
 
