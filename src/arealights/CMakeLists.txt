@@ -50,7 +50,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 corrade_add_resource(AreaLights_RESOURCES resources.conf)
 
 add_executable(magnum-arealights AreaLightsExample.cpp ${AreaLights_RESOURCES})
-target_link_libraries(magnum-arealights
+target_link_libraries(magnum-arealights PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders

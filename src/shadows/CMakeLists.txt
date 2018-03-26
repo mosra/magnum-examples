@@ -77,7 +77,7 @@ add_executable(magnum-shadows
     DebugLines.cpp
     Types.h
     ${Shadows_RESOURCES})
-target_link_libraries(magnum-shadows
+target_link_libraries(magnum-shadows PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

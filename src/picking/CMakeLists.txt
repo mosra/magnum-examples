@@ -62,7 +62,7 @@ corrade_add_resource(Picking_RESOURCES resources.conf)
 add_executable(magnum-picking
     PickingExample.cpp
     ${Picking_RESOURCES})
-target_link_libraries(magnum-picking
+target_link_libraries(magnum-picking PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

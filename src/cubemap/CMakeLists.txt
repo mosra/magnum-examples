@@ -74,7 +74,7 @@ add_executable(magnum-cubemap
     Types.h
 
     ${CubeMap_RESOURCES})
-target_link_libraries(magnum-cubemap
+target_link_libraries(magnum-cubemap PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

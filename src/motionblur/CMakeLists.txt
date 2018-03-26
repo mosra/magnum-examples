@@ -70,7 +70,7 @@ add_executable(magnum-motionblur
     Types.h
 
     ${MotionBlur_RESOURCES})
-target_link_libraries(magnum-motionblur
+target_link_libraries(magnum-motionblur PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

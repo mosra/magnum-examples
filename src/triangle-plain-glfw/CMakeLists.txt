@@ -65,7 +65,7 @@ endif()
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-triangle-plain-glfw main.cpp)
-target_link_libraries(magnum-triangle-plain-glfw
+target_link_libraries(magnum-triangle-plain-glfw PRIVATE
     GLFW::GLFW
     Magnum::Context
     Magnum::Magnum

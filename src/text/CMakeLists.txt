@@ -61,7 +61,7 @@ corrade_add_resource(TextExample_RESOURCES resources.conf)
 add_executable(magnum-text
     TextExample.cpp
     ${TextExample_RESOURCES})
-target_link_libraries(magnum-text
+target_link_libraries(magnum-text PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders

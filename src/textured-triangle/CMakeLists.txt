@@ -60,7 +60,7 @@ add_executable(magnum-textured-triangle
     TexturedTriangleShader.cpp
     TexturedTriangleShader.h
     ${TexturedTriangle_RESOURCES})
-target_link_libraries(magnum-textured-triangle
+target_link_libraries(magnum-textured-triangle PRIVATE
     Magnum::Application
     Magnum::Magnum)
 

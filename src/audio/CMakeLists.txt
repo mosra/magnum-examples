@@ -63,7 +63,7 @@ corrade_add_resource(AudioExample_RESOURCES resources.conf)
 add_executable(magnum-audio
     AudioExample.cpp
     ${AudioExample_RESOURCES})
-target_link_libraries(magnum-audio
+target_link_libraries(magnum-audio PRIVATE
     Magnum::Application
     Magnum::Audio
     Magnum::DebugTools

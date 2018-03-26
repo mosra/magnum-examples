@@ -66,7 +66,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-webvr
     WebVrExample.cpp)
-target_link_libraries(magnum-webvr
+target_link_libraries(magnum-webvr PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

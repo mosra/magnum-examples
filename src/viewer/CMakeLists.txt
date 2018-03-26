@@ -58,7 +58,7 @@ find_package(Magnum REQUIRED
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-viewer ViewerExample.cpp)
-target_link_libraries(magnum-viewer
+target_link_libraries(magnum-viewer PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools
