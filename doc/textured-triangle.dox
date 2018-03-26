@@ -46,11 +46,11 @@ these features:
 @section examples-textured-triangle-skeleton Basic skeleton
 
 Compared to the original triangle example, we need extra includes for loading
-image data  using a plugin and uploading them to a texture:
+image data using a plugin and uploading them to a texture:
 
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip #include
-@until configure.h
+@until TexturedTriangleShader.h
 
 The basic skeleton of main example class is similar to the original, except for
 a custom shader and added @ref Texture2D.
@@ -174,7 +174,6 @@ again buffer swap.
 
 @skip TexturedTriangleExample::drawEvent
 @until }
-@until }
 
 And, don't forget the main function:
 
@@ -184,20 +183,8 @@ MAGNUM_APPLICATION_MAIN(TexturedTriangleExample)
 
 @section examples-textured-triangle-compilation Compilation
 
-Compilation is not as straightforward as in previous example, because we need
-to query directory with importer plugins and compile the resources into
-executable. In addition to `CMakeLists.txt` we need two additonal files, one
-for specifying plugin directory and one for compiling the resources.
-
-The `configure.h.cmake` file contains input for `configure.h` header which will
-contain proper value for `MAGNUM_PLUGINS_IMPORTER_DIR`. CMake will replace
-`${MAGNUM_PLUGINS_IMPORTER_DIR}` or `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` with
-path gathered when looking for Magnum. Again, see @ref plugins for more
-detailed information about plugin directories.
-
-@dontinclude textured-triangle/configure.h.cmake
-@skip #ifdef CORRADE_IS_DEBUG_BUILD
-@until #endif
+Compilation is slightly more complicated compared to previous examples, because
+we need to compile our resources into the executable.
 
 The `resources.conf` file lists all resources which need to be compiled into
 the executable --- that is our GLSL shader sources and the texture image. All
@@ -208,23 +195,16 @@ compilation process is explained thoroughly in Corrade's
 
 @include textured-triangle/resources.conf
 
-In the `CMakeLists.txt` file first we find required Magnum package.
+In the `CMakeLists.txt` file first we find the required Magnum package.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip find_package
 @until set_directory_properties
 
-We then process the configuration file with CMake:
-
-@dontinclude textured-triangle/CMakeLists.txt
-@skip configure_file
-@until ${CMAKE_CURRENT_BINARY_DIR}/configure.h
-
-Now we compile the resources into the executable using the
-@ref corrade-cmake-add-resource "corrade_add_resource()" macro, then we create
-an executable from the result and other source files. We also need to include
-current binary dir, because it will contain our generated `configure.h`. Last
-step is linking, the same as previously.
+After that we compile the resources using the
+@ref corrade-cmake-add-resource "corrade_add_resource()" macro and create an
+executable from the result and other source files. Last step is linking, the
+same as previously.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
@@ -236,7 +216,6 @@ Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
 
 -   @ref textured-triangle/CMakeLists.txt "CMakeLists.txt"
--   @ref textured-triangle/configure.h.cmake "configure.h.cmake"
 -   @ref textured-triangle/resources.conf "resources.conf"
 -   @ref textured-triangle/TexturedTriangleExample.cpp "TexturedTriangleExample.cpp"
 -   @ref textured-triangle/TexturedTriangleShader.cpp "TexturedTriangleShader.cpp"
@@ -251,7 +230,6 @@ support that aren't present in `master` in order to keep the example code as
 simple as possible.
 
 @example textured-triangle/CMakeLists.txt @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
-@example textured-triangle/configure.h.cmake @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/resources.conf @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleExample.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/TexturedTriangleShader.cpp @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation

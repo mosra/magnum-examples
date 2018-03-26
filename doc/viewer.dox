@@ -111,7 +111,7 @@ materials, meshes and textures:
 
 @dontinclude viewer/ViewerExample.cpp
 @skip #include
-@until configure.h
+@until TextureData.h
 
 Our resource manager will store vertex and index buffers, meshes, textures and
 shaders for the whole lifetime of our application. During loading we would need
@@ -169,7 +169,7 @@ as material support, string data identifiers, scene hierarchy etc.).
 We try load and instantiate the plugin and open the file. If any operation
 fails, the application simply exits. The manager and importer prints message on
 any error, so it's not needed to repeat it in application code.
-@skip PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+@skip PluginManager::Manager<Trade::AbstractImporter> manager;
 @until std::exit(4);
 
 First we import all materials, as that's the least involved operation. We check
@@ -288,6 +288,7 @@ importing them, but that's out of scope of this example.
 Viewport and draw events delegate everything to our camera. The camera does
 proper aspect ratio correction based on viewport size and draws all objects
 added to drawable group.
+
 @skip void ViewerExample::viewportEvent
 @until }
 @until }
@@ -295,6 +296,7 @@ added to drawable group.
 
 Lastly there is mouse handling to rotate and zoom the scene around, nothing new
 to talk about.
+
 @skip void ViewerExample::mousePressEvent
 @until }
 @until }
@@ -309,6 +311,7 @@ have @ref SceneGraph::Drawable feature attached. The most convenient way is to
 use multiple inheritance, see @ref scenegraph-features for more information.
 Our objects will need mesh and shader resource along with some material
 definition. The textured object has additional texture resource.
+
 @dontinclude viewer/ViewerExample.cpp
 @skip class ColoredObject
 @until };
@@ -316,6 +319,7 @@ definition. The textured object has additional texture resource.
 
 In constructor, these two classes setup parent/children hierarchy and attach
 drawable to drawable group. They then acquire the resources from the manager.
+
 @skip ColoredObject::ColoredObject
 @until }
 @until }
@@ -326,6 +330,7 @@ drawable to drawable group. They then acquire the resources from the manager.
 
 Drawing functions have nothing special, just shader preparation and mesh
 drawing.
+
 @skip void ColoredObject::draw
 @until }
 @until }
@@ -340,13 +345,7 @@ MAGNUM_APPLICATION_MAIN(ViewerExample)
 
 @section examples-viewer-compilation Compilation
 
-Compilation is as easy as usual, we just need to provide also path to the
-plugin dir, similarly to what we did in the
-@ref examples-textured-triangle "Textured Triangle" example.
-
-@dontinclude viewer/configure.h.cmake
-@skip #ifdef CORRADE_IS_DEBUG_BUILD
-@until #endif
+Compilation is again nothing special:
 
 @dontinclude viewer/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
@@ -358,7 +357,6 @@ Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/viewer).
 
 -   @ref viewer/CMakeLists.txt "CMakeLists.txt"
--   @ref viewer/configure.h.cmake "configure.h.cmake"
 -   @ref viewer/ViewerExample.cpp "ViewerExample.cpp"
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
@@ -367,7 +365,6 @@ support that aren't present in `master` in order to keep the example code as
 simple as possible.
 
 @example viewer/CMakeLists.txt @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
-@example viewer/configure.h.cmake @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
 @example viewer/ViewerExample.cpp @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
 
 */

@@ -62,7 +62,6 @@ Full source code is linked below and together with assets also available in the
 
 -   @ref audio/AudioExample.cpp "AudioExample.cpp"
 -   @ref audio/CMakeLists.txt "CMakeLists.txt"
--   @ref audio/configure.h.cmake "configure.h.cmake"
 -   @ref audio/resources.conf "resources.conf"
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/audio)
@@ -72,7 +71,6 @@ simple as possible.
 
 @example audio/AudioExample.cpp @m_examplenavigation{examples-audio,audio/} @m_footernavigation
 @example audio/CMakeLists.txt @m_examplenavigation{examples-audio,audio/} @m_footernavigation
-@example audio/configure.h.cmake @m_examplenavigation{examples-audio,audio/} @m_footernavigation
 @example audio/resources.conf @m_examplenavigation{examples-audio,audio/} @m_footernavigation
 
 */

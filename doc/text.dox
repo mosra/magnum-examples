@@ -52,7 +52,6 @@ Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/text).
 
 -   @ref text/CMakeLists.txt "CMakeLists.txt"
--   @ref text/configure.h.cmake "configure.h.cmake"
 -   @ref text/resources.conf "resources.conf"
 -   @ref text/TextExample.cpp "TextExample.cpp"
 
@@ -63,7 +62,6 @@ simple as possible.
 
 @example text/TextExample.cpp @m_examplenavigation{examples-text,text/} @m_footernavigation
 @example text/resources.conf @m_examplenavigation{examples-text,text/} @m_footernavigation
-@example text/configure.h.cmake @m_examplenavigation{examples-text,text/} @m_footernavigation
 @example text/CMakeLists.txt @m_examplenavigation{examples-text,text/} @m_footernavigation
 
 */
