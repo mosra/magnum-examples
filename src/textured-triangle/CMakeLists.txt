@@ -53,9 +53,6 @@ find_package(Magnum REQUIRED Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 corrade_add_resource(TexturedTriangle_RESOURCES resources.conf)
 
 add_executable(magnum-textured-triangle
@@ -63,7 +60,6 @@ add_executable(magnum-textured-triangle
     TexturedTriangleShader.cpp
     TexturedTriangleShader.h
     ${TexturedTriangle_RESOURCES})
-target_include_directories(magnum-textured-triangle PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-textured-triangle
     Magnum::Application
     Magnum::Magnum)

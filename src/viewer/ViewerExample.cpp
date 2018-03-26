@@ -52,8 +52,6 @@
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>
 
-#include "configure.h"
-
 namespace Magnum { namespace Examples {
 
 typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
@@ -153,7 +151,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     Renderer::enable(Renderer::Feature::FaceCulling);
 
     /* Load scene importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
     if(!importer) std::exit(1);
 

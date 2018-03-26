@@ -39,7 +39,6 @@
 #include <Magnum/Trade/ImageData.h>
 
 #include "TexturedTriangleShader.h"
-#include "configure.h"
 
 namespace Magnum { namespace Examples {
 
@@ -77,7 +76,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
             TexturedTriangleShader::TextureCoordinates{});
 
     /* Load TGA importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
     if(!importer) std::exit(1);
 

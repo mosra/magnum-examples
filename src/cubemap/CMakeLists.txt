@@ -57,9 +57,6 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 corrade_add_resource(CubeMap_RESOURCES resources.conf)
 
 add_executable(magnum-cubemap
@@ -77,7 +74,6 @@ add_executable(magnum-cubemap
     Types.h
 
     ${CubeMap_RESOURCES})
-target_include_directories(magnum-cubemap PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-cubemap
     Magnum::Application
     Magnum::Magnum

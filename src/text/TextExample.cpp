@@ -40,8 +40,6 @@
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
 #include <Magnum/Text/Renderer.h>
 
-#include "configure.h"
-
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::Math::Literals;
@@ -70,7 +68,7 @@ class TextExample: public Platform::Application {
         Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Text Example")), _manager(MAGNUM_PLUGINS_FONT_DIR), _cache(Vector2i(2048), Vector2i(512), 22), _text{NoCreate} {
+TextExample::TextExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Text Example")}, _cache(Vector2i(2048), Vector2i(512), 22), _text{NoCreate} {
     /* Load FreeTypeFont plugin */
     _font = _manager.loadAndInstantiate("FreeTypeFont");
     if(!_font) std::exit(1);
