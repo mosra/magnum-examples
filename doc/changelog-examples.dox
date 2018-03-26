@@ -40,6 +40,10 @@ namespace Magnum {
     dropped, as it was still missing some important C++11 functionality. See
     @ref building-cross-android for more information.
 
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   The @ref examples-webvr example was fixed to work on Android phones
+
 @section changelog-examples-2018-02 2018.02
 
 Released 2018-02-15, tagged as

@@ -37,7 +37,9 @@ This example is a basic demonstration of how to use the
 with Magnum.
 
 For the full experience, this example requires a WebVR 1.1 capable browser and
-a VR headset. You may need to enable WebVR support explicitly on your browser.
+a VR headset. You may need to enable WebVR support explicitly on your browser
+--- on Chrome go into `chrome://flags` and search for WebVR. Works on Android
+as well.
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/webvr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
