@@ -112,7 +112,7 @@ WebVrExample::WebVrExample(const Arguments& arguments):
     Renderer::enable(Renderer::Feature::DepthTest);
 
     /* Setup cube mesh */
-    const Trade::MeshData3D cube = Primitives::Cube::solid();
+    const Trade::MeshData3D cube = Primitives::cubeSolid();
     _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
 
     Containers::Array<char> indexData;
