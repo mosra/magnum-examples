@@ -62,6 +62,7 @@ cmake .. \
     -DWITH_TEXTURETOOLS=ON \
     -DWITH_SDL2APPLICATION=OFF \
     -DWITH_ANDROIDAPPLICATION=ON \
+    -DWITH_TGAIMPORTER=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -G Ninja
 ninja install
@@ -119,5 +120,10 @@ cd ../..
 
 # Build the Primitives example
 cd src/primitives
+gradle build
+cd ../..
+
+# Build the Textured Triangle example
+cd src/textured-triangle
 gradle build
 cd ../..

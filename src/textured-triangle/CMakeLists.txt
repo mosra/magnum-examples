@@ -49,9 +49,12 @@ endif()
 
 project(MagnumTexturedTriangleExample)
 
-find_package(Magnum REQUIRED
-    Shaders
-    Sdl2Application)
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
+find_package(Magnum REQUIRED Shaders)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     find_package(Magnum REQUIRED TgaImporter)
@@ -72,8 +75,6 @@ if(NOT CORRADE_TARGET_ANDROID)
         TexturedTriangleExample.cpp
         ${TexturedTriangle_RESOURCES})
 else()
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}")
     add_library(magnum-textured-triangle SHARED
         TexturedTriangleExample.cpp
         ${TexturedTriangle_RESOURCES})
