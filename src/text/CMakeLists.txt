@@ -65,14 +65,15 @@ corrade_add_resource(TextExample_RESOURCES resources.conf)
 add_executable(magnum-text
     TextExample.cpp
     ${TextExample_RESOURCES})
-target_link_libraries(magnum-text
+target_link_libraries(magnum-text PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders
     Magnum::Text)
 
 if(MAGNUM_BUILD_STATIC)
-    target_link_libraries(magnum-text ${MAGNUM_TGAIMPORTER_LIBRARIES} ${MAGNUM_MAGNUMFONT_LIBRARIES} ${MAGNUM_LIBRARIES})
+    target_link_libraries(magnum-text PRIVATE
+        Magnum::MagnumFont)
 endif()
 
 # Installation for Emscripten

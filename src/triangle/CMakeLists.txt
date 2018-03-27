@@ -70,7 +70,7 @@ if(NOT CORRADE_TARGET_ANDROID)
 else()
     add_library(magnum-triangle SHARED TriangleExample.cpp)
 endif()
-target_link_libraries(magnum-triangle
+target_link_libraries(magnum-triangle PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders)

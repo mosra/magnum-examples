@@ -74,7 +74,6 @@ Full source code is linked below and together with assets also available in the
 -   @ref arealights/AreaLights.vert "AreaLights.vert"
 -   @ref arealights/AreaLightsExample.cpp "AreaLightsExample.cpp"
 -   @ref arealights/CMakeLists.txt "CMakeLists.txt"
--   @ref arealights/configure.h.cmake "configure.h.cmake"
 -   @ref arealights/resources.conf "resources.conf"
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/arealights)
@@ -86,7 +85,6 @@ order to keep the example code as simple as possible.
 @example arealights/AreaLights.vert @m_examplenavigation{examples-arealights,arealights/} @m_footernavigation
 @example arealights/AreaLightsExample.cpp @m_examplenavigation{examples-arealights,arealights/} @m_footernavigation
 @example arealights/CMakeLists.txt @m_examplenavigation{examples-arealights,arealights/} @m_footernavigation
-@example arealights/configure.h.cmake @m_examplenavigation{examples-arealights,arealights/} @m_footernavigation
 @example arealights/resources.conf @m_examplenavigation{examples-arealights,arealights/} @m_footernavigation
 
 */

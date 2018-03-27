@@ -94,7 +94,7 @@ add_executable(magnum-cubemap
     ${CubeMap_SRCS}
     ${CubeMap_HEADERS}
     ${CubeMap_RESOURCES})
-target_link_libraries(magnum-cubemap
+target_link_libraries(magnum-cubemap PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools
@@ -103,7 +103,7 @@ target_link_libraries(magnum-cubemap
 
 # iOS-specific
 if(CORRADE_TARGET_IOS)
-    target_link_libraries(magnum-cubemap MagnumPlugins::StbImageImporter)
+    target_link_libraries(magnum-cubemap PRIVATE MagnumPlugins::StbImageImporter)
     set_target_properties(magnum-cubemap PROPERTIES
         MACOSX_BUNDLE ON
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in

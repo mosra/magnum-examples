@@ -79,7 +79,7 @@ else()
         TexturedTriangleExample.cpp
         ${TexturedTriangle_RESOURCES})
 endif()
-target_link_libraries(magnum-textured-triangle
+target_link_libraries(magnum-textured-triangle PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders)
@@ -93,7 +93,7 @@ if(CORRADE_TARGET_IOS)
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
-    target_link_libraries(magnum-textured-triangle Magnum::TgaImporter)
+    target_link_libraries(magnum-textured-triangle PRIVATE Magnum::TgaImporter)
 endif()
 
 # Installation for Emscripten

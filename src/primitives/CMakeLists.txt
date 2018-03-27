@@ -72,7 +72,7 @@ if(NOT CORRADE_TARGET_ANDROID)
 else()
     add_library(magnum-primitives SHARED PrimitivesExample.cpp)
 endif()
-target_link_libraries(magnum-primitives
+target_link_libraries(magnum-primitives PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

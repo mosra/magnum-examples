@@ -67,7 +67,7 @@ corrade_add_resource(AudioExample_RESOURCES resources.conf)
 add_executable(magnum-audio
     AudioExample.cpp
     ${AudioExample_RESOURCES})
-target_link_libraries(magnum-audio
+target_link_libraries(magnum-audio PRIVATE
     Magnum::Application
     Magnum::Audio
     Magnum::DebugTools
@@ -75,7 +75,8 @@ target_link_libraries(magnum-audio
     Magnum::SceneGraph)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-audio MagnumPlugins::StbVorbisAudioImporter)
+    target_link_libraries(magnum-audio PRIVATE
+        MagnumPlugins::StbVorbisAudioImporter)
 endif()
 
 # Installation for Emscripten

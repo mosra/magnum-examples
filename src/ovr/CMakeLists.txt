@@ -68,7 +68,7 @@ add_executable(magnum-ovr
     CubeDrawable.cpp
     CubeDrawable.h
     Types.h)
-target_link_libraries(magnum-ovr
+target_link_libraries(magnum-ovr PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools

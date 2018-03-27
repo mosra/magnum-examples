@@ -66,7 +66,7 @@ corrade_add_resource(Viewer_RESOURCES resources.conf)
 add_executable(magnum-viewer
     ViewerExample.cpp
     ${Viewer_RESOURCES})
-target_link_libraries(magnum-viewer
+target_link_libraries(magnum-viewer PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools
@@ -74,7 +74,7 @@ target_link_libraries(magnum-viewer
     Magnum::Shaders)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-viewer ${MAGNUMPLUGINS_OPENGEXIMPORTER_LIBRARIES})
+    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::OpenGexImporter)
 endif()
 
 # Installation for Emscripten
