@@ -58,6 +58,7 @@ cmake .. ^
     -DWITH_SHAPES=ON ^
     -DWITH_TEXT=ON ^
     -DWITH_TEXTURETOOLS=ON ^
+    -DWITH_TRADE=ON ^
     -DWITH_SDL2APPLICATION=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
