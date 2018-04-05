@@ -53,6 +53,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Shaders
     SceneGraph
+    Trade
     Sdl2Application)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
@@ -71,7 +72,8 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::SceneGraph
-    Magnum::Shaders)
+    Magnum::Shaders
+    Magnum::Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::OpenGexImporter)

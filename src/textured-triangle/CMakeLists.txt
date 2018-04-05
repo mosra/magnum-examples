@@ -54,7 +54,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-find_package(Magnum REQUIRED Shaders)
+find_package(Magnum REQUIRED Shaders Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     find_package(Magnum REQUIRED TgaImporter)
@@ -82,7 +82,8 @@ endif()
 target_link_libraries(magnum-textured-triangle PRIVATE
     Magnum::Application
     Magnum::Magnum
-    Magnum::Shaders)
+    Magnum::Shaders
+    Magnum::Trade)
 
 # iOS-specifics
 if(CORRADE_TARGET_IOS)

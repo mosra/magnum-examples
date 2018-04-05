@@ -35,7 +35,7 @@ namespace Magnum {
 This example extends the basic @ref examples-triangle "Triangle example" with
 these features:
 
--   Working with textures and using plugin manager for importing TGA image
+-   Working with textures and using the @ref Trade library for importing image
     data.
 -   Creating custom shaders.
 -   Storing resources in the executable, so they don't have to be carried as
@@ -46,7 +46,7 @@ these features:
 @section examples-textured-triangle-skeleton Basic skeleton
 
 Compared to the original triangle example, we need extra includes for loading
-image data using a plugin and uploading them to a texture:
+image data and uploading them to a texture:
 
 @dontinclude textured-triangle/TexturedTriangleExample.cpp
 @skip #include
@@ -195,7 +195,8 @@ compilation process is explained thoroughly in Corrade's
 
 @include textured-triangle/resources.conf
 
-In the `CMakeLists.txt` file first we find the required Magnum package.
+In the `CMakeLists.txt` file first we find the required Magnum package, now
+asking for the @ref Trade library as well:
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip find_package
@@ -203,12 +204,13 @@ In the `CMakeLists.txt` file first we find the required Magnum package.
 
 After that we compile the resources using the
 @ref corrade-cmake-add-resource "corrade_add_resource()" macro and create an
-executable from the result and other source files. Last step is linking, the
-same as previously.
+executable from the result and other source files. Last step is linking to all
+needed libraries. The plugin is loaded dynamically, so it's not handled by
+CMake at all.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
-@until Magnum::Magnum)
+@until Magnum::Trade)
 
 You can now try playing around with the shader source, modifying texture
 coordinates or adding other effects. The full file content is linked below.

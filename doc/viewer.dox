@@ -349,7 +349,7 @@ Compilation is again nothing special:
 
 @dontinclude viewer/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
-@until Magnum::Shaders)
+@until Magnum::Trade)
 
 You can experiment by loading scenes of varying complexity and formats or
 adding light and camera property import. The full file content is linked below.

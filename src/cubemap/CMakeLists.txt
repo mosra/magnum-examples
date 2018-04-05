@@ -53,6 +53,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
+    Trade
     Sdl2Application)
 
 if(CORRADE_TARGET_IOS)
@@ -99,7 +100,8 @@ target_link_libraries(magnum-cubemap PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::SceneGraph)
+    Magnum::SceneGraph
+    Magnum::Trade)
 
 # iOS-specific
 if(CORRADE_TARGET_IOS)
