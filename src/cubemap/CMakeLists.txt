@@ -53,6 +53,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
+    Trade
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -79,7 +80,8 @@ target_link_libraries(magnum-cubemap PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::SceneGraph)
+    Magnum::SceneGraph
+    Magnum::Trade)
 
 install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/cubemap)

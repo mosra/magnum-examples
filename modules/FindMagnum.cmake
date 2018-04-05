@@ -351,7 +351,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     elseif(_component STREQUAL Text)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools)
     elseif(_component STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade)
     elseif(_component STREQUAL MeshTools)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component STREQUAL OpenGLTester)
@@ -381,7 +381,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     elseif(_component STREQUAL MagnumFontConverter)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImageConverter) # and below
     elseif(_component STREQUAL ObjImporter)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools) # and below
     endif()
 
     if(_component MATCHES ".+AudioImporter")

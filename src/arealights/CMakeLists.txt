@@ -42,6 +42,7 @@ endif()
 
 find_package(Magnum REQUIRED
     Shaders
+    Trade
     Sdl2Application)
 find_package(MagnumExtras REQUIRED Ui)
 
@@ -54,6 +55,7 @@ target_link_libraries(magnum-arealights PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders
+    Magnum::Trade
     MagnumExtras::Ui)
 
 install(TARGETS magnum-arealights DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

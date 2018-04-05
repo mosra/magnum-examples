@@ -49,7 +49,7 @@ endif()
 
 project(MagnumTexturedTriangleExample)
 
-find_package(Magnum REQUIRED Sdl2Application)
+find_package(Magnum REQUIRED Trade Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -62,6 +62,7 @@ add_executable(magnum-textured-triangle
     ${TexturedTriangle_RESOURCES})
 target_link_libraries(magnum-textured-triangle PRIVATE
     Magnum::Application
-    Magnum::Magnum)
+    Magnum::Magnum
+    Magnum::Trade)
 
 install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

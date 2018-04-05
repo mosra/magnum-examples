@@ -53,6 +53,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Shaders
     SceneGraph
+    Trade
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -63,7 +64,8 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::SceneGraph
-    Magnum::Shaders)
+    Magnum::Shaders
+    Magnum::Trade)
 
 install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES scene.ogex DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
