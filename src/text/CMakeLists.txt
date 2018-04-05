@@ -52,6 +52,7 @@ project(MagnumTextExample)
 find_package(Magnum REQUIRED
     Shaders
     Text
+    Trade
     Sdl2Application)
 
 if(MAGNUM_BUILD_STATIC)
@@ -69,7 +70,8 @@ target_link_libraries(magnum-text PRIVATE
     Magnum::Application
     Magnum::Magnum
     Magnum::Shaders
-    Magnum::Text)
+    Magnum::Text
+    Magnum::Trade)
 
 if(MAGNUM_BUILD_STATIC)
     target_link_libraries(magnum-text PRIVATE
