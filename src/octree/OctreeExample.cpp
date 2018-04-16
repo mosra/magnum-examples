@@ -30,8 +30,8 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/OctreeDrawableGroup.h>
-#include <Magnum/SceneGraph/OctreeDrawableGroup.hpp>
+#include <Magnum/Octree/OctreeDrawableGroup.h>
+#include <Magnum/Octree/OctreeDrawableGroup.hpp>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -91,9 +91,9 @@ class OctreeExample: public Platform::Application {
         Object3D _cameraObject;
         Object3D _viewerObject;
         Object3D _octreeObject;
-        SceneGraph::Camera3D _camera; /* camera which will be culled for */
-        SceneGraph::Camera3D _viewer; /* external camera */
-        SceneGraph::Camera3D* _activeCamera; /* camera from which we will render */
+        SceneGraph::Camera3D _camera; /* Camera which will be culled for */
+        SceneGraph::Camera3D _viewer; /* External camera */
+        SceneGraph::Camera3D* _activeCamera; /* Camera from which we will render */
 
         SceneGraph::OctreeDrawableGroup<Float> _culledDrawables;
         SceneGraph::DrawableGroup3D _drawables;
@@ -132,6 +132,7 @@ OctreeExample::OctreeExample(const Arguments& arguments):
     /* Create visualisation of _camera view frustum */
     const Matrix4 mvp = Matrix4(_camera.projectionMatrix());
 
+    // TODO: Use Frustum::fromMatrix()
     const Vector4 left{mvp.row(3) + mvp.row(0)};
     const Vector4 right{mvp.row(3) - mvp.row(0)};
     const Vector4 bottom{mvp.row(3) + mvp.row(1)};
@@ -187,9 +188,9 @@ OctreeExample::OctreeExample(const Arguments& arguments):
 Vector3 OctreeExample::calculateIntersection(const Vector4 &v1, const Vector4 &v2, const Vector4 &v3) {
     const Float det = Matrix3(v1.xyz(), v2.xyz(), v3.xyz()).determinant();
 
-    const Float x = Matrix3({v1.w(), v2.w(), v3.w()}, {v1.y(), v2.y(), v3.y()}, {v1.z(), v2.z(), v3.z()}).determinant() / det;
-    const Float y = Matrix3({v1.x(), v2.x(), v3.x()}, {v1.w(), v2.w(), v3.w()}, {v1.z(), v2.z(), v3.z()}).determinant() / det;
-    const Float z = Matrix3({v1.x(), v2.x(), v3.x()}, {v1.y(), v2.y(), v3.y()}, {v1.w(), v2.w(), v3.w()}).determinant() / det;
+    const Float x = Matrix3({v1.w(), v2.w(), v3.w()}, {v1.y(), v2.y(), v3.y()}, {v1.z(), v2.z(), v3.z()}).determinant()/det;
+    const Float y = Matrix3({v1.x(), v2.x(), v3.x()}, {v1.w(), v2.w(), v3.w()}, {v1.z(), v2.z(), v3.z()}).determinant()/det;
+    const Float z = Matrix3({v1.x(), v2.x(), v3.x()}, {v1.y(), v2.y(), v3.y()}, {v1.w(), v2.w(), v3.w()}).determinant()/det;
 
     return Vector3{x, y, -z};
 }
@@ -209,16 +210,16 @@ void OctreeExample::addBox(const Range3D& aabox) {
 }
 
 void OctreeExample::addDrawableForOctree(Octree::Octree<SceneGraph::Drawable<3, Float>*>& octree) {
-    if(octree.isLeafNode()) {
-        const Matrix4 transformationMatrix = Matrix4::translation(octree.center())*Matrix4::scaling(Vector3{octree.radius()*0.999f});
+    if(octree.isLeafNode(0)) {
+        //const Matrix4 transformationMatrix = Matrix4::translation(octree.center())*Matrix4::scaling(Vector3{octree.radius()*0.999f});
 
-        Object3D* box = new Object3D{&_octreeObject};
-        box->setTransformation(transformationMatrix);
+        //Object3D* box = new Object3D{&_octreeObject};
+        //box->setTransformation(transformationMatrix);
 
-        (new WireframeDrawable(box, &_octreeVisualization, _cubeMesh, _flatShader))->setColor(GREEN * float(octree.depth()));
+        //(new WireframeDrawable(box, &_octreeVisualization, _cubeMesh, _flatShader))->setColor(GREEN * float(octree.depth()));
     } else {
         for(int i = 0; i < 8; ++i) {
-            addDrawableForOctree(*octree.child(i));
+            //addDrawableForOctree(*octree.child(i));
         }
     }
 }
@@ -231,12 +232,8 @@ void OctreeExample::drawEvent() {
 
     _activeCamera->draw(_culledDrawables);
 
-    if(_activeCamera == &_viewer) {
-        _activeCamera->draw(_drawables);
-    }
-    if(_visualizeOctree) {
-        _activeCamera->draw(_octreeVisualization);
-    }
+    if(_activeCamera == &_viewer) _activeCamera->draw(_drawables);
+    if(_visualizeOctree) _activeCamera->draw(_octreeVisualization);
 
     swapBuffers();
 
@@ -248,12 +245,8 @@ void OctreeExample::drawEvent() {
 
 void OctreeExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::S) {
-        /* Switch view */
-        if(_activeCamera == &_viewer) {
-            _activeCamera = &_camera;
-        } else {
-            _activeCamera = &_viewer;
-        }
+        /* Toggle view */
+        _activeCamera = (_activeCamera == &_viewer) ? &_camera : &_viewer;
     } else if(event.key() == KeyEvent::Key::V) {
         _visualizeOctree = !_visualizeOctree;
     } else if(event.key() == KeyEvent::Key::Esc) {
