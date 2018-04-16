@@ -18,7 +18,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
 #             Vladimír Vondruš <mosra@centrum.cz>
-#   Copyright © 2015, 2016 Jonathan Hale <squareys@googlemail.com>
+#   Copyright © 2015, 2016, 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -75,7 +75,8 @@ if(WIN32)
             set(_OVR_MSVC_NAME "VS2010")
         endif()
 
-        find_library(OVR_LIBRARY NAMES LibOVR HINTS "${LIBOVR_ROOT}/Lib/Windows/${_OVR_MSVC_ARCH}/Release/${_OVR_MSVC_NAME}")
+        find_library(OVR_LIBRARY_DEBUG NAMES LibOVR HINTS "${LIBOVR_ROOT}/Lib/Windows/${_OVR_MSVC_ARCH}/Debug/${_OVR_MSVC_NAME}")
+        find_library(OVR_LIBRARY_RELEASE NAMES LibOVR HINTS "${LIBOVR_ROOT}/Lib/Windows/${_OVR_MSVC_ARCH}/Release/${_OVR_MSVC_NAME}")
 
         unset(_OVR_MSVC_ARCH)
         unset(_OVR_MSVC_NAME)
@@ -84,15 +85,18 @@ if(WIN32)
         # which requires the Oculus runtime to be installed.
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
             # compiling for 64 bit
-            find_library(OVR_LIBRARY NAMES LibOVRRT64_1.dll HINTS "C:/Program Files (x86)/Oculus/Support/oculus-runtime")
+            find_library(OVR_LIBRARY_RELEASE NAMES LibOVRRT64_1.dll HINTS "C:/Program Files (x86)/Oculus/Support/oculus-runtime")
         else()
             # compiling for 32 bit
-            find_library(OVR_LIBRARY NAMES LibOVRRT32_1.dll HINTS "C:/Program Files (x86)/Oculus/Support/oculus-runtime")
+            find_library(OVR_LIBRARY_RELEASE NAMES LibOVRRT32_1.dll HINTS "C:/Program Files (x86)/Oculus/Support/oculus-runtime")
         endif()
     endif()
 else()
     error("The Oculus SDK does not support ${CMAKE_SYSTEM_NAME}.")
 endif()
+
+include(SelectLibraryConfigurations)
+select_library_configurations(OVR)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OVR DEFAULT_MSG
@@ -100,12 +104,23 @@ find_package_handle_standard_args(OVR DEFAULT_MSG
     OVR_INCLUDE_DIR)
 
 mark_as_advanced(FORCE
-    OVR_LIBRARY
+    OVR_LIBRARY_DEBUG
+    OVR_LIBRARY_RELEASE
     OVR_INCLUDE_DIR)
 
 if(NOT TARGET OVR::OVR)
     add_library(OVR::OVR UNKNOWN IMPORTED)
+
+    set_property(TARGET OVR::OVR APPEND PROPERTY
+        IMPORTED_CONFIGURATIONS RELEASE)
     set_target_properties(OVR::OVR PROPERTIES
-        IMPORTED_LOCATION ${OVR_LIBRARY}
+        IMPORTED_LOCATION_RELEASE ${OVR_LIBRARY_RELEASE}
         INTERFACE_INCLUDE_DIRECTORIES ${OVR_INCLUDE_DIR})
+
+    if(OVR_LIBRARY_DEBUG)
+        set_property(TARGET OVR::OVR APPEND PROPERTY
+            IMPORTED_CONFIGURATIONS DEBUG)
+        set_property(TARGET OVR::OVR PROPERTY
+            IMPORTED_LOCATION_DEBUG ${OVR_LIBRARY_DEBUG})
+    endif()
 endif()
