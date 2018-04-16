@@ -58,6 +58,10 @@ if(WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()
 
+if(WITH_OCTREE_EXAMPLE)
+    add_subdirectory(octree)
+endif()
+
 if(WITH_OVR_EXAMPLE)
     add_subdirectory(ovr)
 endif()

@@ -63,6 +63,7 @@ option(WITH_AUDIO_EXAMPLE "Build audio example (requires Magnum Audio library)" 
 option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletIntegration library)" OFF)
 cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+option(WITH_OCTREE_EXAMPLE "Build Octree: example" OFF)
 option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
 option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
 option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
