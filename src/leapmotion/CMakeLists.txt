@@ -5,6 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
+#       2018 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -27,77 +28,49 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# On MSVC remove /W3, as we are replacing it with /W4
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
-    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+cmake_minimum_required(VERSION 2.8.12)
+
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
+endif()
+# Don't treat imported targets with :: as files
+if(POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW)
+endif()
+# Enable MACOSX_RPATH by default
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW)
+endif()
+# Quoted variables should not be dereferenced
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
 endif()
 
-# On Windows enable UNICODE/_UNICODE macros to avoid accidentally passing UTF-8
-# values to ANSI functions
-if(CORRADE_TARGET_WINDOWS)
-    add_definitions("-DUNICODE" "-D_UNICODE")
+project(MagnumLeapMotionExample)
+
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-if(WITH_AREALIGHTS_EXAMPLE)
-    add_subdirectory(arealights)
-endif()
+find_package(Magnum REQUIRED
+    MeshTools
+    Primitives
+    Shaders
+    Sdl2Application)
+find_package(Leap REQUIRED)
 
-if(WITH_AUDIO_EXAMPLE)
-    add_subdirectory(audio)
-endif()
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-if(WITH_BULLET_EXAMPLE)
-    add_subdirectory(bullet)
-endif()
+add_executable(magnum-leapmotion LeapMotionExample.cpp)
+target_link_libraries(magnum-leapmotion PRIVATE
+    Magnum::Application
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders
+    Leap::Leap)
 
-if(WITH_CUBEMAP_EXAMPLE)
-    add_subdirectory(cubemap)
-endif()
-
-if(WITH_LEAPMOTION_EXAMPLE)
-    add_subdirectory(leapmotion)
-endif()
-
-if(WITH_MOTIONBLUR_EXAMPLE)
-    add_subdirectory(motionblur)
-endif()
-
-if(WITH_OVR_EXAMPLE)
-    add_subdirectory(ovr)
-endif()
-
-if(WITH_PICKING_EXAMPLE)
-    add_subdirectory(picking)
-endif()
-
-if(WITH_PRIMITIVES_EXAMPLE)
-    add_subdirectory(primitives)
-endif()
-
-if(WITH_SHADOWS_EXAMPLE)
-    add_subdirectory(shadows)
-endif()
-
-if(WITH_TEXT_EXAMPLE)
-    add_subdirectory(text)
-endif()
-
-if(WITH_TEXTUREDTRIANGLE_EXAMPLE)
-    add_subdirectory(textured-triangle)
-endif()
-
-if(WITH_TRIANGLE_EXAMPLE)
-    add_subdirectory(triangle)
-endif()
-
-if(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
-    add_subdirectory(triangle-plain-glfw)
-endif()
-
-if(WITH_VIEWER_EXAMPLE)
-    add_subdirectory(viewer)
-endif()
-
-if(WITH_WEBVR_EXAMPLE)
-    add_subdirectory(webvr)
-endif()
+install(TARGETS magnum-leapmotion DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
