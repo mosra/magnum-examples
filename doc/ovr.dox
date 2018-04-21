@@ -58,20 +58,10 @@ Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/ovr).
 
 -   @ref ovr/CMakeLists.txt "CMakeLists.txt"
--   @ref ovr/CubeDrawable.cpp "CubeDrawable.cpp"
--   @ref ovr/CubeDrawable.h "CubeDrawable.h"
--   @ref ovr/HmdCamera.cpp "HmdCamera.cpp"
--   @ref ovr/HmdCamera.h "HmdCamera.h"
 -   @ref ovr/OvrExample.cpp "OvrExample.cpp"
--   @ref ovr/Types.h "Types.h"
 
 @example ovr/CMakeLists.txt @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
-@example ovr/CubeDrawable.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
-@example ovr/CubeDrawable.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
-@example ovr/HmdCamera.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
-@example ovr/HmdCamera.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
 @example ovr/OvrExample.cpp @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
-@example ovr/Types.h @m_examplenavigation{examples-ovr,ovr/} @m_footernavigation
 
 */
 }
