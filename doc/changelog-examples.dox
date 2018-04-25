@@ -40,6 +40,18 @@ namespace Magnum {
     dropped, as it was still missing some important C++11 functionality. See
     @ref building-cross-android for more information.
 
+@subsection changelog-examples-latest-changes Changes and improvements
+
+-   Simplified the @ref examples-ovr example to a single file with minimal
+    dependencies
+
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   It's now possible to build particular examples as if they would be a
+    project root. See @ref building-examples-features for more information.
+-   Fixed the Debian package to not include a revision. While just a warning on
+    Ubuntu, it's a hard error on Debian.
+
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
 -   The @ref examples-webvr example was fixed to work on Android phones
