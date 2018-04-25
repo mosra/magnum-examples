@@ -202,6 +202,17 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_WEBVRE_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 
+Besides building the whole project and enabling a particular subset of
+examples, it's also possible to build each example as if the example itself
+would be a project root. For example:
+
+@code{.sh}
+cd magnum-examples
+mkdir build-cubemap && cd build-cubemap
+cmake ../src/cubemap
+# ...
+@endcode
+
 @section building-examples-doc Building documentation
 
 The documentation for examples is built as part of of the main Magnum

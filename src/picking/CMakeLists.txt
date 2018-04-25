@@ -55,6 +55,11 @@ find_package(Magnum REQUIRED
 
 project(MagnumPickingExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(Picking_RESOURCES resources.conf)
