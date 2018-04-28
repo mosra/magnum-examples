@@ -5,7 +5,7 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2015, 2016 — Jonathan Hale <squareys@googlemail.com>
+        2015, 2016, 2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -29,7 +29,6 @@
 */
 
 #include <memory>
-
 #include <Magnum/Buffer.h>
 #include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
@@ -76,17 +75,20 @@ class OvrExample: public Platform::Application {
             Matrix4::rotationY(45.0_degf)*Matrix4::translation({5.0f, 0.0f, 0.0f}),
             Matrix4::rotationY(45.0_degf)*Matrix4::translation({-10.0f, 0.0f, 0.0f}),
             Matrix4::rotationY(45.0_degf)*Matrix4::translation({0.0f, 0.0f, 7.0f})};
-        Color3 _cubeColors[CubeCount]{0xffff00_rgbf, 0xff0000_rgbf, 0x0000ff_rgbf, 0x00ffff_rgbf};
+        Color3 _cubeColors[CubeCount]{
+            0xffff00_rgbf, 0xff0000_rgbf, 0x0000ff_rgbf, 0x00ffff_rgbf};
 
         Framebuffer _mirrorFramebuffer{NoCreate};
         Texture2D* _mirrorTexture;
 
         OvrIntegration::LayerEyeFov* _layer;
-        OvrIntegration::PerformanceHudMode _curPerfHudMode;
-        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode;
+        OvrIntegration::PerformanceHudMode _curPerfHudMode{
+            OvrIntegration::PerformanceHudMode::Off};
+        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode{
+            OvrIntegration::DebugHudStereoMode::Off};
 
         /* Whether to show contents in the window or just on the VR HMD */
-        bool _enableMirroring;
+        bool _enableMirroring{true};
 
         /* Per eye view members */
         Texture2D _depth[2]{Texture2D{NoCreate}, Texture2D{NoCreate}};
@@ -96,11 +98,7 @@ class OvrExample: public Platform::Application {
         Deg _cameraRotation = 0.0_degf;
 };
 
-OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, NoCreate),
-    _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
-    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off),
-    _enableMirroring(true)
-{
+OvrExample::OvrExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
     /* Connect to an active Oculus session */
     _session = _ovrContext.createSession();
 
@@ -161,8 +159,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
 
     /* Setup shader */
     _shader = Shaders::Phong();
-    _shader.setSpecularColor(Color3(1.0f))
-           .setShininess(20)
+    _shader.setShininess(20)
            .setLightPosition({3.0f, 3.0f, 3.0f});
 
     /* Setup compositor layers */
@@ -171,7 +168,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
            .setHighQuality(true);
 
     /* Setup per-eye views */
-    for(int eye: {0, 1}) {
+    for(Int eye: {0, 1}) {
         _projectionMatrix[eye] = _session->projectionMatrix(eye, 0.001f, 100.0f);
 
         const Vector2i textureSize = _session->fovTextureSize(eye);
@@ -198,18 +195,19 @@ void OvrExample::drawEvent() {
     const std::array<DualQuaternion, 2> poses = _session->pollEyePoses().eyePoses();
 
     /* Draw the scene for both eyes */
-    for(int eye: {0, 1}) {
+    for(Int eye: {0, 1}) {
         /* Switch to eye render target and bind render textures */
-        _framebuffer[eye].bind();
-        _framebuffer[eye].attachTexture(Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
+        _framebuffer[eye]
+            .attachTexture(Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
             .attachTexture(Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
             /* Clear with the standard grey so that at least that will be visible in
             case the scene is not correctly set up */
-            .clear(FramebufferClear::Color|FramebufferClear::Depth);
+            .clear(FramebufferClear::Color|FramebufferClear::Depth)
+            .bind();
 
         /* Render scene */
         const Matrix4 viewProjMatrix = _projectionMatrix[eye]*poses[eye].inverted().toMatrix()*Matrix4::rotationY(_cameraRotation);
-        for(int cubeIndex = 0; cubeIndex < CubeCount; ++cubeIndex) {
+        for(Int cubeIndex = 0; cubeIndex < CubeCount; ++cubeIndex) {
             _shader.setDiffuseColor(_cubeColors[cubeIndex])
                 .setTransformationMatrix(_cubeTransforms[cubeIndex])
                 .setNormalMatrix(_cubeTransforms[cubeIndex].rotationScaling())
