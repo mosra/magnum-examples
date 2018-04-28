@@ -159,49 +159,8 @@ for a high-level overview.
 -   The @ref building-examples documentation now prefers package installation
     instead of manual build
 
-@section changelog-examples-2015-05 2015.05
-
-Released 2015-05-09, tagged as
-[v2015.05](https://github.com/mosra/magnum-examples/releases/tag/v2015.05). See
-the [release announcement](http://blog.magnum.graphics/announcements/may-2015-updates/)
-for a high-level overview.
-
-@subsection changelog-examples-2015-05-changes Changes
-
--   Reworked and simplified the @ref examples-viewer "Viewer example", updated
-    it to work with virtually any file format.
-
-@subsection changelog-examples-2015-05-bugfixes Bug fixes
-
--   Removed unneeded requirement for @extension{ARB,invalidate_subdata} from
-    the @ref examples-cubemap "Cube Map example" (see
-    [mosra/magnum#63](https://github.com/mosra/magnum/issues/63)).
-
-@subsection changelog-examples-2015-05-buildsystem Build system
-
--   All examples are now installable in a way similar to Magnum itself.
--   Displaying all header files, plugin metadata files and resource files in
-    project view to make use of some IDEs less painful (such as QtCreator).
--   Added ArchLinux, Debian and Gentoo packages (see
-    [mosra/magnum-examples#8](https://github.com/mosra/magnum/issues/8)).
-
-@subsection changelog-examples-2015-05-documentation Documentation
-
--   Various documentation fixes (see
-    [mosra/magnum-examples#7](https://github.com/mosra/magnum-examples/issues/7)
-
-@section changelog-examples-2014-06 2014.06
-
-Released 2014-06-30, tagged as
-[v2014.06](https://github.com/mosra/magnum-examples/releases/tag/v2014.06). See
-the [release announcement](http://blog.magnum.graphics/announcements/june-2014-updates/)
-for a high-level overview.
-
-@subsection changelog-examples-2014-06-bugfixes Bug fixes
-
--   Fixed order-dependent linking errors (see
-    [mosra/magnum-examples#6](https://github.com/mosra/magnum-examples/pull/6))
--
+Changelogs for previous versions are available in
+@ref changelog-examples-old "Archived example changelogs".
 
 */
 
