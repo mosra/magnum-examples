@@ -29,16 +29,16 @@
 */
 
 #include <memory>
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Magnum.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Renderbuffer.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -65,8 +65,8 @@ class OvrExample: public Platform::Application {
         OvrIntegration::Context _ovrContext;
         std::unique_ptr<OvrIntegration::Session> _session;
 
-        Buffer _indexBuffer{NoCreate}, _vertexBuffer{NoCreate};
-        Mesh _mesh{NoCreate};
+        GL::Buffer _indexBuffer{NoCreate}, _vertexBuffer{NoCreate};
+        GL::Mesh _mesh{NoCreate};
         Shaders::Phong _shader{NoCreate};
 
         enum: std::size_t { CubeCount = 4 };
@@ -78,8 +78,8 @@ class OvrExample: public Platform::Application {
         Color3 _cubeColors[CubeCount]{
             0xffff00_rgbf, 0xff0000_rgbf, 0x0000ff_rgbf, 0x00ffff_rgbf};
 
-        Framebuffer _mirrorFramebuffer{NoCreate};
-        Texture2D* _mirrorTexture;
+        GL::Framebuffer _mirrorFramebuffer{NoCreate};
+        GL::Texture2D* _mirrorTexture;
 
         OvrIntegration::LayerEyeFov* _layer;
         OvrIntegration::PerformanceHudMode _curPerfHudMode{
@@ -91,9 +91,11 @@ class OvrExample: public Platform::Application {
         bool _enableMirroring{true};
 
         /* Per eye view members */
-        Texture2D _depth[2]{Texture2D{NoCreate}, Texture2D{NoCreate}};
+        GL::Texture2D _depth[2]{GL::Texture2D{NoCreate},
+                                GL::Texture2D{NoCreate}};
         std::unique_ptr<OvrIntegration::TextureSwapChain> _textureSwapChain[2];
-        Framebuffer _framebuffer[2]{Framebuffer{NoCreate}, Framebuffer{NoCreate}};
+        GL::Framebuffer _framebuffer[2]{GL::Framebuffer{NoCreate},
+                                        GL::Framebuffer{NoCreate}};
         Matrix4 _projectionMatrix[2];
         Deg _cameraRotation = 0.0_degf;
 };
@@ -125,34 +127,34 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
     if(!setSwapInterval(0))
         Error() << "Could not turn off VSync.";
 
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::enable(Renderer::Feature::FramebufferSRGB);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSRGB);
 
     _session->configureRendering();
 
     /* Setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer */
     _mirrorTexture = &_session->createMirrorTexture(resolution);
-    _mirrorFramebuffer = Framebuffer(Range2Di::fromSize({}, resolution));
-    _mirrorFramebuffer.attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
-                      .mapForRead(Framebuffer::ColorAttachment(0));
+    _mirrorFramebuffer = GL::Framebuffer(Range2Di::fromSize({}, resolution));
+    _mirrorFramebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
+                      .mapForRead(GL::Framebuffer::ColorAttachment(0));
 
     /* Setup cube mesh */
     const Trade::MeshData3D cube = Primitives::cubeSolid();
-    _vertexBuffer = Buffer();
+    _vertexBuffer = GL::Buffer();
     _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)),
-                          BufferUsage::StaticDraw);
+                          GL::BufferUsage::StaticDraw);
 
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
     std::tie(indexData, indexType, indexStart, indexEnd) =
             MeshTools::compressIndices(cube.indices());
 
-    _indexBuffer = Buffer();
-    _indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+    _indexBuffer = GL::Buffer{};
+    _indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
-    _mesh = Mesh(cube.primitive());
+    _mesh = GL::Mesh{cube.primitive()};
     _mesh.setCount(cube.indices().size())
          .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
          .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
@@ -176,14 +178,14 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
 
         /* Create the framebuffer which will be used to render to the current
         texture of the texture set later. */
-        _framebuffer[eye] = Framebuffer({{}, textureSize});
-        _framebuffer[eye].mapForDraw(Framebuffer::ColorAttachment(0));
+        _framebuffer[eye] = GL::Framebuffer{{{}, textureSize}};
+        _framebuffer[eye].mapForDraw(GL::Framebuffer::ColorAttachment(0));
 
         /* Setup depth attachment */
-        _depth[eye] = Texture2D();
-        _depth[eye].setMinificationFilter(Sampler::Filter::Linear)
-                   .setWrapping(Sampler::Wrapping::ClampToEdge)
-                   .setStorage(1, TextureFormat::DepthComponent32F, textureSize);
+        _depth[eye] = GL::Texture2D{};
+        _depth[eye].setMinificationFilter(GL::SamplerFilter::Linear)
+                   .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                   .setStorage(1, GL::TextureFormat::DepthComponent32F, textureSize);
 
         _layer->setColorTexture(eye, *_textureSwapChain[eye])
                .setViewport(eye, {{}, textureSize});
@@ -198,11 +200,11 @@ void OvrExample::drawEvent() {
     for(Int eye: {0, 1}) {
         /* Switch to eye render target and bind render textures */
         _framebuffer[eye]
-            .attachTexture(Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
-            .attachTexture(Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
+            .attachTexture(GL::Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
+            .attachTexture(GL::Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
             /* Clear with the standard grey so that at least that will be visible in
             case the scene is not correctly set up */
-            .clear(FramebufferClear::Color|FramebufferClear::Depth)
+            .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
             .bind();
 
         /* Render scene */
@@ -223,8 +225,8 @@ void OvrExample::drawEvent() {
            framebuffer with an invalid COLOR_ATTACHMENT0 because the texture ID
            associated with COLOR_ATTACHMENT0 had been unlocked by calling
            wglDXUnlockObjectsNV(). */
-        _framebuffer[eye].detach(Framebuffer::ColorAttachment(0))
-                         .detach(Framebuffer::BufferAttachment::Depth);
+        _framebuffer[eye].detach(GL::Framebuffer::ColorAttachment(0))
+                         .detach(GL::Framebuffer::BufferAttachment::Depth);
     }
 
     /* Set the layers eye poses to the poses chached in the _hmd. */
@@ -236,11 +238,11 @@ void OvrExample::drawEvent() {
     if(_enableMirroring) {
         /* Blit mirror texture to default framebuffer */
         const Vector2i size = _mirrorTexture->imageSize(0);
-        Framebuffer::blit(_mirrorFramebuffer,
-                          defaultFramebuffer,
-                          {{0, size.y()}, {size.x(), 0}},
-                          {{}, size},
-                          FramebufferBlit::Color, FramebufferBlitFilter::Nearest);
+        GL::Framebuffer::blit(_mirrorFramebuffer,
+            GL::defaultFramebuffer,
+            {{0, size.y()}, {size.x(), 0}},
+            {{}, size},
+            GL::FramebufferBlit::Color, GL::FramebufferBlitFilter::Nearest);
 
         swapBuffers();
     }
