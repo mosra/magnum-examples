@@ -58,6 +58,7 @@ endif()
 find_package(Magnum REQUIRED
     Audio
     DebugTools
+    GL
     SceneGraph
     Sdl2Application)
 
@@ -71,6 +72,7 @@ add_executable(magnum-audio
 target_link_libraries(magnum-audio PRIVATE
     Magnum::Application
     Magnum::Audio
+    Magnum::GL
     Magnum::DebugTools
     Magnum::Magnum
     Magnum::SceneGraph)
