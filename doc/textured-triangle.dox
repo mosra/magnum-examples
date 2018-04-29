@@ -53,7 +53,7 @@ image data and uploading them to a texture:
 @until TexturedTriangleShader.h
 
 The basic skeleton of main example class is similar to the original, except for
-a custom shader and added @ref Texture2D.
+a custom shader and added @ref GL::Texture2D.
 
 @skip class TexturedTriangle
 @until };
@@ -93,12 +93,12 @@ for compilation and link status --- it's better to exit the program immediately
 instead of leaving it in some unexpected state. We then retrieve location for
 the base color uniform. Then we set the texture layer uniform to fixed value,
 so it doesn't have to be set manually when using the shader for rendering. We
-require OpenGL 3.3 in the shader, so the attribute locations can be conveniently set
-@ref AbstractShaderProgram-attribute-location "directly in the shader source".
+require OpenGL 3.3 in the shader, so the attribute locations can be
+conveniently set @ref GL-AbstractShaderProgram-attribute-location "directly in the shader source".
 With newer OpenGL versions we could also explicitly set uniform locations and
-texture layers itself, see @ref AbstractShaderProgram-uniform-location and
-@ref AbstractShaderProgram-texture-units. However, in this example we will keep
-compatibility with OpenGL 3.3.
+texture layers itself, see @ref GL-AbstractShaderProgram-uniform-location and
+@ref GL-AbstractShaderProgram-texture-units. However, in this example we will
+keep compatibility with OpenGL 3.3.
 
 @dontinclude textured-triangle/TexturedTriangleShader.cpp
 @skip TexturedTriangleShader::TexturedTriangleShader

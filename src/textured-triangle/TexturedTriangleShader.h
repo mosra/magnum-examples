@@ -29,16 +29,16 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Texture.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/Texture.h>
 #include <Magnum/Math/Color.h>
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleShader: public AbstractShaderProgram {
+class TexturedTriangleShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector2> Position;
-        typedef Attribute<1, Vector2> TextureCoordinates;
+        typedef GL::Attribute<0, Vector2> Position;
+        typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
         explicit TexturedTriangleShader();
 
@@ -47,7 +47,7 @@ class TexturedTriangleShader: public AbstractShaderProgram {
             return *this;
         }
 
-        TexturedTriangleShader& bindTexture(Texture2D& texture) {
+        TexturedTriangleShader& bindTexture(GL::Texture2D& texture) {
             texture.bind(TextureLayer);
             return *this;
         }

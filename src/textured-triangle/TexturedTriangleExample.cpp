@@ -29,11 +29,11 @@
 
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
@@ -49,10 +49,10 @@ class TexturedTriangleExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        Buffer _buffer;
-        Mesh _mesh;
+        GL::Buffer _buffer;
+        GL::Mesh _mesh;
         TexturedTriangleShader _shader;
-        Texture2D _texture;
+        GL::Texture2D _texture;
 };
 
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
@@ -68,8 +68,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top vertex position and texture coordinate */
     };
 
-    _buffer.setData(data, BufferUsage::StaticDraw);
-    _mesh.setPrimitive(MeshPrimitive::Triangles)
+    _buffer.setData(data, GL::BufferUsage::StaticDraw);
+    _mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3)
         .addVertexBuffer(_buffer, 0,
             TexturedTriangleShader::Position{},
@@ -88,15 +88,15 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
     /* Set texture data and parameters */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setStorage(1, TextureFormat::RGB8, image->size())
+    _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setMinificationFilter(GL::SamplerFilter::Linear)
+        .setStorage(1, GL::TextureFormat::RGB8, image->size())
         .setSubImage(0, {}, *image);
 }
 
 void TexturedTriangleExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     using namespace Math::Literals;
 

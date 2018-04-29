@@ -54,7 +54,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-find_package(Magnum REQUIRED Trade Sdl2Application)
+find_package(Magnum REQUIRED GL Trade Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -67,6 +67,7 @@ add_executable(magnum-textured-triangle
     ${TexturedTriangle_RESOURCES})
 target_link_libraries(magnum-textured-triangle PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::Trade)
 
