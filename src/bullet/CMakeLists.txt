@@ -57,11 +57,11 @@ endif()
 
 find_package(Magnum REQUIRED
     DebugTools
+    GL
     SceneGraph
     Shapes
     Sdl2Application)
-find_package(MagnumIntegration REQUIRED
-    Bullet)
+find_package(MagnumIntegration REQUIRED Bullet)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -69,6 +69,7 @@ add_executable(magnum-bullet BulletExample.cpp)
 target_link_libraries(magnum-bullet PRIVATE
     Magnum::Application
     Magnum::DebugTools
+    Magnum::GL
     Magnum::Magnum
     Magnum::SceneGraph
     Magnum::Shapes

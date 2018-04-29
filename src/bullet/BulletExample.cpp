@@ -32,16 +32,16 @@
 #include <Magnum/BulletIntegration/ConvertShape.h>
 #include <Magnum/BulletIntegration/Integration.h>
 #include <Magnum/BulletIntegration/MotionState.h>
-#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Constants.h>
-#include <Magnum/Mesh.h>
 #include <Magnum/DebugTools/ShapeRenderer.h>
 #include <Magnum/DebugTools/ResourceManager.h>
 #include <Magnum/Shapes/Box.h>
 #include <Magnum/Shapes/Shape.h>
 #include <Magnum/Shapes/ShapeGroup.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -81,10 +81,11 @@ class BulletExample: public Platform::Application {
 BulletExample::BulletExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
     /* Try 16x MSAA */
     Configuration conf;
-    conf.setTitle("Magnum Bullet Integration Example")
-        .setSampleCount(8);
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
+    conf.setTitle("Magnum Bullet Integration Example");
+    GLConfiguration glConf;
+    glConf.setSampleCount(8);
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     /* Camera setup */
     (_cameraRig = new Object3D(&_scene))
@@ -94,7 +95,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100.0f))
-        .setViewport(defaultFramebuffer.viewport().size());
+        .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Debug draw setup */
     /** @todo Revert it back to oneliners when setters return rvalue refs properly */
@@ -163,13 +164,13 @@ btRigidBody* BulletExample::createRigidBody(Float mass, Object3D& object, btColl
 }
 
 void BulletExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
 
     _camera->setViewport(size);
 }
 
 void BulletExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* Step bullet simulation */
     _bWord->stepSimulation(_timeline.previousFrameDuration(), 5);
@@ -199,7 +200,7 @@ void BulletExample::keyPressEvent(KeyEvent& event) {
 
 void BulletExample::mousePressEvent(MouseEvent& event) {
     if(event.button() == MouseEvent::Button::Left) {
-        Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2(event.position())/Vector2(defaultFramebuffer.viewport().size())-Vector2(0.5f))* _camera->projectionSize();
+        Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2(event.position())/Vector2(GL::defaultFramebuffer.viewport().size())-Vector2(0.5f))* _camera->projectionSize();
         Vector3 direction = (_cameraObject->absoluteTransformation().rotationScaling() * Vector3(clickPoint, -1.f)).normalized();
         shootBox(direction);
         event.setAccepted();
