@@ -28,13 +28,13 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Magnum.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
@@ -56,9 +56,9 @@ class LeapMotionExample: public Platform::Application {
         void drawEvent() override;
         void drawBone(const Leap::Bone& bone, bool start, bool end, const Color3& color);
 
-        Buffer _buffers[4];
-        Mesh _cylinder{NoCreate};
-        Mesh _sphere{NoCreate};
+        GL::Buffer _buffers[4];
+        GL::Mesh _cylinder{NoCreate};
+        GL::Mesh _sphere{NoCreate};
 
         Shaders::Phong _shader;
 
@@ -75,7 +75,7 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
     /* To use LeapMotion with VR, you should set
        _controller.setPolicy(Leap::Controller::PolicyFlag::POLICY_OPTIMIZE_HMD); */
 
-    Renderer::enable(Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* As we sample the Leap controller every frame, enabling vsyc will cause more latency,
        but seems to produce more stable results.
@@ -83,17 +83,17 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
     setSwapInterval(1);
 
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
     {
         /* Setup cylinder mesh */
         const Trade::MeshData3D cylinder = Primitives::cylinderSolid(2, 16, 0.5f);
-        _buffers[0].setData(MeshTools::interleave(cylinder.positions(0), cylinder.normals(0)), BufferUsage::StaticDraw);
+        _buffers[0].setData(MeshTools::interleave(cylinder.positions(0), cylinder.normals(0)), GL::BufferUsage::StaticDraw);
 
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cylinder.indices());
-        _buffers[1].setData(indexData, BufferUsage::StaticDraw);
+        _buffers[1].setData(indexData, GL::BufferUsage::StaticDraw);
 
-        _cylinder = Mesh(cylinder.primitive());
+        _cylinder = GL::Mesh{cylinder.primitive()};
         _cylinder.setCount(cylinder.indices().size())
                  .addVertexBuffer(_buffers[0], 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
                  .setIndexBuffer(_buffers[1], 0, indexType, indexStart, indexEnd);
@@ -101,12 +101,12 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
     {
         /* Setup sphere mesh */
         const Trade::MeshData3D sphere = Primitives::uvSphereSolid(16, 16);
-        _buffers[2].setData(MeshTools::interleave(sphere.positions(0), sphere.normals(0)), BufferUsage::StaticDraw);
+        _buffers[2].setData(MeshTools::interleave(sphere.positions(0), sphere.normals(0)), GL::BufferUsage::StaticDraw);
 
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(sphere.indices());
-        _buffers[3].setData(indexData, BufferUsage::StaticDraw);
+        _buffers[3].setData(indexData, GL::BufferUsage::StaticDraw);
 
-        _sphere = Mesh(sphere.primitive());
+        _sphere = GL::Mesh{sphere.primitive()};
         _sphere.setCount(sphere.indices().size())
                .addVertexBuffer(_buffers[2], 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
                .setIndexBuffer(_buffers[3], 0, indexType, indexStart, indexEnd);
@@ -120,7 +120,7 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
 
 void LeapMotionExample::drawEvent() {
     /* Poll leap controller */
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     /* Render scene */
     if(_controller.isConnected()) {
