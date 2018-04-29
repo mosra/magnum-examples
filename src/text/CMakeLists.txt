@@ -55,6 +55,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     Shaders
     Text
     Sdl2Application)
@@ -68,6 +69,7 @@ add_executable(magnum-text
     ${TextExample_RESOURCES})
 target_link_libraries(magnum-text PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::Shaders
     Magnum::Text)

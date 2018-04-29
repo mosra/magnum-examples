@@ -30,11 +30,11 @@
 #include <iomanip>
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Complex.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/DistanceFieldVector.h>
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
@@ -59,8 +59,8 @@ class TextExample: public Platform::Application {
         std::unique_ptr<Text::AbstractFont> _font;
 
         Text::DistanceFieldGlyphCache _cache;
-        Mesh _text;
-        Buffer _vertices, _indices;
+        GL::Mesh _text;
+        GL::Buffer _vertices, _indices;
         std::unique_ptr<Text::Renderer2D> _text2;
         Shaders::DistanceFieldVector2D _shader;
 
@@ -87,28 +87,28 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
         "Здравствуй, мир!\n"
         "Γεια σου κόσμε!\n"
         "Hej Världen!",
-        _vertices, _indices, BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
+        _vertices, _indices, GL::BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
     _text2.reset(new Text::Renderer2D(*_font, _cache, 0.035f, Text::Alignment::TopRight));
-    _text2->reserve(40, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+    _text2->reserve(40, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
 
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::SourceAlpha, Renderer::BlendFunction::OneMinusSourceAlpha);
-    Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
     _transformation = Matrix3::rotation(Deg(-10.0f));
-    _projection = Matrix3::scaling(Vector2::yScale(Vector2(defaultFramebuffer.viewport().size()).aspectRatio()));
+    _projection = Matrix3::scaling(Vector2::yScale(Vector2(GL::defaultFramebuffer.viewport().size()).aspectRatio()));
     updateText();
 }
 
 void TextExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
 
     _projection = Matrix3::scaling(Vector2::yScale(Vector2(size).aspectRatio()));
 }
 
 void TextExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _shader.bindVectorTexture(_cache.texture());
 
