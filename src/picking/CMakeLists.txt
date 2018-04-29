@@ -48,6 +48,7 @@ if(POLICY CMP0054)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     SceneGraph
@@ -69,6 +70,7 @@ add_executable(magnum-picking
     ${Picking_RESOURCES})
 target_link_libraries(magnum-picking PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
