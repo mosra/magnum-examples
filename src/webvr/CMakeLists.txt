@@ -62,6 +62,7 @@ if(NOT HAS_WEBVR_1_1)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     Shaders
@@ -73,6 +74,7 @@ add_executable(magnum-webvr
     WebVrExample.cpp)
 target_link_libraries(magnum-webvr PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
