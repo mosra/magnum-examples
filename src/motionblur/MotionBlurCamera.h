@@ -29,10 +29,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/BufferImage.h>
-#include <Magnum/Texture.h>
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Mesh.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/BufferImage.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/Camera.h>
 
 #include "Types.h"
@@ -51,9 +51,9 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
         void draw(SceneGraph::DrawableGroup3D& group) override;
 
     private:
-        class MotionBlurShader: public AbstractShaderProgram {
+        class MotionBlurShader: public GL::AbstractShaderProgram {
             public:
-                typedef Attribute<0, Vector2> Position;
+                typedef GL::Attribute<0, Vector2> Position;
 
                 /* Frame texture layers are from 0 to FrameCount */
 
@@ -62,19 +62,19 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
 
         class MotionBlurCanvas: public Object3D {
             public:
-                MotionBlurCanvas(Texture2D** frames, Object3D* parent = nullptr);
+                MotionBlurCanvas(GL::Texture2D** frames, Object3D* parent = nullptr);
 
                 void draw(std::size_t currentFrame);
 
             private:
                 MotionBlurShader shader;
-                Buffer buffer;
-                Mesh mesh;
-                Texture2D** frames;
+                GL::Buffer buffer;
+                GL::Mesh mesh;
+                GL::Texture2D** frames;
         };
 
-        BufferImage2D framebuffer;
-        Texture2D* frames[FrameCount];
+        GL::BufferImage2D framebuffer;
+        GL::Texture2D* frames[FrameCount];
         std::size_t currentFrame;
         MotionBlurCanvas canvas;
 };
