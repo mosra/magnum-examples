@@ -72,14 +72,14 @@ rendering, but it will speed things up as only front-facing faces will be
 rendered.
 
 @skip PrimitivesExample::PrimitivesExample
-@until Renderer::enable(Renderer::Feature::FaceCulling
+@until GL::Renderer::enable(GL::Renderer::Feature::FaceCulling
 
-We now use the pre-made @ref Primitives::Cube "cube primitive" and create a
-mesh from it. The mesh is indexed and contains position and normal data. As
-said earlier, interleaving the data gives us best memory access performance. We
-can do it by hand as in the previous example, but using @ref MeshTools::interleave()
-is much more convenient. We upload the interleaved data directly to vertex
-buffer.
+We now use the pre-made @ref Primitives::cubeSolid() "cube primitive" and
+create a mesh from it. The mesh is indexed and contains position and normal
+data. As said earlier, interleaving the data gives us best memory access
+performance. We can do it by hand as in the previous example, but using
+@ref MeshTools::interleave() is much more convenient. We upload the interleaved
+data directly to vertex buffer.
 
 @skip Trade::MeshData3D
 @until _vertexBuffer.setData(

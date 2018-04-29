@@ -55,6 +55,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     Shaders
@@ -65,6 +66,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 add_executable(magnum-primitives PrimitivesExample.cpp)
 target_link_libraries(magnum-primitives PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
