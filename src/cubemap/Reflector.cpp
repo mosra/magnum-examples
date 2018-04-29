@@ -31,10 +31,12 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/CubeMapTexture.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/CubeMapTexture.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/UVSphere.h>
@@ -51,21 +53,21 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
     CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
 
     /* Sphere mesh */
-    if(!(_sphere = resourceManager.get<Mesh>("sphere"))) {
+    if(!(_sphere = resourceManager.get<GL::Mesh>("sphere"))) {
         Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32, Primitives::UVSphereTextureCoords::Generate);
 
-        Buffer* buffer = new Buffer;
-        buffer->setData(MeshTools::interleave(sphereData.positions(0), sphereData.textureCoords2D(0)), BufferUsage::StaticDraw);
+        GL::Buffer* buffer = new GL::Buffer;
+        buffer->setData(MeshTools::interleave(sphereData.positions(0), sphereData.textureCoords2D(0)), GL::BufferUsage::StaticDraw);
 
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(sphereData.indices());
 
-        Buffer* indexBuffer = new Buffer;
-        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        GL::Buffer* indexBuffer = new GL::Buffer;
+        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
 
-        Mesh* mesh = new Mesh;
+        GL::Mesh* mesh = new GL::Mesh;
         mesh->setPrimitive(sphereData.primitive())
             .setCount(sphereData.indices().size())
             .addVertexBuffer(*buffer, 0, ReflectorShader::Position{}, ReflectorShader::TextureCoords{})
@@ -77,30 +79,30 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
     }
 
     /* Tarnish texture */
-    if(!(_tarnishTexture = resourceManager.get<Texture2D>("tarnish-texture"))) {
+    if(!(_tarnishTexture = resourceManager.get<GL::Texture2D>("tarnish-texture"))) {
         Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
         Utility::Resource rs("data");
         importer->openData(rs.getRaw("tarnish.jpg"));
 
         Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_INTERNAL_ASSERT(image);
-        auto texture = new Texture2D;
-        texture->setWrapping(Sampler::Wrapping::ClampToEdge)
-            .setMagnificationFilter(Sampler::Filter::Linear)
-            .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-            .setStorage(Math::log2(image->size().min())+1, TextureFormat::RGB8, image->size())
+        auto texture = new GL::Texture2D;
+        texture->setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
+            .setStorage(Math::log2(image->size().min())+1, GL::TextureFormat::RGB8, image->size())
             .setSubImage(0, {}, *image)
             .generateMipmap();
 
-        resourceManager.set<Texture2D>(_tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager.set<GL::Texture2D>(_tarnishTexture.key(), texture, ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Reflector shader */
-    if(!(_shader = resourceManager.get<AbstractShaderProgram, ReflectorShader>("reflector-shader")))
-        resourceManager.set<AbstractShaderProgram>(_shader.key(), new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
+    if(!(_shader = resourceManager.get<GL::AbstractShaderProgram, ReflectorShader>("reflector-shader")))
+        resourceManager.set<GL::AbstractShaderProgram>(_shader.key(), new ReflectorShader, ResourceDataState::Final, ResourcePolicy::Resident);
 
     /* Texture (created in CubeMap class) */
-    _texture = resourceManager.get<CubeMapTexture>("texture");
+    _texture = resourceManager.get<GL::CubeMapTexture>("texture");
 }
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {

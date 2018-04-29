@@ -30,10 +30,10 @@
 #include "ReflectorShader.h"
 
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/CubeMapTexture.h>
-#include <Magnum/Shader.h>
-#include <Magnum/Texture.h>
-#include <Magnum/Version.h>
+#include <Magnum/GL/CubeMapTexture.h>
+#include <Magnum/GL/Shader.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/Version.h>
 
 namespace Magnum { namespace Examples {
 
@@ -47,13 +47,13 @@ namespace {
 ReflectorShader::ReflectorShader() {
     Utility::Resource rs("data");
 
-    Shader vert(Version::GL330, Shader::Type::Vertex);
-    Shader frag(Version::GL330, Shader::Type::Fragment);
+    GL::Shader vert(GL::Version::GL330, GL::Shader::Type::Vertex);
+    GL::Shader frag(GL::Version::GL330, GL::Shader::Type::Fragment);
 
     vert.addSource(rs.get("ReflectorShader.vert"));
     frag.addSource(rs.get("ReflectorShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
 
@@ -70,12 +70,12 @@ ReflectorShader::ReflectorShader() {
     setUniform(uniformLocation("tarnishTextureData"), TarnishTextureLayer);
 }
 
-ReflectorShader& ReflectorShader::setTexture(CubeMapTexture& texture) {
+ReflectorShader& ReflectorShader::setTexture(GL::CubeMapTexture& texture) {
     texture.bind(TextureLayer);
     return *this;
 }
 
-ReflectorShader& ReflectorShader::setTarnishTexture(Texture2D& texture) {
+ReflectorShader& ReflectorShader::setTarnishTexture(GL::Texture2D& texture) {
     texture.bind(TarnishTextureLayer);
     return *this;
 }
