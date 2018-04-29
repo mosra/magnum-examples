@@ -14,6 +14,7 @@
 # This command alone is useless without specifying the components:
 #
 #  Bullet                       - Bullet Physics integration library
+#  Dart                         - Dart Physics integration library
 #  Ovr                          - Oculus SDK integration library
 #
 # Example usage with specifying additional components is:
@@ -53,6 +54,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2018 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -76,13 +78,14 @@
 # Magnum library dependencies
 set(_MAGNUMINTEGRATION_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
-    string(TOUPPER ${_component} _COMPONENT)
-
     if(_component STREQUAL Bullet)
-        set(_MAGNUMINTEGRATION_${_COMPONENT}_MAGNUM_DEPENDENCIES SceneGraph Shapes)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shapes)
+    endif()
+    if(_component STREQUAL Dart)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools)
     endif()
 
-    list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_COMPONENT}_MAGNUM_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
 endforeach()
 find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
 
@@ -91,21 +94,24 @@ find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum
     HINTS ${MAGNUM_INCLUDE_DIR})
 mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 
+# Component distinction (listing them explicitly to avoid mistakes with finding
+# components from other repositories)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Ovr)
+
+# Inter-component dependencies (none yet)
+# set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
+
 # Ensure that all inter-component dependencies are specified as well
 set(_MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
-    string(TOUPPER ${_component} _COMPONENT)
-
-    # (no inter-component dependencies yet)
-
     # Mark the dependencies as required if the component is also required
     if(MagnumIntegration_FIND_REQUIRED_${_component})
-        foreach(_dependency ${_MAGNUMINTEGRATION_${_COMPONENT}_DEPENDENCIES})
+        foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_DEPENDENCIES})
             set(MagnumIntegration_FIND_REQUIRED_${_dependency} TRUE)
         endforeach()
     endif()
 
-    list(APPEND _MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS ${_MAGNUMINTEGRATION_${_COMPONENT}_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS ${_MAGNUMINTEGRATION_${_component}_DEPENDENCIES})
 endforeach()
 
 # Join the lists, remove duplicate components
@@ -116,11 +122,14 @@ if(MagnumIntegration_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES MagnumIntegration_FIND_COMPONENTS)
 endif()
 
-# Component distinction (listing them explicitly to avoid mistakes with finding
-# components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS "^(Bullet|Ovr)$")
+# Convert components lists to regular expressions so I can use if(MATCHES).
+# TODO: Drop this once CMake 3.3 and if(IN_LIST) can be used
+foreach(_WHAT LIBRARY)
+    string(REPLACE ";" "|" _MAGNUMINTEGRATION_${_WHAT}_COMPONENTS "${_MAGNUMINTEGRATION_${_WHAT}_COMPONENT_LIST}")
+    set(_MAGNUMINTEGRATION_${_WHAT}_COMPONENTS "^(${_MAGNUMINTEGRATION_${_WHAT}_COMPONENTS})$")
+endforeach()
 
-# Additional components
+# Find all components
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
 
@@ -175,6 +184,16 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
 
+        # Dart integration library
+        elseif(_component STREQUAL Dart)
+            find_package(DART 6.0.0 CONFIG REQUIRED)
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_INCLUDE_DIRECTORIES ${DART_INCLUDE_DIRS})
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${DART_LIBRARIES})
+
+            set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ConvertShapeNode.h)
+
         # Oculus SDK integration library
         elseif(_component STREQUAL Ovr)
             find_package(OVR)
@@ -197,13 +216,13 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             # Link to core Magnum library, add other Magnum dependencies
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
-            foreach(_dependency ${_MAGNUMINTEGRATION_${_COMPONENT}_MAGNUM_DEPENDENCIES})
+            foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
             endforeach()
 
             # Add inter-project dependencies
-            foreach(_dependency ${_MAGNUMINTEGRATION_${_COMPONENT}_DEPENDENCIES})
+            foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_DEPENDENCIES})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES MagnumIntegration::${_dependency})
             endforeach()
