@@ -41,9 +41,9 @@ This example requires you to have the [Orion beta](https://developer.leapmotion.
 [Leap Motion V2 Desktop SDK](https://developer.leapmotion.com/sdk/v2) installed.
 In addition, you will need a [Leap Motion Controller](https://store.leapmotion.com/).
 
-@section examples-leapmotion-controls Key controls
+@section examples-leapmotion-controls Controls
 
--   @m_class{m-label m-default} **Move Hands** --- move hands
+-   @m_class{m-label m-default} **Move hands** --- well, move hands
 -   @m_class{m-label m-default} **Escape** --- close the application
 
 @section examples-leapmotion-credits Credits
@@ -54,10 +54,13 @@ This example was originally contributed by [Jonathan Hale](https://github.com/Sq
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/leapmotion).
+Note that the CMake code uses `FindLeap.cmake`, which you can find in the
+[modules/](https://github.com/mosra/magnum-examples/tree/master/modules)
+directory.
 
--   @ref ovr/CMakeLists.txt "CMakeLists.txt"
--   @ref ovr/LeapMotionExample.cpp "LeapMotionExample.cpp"
--   @ref modules/FindLeap.cmake "FindLeap.cmake"
+-   @ref leapmotion/CMakeLists.txt "CMakeLists.txt"
+-   @ref leapmotion/LeapMotionExample.cpp "LeapMotionExample.cpp"
+
 
 @example leapmotion/CMakeLists.txt @m_examplenavigation{examples-leapmotion,leapmotion/} @m_footernavigation
 @example leapmotion/LeapMotionExample.cpp @m_examplenavigation{examples-leapmotion,leapmotion/} @m_footernavigation

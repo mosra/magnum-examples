@@ -43,7 +43,8 @@ as well.
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/webvr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
-Note that there is also a @ref examples-ovr "Oculus VR example".
+Note that there is also a @ref examples-ovr "Oculus VR example" and a
+@ref examples-leapmotion "Leap Motion example".
 
 @section examples-webvr-controls Controls
 

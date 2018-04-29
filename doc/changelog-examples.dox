@@ -40,6 +40,10 @@ namespace Magnum {
     dropped, as it was still missing some important C++11 functionality. See
     @ref building-cross-android for more information.
 
+@subsection changelog-examples-latest-new New features
+
+-   New @ref examples-leapmotion example showcasing hand tracking
+
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Simplified the @ref examples-ovr example to a single file with minimal
