@@ -56,6 +56,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     Shaders
     Trade
     Sdl2Application)
@@ -68,6 +69,7 @@ corrade_add_resource(AreaLights_RESOURCES resources.conf)
 add_executable(magnum-arealights AreaLightsExample.cpp ${AreaLights_RESOURCES})
 target_link_libraries(magnum-arealights PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::Shaders
     Magnum::Trade
