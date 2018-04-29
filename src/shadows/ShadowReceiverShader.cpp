@@ -31,21 +31,21 @@
 #include "ShadowReceiverShader.h"
 
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/Context.h>
-#include <Magnum/Shader.h>
-#include <Magnum/TextureArray.h>
-#include <Magnum/Version.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/Shader.h>
+#include <Magnum/GL/TextureArray.h>
+#include <Magnum/GL/Version.h>
 #include <Magnum/Math/Matrix4.h>
 
 namespace Magnum { namespace Examples {
 
 ShadowReceiverShader::ShadowReceiverShader(Int numShadowLevels) {
-    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL330);
 
     const Utility::Resource rs{"shadow-data"};
 
-    Shader vert{Version::GL330, Shader::Type::Vertex};
-    Shader frag{Version::GL330, Shader::Type::Fragment};
+    GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GL330, GL::Shader::Type::Fragment};
 
     std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
     vert.addSource(preamble);
@@ -53,7 +53,7 @@ ShadowReceiverShader::ShadowReceiverShader(Int numShadowLevels) {
     frag.addSource(preamble);
     frag.addSource(rs.get("ShadowReceiver.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");
@@ -91,7 +91,7 @@ ShadowReceiverShader& ShadowReceiverShader::setLightDirection(const Vector3& vec
     return *this;
 }
 
-ShadowReceiverShader& ShadowReceiverShader::setShadowmapTexture(Texture2DArray& texture) {
+ShadowReceiverShader& ShadowReceiverShader::setShadowmapTexture(GL::Texture2DArray& texture) {
     texture.bind(ShadowmapTextureLayer);
     return *this;
 }

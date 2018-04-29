@@ -28,10 +28,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Buffer.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Texture.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -67,8 +67,8 @@ class ShadowsExample: public Platform::Application {
 
     private:
         struct Model {
-            Buffer indexBuffer, vertexBuffer;
-            Mesh mesh;
+            GL::Buffer indexBuffer, vertexBuffer;
+            GL::Mesh mesh;
             Float radius;
         };
 
@@ -133,8 +133,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments):
     _shadowReceiverShader.reset(new ShadowReceiverShader(_shadowLight.layerCount()));
     _shadowReceiverShader->setShadowBias(_shadowBias);
 
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::enable(Renderer::Feature::FaceCulling);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
     addModel(Primitives::cubeSolid());
     addModel(Primitives::capsule3DSolid(1, 1, 4, 1.0f));
@@ -155,12 +155,12 @@ ShadowsExample::ShadowsExample(const Arguments& arguments):
     _shadowLight.setupSplitDistances(MainCameraNear, MainCameraFar, _layerSplitExponent);
 
     _mainCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf,
-        Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(),
+        Vector2{GL::defaultFramebuffer.viewport().size()}.aspectRatio(),
         MainCameraNear, MainCameraFar));
     _mainCameraObject.setTransformation(Matrix4::translation(Vector3::yAxis(3.0f)));
 
     _debugCamera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf,
-        Vector2{defaultFramebuffer.viewport().size()}.aspectRatio(),
+        Vector2{GL::defaultFramebuffer.viewport().size()}.aspectRatio(),
         MainCameraNear/4.0f, MainCameraFar*4.0f));
     _debugCameraObject.setTransformation(Matrix4::lookAt(
         {100.0f, 50.0f, 0.0f}, Vector3::zAxis(-30.0f), Vector3::yAxis()));
@@ -195,7 +195,7 @@ void ShadowsExample::addModel(const Trade::MeshData3D& meshData3D) {
     Model& model = _models.back();
 
     model.vertexBuffer.setData(MeshTools::interleave(meshData3D.positions(0), meshData3D.normals(0)),
-        BufferUsage::StaticDraw);
+        GL::BufferUsage::StaticDraw);
 
     Float maxMagnitudeSquared = 0.0f;
     for(Vector3 position: meshData3D.positions(0)) {
@@ -208,10 +208,10 @@ void ShadowsExample::addModel(const Trade::MeshData3D& meshData3D) {
     model.radius = std::sqrt(maxMagnitudeSquared);
 
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
     std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData3D.indices());
-    model.indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+    model.indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
     model.mesh.setPrimitive(meshData3D.primitive())
         .setCount(meshData3D.indices().size())
@@ -235,10 +235,10 @@ void ShadowsExample::drawEvent() {
        render only back faces for shadows. */
     switch(_shadowMapFaceCullMode) {
         case 0:
-            Renderer::disable(Renderer::Feature::FaceCulling);
+            GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
             break;
         case 2:
-            Renderer::setFaceCullingMode(Renderer::PolygonFacing::Front);
+            GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
             break;
     }
 
@@ -247,15 +247,15 @@ void ShadowsExample::drawEvent() {
 
     switch(_shadowMapFaceCullMode) {
         case 0:
-            Renderer::enable(Renderer::Feature::FaceCulling);
+            GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
             break;
         case 2:
-            Renderer::setFaceCullingMode(Renderer::PolygonFacing::Back);
+            GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
             break;
     }
 
-    Renderer::setClearColor({0.1f, 0.1f, 0.4f, 1.0f});
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+    GL::Renderer::setClearColor({0.1f, 0.1f, 0.4f, 1.0f});
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     Containers::Array<Matrix4> shadowMatrices{Containers::NoInit, _shadowLight.layerCount()};
     for(std::size_t layerIndex = 0; layerIndex != _shadowLight.layerCount(); ++layerIndex)
@@ -419,7 +419,7 @@ void ShadowsExample::setShadowSplitExponent(const Float power) {
 }
 
 void ShadowsExample::setShadowMapSize(const Vector2i& shadowMapSize) {
-    if((shadowMapSize >= Vector2i{1}).all() && (shadowMapSize <= Texture2D::maxSize()).all()) {
+    if((shadowMapSize >= Vector2i{1}).all() && (shadowMapSize <= GL::Texture2D::maxSize()).all()) {
         _shadowMapSize = shadowMapSize;
         _shadowLight.setupShadowmaps(_shadowLight.layerCount(), _shadowMapSize);
         Debug() << "Shadow map size" << shadowMapSize << "x" << _shadowLight.layerCount() << "layers";

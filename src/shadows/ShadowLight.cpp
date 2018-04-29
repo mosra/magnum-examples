@@ -31,11 +31,11 @@
 #include "ShadowLight.h"
 
 #include <algorithm>
-#include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/ImageView.h>
-#include <Magnum/PixelFormat.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/PixelFormat.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/SceneGraph/FeatureGroup.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -51,21 +51,21 @@ ShadowLight::ShadowLight(SceneGraph::Object<SceneGraph::MatrixTransformation3D>&
 void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
     _layers.clear();
 
-    (_shadowTexture = Texture2DArray{})
-        .setImage(0, TextureFormat::DepthComponent, ImageView3D{PixelFormat::DepthComponent, PixelType::Float, {size, numShadowLevels}, nullptr})
+    (_shadowTexture = GL::Texture2DArray{})
+        .setImage(0, GL::TextureFormat::DepthComponent, ImageView3D{GL::PixelFormat::DepthComponent, GL::PixelType::Float, {size, numShadowLevels}, nullptr})
         .setMaxLevel(0)
-        .setCompareFunction(Sampler::CompareFunction::LessOrEqual)
-        .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-        .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Base)
-        .setMagnificationFilter(Sampler::Filter::Linear);
+        .setCompareFunction(GL::SamplerCompareFunction::LessOrEqual)
+        .setCompareMode(GL::SamplerCompareMode::CompareRefToTexture)
+        .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Linear);
 
     for(std::int_fast32_t i = 0; i < numShadowLevels; ++i) {
         _layers.emplace_back(size);
-        Framebuffer& shadowFramebuffer = _layers.back().shadowFramebuffer;
-        shadowFramebuffer.attachTextureLayer(Framebuffer::BufferAttachment::Depth, _shadowTexture, 0, i)
-            .mapForDraw(Framebuffer::DrawAttachment::None)
+        GL::Framebuffer& shadowFramebuffer = _layers.back().shadowFramebuffer;
+        shadowFramebuffer.attachTextureLayer(GL::Framebuffer::BufferAttachment::Depth, _shadowTexture, 0, i)
+            .mapForDraw(GL::Framebuffer::DrawAttachment::None)
             .bind();
-        CORRADE_INTERNAL_ASSERT(shadowFramebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
+        CORRADE_INTERNAL_ASSERT(shadowFramebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
     }
 }
 
@@ -174,7 +174,7 @@ void ShadowLight::render(SceneGraph::DrawableGroup3D& drawables) {
                                  {0.0f, 0.0f, 0.5f, 0.0f},
                                  {0.5f, 0.5f, 0.5f, 1.0f}};
 
-    Renderer::setDepthMask(true);
+    GL::Renderer::setDepthMask(true);
 
     for(std::size_t layer = 0; layer != _layers.size(); ++layer) {
         ShadowLayerData& d = _layers[layer];
@@ -232,13 +232,13 @@ void ShadowLight::render(SceneGraph::DrawableGroup3D& drawables) {
         d.shadowMatrix = bias*shadowCameraProjectionMatrix*cameraMatrix();
         setProjectionMatrix(shadowCameraProjectionMatrix);
 
-        d.shadowFramebuffer.clear(FramebufferClear::Depth)
+        d.shadowFramebuffer.clear(GL::FramebufferClear::Depth)
             .bind();
         for(std::size_t i = 0; i != transformationsOutIndex; ++i)
             filteredDrawables[i]->draw(transformations[i], *this);
     }
 
-    defaultFramebuffer.bind();
+    GL::defaultFramebuffer.bind();
 }
 
 }}

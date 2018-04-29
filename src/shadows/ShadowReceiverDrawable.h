@@ -30,8 +30,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Mesh.h>
 
 namespace Magnum { namespace Examples {
 
@@ -45,12 +45,12 @@ class ShadowReceiverDrawable: public SceneGraph::Drawable3D {
 
         void draw(const Matrix4 &transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        void setMesh(Mesh& mesh) { _mesh = &mesh; }
+        void setMesh(GL::Mesh& mesh) { _mesh = &mesh; }
 
         void setShader(ShadowReceiverShader& shader) { _shader = &shader; }
 
     private:
-        Mesh* _mesh{};
+        GL::Mesh* _mesh{};
         ShadowReceiverShader* _shader{};
 };
 
