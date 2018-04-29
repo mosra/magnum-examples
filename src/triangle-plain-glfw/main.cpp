@@ -27,10 +27,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Buffer.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Platform/Context.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/Platform/GLContext.h>
 #include <Magnum/Shaders/VertexColor.h>
 #include <GLFW/glfw3.h>
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 
     {
         /* Create Magnum context in an isolated scope */
-        Platform::Context ctx{argc, argv};
+        Platform::GLContext ctx{argc, argv};
 
         /* Setup the colored triangle */
         using namespace Math::Literals;
@@ -68,11 +68,11 @@ int main(int argc, char** argv) {
             {{ 0.0f,  0.5f}, 0x0000ff_rgbf}     /* Top vertex, blue color */
         };
 
-        Buffer buffer;
-        buffer.setData(data, BufferUsage::StaticDraw);
+        GL::Buffer buffer;
+        buffer.setData(data, GL::BufferUsage::StaticDraw);
 
-        Mesh mesh;
-        mesh.setPrimitive(MeshPrimitive::Triangles)
+        GL::Mesh mesh;
+        mesh.setPrimitive(GL::MeshPrimitive::Triangles)
             .setCount(3)
             .addVertexBuffer(buffer, 0,
                 Shaders::VertexColor2D::Position{},
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
         while(!glfwWindowShouldClose(window)) {
 
             /* Render here */
-            defaultFramebuffer.clear(FramebufferClear::Color);
+            GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
             mesh.draw(shader);
 
             /* Swap front and back buffers */
