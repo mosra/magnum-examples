@@ -44,7 +44,7 @@ for a high-level overview.
 
 @subsection changelog-examples-2015-05-bugfixes Bug fixes
 
--   Removed unneeded requirement for @extension{ARB,invalidate_subdata} from
+-   Removed unneeded requirement for @gl_extension{ARB,invalidate_subdata} from
     the @ref examples-cubemap "Cube Map example" (see
     [mosra/magnum#63](https://github.com/mosra/magnum/issues/63)).
 
