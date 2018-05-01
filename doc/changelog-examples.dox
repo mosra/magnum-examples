@@ -43,22 +43,25 @@ namespace Magnum {
 @subsection changelog-examples-latest-new New features
 
 -   New @ref examples-leapmotion example showcasing hand tracking
+    (see [mosra/magnum-examples#40](https://github.com/mosra/magnum-examples/pull/40))
 
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Simplified the @ref examples-ovr example to a single file with minimal
-    dependencies
+    dependencies (see [mosra/magnum-examples#39](https://github.com/mosra/magnum-examples/pull/39))
 
 @subsection changelog-examples-latest-buildsystem Build system
 
 -   It's now possible to build particular examples as if they would be a
-    project root. See @ref building-examples-features for more information.
+    project root. See @ref building-examples-features and
+    [mosra/magnum#241](https://github.com/mosra/magnum/issues/241) for more information.
 -   Fixed the Debian package to not include a revision. While just a warning on
-    Ubuntu, it's a hard error on Debian.
+    Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
 -   The @ref examples-webvr example was fixed to work on Android phones
+    (see [mosra/magnum-examples#38](https://github.com/mosra/magnum-examples/pull/38))
 
 @section changelog-examples-2018-02 2018.02
 
