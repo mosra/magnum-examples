@@ -58,6 +58,8 @@ Released 2018-05-01, tagged as
 -   It's now possible to build particular examples as if they would be a
     project root. See @ref building-examples-features and
     [mosra/magnum#241](https://github.com/mosra/magnum/issues/241) for more information.
+-   Homebrew macOS packages were updated to install the stable version by
+    default
 -   Fixed the Debian package to not include a revision. While just a warning on
     Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
 
