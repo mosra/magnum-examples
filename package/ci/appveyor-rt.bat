@@ -144,6 +144,7 @@ cmake .. ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF ^
     -DWITH_TRIANGLE_EXAMPLE=OFF ^
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF ^
+    -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF ^
     -DWITH_VIEWER_EXAMPLE=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b

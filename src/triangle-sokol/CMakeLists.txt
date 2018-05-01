@@ -47,35 +47,23 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
-# macro called from FindX11)
-if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
-    set(LANG CXX)
-endif()
-project(MagnumExamples ${LANG})
+project(MagnumTriangleSokolExample)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
-find_package(Magnum REQUIRED)
-
-include(CMakeDependentOption)
-option(WITH_AREALIGHTS_EXAMPLE "Build arealights example" OFF)
-option(WITH_AUDIO_EXAMPLE "Build audio example (requires Magnum Audio library)" OFF)
-option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletIntegration library)" OFF)
-cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_LEAPMOTION_EXAMPLE "Build LeapMotion example" OFF)
-cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
-option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
-option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
-option(WITH_SHADOWS_EXAMPLE "Build shadow mapping example" OFF)
-option(WITH_TEXT_EXAMPLE "Build Text example (requires FreeTypeFont plugin)" OFF)
-cmake_dependent_option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires TgaImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
-option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" OFF)
-option(WITH_TRIANGLE_SOKOL_EXAMPLE "Build sokol_gfx Triangle example" OFF)
-option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
-if(CORRADE_TARGET_EMSCRIPTEN)
-    option(WITH_WEBVR_EXAMPLE "Build WebVR example" OFF)
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-add_subdirectory(src)
+find_package(Magnum REQUIRED Sdl2Application)
+find_package(GLEW REQUIRED)
+
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
+
+add_executable(magnum-triangle-sokol TriangleSokolExample.cpp)
+target_include_directories(magnum-triangle-sokol PRIVATE ${GLEW_INCLUDE_DIRS})
+target_link_libraries(magnum-triangle-sokol PRIVATE
+    Magnum::Application
+    Magnum::Magnum
+    ${GLEW_LIBRARIES})
+
+install(TARGETS magnum-triangle-sokol DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

@@ -206,6 +206,9 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
     @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example. Depends on
     [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
+-   `WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
+    @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
+    [GLEW](http://glew.sourceforge.net/).
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 -   `WITH_WEBVRE_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.

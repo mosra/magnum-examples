@@ -125,6 +125,7 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_EXAMPLE=OFF \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
+    -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=OFF \
     -G Xcode
 set -o pipefail && cmake --build . --config Release | xcpretty

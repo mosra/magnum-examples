@@ -94,6 +94,10 @@ if(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
     add_subdirectory(triangle-plain-glfw)
 endif()
 
+if(WITH_TRIANGLE_SOKOL_EXAMPLE)
+    add_subdirectory(triangle-sokol)
+endif()
+
 if(WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()

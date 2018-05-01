@@ -81,6 +81,7 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
+    -DWITH_TRIANGLE_SOKOL_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
