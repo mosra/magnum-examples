@@ -48,12 +48,18 @@ if(POLICY CMP0054)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     SceneGraph
     Sdl2Application)
 
 project(MagnumPickingExample)
+
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -64,6 +70,7 @@ add_executable(magnum-picking
     ${Picking_RESOURCES})
 target_link_libraries(magnum-picking PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives

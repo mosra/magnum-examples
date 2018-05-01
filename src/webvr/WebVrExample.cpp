@@ -30,11 +30,11 @@
 
 #include <memory>
 #include <Corrade/Containers/Array.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Magnum.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/Math/Range.h>
 #include <Magnum/MeshTools/CompressIndices.h>
@@ -65,8 +65,8 @@ class WebVrExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& e) override;
 
-        Buffer _indexBuffer, _vertexBuffer;
-        Mesh _mesh;
+        GL::Buffer _indexBuffer, _vertexBuffer;
+        GL::Mesh _mesh;
         Shaders::Phong _shader;
 
         Matrix4 _cubeModelMatrices[4];
@@ -109,20 +109,19 @@ void displayPresentCallback(void* app) {
 WebVrExample::WebVrExample(const Arguments& arguments):
     Platform::Application(arguments, Configuration{}.setSampleCount(4).setSize({640, 320}))
 {
-    Renderer::enable(Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Setup cube mesh */
     const Trade::MeshData3D cube = Primitives::cubeSolid();
-    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
+    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), GL::BufferUsage::StaticDraw);
 
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
-
     std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
 
-    _indexBuffer.setTargetHint(Buffer::TargetHint::ElementArray);
-    _indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+    _indexBuffer.setTargetHint(GL::Buffer::TargetHint::ElementArray);
+    _indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
     _mesh.setPrimitive(cube.primitive())
         .setCount(cube.indices().size())
@@ -231,7 +230,7 @@ void WebVrExample::drawEvent() {
 }
 
 void WebVrExample::displayRender() {
-    defaultFramebuffer.clear(FramebufferClear::Color | FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     const Vector3 lightPos{3.0f, 3.0f, 3.0f};
 
@@ -260,7 +259,7 @@ void WebVrExample::displayRender() {
                .setProjectionMatrix(projMatrix[eye]);
 
         /* Set viewport to left/right half of canvas */
-        defaultFramebuffer.setViewport(viewport[eye]);
+        GL::defaultFramebuffer.setViewport(viewport[eye]);
 
         /* Draw all four cubes for this eye */
         for (int i = 0; i < 4; ++i) {

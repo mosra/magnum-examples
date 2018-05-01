@@ -28,14 +28,15 @@
 */
 
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Renderer.h>
 #include <Magnum/ResourceManager.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -53,7 +54,7 @@
 
 namespace Magnum { namespace Examples {
 
-typedef ResourceManager<Buffer, Mesh, Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
+typedef ResourceManager<GL::Buffer, GL::Mesh, GL::Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -89,7 +90,7 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Resource<Mesh> _mesh;
+        Resource<GL::Mesh> _mesh;
         Resource<Shaders::Phong> _shader;
         Vector3 _ambientColor,
             _diffuseColor,
@@ -104,8 +105,8 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Resource<Mesh> _mesh;
-        Resource<Texture2D> _diffuseTexture;
+        Resource<GL::Mesh> _mesh;
+        Resource<GL::Texture2D> _diffuseTexture;
         Resource<Shaders::Phong> _shader;
         Vector3 _ambientColor,
             _specularColor;
@@ -130,8 +131,8 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     material->specularColor() = 0xffffff_rgbf;
     _resourceManager
         .setFallback(material)
-        .setFallback(new Texture2D)
-        .setFallback(new Mesh);
+        .setFallback(new GL::Texture2D)
+        .setFallback(new GL::Mesh);
 
     /* Every scene needs a camera */
     (*(_cameraObject = new Object3D{&_scene}))
@@ -139,9 +140,9 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     (*(_camera = new SceneGraph::Camera3D{*_cameraObject}))
         .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 10.0f))
-        .setViewport(defaultFramebuffer.viewport().size());
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::enable(Renderer::Feature::FaceCulling);
+        .setViewport(GL::defaultFramebuffer.viewport().size());
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
@@ -182,25 +183,20 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         Debug{} << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
 
         Containers::Optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
-        if(!imageData || (imageData->format() != PixelFormat::RGB
-            #ifndef MAGNUM_TARGET_GLES
-            && imageData->format() != PixelFormat::BGR
-            #endif
-            ))
-        {
+        if(!imageData || imageData->format() != PixelFormat::RGB8Unorm) {
             Warning{} << "Cannot load texture image, skipping";
             continue;
         }
 
         /* Configure texture */
-        auto texture = new Texture2D;
+        auto texture = new GL::Texture2D;
         texture->setMagnificationFilter(textureData->magnificationFilter())
             .setMinificationFilter(textureData->minificationFilter(), textureData->mipmapFilter())
             .setWrapping(textureData->wrapping().xy())
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            .setStorage(1, TextureFormat::RGB8, imageData->size())
+            .setStorage(1, GL::TextureFormat::RGB8, imageData->size())
             #else
-            .setStorage(1, TextureFormat::RGB, imageData->size())
+            .setStorage(1, GL::TextureFormat::RGB, imageData->size())
             #endif
             .setSubImage(0, {}, *imageData)
             .generateMipmap();
@@ -220,26 +216,15 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         }
 
         /* Compile the mesh */
-        Mesh mesh{NoCreate};
-        std::unique_ptr<Buffer> buffer, indexBuffer;
-        std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, BufferUsage::StaticDraw);
+        GL::Mesh mesh{NoCreate};
+        std::unique_ptr<GL::Buffer> buffer, indexBuffer;
+        std::tie(mesh, buffer, indexBuffer) = MeshTools::compile(*meshData, GL::BufferUsage::StaticDraw);
 
         /* Save things */
-        _resourceManager.set(ResourceKey{i}, new Mesh{std::move(mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
-        _resourceManager.set(
-            #ifndef CORRADE_GCC44_COMPATIBILITY
-            std::to_string(i) +
-            #else
-            std::to_string(static_cast<unsigned long long int>(i)) +
-            #endif
-            "-vertices", buffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
-        if(indexBuffer) _resourceManager.set(
-            #ifndef CORRADE_GCC44_COMPATIBILITY
-            std::to_string(i) +
-            #else
-            std::to_string(static_cast<unsigned long long int>(i)) +
-            #endif
-            "-indices", indexBuffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
+        _resourceManager.set(ResourceKey{i}, new GL::Mesh{std::move(mesh)}, ResourceDataState::Final, ResourcePolicy::Manual);
+        _resourceManager.set(std::to_string(i) + "-vertices", buffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
+        if(indexBuffer)
+            _resourceManager.set(std::to_string(i) + "-indices", indexBuffer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
     }
 
     /* Default object, parent of all (for manipulation) */
@@ -261,15 +246,15 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* The format has no scene support, display just the first loaded mesh with
        default material and be done with it */
-    } else if(_resourceManager.state<Mesh>(ResourceKey{0}) == ResourceState::Final)
+    } else if(_resourceManager.state<GL::Mesh>(ResourceKey{0}) == ResourceState::Final)
         new ColoredObject{ResourceKey{0}, ResourceKey(-1), _o, &_drawables};
 
     /* Materials were consumed by objects and they are not needed anymore. Also
        free all texture/mesh data that weren't referenced by any object. */
     _resourceManager.setFallback<Trade::PhongMaterialData>(nullptr)
         .clear<Trade::PhongMaterialData>()
-        .free<Texture2D>()
-        .free<Mesh>();
+        .free<GL::Texture2D>()
+        .free<GL::Mesh>();
 }
 
 void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* parent, UnsignedInt i) {
@@ -326,12 +311,12 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* paren
 }
 
 void ViewerExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
     _camera->setViewport(size);
 }
 
 void ViewerExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
     _camera->draw(_drawables);
     swapBuffers();
 }
@@ -386,7 +371,7 @@ void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
 
 ColoredObject::ColoredObject(ResourceKey meshId, ResourceKey materialId, Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _mesh{ViewerResourceManager::instance().get<Mesh>(meshId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")}
+    _mesh{ViewerResourceManager::instance().get<GL::Mesh>(meshId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")}
 {
     auto material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialId);
     _ambientColor = material->ambientColor();
@@ -397,7 +382,7 @@ ColoredObject::ColoredObject(ResourceKey meshId, ResourceKey materialId, Object3
 
 TexturedObject::TexturedObject(ResourceKey meshId, ResourceKey materialId, ResourceKey diffuseTextureId, Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _mesh{ViewerResourceManager::instance().get<Mesh>(meshId)}, _diffuseTexture{ViewerResourceManager::instance().get<Texture2D>(diffuseTextureId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")}
+    _mesh{ViewerResourceManager::instance().get<GL::Mesh>(meshId)}, _diffuseTexture{ViewerResourceManager::instance().get<GL::Texture2D>(diffuseTextureId)}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")}
 {
     auto material = ViewerResourceManager::instance().get<Trade::PhongMaterialData>(materialId);
     _ambientColor = material->ambientColor();

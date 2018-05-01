@@ -50,13 +50,18 @@ endif()
 
 project(MagnumBulletExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 find_package(Magnum REQUIRED
     DebugTools
+    GL
     SceneGraph
     Shapes
     Sdl2Application)
-find_package(MagnumIntegration REQUIRED
-    Bullet)
+find_package(MagnumIntegration REQUIRED Bullet)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -64,6 +69,7 @@ add_executable(magnum-bullet BulletExample.cpp)
 target_link_libraries(magnum-bullet PRIVATE
     Magnum::Application
     Magnum::DebugTools
+    Magnum::GL
     Magnum::Magnum
     Magnum::SceneGraph
     Magnum::Shapes

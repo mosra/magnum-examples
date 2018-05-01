@@ -30,10 +30,12 @@
 #include "CubeMap.h"
 
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/CubeMapTexture.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/Mesh.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/CubeMapTexture.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/FlipNormals.h>
 #include <Magnum/MeshTools/Interleave.h>
@@ -53,22 +55,22 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
     CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
 
     /* Cube mesh */
-    if(!(_cube = resourceManager.get<Mesh>("cube"))) {
+    if(!(_cube = resourceManager.get<GL::Mesh>("cube"))) {
         Trade::MeshData3D cubeData = Primitives::cubeSolid();
         MeshTools::flipFaceWinding(cubeData.indices());
 
-        Buffer* buffer = new Buffer;
-        buffer->setData(MeshTools::interleave(cubeData.positions(0)), BufferUsage::StaticDraw);
+        GL::Buffer* buffer = new GL::Buffer;
+        buffer->setData(MeshTools::interleave(cubeData.positions(0)), GL::BufferUsage::StaticDraw);
 
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cubeData.indices());
 
-        Buffer* indexBuffer = new Buffer;
-        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        GL::Buffer* indexBuffer = new GL::Buffer;
+        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
 
-        Mesh* mesh = new Mesh;
+        GL::Mesh* mesh = new GL::Mesh;
         mesh->setPrimitive(cubeData.primitive())
             .setCount(cubeData.indices().size())
             .addVertexBuffer(*buffer, 0, CubeMapShader::Position{})
@@ -80,12 +82,12 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
     }
 
     /* Cube map texture */
-    if(!(_texture = resourceManager.get<CubeMapTexture>("texture"))) {
-        CubeMapTexture* cubeMap = new CubeMapTexture;
+    if(!(_texture = resourceManager.get<GL::CubeMapTexture>("texture"))) {
+        GL::CubeMapTexture* cubeMap = new GL::CubeMapTexture;
 
-        cubeMap->setWrapping(Sampler::Wrapping::ClampToEdge)
-            .setMagnificationFilter(Sampler::Filter::Linear)
-            .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear);
+        cubeMap->setWrapping(GL::SamplerWrapping::ClampToEdge)
+            .setMagnificationFilter(GL::SamplerFilter::Linear)
+            .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear);
 
         Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
 
@@ -94,28 +96,28 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
         Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_INTERNAL_ASSERT(image);
         Vector2i size = image->size();
-        cubeMap->setStorage(Math::log2(size.min())+1, TextureFormat::RGB8, size)
-            .setSubImage(CubeMapCoordinate::PositiveX, 0, {}, *image);
+        cubeMap->setStorage(Math::log2(size.min())+1, GL::TextureFormat::RGB8, size)
+            .setSubImage(GL::CubeMapCoordinate::PositiveX, 0, {}, *image);
 
         importer->openFile(prefix + "-x.jpg");
         CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(CubeMapCoordinate::NegativeX, 0, {}, *image);
+        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeX, 0, {}, *image);
 
         importer->openFile(prefix + "+y.jpg");
         CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(CubeMapCoordinate::PositiveY, 0, {}, *image);
+        cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveY, 0, {}, *image);
 
         importer->openFile(prefix + "-y.jpg");
         CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(CubeMapCoordinate::NegativeY, 0, {}, *image);
+        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeY, 0, {}, *image);
 
         importer->openFile(prefix + "+z.jpg");
         CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(CubeMapCoordinate::PositiveZ, 0, {}, *image);
+        cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveZ, 0, {}, *image);
 
         importer->openFile(prefix + "-z.jpg");
         CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(CubeMapCoordinate::NegativeZ, 0, {}, *image);
+        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeZ, 0, {}, *image);
 
         cubeMap->generateMipmap();
 
@@ -123,8 +125,8 @@ CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::Drawab
     }
 
     /* Shader */
-    if(!(_shader = resourceManager.get<AbstractShaderProgram, CubeMapShader>("shader")))
-        resourceManager.set<AbstractShaderProgram>(_shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
+    if(!(_shader = resourceManager.get<GL::AbstractShaderProgram, CubeMapShader>("shader")))
+        resourceManager.set<GL::AbstractShaderProgram>(_shader.key(), new CubeMapShader, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {

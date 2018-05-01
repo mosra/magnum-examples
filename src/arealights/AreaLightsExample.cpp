@@ -36,17 +36,17 @@
 #include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Extensions.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Shader.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
-#include <Magnum/Version.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Extensions.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Shader.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
+#include <Magnum/GL/Version.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Text/Alignment.h>
@@ -68,23 +68,23 @@
 namespace Magnum { namespace Examples {
 
 /* Class for the area light shader */
-class AreaLightShader: public AbstractShaderProgram {
+class AreaLightShader: public GL::AbstractShaderProgram {
     public:
-        explicit AreaLightShader(NoCreateT): AbstractShaderProgram{NoCreate} {}
+        explicit AreaLightShader(NoCreateT): GL::AbstractShaderProgram{NoCreate} {}
 
         explicit AreaLightShader() {
-            MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GLES300);
+            MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES300);
 
             /* Load and compile shaders from compiled-in resource */
             Utility::Resource rs("arealights-data");
 
-            Shader vert{Version::GLES300, Shader::Type::Vertex};
-            Shader frag{Version::GLES300, Shader::Type::Fragment};
+            GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex};
+            GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
 
             vert.addSource(rs.get("AreaLights.vert"));
             frag.addSource(rs.get("AreaLights.frag"));
 
-            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
             attachShaders({vert, frag});
 
@@ -180,8 +180,8 @@ class AreaLightShader: public AbstractShaderProgram {
 
         /* LTC lookup textures */
 
-        AreaLightShader& bindTextures(Texture2D& ltcMat, Texture2D& ltcAmp) {
-            Texture2D::bind(LtcMatTextureUnit, {&ltcMat, &ltcAmp});
+        AreaLightShader& bindTextures(GL::Texture2D& ltcMat, GL::Texture2D& ltcAmp) {
+            GL::Texture2D::bind(LtcMatTextureUnit, {&ltcMat, &ltcAmp});
             return *this;
         }
 
@@ -280,16 +280,16 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
         bool _lightTwoSided[3]{true, false, true};
 
         /* Plane mesh */
-        Buffer _vertices{NoCreate};
-        Mesh _plane{NoCreate};
+        GL::Buffer _vertices{NoCreate};
+        GL::Mesh _plane{NoCreate};
 
         /* Shaders */
         AreaLightShader _areaLightShader{NoCreate};
         Shaders::Flat3D _flatShader{NoCreate};
 
         /* Look Up Textures for arealights shader */
-        Texture2D _ltcAmp{NoCreate};
-        Texture2D _ltcMat{NoCreate};
+        GL::Texture2D _ltcAmp{NoCreate};
+        GL::Texture2D _ltcMat{NoCreate};
 
         /* Camera and interaction */
         Matrix4 _transformation, _projection, _view;
@@ -323,22 +323,23 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     /* Try to create multisampled context, but be nice and fall back if not
        available */
     Configuration conf;
-    conf.setTitle("Magnum Area Lights Example")
-        .setSampleCount(8);
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
+    conf.setTitle("Magnum Area Lights Example");
+    GLConfiguration glConf;
+    glConf.setSampleCount(8);
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     /* Make it all DARK, eanble face culling so one-sided lights are properly
        visualized */
-    Renderer::enable(Renderer::Feature::FaceCulling);
-    Renderer::setClearColor(0x000000_rgbf);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::setClearColor(0x000000_rgbf);
 
     /* Setup the plane mesh, which will be used for both the floor and light
        visualization */
-    _vertices = Buffer{};
-    _vertices.setData(LightVertices, BufferUsage::StaticDraw);
-    _plane = Mesh{};
-    _plane.setPrimitive(MeshPrimitive::TriangleFan)
+    _vertices = GL::Buffer{};
+    _vertices.setData(LightVertices, GL::BufferUsage::StaticDraw);
+    _plane = GL::Mesh{};
+    _plane.setPrimitive(GL::MeshPrimitive::TriangleFan)
         .addVertexBuffer(_vertices, 0, Shaders::Generic3D::Position{}, Shaders::Generic3D::Normal{})
         .setCount(Containers::arraySize(LightVertices));
 
@@ -358,25 +359,25 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     /* Set texture data and parameters */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    _ltcAmp = Texture2D{};
-    _ltcAmp.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear);
+    _ltcAmp = GL::Texture2D{};
+    _ltcAmp.setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setMinificationFilter(GL::SamplerFilter::Linear);
 
     /* Convert to half-float in case we can't filter float textures */
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_float_linear>()) {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::texture_float_linear>()) {
         CORRADE_INTERNAL_ASSERT(!(image->size().x()%2)); /* so we don't have to think about alignment */
         auto floats = Containers::arrayCast<Float>(image->data());
         Containers::Array<Half> halves{std::size_t(image->size().product()*2)};
         for(std::size_t i = 0; i != floats.size(); ++i)
             halves[i] = Half{floats[i]};
-        _ltcAmp.setStorage(1, TextureFormat::RG16F, image->size())
-            .setSubImage(0, {}, ImageView2D{PixelFormat::RG, PixelType::HalfFloat, image->size(), halves});
+        _ltcAmp.setStorage(1, GL::TextureFormat::RG16F, image->size())
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RG16F, image->size(), halves});
     } else
     #endif
     {
-        _ltcAmp.setStorage(1, TextureFormat::RG32F, image->size())
+        _ltcAmp.setStorage(1, GL::TextureFormat::RG32F, image->size())
             .setSubImage(0, {}, *image);
     }
 
@@ -386,24 +387,24 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     /* Set texture data and parameters */
     image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    _ltcMat = Texture2D{};
-    _ltcMat.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setMinificationFilter(Sampler::Filter::Linear);
+    _ltcMat = GL::Texture2D{};
+    _ltcMat.setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setMinificationFilter(GL::SamplerFilter::Linear);
 
     /* Convert to half-float in case we can't filter float textures */
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_float_linear>()) {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::texture_float_linear>()) {
         auto floats = Containers::arrayCast<Float>(image->data());
         Containers::Array<Half> halves{std::size_t(image->size().product()*4)};
         for(std::size_t i = 0; i != floats.size(); ++i)
             halves[i] = Half{floats[i]};
-        _ltcMat.setStorage(1, TextureFormat::RGBA16F, image->size())
-            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::HalfFloat, image->size(), halves});
+        _ltcMat.setStorage(1, GL::TextureFormat::RGBA16F, image->size())
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA16F, image->size(), halves});
     } else
     #endif
     {
-        _ltcMat.setStorage(1, TextureFormat::RGBA32F, image->size())
+        _ltcMat.setStorage(1, GL::TextureFormat::RGBA32F, image->size())
             .setSubImage(0, {}, *image);
     }
 
@@ -470,7 +471,7 @@ void AreaLightsExample::reset() {
 }
 
 void AreaLightsExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -480,8 +481,8 @@ void AreaLightsExample::drawEvent() {
 
     /* Draw light on the floor. Cheat a bit and just add everything together.
        Will work as long as the background is black. */
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     _areaLightShader.bindTextures(_ltcMat, _ltcAmp);
     for(std::size_t i: {0, 1, 2}) {
         Vector3 quadPoints[4];
@@ -500,7 +501,7 @@ void AreaLightsExample::drawEvent() {
             .setTwoSided(_lightTwoSided[i]);
         _plane.draw(_areaLightShader);
     }
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     /* Draw light visualization. Draw twice for two-sided lights. */
     for(std::size_t i: {0, 1, 2}) {
@@ -515,11 +516,11 @@ void AreaLightsExample::drawEvent() {
     }
 
     /* Draw the UI */
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     _ui->draw();
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     /* Redraw only if moving somewhere */
     swapBuffers();
@@ -546,7 +547,7 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     } else if((event.buttons() & MouseMoveEvent::Button::Left)) {
         const Vector2 delta = 3.0f*
-            Vector2{event.position() - _previousMousePosition}/Vector2{defaultFramebuffer.viewport().size()};
+            Vector2{event.position() - _previousMousePosition}/Vector2{GL::defaultFramebuffer.viewport().size()};
         _cameraRotation += delta;
 
         _previousMousePosition = event.position();

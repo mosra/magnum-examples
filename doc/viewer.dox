@@ -133,6 +133,7 @@ implementation. We typedef the classes too to save us more typing.
 Our main class contains instance of our resource manager (which needs to exist
 during lifetime of all other objects, thus it is first), scene, group of all
 drawables, object holding the camera and the camera feature.
+
 @skip class ViewerExample
 @until };
 
@@ -146,13 +147,15 @@ a help message.
 Then we populate our resource manager with shaders and fallback empty data for
 materials, textures or meshes that weren't present in the file or couldn't be
 loaded for some reason.
+
 @skip Phong shader instances
-@until .setFallback(new Mesh);
+@until .setFallback(new GL::Mesh);
 
 Next we setup the camera and renderer features.
+
 @skip Every scene needs a camera
-@until Renderer::enable
-@until Renderer::enable
+@until GL::Renderer::enable
+@until GL::Renderer::enable
 
 @section examples-viewer-import Importing the data
 
@@ -169,6 +172,7 @@ as material support, string data identifiers, scene hierarchy etc.).
 We try load and instantiate the plugin and open the file. If any operation
 fails, the application simply exits. The manager and importer prints message on
 any error, so it's not needed to repeat it in application code.
+
 @skip PluginManager::Manager<Trade::AbstractImporter> manager;
 @until std::exit(4);
 
@@ -274,7 +278,7 @@ supported, but adding support for specular textures etc. is fairly trivial.
 Back in the constructor, when the import is done, we clear all material data
 (as they were copied into object instances) and free all unreferenced data by
 calling @ref ResourceManager::free(). Note that we're not doing that for
-buffers, as they are referenced only internally from @ref Mesh and thus the
+buffers, as they are referenced only internally from @ref GL::Mesh and thus the
 manager would free them all, causing dangling memory references and crash
 later. Better solution might be to filter-out the unused data before actually
 importing them, but that's out of scope of this example.

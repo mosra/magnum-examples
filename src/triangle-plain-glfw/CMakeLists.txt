@@ -49,9 +49,14 @@ endif()
 
 project(MagnumTrianglePlainGlfwExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 find_package(GLFW REQUIRED)
 
-find_package(Magnum REQUIRED Shaders)
+find_package(Magnum REQUIRED GL Shaders)
 if(CORRADE_TARGET_APPLE)
     find_package(Magnum REQUIRED CglContext)
 elseif(CORRADE_TARGET_UNIX)
@@ -67,7 +72,8 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 add_executable(magnum-triangle-plain-glfw main.cpp)
 target_link_libraries(magnum-triangle-plain-glfw PRIVATE
     GLFW::GLFW
-    Magnum::Context
+    Magnum::GL
+    Magnum::GLContext
     Magnum::Magnum
     Magnum::Shaders)
 

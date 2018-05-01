@@ -55,6 +55,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     Shaders)
@@ -74,6 +75,7 @@ else()
 endif()
 target_link_libraries(magnum-primitives PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives

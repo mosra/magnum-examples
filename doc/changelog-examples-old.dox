@@ -1,0 +1,78 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page changelog-examples-old Examples
+
+@tableofcontents
+@m_footernavigation
+
+@section changelog-examples-2015-05 2015.05
+
+Released 2015-05-09, tagged as
+[v2015.05](https://github.com/mosra/magnum-examples/releases/tag/v2015.05). See
+the [release announcement](http://blog.magnum.graphics/announcements/may-2015-updates/)
+for a high-level overview.
+
+@subsection changelog-examples-2015-05-changes Changes
+
+-   Reworked and simplified the @ref examples-viewer "Viewer example", updated
+    it to work with virtually any file format.
+
+@subsection changelog-examples-2015-05-bugfixes Bug fixes
+
+-   Removed unneeded requirement for @gl_extension{ARB,invalidate_subdata} from
+    the @ref examples-cubemap "Cube Map example" (see
+    [mosra/magnum#63](https://github.com/mosra/magnum/issues/63)).
+
+@subsection changelog-examples-2015-05-buildsystem Build system
+
+-   All examples are now installable in a way similar to Magnum itself.
+-   Displaying all header files, plugin metadata files and resource files in
+    project view to make use of some IDEs less painful (such as QtCreator).
+-   Added ArchLinux, Debian and Gentoo packages (see
+    [mosra/magnum-examples#8](https://github.com/mosra/magnum/issues/8)).
+
+@subsection changelog-examples-2015-05-documentation Documentation
+
+-   Various documentation fixes (see
+    [mosra/magnum-examples#7](https://github.com/mosra/magnum-examples/issues/7)
+
+@section changelog-examples-2014-06 2014.06
+
+Released 2014-06-30, tagged as
+[v2014.06](https://github.com/mosra/magnum-examples/releases/tag/v2014.06). See
+the [release announcement](http://blog.magnum.graphics/announcements/june-2014-updates/)
+for a high-level overview.
+
+@subsection changelog-examples-2014-06-bugfixes Bug fixes
+
+-   Fixed order-dependent linking errors (see
+    [mosra/magnum-examples#6](https://github.com/mosra/magnum-examples/pull/6))
+
+*/
+
+}

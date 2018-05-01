@@ -28,20 +28,21 @@
 */
 
 #include <Corrade/Utility/Resource.h>
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Renderbuffer.h>
-#include <Magnum/RenderbufferFormat.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Shader.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
-#include <Magnum/Version.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/RenderbufferFormat.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Shader.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
+#include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
@@ -55,16 +56,17 @@
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 
-using namespace Magnum;
+namespace Magnum { namespace Examples {
+
 using namespace Magnum::Math::Literals;
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class PhongIdShader: public AbstractShaderProgram {
+class PhongIdShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position;
-        typedef Attribute<1, Vector3> Normal;
+        typedef GL::Attribute<0, Vector3> Position;
+        typedef GL::Attribute<1, Vector3> Normal;
 
         enum: UnsignedInt {
             ColorOutput = 0,
@@ -122,15 +124,15 @@ PhongIdShader::PhongIdShader() {
     Utility::Resource rs("picking-data");
 
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert{Version::GL330, Shader::Type::Vertex},
-        frag{Version::GL330, Shader::Type::Fragment};
+    GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex},
+        frag{GL::Version::GL330, GL::Shader::Type::Fragment};
     #else
-    Shader vert{Version::GLES300, Shader::Type::Vertex},
-        frag{Version::GLES300, Shader::Type::Fragment};
+    GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex},
+        frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
     #endif
     vert.addSource(rs.get("PhongId.vert"));
     frag.addSource(rs.get("PhongId.frag"));
-    CORRADE_INTERNAL_ASSERT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vert, frag}));
     attachShaders({vert, frag});
     CORRADE_INTERNAL_ASSERT(link());
 
@@ -145,7 +147,7 @@ PhongIdShader::PhongIdShader() {
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
+        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -166,7 +168,7 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
         bool _selected;
         PhongIdShader& _shader;
         Color3 _color;
-        Mesh& _mesh;
+        GL::Mesh& _mesh;
 };
 
 class PickingExample: public Platform::Application {
@@ -185,63 +187,63 @@ class PickingExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
 
         PhongIdShader _shader;
-        Buffer _cubeVertices, _cubeIndices,
+        GL::Buffer _cubeVertices, _cubeIndices,
             _sphereVertices, _sphereIndices,
             _planeVertices;
-        Mesh _cube, _plane, _sphere;
+        GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };
         PickableObject* _objects[ObjectCount];
 
-        Framebuffer _framebuffer;
-        Renderbuffer _color, _objectId, _depth;
+        GL::Framebuffer _framebuffer;
+        GL::Renderbuffer _color, _objectId, _depth;
 
         Vector2i _previousMousePosition, _mousePressPosition;
 };
 
 PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")},
-    _cubeVertices{Buffer::TargetHint::Array}, _cubeIndices{Buffer::TargetHint::ElementArray},
-    _sphereVertices{Buffer::TargetHint::Array}, _sphereIndices{Buffer::TargetHint::ElementArray},
-    _planeVertices{Buffer::TargetHint::Array}, _framebuffer{defaultFramebuffer.viewport()}
+    _cubeVertices{GL::Buffer::TargetHint::Array}, _cubeIndices{GL::Buffer::TargetHint::ElementArray},
+    _sphereVertices{GL::Buffer::TargetHint::Array}, _sphereIndices{GL::Buffer::TargetHint::ElementArray},
+    _planeVertices{GL::Buffer::TargetHint::Array}, _framebuffer{GL::defaultFramebuffer.viewport()}
 {
     #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL330);
     #endif
 
     /* Global renderer configuration */
-    Renderer::enable(Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Configure framebuffer (using R8UI for object ID which means 255 objects max) */
-    _color.setStorage(RenderbufferFormat::RGBA8, defaultFramebuffer.viewport().size());
-    _objectId.setStorage(RenderbufferFormat::R8UI, defaultFramebuffer.viewport().size());
-    _depth.setStorage(RenderbufferFormat::DepthComponent24, defaultFramebuffer.viewport().size());
-    _framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, _color)
-               .attachRenderbuffer(Framebuffer::ColorAttachment{1}, _objectId)
-               .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, _depth)
-               .mapForDraw({{PhongIdShader::ColorOutput, Framebuffer::ColorAttachment{0}},
-                            {PhongIdShader::ObjectIdOutput, Framebuffer::ColorAttachment{1}}});
-    CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
+    _color.setStorage(GL::RenderbufferFormat::RGBA8, GL::defaultFramebuffer.viewport().size());
+    _objectId.setStorage(GL::RenderbufferFormat::R8UI, GL::defaultFramebuffer.viewport().size());
+    _depth.setStorage(GL::RenderbufferFormat::DepthComponent24, GL::defaultFramebuffer.viewport().size());
+    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+               .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+               .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, _depth)
+               .mapForDraw({{PhongIdShader::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                            {PhongIdShader::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
+    CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     /* Set up meshes */
     {
         Trade::MeshData3D data = Primitives::cubeSolid();
-        _cubeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
-        _cubeIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), BufferUsage::StaticDraw);
+        _cubeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
+        _cubeIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), GL::BufferUsage::StaticDraw);
         _cube.setCount(data.indices().size())
             .setPrimitive(data.primitive())
             .addVertexBuffer(_cubeVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
-            .setIndexBuffer(_cubeIndices, 0, Mesh::IndexType::UnsignedShort);
+            .setIndexBuffer(_cubeIndices, 0, MeshIndexType::UnsignedShort);
     } {
         Trade::MeshData3D data = Primitives::uvSphereSolid(16, 32);
-        _sphereVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
-        _sphereIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), BufferUsage::StaticDraw);
+        _sphereVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
+        _sphereIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), GL::BufferUsage::StaticDraw);
         _sphere.setCount(data.indices().size())
             .setPrimitive(data.primitive())
             .addVertexBuffer(_sphereVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
-            .setIndexBuffer(_sphereIndices, 0, Mesh::IndexType::UnsignedShort);
+            .setIndexBuffer(_sphereIndices, 0, MeshIndexType::UnsignedShort);
     } {
         Trade::MeshData3D data = Primitives::planeSolid();
-        _planeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), BufferUsage::StaticDraw);
+        _planeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
         _plane.setCount(data.positions(0).size())
             .setPrimitive(data.primitive())
             .addVertexBuffer(_planeVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{});
@@ -273,7 +275,7 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _camera = new SceneGraph::Camera3D{*_cameraObject};
     _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 4.0f/3.0f, 0.001f, 100.0f))
-        .setViewport(defaultFramebuffer.viewport().size());
+        .setViewport(GL::defaultFramebuffer.viewport().size());
 }
 
 void PickingExample::drawEvent() {
@@ -286,13 +288,13 @@ void PickingExample::drawEvent() {
     _camera->draw(_drawables);
 
     /* Bind the main buffer back */
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth)
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
         .bind();
 
     /* Blit color to window framebuffer */
-    _framebuffer.mapForRead(Framebuffer::ColorAttachment{0});
-    AbstractFramebuffer::blit(_framebuffer, defaultFramebuffer,
-        {{}, _framebuffer.viewport().size()}, FramebufferBlit::Color);
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
+    GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
+        {{}, _framebuffer.viewport().size()}, GL::FramebufferBlit::Color);
 
     swapBuffers();
 }
@@ -309,7 +311,7 @@ void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     const Vector2 delta = 3.0f*
         Vector2{event.position() - _previousMousePosition}/
-        Vector2{defaultFramebuffer.viewport().size()};
+        Vector2{GL::defaultFramebuffer.viewport().size()};
 
     (*_cameraObject)
         .rotate(Rad{-delta.y()}, _cameraObject->transformation().right().normalized())
@@ -324,10 +326,10 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
 
     /* Read object ID at given click position (framebuffer has Y up while windowing system Y down) */
-    _framebuffer.mapForRead(Framebuffer::ColorAttachment{1});
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
-        {PixelFormat::RedInteger, PixelType::UnsignedByte});
+        {PixelFormat::R8UI});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
@@ -339,4 +341,6 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     redraw();
 }
 
-MAGNUM_APPLICATION_MAIN(PickingExample)
+}}
+
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::PickingExample)

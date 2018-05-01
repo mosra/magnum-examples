@@ -39,17 +39,15 @@
 #include <Magnum/Audio/PlayableGroup.h>
 #include <Magnum/Audio/Renderer.h>
 #include <Magnum/Audio/Source.h>
-
+#include <Magnum/DebugTools/ResourceManager.h>
+#include <Magnum/DebugTools/ShapeRenderer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shapes/Shape.h>
 #include <Magnum/Shapes/ShapeGroup.h>
 #include <Magnum/Shapes/Sphere.h>
 #include <Magnum/Shapes/Box.h>
-#include <Magnum/DebugTools/ResourceManager.h>
-#include <Magnum/DebugTools/ShapeRenderer.h>
-
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -110,15 +108,16 @@ AudioExample::AudioExample(const Arguments& arguments):
 {
     /* Try 16x MSAA */
     Configuration conf;
-    conf.setTitle("Magnum Audio Example")
-        .setSampleCount(16);
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
+    conf.setTitle("Magnum Audio Example");
+    GLConfiguration glConf;
+    glConf.setSampleCount(16);
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     /* Setup the camera */
     _camera.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
            .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(90.0f), 1.0f, 0.001f, 100.0f))
-           .setViewport(defaultFramebuffer.viewport().size());
+           .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Load importer plugin */
     PluginManager::Manager<Audio::AbstractImporter> audioManager;
@@ -157,7 +156,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     new DebugTools::ShapeRenderer3D(*box, ResourceKey("white"), &_drawables);
 
     /* Enable depth testing for correct overlap of shapes */
-    Renderer::enable(Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Print HRTF status information */
     Debug() << "HRTF status:" << _context.hrtfStatus();
@@ -172,7 +171,7 @@ AudioExample::AudioExample(const Arguments& arguments):
 }
 
 void AudioExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color | FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     _shapes.setClean();
 

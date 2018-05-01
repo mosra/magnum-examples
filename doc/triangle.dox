@@ -31,15 +31,17 @@ namespace Magnum {
 
 @image html triangle.png
 
-The Hello World of 3D graphics, rendering a single colored triangle.
+The Hello World of 3D graphics, rendering a single colored triangle using
+OpenGL.
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 For this example we will use SDL2, which is the most widely used multiplatform
 windowing toolkit. Support for it is in the @ref Platform::Sdl2Application
-class. We also need @ref Mesh for encapsulating our triangle, @ref Buffer to
-store vertex data, @ref Shaders::VertexColor2D shader which will take care of
-rendering and an ability to control the @ref DefaultFramebuffer.
+class. We also need @ref GL::Mesh for encapsulating our triangle,
+@ref GL::Buffer to store vertex data, @ref Shaders::VertexColor2D shader which
+will take care of rendering and an ability to control the
+@ref GL::DefaultFramebuffer.
 
 @dontinclude triangle/TriangleExample.cpp
 @skip #include
@@ -78,20 +80,21 @@ colors, just like you are used to from CSS and various graphics editors.
 
 We then create vertex buffer and fill it with data. The data won't be changed
 or read back into main memory during application lifetime, so we mark them with
-appropriate @ref BufferUsage.
+appropriate @ref GL::BufferUsage.
 
-@skip Buffer
+@skip GL::Buffer
 @until setData
 
-Now we configure the mesh --- we specify @ref MeshPrimitive and vertex count,
-add vertex buffer and specify attribute locations for use with the shader. We
-need to describe physical location of vertex attributes in the buffer --- zero
-offset from the beginning, first the position, then the color; with no gaps in
-between. Position is implicitly three-component float vector, colors are
-implicitly also floats, but because it's not immediately clear whether we want
-to use RGB or RGBA colors, the shader attribute requires to say how many
-components our colors have. Note that it's also possible to override attribute
-type and  many other things --- see the @ref Attribute class for details.
+Now we configure the mesh --- we specify @ref GL::MeshPrimitive and vertex
+count, add vertex buffer and specify attribute locations for use with the
+shader. We need to describe physical location of vertex attributes in the
+buffer --- zero offset from the beginning, first the position, then the color;
+with no gaps in between. Position is implicitly three-component float vector,
+colors are implicitly also floats, but because it's not immediately clear
+whether we want to use RGB or RGBA colors, the shader attribute requires to say
+how many components our colors have. Note that it's also possible to override
+attribute type and  many other things --- see the @ref GL::Attribute class for
+details.
 
 @skip _mesh.
 @until }
@@ -121,10 +124,10 @@ MAGNUM_APPLICATION_MAIN(TriangleExample)
 @endcode
 
 That's all, now we can compile the whole example using CMake. First we require
-the `Magnum` package with `Shaders` and `Sdl2Application` components. It's
-recommended to use also Corrade's set of compiler flags to enable additional
-warnings. Then we create our executable and link to all Magnum libraries we
-requested. See @ref cmake for more information.
+the `Magnum` package with `GL`, `Shaders` and `Sdl2Application` components.
+It's recommended to use also Corrade's set of compiler flags to enable
+additional warnings. Then we create our executable and link to all Magnum
+libraries we requested. See @ref cmake for more information.
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package

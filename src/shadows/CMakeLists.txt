@@ -50,7 +50,13 @@ endif()
 
 project(MagnumShadowsExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     Shaders
@@ -79,6 +85,7 @@ add_executable(magnum-shadows
     ${Shadows_RESOURCES})
 target_link_libraries(magnum-shadows PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives

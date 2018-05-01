@@ -28,15 +28,15 @@
 */
 
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/CubeMapTexture.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Extensions.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Texture.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/CubeMapTexture.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Extensions.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -83,8 +83,8 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     #endif
     ))
 {
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::enable(Renderer::Feature::FaceCulling);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
     /* Set up perspective camera */
     (_cameraObject = new Object3D(&_scene))
@@ -92,7 +92,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(55.0f), 1.0f, 0.001f, 100.0f))
-        .setViewport(defaultFramebuffer.viewport().size());
+        .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
@@ -120,13 +120,13 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 }
 
 void CubeMapExample::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
     _camera->setViewport(size);
 }
 
 void CubeMapExample::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Depth);
-    defaultFramebuffer.invalidate({DefaultFramebuffer::InvalidationAttachment::Color});
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Depth);
+    GL::defaultFramebuffer.invalidate({GL::DefaultFramebuffer::InvalidationAttachment::Color});
 
     _camera->draw(_drawables);
     swapBuffers();
@@ -166,7 +166,7 @@ void CubeMapExample::mouseMoveEvent(MouseMoveEvent& event) {
 
     const Vector2 delta = 3.0f*
         Vector2{event.position() - _previousMousePosition}/
-        Vector2{defaultFramebuffer.viewport().size()};
+        Vector2{GL::defaultFramebuffer.viewport().size()};
 
     (*_cameraObject).rotate(Rad{delta.y()}, _cameraObject->transformation().right().normalized());
 

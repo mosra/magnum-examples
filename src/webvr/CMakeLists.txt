@@ -50,6 +50,11 @@ endif()
 
 project(MagnumWebVrExample)
 
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+endif()
+
 include(CheckSymbolExists)
 check_symbol_exists(EMSCRIPTEN_VR_API_VERSION "emscripten/vr.h" HAS_WEBVR_1_1)
 if(NOT HAS_WEBVR_1_1)
@@ -57,6 +62,7 @@ if(NOT HAS_WEBVR_1_1)
 endif()
 
 find_package(Magnum REQUIRED
+    GL
     MeshTools
     Primitives
     Shaders
@@ -68,6 +74,7 @@ add_executable(magnum-webvr
     WebVrExample.cpp)
 target_link_libraries(magnum-webvr PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives

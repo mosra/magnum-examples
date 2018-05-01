@@ -43,10 +43,11 @@ so we won't use it. Note that it's possible to use any windowing toolkit that
 provides an OpenGL context, GLFW was chosen because it has a very clear and
 simple API. @m_enddiv
 
-We need to have @ref Buffer, @ref Mesh and @ref Shaders::VertexColor included
-to populate, set up and render our triangle and @ref DefaultFramebuffer to
-properly clear the framebuffer before  rendering. The @ref Platform::Context
-class will take care of hooking into provided OpenGL context.
+We need to have @ref GL::Buffer, @ref GL::Mesh and @ref Shaders::VertexColor
+included to populate, set up and render our triangle and
+@ref GL::DefaultFramebuffer to properly clear the framebuffer before rendering.
+The @ref Platform::GLContext class will take care of hooking into provided
+OpenGL context.
 
 Because Magnum has its own stripped-down OpenGL headers, GLFW needs to be
 included last so its GL headers don't take priority over the Magnum ones.
@@ -62,18 +63,18 @@ The @cpp main() @ce function preamble is not much different from the
 @until glfwMakeContextCurrent
 
 Now that we have the OpenGL context created and made current, we can
-instantiate @ref Platform::Context. We'll do it in an isolated scope, so the
+instantiate @ref Platform::GLContext. We'll do it in an isolated scope, so the
 RAII principle will take care of destroying it at a right time. We'll pass the
 `argc` and `argv` parameters to it --- it's completely optional and we could
-use the default @ref Platform::Context::Context() constructor instead, but this
-allows us to control Magnum renderer behavior on particular hardware from
+use the default @ref Platform::GLContext::GLContext() constructor instead, but
+this allows us to control Magnum renderer behavior on particular hardware from
 command-line. All Magnum options are prefixed with `--magnum-` to avoid
 conflicts with other application arguments and even if we wouldn't propagate
 them, it's still possible to set the options from environment. See
-@ref Context-command-line for more information.
+@ref GL-Context-command-line for more information.
 
 @note
-    The @ref Platform::Context is just managing a state tracker for the
+    The @ref Platform::GLContext is just managing a state tracker for the
     enclosing OpenGL context --- if we wouldn't need to access any OpenGL
     functionality, we wouldn't even need its instance. Magnum functionality
     that is not accessing OpenGL doesn't need any shared / global state to work

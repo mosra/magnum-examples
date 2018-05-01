@@ -54,8 +54,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-find_package(Magnum REQUIRED
-    Shaders)
+find_package(Magnum REQUIRED GL Shaders)
 
 if(CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED AndroidApplication)
@@ -72,6 +71,7 @@ else()
 endif()
 target_link_libraries(magnum-triangle PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
     Magnum::Shaders)
 

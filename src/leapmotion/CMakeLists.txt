@@ -5,6 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
+#       2018 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -47,7 +48,7 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(MagnumViewerExample)
+project(MagnumLeapMotionExample)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -55,52 +56,21 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
-    GL
     MeshTools
+    Primitives
     Shaders
-    SceneGraph
-    Trade
     Sdl2Application)
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(MagnumPlugins REQUIRED OpenGexImporter)
-endif()
+find_package(Leap REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(Viewer_RESOURCES resources.conf)
-
-add_executable(magnum-viewer
-    ViewerExample.cpp
-    ${Viewer_RESOURCES})
-target_link_libraries(magnum-viewer PRIVATE
+add_executable(magnum-leapmotion LeapMotionExample.cpp)
+target_link_libraries(magnum-leapmotion PRIVATE
     Magnum::Application
-    Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
-    Magnum::SceneGraph
+    Magnum::Primitives
     Magnum::Shaders
-    Magnum::Trade)
+    Leap::Leap)
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::OpenGexImporter)
-endif()
-
-# Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES viewer.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer RENAME index.html)
-    install(TARGETS magnum-viewer DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
-    install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
-    install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.wasm
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer OPTIONAL)
-
-# Installation for desktop
-else()
-    install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    install(FILES scene.ogex DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
-endif()
+install(TARGETS magnum-leapmotion DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

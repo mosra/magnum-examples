@@ -63,6 +63,7 @@ The following consist of documented source code only:
 -   @subpage examples-bullet @m_span{m-label m-default m-flat} live web demo @m_endspan
     --- @copybrief examples-bullet
 -   @subpage examples-cubemap --- @copybrief examples-cubemap
+-   @subpage examples-leapmotion --- @copybrief examples-leapmotion
 -   @subpage examples-motionblur --- @copybrief examples-motionblur
 -   @subpage examples-ovr --- @copybrief examples-ovr
 -   @subpage examples-picking @m_span{m-label m-default m-flat} live web demo @m_endspan

@@ -5,7 +5,7 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
             Vladimír Vondruš <mosra@centrum.cz>
-        2015, 2016 — Jonathan Hale <squareys@googlemail.com>
+        2015, 2016, 2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -29,28 +29,20 @@
 */
 
 #include <memory>
-#include <Corrade/Containers/Array.h>
-#include <Corrade/Utility/utilities.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/Context.h>
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Magnum.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Renderbuffer.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
-#include <Magnum/Math/Quaternion.h>
-#include <Magnum/Math/Vector2.h>
-#include <Magnum/Math/Vector3.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
@@ -58,11 +50,9 @@
 #include <Magnum/OvrIntegration/Session.h>
 #include <Magnum/OvrIntegration/Enums.h>
 
-#include "Types.h"
-#include "HmdCamera.h"
-#include "CubeDrawable.h"
-
 namespace Magnum { namespace Examples {
+
+using namespace Math::Literals;
 
 class OvrExample: public Platform::Application {
     public:
@@ -75,34 +65,42 @@ class OvrExample: public Platform::Application {
         OvrIntegration::Context _ovrContext;
         std::unique_ptr<OvrIntegration::Session> _session;
 
-        std::unique_ptr<Buffer> _indexBuffer, _vertexBuffer;
-        std::unique_ptr<Mesh> _mesh;
-        std::unique_ptr<Shaders::Phong> _shader;
+        GL::Buffer _indexBuffer{NoCreate}, _vertexBuffer{NoCreate};
+        GL::Mesh _mesh{NoCreate};
+        Shaders::Phong _shader{NoCreate};
 
-        Scene3D _scene;
-        Object3D _cameraObject;
-        Object3D _eyes[2];
-        SceneGraph::DrawableGroup3D _drawables;
-        std::unique_ptr<HmdCamera> _cameras[2];
+        enum: std::size_t { CubeCount = 4 };
+        Matrix4 _cubeTransforms[CubeCount]{
+            Matrix4::rotationY(45.0_degf)*Matrix4::translation({0.0f, 0.0f, -3.0f}),
+            Matrix4::rotationY(45.0_degf)*Matrix4::translation({5.0f, 0.0f, 0.0f}),
+            Matrix4::rotationY(45.0_degf)*Matrix4::translation({-10.0f, 0.0f, 0.0f}),
+            Matrix4::rotationY(45.0_degf)*Matrix4::translation({0.0f, 0.0f, 7.0f})};
+        Color3 _cubeColors[CubeCount]{
+            0xffff00_rgbf, 0xff0000_rgbf, 0x0000ff_rgbf, 0x00ffff_rgbf};
 
-        std::unique_ptr<Object3D> _cubes[4];
-        std::unique_ptr<CubeDrawable> _cubeDrawables[4];
-
-        std::unique_ptr<Framebuffer> _mirrorFramebuffer;
-        Texture2D* _mirrorTexture;
+        GL::Framebuffer _mirrorFramebuffer{NoCreate};
+        GL::Texture2D* _mirrorTexture;
 
         OvrIntegration::LayerEyeFov* _layer;
-        OvrIntegration::PerformanceHudMode _curPerfHudMode;
-        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode;
+        OvrIntegration::PerformanceHudMode _curPerfHudMode{
+            OvrIntegration::PerformanceHudMode::Off};
+        OvrIntegration::DebugHudStereoMode _curDebugHudStereoMode{
+            OvrIntegration::DebugHudStereoMode::Off};
 
-        bool _enableMirroring;
+        /* Whether to show contents in the window or just on the VR HMD */
+        bool _enableMirroring{true};
+
+        /* Per eye view members */
+        GL::Texture2D _depth[2]{GL::Texture2D{NoCreate},
+                                GL::Texture2D{NoCreate}};
+        std::unique_ptr<OvrIntegration::TextureSwapChain> _textureSwapChain[2];
+        GL::Framebuffer _framebuffer[2]{GL::Framebuffer{NoCreate},
+                                        GL::Framebuffer{NoCreate}};
+        Matrix4 _projectionMatrix[2];
+        Deg _cameraRotation = 0.0_degf;
 };
 
-OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(arguments, nullptr),
-    _cameraObject(&_scene), _curPerfHudMode(OvrIntegration::PerformanceHudMode::Off),
-    _curDebugHudStereoMode(OvrIntegration::DebugHudStereoMode::Off),
-    _enableMirroring(true)
-{
+OvrExample::OvrExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
     /* Connect to an active Oculus session */
     _session = _ovrContext.createSession();
 
@@ -113,7 +111,7 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     }
 
     /* Get the HMD display resolution */
-    const Vector2i resolution = _session->resolution() / 2;
+    const Vector2i resolution = _session->resolution()/2;
 
     /* Create a context with the HMD display resolution */
     Configuration conf;
@@ -129,81 +127,68 @@ OvrExample::OvrExample(const Arguments& arguments) : Platform::Application(argum
     if(!setSwapInterval(0))
         Error() << "Could not turn off VSync.";
 
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::enable(Renderer::Feature::FramebufferSRGB);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSRGB);
 
     _session->configureRendering();
 
     /* Setup mirroring of oculus sdk compositor results to a texture which can
        later be blitted onto the default framebuffer */
     _mirrorTexture = &_session->createMirrorTexture(resolution);
-    _mirrorFramebuffer.reset(new Framebuffer(Range2Di::fromSize({}, resolution)));
-    _mirrorFramebuffer->attachTexture(Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
-                      .mapForRead(Framebuffer::ColorAttachment(0));
+    _mirrorFramebuffer = GL::Framebuffer(Range2Di::fromSize({}, resolution));
+    _mirrorFramebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), *_mirrorTexture, 0)
+                      .mapForRead(GL::Framebuffer::ColorAttachment(0));
 
     /* Setup cube mesh */
-    const Trade::MeshData3D cube = Primitives::Cube::solid();
-
-    _vertexBuffer.reset(new Buffer());
-    _vertexBuffer->setData(
-                MeshTools::interleave(cube.positions(0), cube.normals(0)),
-                BufferUsage::StaticDraw);
+    const Trade::MeshData3D cube = Primitives::cubeSolid();
+    _vertexBuffer = GL::Buffer();
+    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)),
+                          GL::BufferUsage::StaticDraw);
 
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
     std::tie(indexData, indexType, indexStart, indexEnd) =
             MeshTools::compressIndices(cube.indices());
 
-    _indexBuffer.reset(new Buffer());
-    _indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+    _indexBuffer = GL::Buffer{};
+    _indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
-    _mesh.reset(new Mesh());
-    _mesh->setPrimitive(cube.primitive()).setCount(cube.indices().size()).addVertexBuffer(
-                *_vertexBuffer, 0, Shaders::Phong::Position {},
-                Shaders::Phong::Normal {}).setIndexBuffer(*_indexBuffer, 0, indexType,
-                                                          indexStart, indexEnd);
+    _mesh = GL::Mesh{cube.primitive()};
+    _mesh.setCount(cube.indices().size())
+         .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
+         .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
 
     /* Setup shader */
-    _shader.reset(new Shaders::Phong());
-
-    /* Setup scene */
-    _cubes[0] = std::unique_ptr<Object3D>(new Object3D(&_scene));
-    _cubes[0]->rotateY(Deg(45.0f));
-    _cubes[0]->translate({0.0f, 0.0f, -3.0f});
-    _cubeDrawables[0] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {1.0f, 1.0f, 0.0f}, _cubes[0].get(), &_drawables));
-
-    _cubes[1] = std::unique_ptr<Object3D>(new Object3D(&_scene));
-    _cubes[1]->rotateY(Deg(45.0f));
-    _cubes[1]->translate({5.0f, 0.0f, 0.0f});
-    _cubeDrawables[1] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {1.0f, 0.0f, 0.0f}, _cubes[1].get(), &_drawables));
-
-    _cubes[2] = std::unique_ptr<Object3D>(new Object3D(&_scene));
-    _cubes[2]->rotateY(Deg(45.0f));
-    _cubes[2]->translate({-10.0f, 0.0f, 0.0f});
-    _cubeDrawables[2] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {0.0f, 0.0f, 1.0f}, _cubes[2].get(), &_drawables));
-
-    _cubes[3] = std::unique_ptr<Object3D>(new Object3D(&_scene));
-    _cubes[3]->rotateY(Deg(45.0f));
-    _cubes[3]->translate({0.0f, 0.0f, 7.0f});
-    _cubeDrawables[3] = std::unique_ptr<CubeDrawable>(new CubeDrawable(*_mesh, *_shader, {0.0f, 1.0f, 1.0f}, _cubes[3].get(), &_drawables));
+    _shader = Shaders::Phong();
+    _shader.setShininess(20)
+           .setLightPosition({3.0f, 3.0f, 3.0f});
 
     /* Setup compositor layers */
     _layer = &_ovrContext.compositor().addLayerEyeFov();
-    _layer->setFov(*_session.get());
-    _layer->setHighQuality(true);
+    _layer->setFov(*_session.get())
+           .setHighQuality(true);
 
-    /* Setup cameras */
-    _eyes[0].setParent(&_cameraObject);
-    _eyes[1].setParent(&_cameraObject);
+    /* Setup per-eye views */
+    for(Int eye: {0, 1}) {
+        _projectionMatrix[eye] = _session->projectionMatrix(eye, 0.001f, 100.0f);
 
-    for(int eye = 0; eye < 2; ++eye) {
-        /* Projection matrix is set in the camera, since it requires some
-           HMD-specific FoV etc */
-        _cameras[eye].reset(new HmdCamera(*_session, eye, _eyes[eye]));
+        const Vector2i textureSize = _session->fovTextureSize(eye);
+        _textureSwapChain[eye] =_session->createTextureSwapChain(textureSize);
 
-        _layer->setColorTexture(eye, _cameras[eye]->textureSwapChain());
-        _layer->setViewport(eye, {{}, _cameras[eye]->viewport()});
+        /* Create the framebuffer which will be used to render to the current
+        texture of the texture set later. */
+        _framebuffer[eye] = GL::Framebuffer{{{}, textureSize}};
+        _framebuffer[eye].mapForDraw(GL::Framebuffer::ColorAttachment(0));
+
+        /* Setup depth attachment */
+        _depth[eye] = GL::Texture2D{};
+        _depth[eye].setMinificationFilter(GL::SamplerFilter::Linear)
+                   .setWrapping(GL::SamplerWrapping::ClampToEdge)
+                   .setStorage(1, GL::TextureFormat::DepthComponent32F, textureSize);
+
+        _layer->setColorTexture(eye, *_textureSwapChain[eye])
+               .setViewport(eye, {{}, textureSize});
     }
 }
 
@@ -211,12 +196,37 @@ void OvrExample::drawEvent() {
     /* Get orientation and position of the hmd. */
     const std::array<DualQuaternion, 2> poses = _session->pollEyePoses().eyePoses();
 
-    /* Draw the scene for both cameras */
-    for(int eye: {0, 1}) {
-        /* set the transformation according to rift trackers */
-        _eyes[eye].setTransformation(poses[eye].toMatrix());
-        /* render each eye. */
-        _cameras[eye]->draw(_drawables);
+    /* Draw the scene for both eyes */
+    for(Int eye: {0, 1}) {
+        /* Switch to eye render target and bind render textures */
+        _framebuffer[eye]
+            .attachTexture(GL::Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
+            .attachTexture(GL::Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
+            /* Clear with the standard grey so that at least that will be visible in
+            case the scene is not correctly set up */
+            .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
+            .bind();
+
+        /* Render scene */
+        const Matrix4 viewProjMatrix = _projectionMatrix[eye]*poses[eye].inverted().toMatrix()*Matrix4::rotationY(_cameraRotation);
+        for(Int cubeIndex = 0; cubeIndex < CubeCount; ++cubeIndex) {
+            _shader.setDiffuseColor(_cubeColors[cubeIndex])
+                .setTransformationMatrix(_cubeTransforms[cubeIndex])
+                .setNormalMatrix(_cubeTransforms[cubeIndex].rotationScaling())
+                .setProjectionMatrix(viewProjMatrix);
+            _mesh.draw(_shader);
+        }
+
+        /* Commit changes and use next texture in chain */
+        _textureSwapChain[eye]->commit();
+
+        /* Reasoning for the next two lines, taken from the Oculus SDK examples
+           code: Without this, [during the next frame, this method] would bind a
+           framebuffer with an invalid COLOR_ATTACHMENT0 because the texture ID
+           associated with COLOR_ATTACHMENT0 had been unlocked by calling
+           wglDXUnlockObjectsNV(). */
+        _framebuffer[eye].detach(GL::Framebuffer::ColorAttachment(0))
+                         .detach(GL::Framebuffer::BufferAttachment::Depth);
     }
 
     /* Set the layers eye poses to the poses chached in the _hmd. */
@@ -228,20 +238,17 @@ void OvrExample::drawEvent() {
     if(_enableMirroring) {
         /* Blit mirror texture to default framebuffer */
         const Vector2i size = _mirrorTexture->imageSize(0);
-        Framebuffer::blit(*_mirrorFramebuffer,
-                          defaultFramebuffer,
-                          {{0, size.y()}, {size.x(), 0}},
-                          {{}, size},
-                          FramebufferBlit::Color, FramebufferBlitFilter::Nearest);
+        GL::Framebuffer::blit(_mirrorFramebuffer,
+            GL::defaultFramebuffer,
+            {{0, size.y()}, {size.x(), 0}},
+            {{}, size},
+            GL::FramebufferBlit::Color, GL::FramebufferBlitFilter::Nearest);
 
         swapBuffers();
     }
 
-    if(_session->isDebugHmd()) {
-        /* Provide some rotation, but only without real devices to avoid VR
-           sickness ;) */
-        _cameraObject.rotateY(Deg(0.1f));
-    }
+    /* Provide some rotation, but only without real devices to avoid VR sickness ;) */
+    if(_session->isDebugHmd()) _cameraRotation += 0.1_degf;
 
     redraw();
 }

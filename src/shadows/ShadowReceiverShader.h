@@ -30,13 +30,13 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/Shaders/Generic.h>
 
 namespace Magnum { namespace Examples {
 
 /** @brief Shader that can synthesize shadows on an object */
-class ShadowReceiverShader: public AbstractShaderProgram {
+class ShadowReceiverShader: public GL::AbstractShaderProgram {
     public:
         typedef Shaders::Generic3D::Position Position;
         typedef Shaders::Generic3D::Normal Normal;
@@ -70,7 +70,7 @@ class ShadowReceiverShader: public AbstractShaderProgram {
         ShadowReceiverShader& setLightDirection(const Vector3& vector3);
 
         /** @brief Set shadow map texture array */
-        ShadowReceiverShader& setShadowmapTexture(Texture2DArray& texture);
+        ShadowReceiverShader& setShadowmapTexture(GL::Texture2DArray& texture);
 
         /**
          * @brief Set thadow bias uniform

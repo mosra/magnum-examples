@@ -45,11 +45,11 @@ class Reflector: public Object3D, SceneGraph::Drawable3D {
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
     private:
-        Resource<Buffer> _buffer;
-        Resource<Mesh> _sphere;
-        Resource<AbstractShaderProgram, ReflectorShader> _shader;
-        Resource<CubeMapTexture> _texture;
-        Resource<Texture2D> _tarnishTexture;
+        Resource<GL::Buffer> _buffer;
+        Resource<GL::Mesh> _sphere;
+        Resource<GL::AbstractShaderProgram, ReflectorShader> _shader;
+        Resource<GL::CubeMapTexture> _texture;
+        Resource<GL::Texture2D> _tarnishTexture;
 };
 
 }}

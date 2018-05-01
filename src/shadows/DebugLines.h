@@ -30,8 +30,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Buffer.h>
-#include <Magnum/Mesh.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/SceneGraph.h>
 #include <Magnum/Shaders/VertexColor.h>
 
@@ -64,8 +64,8 @@ class DebugLines {
 
     protected:
         std::vector<Point> _lines;
-        Buffer _buffer;
-        Mesh _mesh;
+        GL::Buffer _buffer;
+        GL::Mesh _mesh;
         Shaders::VertexColor3D _shader;
 };
 

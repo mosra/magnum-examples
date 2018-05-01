@@ -30,11 +30,11 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/AbstractShaderProgram.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
 
-class ShadowCasterShader: public AbstractShaderProgram {
+class ShadowCasterShader: public GL::AbstractShaderProgram {
     public:
         explicit ShadowCasterShader();
 

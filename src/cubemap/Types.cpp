@@ -29,15 +29,15 @@
 
 #include "Types.h"
 
-#include <Magnum/AbstractShaderProgram.h>
-#include <Magnum/Buffer.h>
-#include <Magnum/CubeMapTexture.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/Texture.h>
+#include <Magnum/GL/AbstractShaderProgram.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/CubeMapTexture.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Texture.h>
 #include <Magnum/Trade/AbstractImporter.h>
 
 namespace Magnum {
 
-template class ResourceManager<Buffer, Mesh, Trade::AbstractImporter, Texture2D, CubeMapTexture, AbstractShaderProgram>;
+template class ResourceManager<GL::Buffer, GL::Mesh, Trade::AbstractImporter, GL::Texture2D, GL::CubeMapTexture, GL::AbstractShaderProgram>;
 
 }
