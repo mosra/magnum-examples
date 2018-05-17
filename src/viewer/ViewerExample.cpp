@@ -119,6 +119,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 {
     Utility::Arguments args;
     args.addArgument("file").setHelp("file", "file to load")
+        .addOption("importer", "AnySceneImporter").setHelp("importer", "importer plugin to use")
         .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
                  "COLLADA one) provided on command-line.")
         .parse(arguments.argc, arguments.argv);
@@ -153,7 +154,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate(args.value("importer"));
     if(!importer) std::exit(1);
 
     Debug{} << "Opening file" << args.value("file");
