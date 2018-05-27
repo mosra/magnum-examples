@@ -128,9 +128,10 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")}
 {
     Utility::Arguments args;
-            args.addArgument("file").setHelp("file", "file to load")
-                .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
-                        "COLLADA one) provided on command-line.");
+  
+    args.addArgument("file").setHelp("file", "file to load")
+        .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
+            "COLLADA one) provided on command-line.");
 
     // If we don't have any file argument, then we need to look for a default asset.
     // This is a bit of an ugly hack, don't blame me, Mosra just needs to implement
@@ -187,7 +188,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
+    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate(args.value("importer"));
     if(!importer) std::exit(1);
 
     Debug{} << "Opening file" << _assetPath;
