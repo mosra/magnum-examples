@@ -6,3 +6,4 @@ pkg
 *~
 *.pkg.tar.xz
 CMakeLists.txt.user*
+.vscode

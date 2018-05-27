@@ -53,6 +53,14 @@
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>
 
+#include <iostream>
+#include <fstream>
+
+inline bool file_exists(const std::string& name) {
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
 namespace Magnum { namespace Examples {
 
 typedef ResourceManager<GL::Buffer, GL::Mesh, GL::Texture2D, Shaders::Phong, Trade::PhongMaterialData> ViewerResourceManager;
@@ -82,6 +90,8 @@ class ViewerExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
         Vector3 _previousPosition;
+
+        std::string _assetPath;
 };
 
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
@@ -118,10 +128,34 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Viewer Example")}
 {
     Utility::Arguments args;
-    args.addArgument("file").setHelp("file", "file to load")
-        .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
-                 "COLLADA one) provided on command-line.")
-        .parse(arguments.argc, arguments.argv);
+            args.addArgument("file").setHelp("file", "file to load")
+                .setHelp("Loads and displays 3D scene file (such as OpenGEX or "
+                        "COLLADA one) provided on command-line.");
+
+    // If we don't have any file argument, then we need to look for a default asset.
+    // This is a bit of an ugly hack, don't blame me, Mosra just needs to implement
+    // optional arguments .. ;-)
+
+    if (arguments.argc < 2) {
+        if (file_exists(std::string("/usr/share/magnum/examples/viewer/scene.ogex"))) {
+            _assetPath = std::string("/usr/share/magnum/examples/viewer/scene.ogex");
+        } else if (file_exists("scene.ogex")) {
+            _assetPath = std::string("scene.ogex");
+        } else {
+            args.parse(arguments.argc, arguments.argv);
+        }
+    } else {
+        args.parse(arguments.argc, arguments.argv);
+
+        if (file_exists(args.value("file"))) {
+            _assetPath = args.value("file");
+        } else {
+            std::cerr << "Unable to load provided scene file. Please provide the path to a scene file to view." << std::endl;
+            std::exit(1);
+        }
+    }
+
+    std::cout << "Loading asset " << _assetPath << std::endl;
 
     /* Phong shader instances */
     _resourceManager
@@ -156,10 +190,10 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnySceneImporter");
     if(!importer) std::exit(1);
 
-    Debug{} << "Opening file" << args.value("file");
+    Debug{} << "Opening file" << _assetPath;
 
     /* Load file */
-    if(!importer->openFile(args.value("file")))
+    if(!importer->openFile(_assetPath))
         std::exit(4);
 
     /* Load all materials */
