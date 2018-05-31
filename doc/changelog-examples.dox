@@ -30,6 +30,13 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@section changelog-examples-latest Changes since 2018.04
+
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   There's now a PPA for Ubuntu packages. See @ref building-examples-packages-deb
+    for more information.
+
 @section changelog-examples-2018-04 2018.04
 
 Released 2018-05-01, tagged as
