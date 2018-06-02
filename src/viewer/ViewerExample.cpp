@@ -306,7 +306,10 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Object3D* paren
     }
 
     /* Create parent object for children, if it doesn't already exist */
-    if(!object && !objectData->children().empty()) object = new Object3D(parent);
+    if(!object && !objectData->children().empty()) {
+        object = new Object3D(parent);
+        object->setTransformation(objectData->transformation());
+    }
 
     /* Recursively add children */
     for(std::size_t id: objectData->children())
