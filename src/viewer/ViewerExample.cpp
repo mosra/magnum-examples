@@ -93,7 +93,7 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
 
         Resource<GL::Mesh> _mesh;
         Resource<Shaders::Phong> _shader;
-        Vector3 _ambientColor,
+        Color4 _ambientColor,
             _diffuseColor,
             _specularColor;
         Float _shininess;
@@ -109,7 +109,7 @@ class TexturedObject: public Object3D, SceneGraph::Drawable3D {
         Resource<GL::Mesh> _mesh;
         Resource<GL::Texture2D> _diffuseTexture;
         Resource<Shaders::Phong> _shader;
-        Vector3 _ambientColor,
+        Color4 _ambientColor,
             _specularColor;
         Float _shininess;
 };
