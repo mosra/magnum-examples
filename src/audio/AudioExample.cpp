@@ -29,38 +29,34 @@
 */
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/PluginManager/PluginManager.h>
-
 #include <Magnum/Audio/AbstractImporter.h>
 #include <Magnum/Audio/Buffer.h>
 #include <Magnum/Audio/Context.h>
 #include <Magnum/Audio/Listener.h>
 #include <Magnum/Audio/Playable.h>
 #include <Magnum/Audio/PlayableGroup.h>
-#include <Magnum/Audio/Renderer.h>
 #include <Magnum/Audio/Source.h>
-#include <Magnum/DebugTools/ResourceManager.h>
-#include <Magnum/DebugTools/ShapeRenderer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shapes/Shape.h>
-#include <Magnum/Shapes/ShapeGroup.h>
-#include <Magnum/Shapes/Sphere.h>
-#include <Magnum/Shapes/Box.h>
+#include <Magnum/Primitives/Cone.h>
+#include <Magnum/Primitives/Cylinder.h>
+#include <Magnum/Shaders/Flat.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/DualQuaternionTransformation.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
 
-using namespace Magnum::SceneGraph;
-using namespace Magnum::Math::Literals;
+using namespace Math::Literals;
 
-typedef Scene<DualQuaternionTransformation> Scene3D;
-typedef Object<DualQuaternionTransformation> Object3D;
+typedef SceneGraph::Scene<SceneGraph::DualQuaternionTransformation> Scene3D;
+typedef SceneGraph::Object<SceneGraph::DualQuaternionTransformation> Object3D;
 
 class AudioExample: public Platform::Application {
     public:
@@ -68,30 +64,22 @@ class AudioExample: public Platform::Application {
 
     private:
         void drawEvent() override;
+        void keyPressEvent(KeyEvent& event) override;
 
-        void keyPressEvent(KeyEvent& event);
+        Shaders::Flat3D _shader{NoCreate};
 
-        DebugTools::ResourceManager _manager;
-
-        /* Audio related members */
+        /* Audio context and buffer */
         Audio::Context _context;
-        Audio::Buffer _testBuffer;
-        Audio::Source _source;
-        Corrade::Containers::Array<char> _bufferData;
+        Containers::Array<char> _bufferData;
+        Audio::Buffer _buffer;
 
-        /* Scene objects */
+        /* Scene */
         Scene3D _scene;
-        Object3D _sourceRig;
-        Object3D _sourceObject;
-        Object3D _cameraObject;
+        Object3D _sourceRig, _sourceObject, _cameraObject;
         SceneGraph::Camera3D _camera;
         SceneGraph::DrawableGroup3D _drawables;
-
-        Audio::PlayableGroup3D _playables;
-        Audio::Playable3D _playable;
         Audio::Listener3D _listener;
-
-        Shapes::ShapeGroup3D _shapes;
+        Audio::PlayableGroup3D _playables;
 };
 
 AudioExample::AudioExample(const Arguments& arguments):
@@ -103,65 +91,84 @@ AudioExample::AudioExample(const Arguments& arguments):
     _sourceObject(&_sourceRig),
     _cameraObject(&_scene),
     _camera(_cameraObject),
-    _playable(_sourceObject, &_playables),
-    _listener(_scene)
+    _listener{_scene}
 {
-    /* Try 16x MSAA */
+    /* Try 8x MSAA, fall back to zero samples if not possible */
     Configuration conf;
     conf.setTitle("Magnum Audio Example");
     GLConfiguration glConf;
-    glConf.setSampleCount(16);
+    glConf.setSampleCount(8);
     if(!tryCreate(conf, glConf))
         create(conf, glConf.setSampleCount(0));
 
-    /* Setup the camera */
-    _camera.setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-           .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(90.0f), 1.0f, 0.001f, 100.0f))
-           .setViewport(GL::defaultFramebuffer.viewport().size());
-
-    /* Load importer plugin */
-    PluginManager::Manager<Audio::AbstractImporter> audioManager;
-    std::unique_ptr<Audio::AbstractImporter> importer = audioManager.loadAndInstantiate("StbVorbisAudioImporter");
-    if(!importer)
-        std::exit(1);
-
     /* Load audio file from compiled resources */
-    const Utility::Resource rs{"audio-data"};
-    if(!importer->openData(rs.getRaw("chimes.ogg")))
-        std::exit(2);
+    {
+        /* Load importer plugin */
+        PluginManager::Manager<Audio::AbstractImporter> manager;
+        std::unique_ptr<Audio::AbstractImporter> importer = manager.loadAndInstantiate("StbVorbisAudioImporter");
+        if(!importer)
+            std::exit(1);
 
-    _bufferData = importer->data(); /* Get the data from importer */
-    /* Add the sample data to the buffer */
-    _testBuffer.setData(importer->format(), _bufferData, importer->frequency());
+        const Utility::Resource rs{"audio-data"};
+        if(!importer->openData(rs.getRaw("chimes.ogg")))
+            std::exit(2);
 
-    /* Make our sound source play the buffer again and again... */
-    _playable.source().setBuffer(&_testBuffer);
-    _playable.source().setLooping(true);
-    _playable.source().play();
+        /* Get the data from importer and add them to the buffer. Be sure to
+           keep a copy to avoid dangling reference. */
+        _bufferData = importer->data();
+        _buffer.setData(importer->format(), _bufferData, importer->frequency());
+    }
 
-    /* Initial offset of the sound source */
-    _sourceObject.translate({0.0f, 0.0f, -5.0f});
-
-    /* Camera placement */
-    _cameraObject.rotateX(-45.0_degf).rotateY(45.0_degf);
-    _cameraObject.translate({8.0f, 10.0f, 8.0f});
-
-    /* Setup simple shape rendering for listener and source */
-    _manager.set("pink", DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 1.0f}));
-    Shapes::Shape<Shapes::Sphere3D>* sphere = new Shapes::Shape<Shapes::Sphere3D>(_sourceObject, {{}, 0.5f}, &_shapes);
-    new DebugTools::ShapeRenderer3D(*sphere, ResourceKey("pink"), &_drawables);
-
-    _manager.set("white", DebugTools::ShapeRendererOptions().setColor({1.0f, 1.0f, 1.0f}));
-    Shapes::Shape<Shapes::Box3D>* box = new Shapes::Shape<Shapes::Box3D>(_scene, {Matrix4{}}, &_shapes);
-    new DebugTools::ShapeRenderer3D(*box, ResourceKey("white"), &_drawables);
-
-    /* Enable depth testing for correct overlap of shapes */
+    /* Set up rendering and a simple debug drawable. Takes ownership of passed
+       mesh and draws it with given color. */
+    _shader = Shaders::Flat3D{};
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    class WireframeDrawable: public SceneGraph::Drawable3D {
+        public:
+            explicit WireframeDrawable(Object3D& object, const Color4& color, Shaders::Flat3D& shader, GL::Mesh&& mesh, SceneGraph::DrawableGroup3D* drawables): SceneGraph::Drawable3D{object, drawables}, _color{color}, _shader(shader), _mesh{std::move(mesh)} {}
+
+        private:
+            void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
+                _shader.setColor(_color)
+                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
+                _mesh.draw(_shader);
+            }
+
+            Color4 _color;
+            Shaders::Flat3D& _shader;
+            GL::Mesh _mesh;
+    };
+
+    /* Set up the camera */
+    _cameraObject
+        .translate(Vector3::zAxis(6.5f))
+        .rotateX(-45.0_degf);
+    _camera
+        .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(90.0_degf, 1.0f, 0.001f, 100.0f))
+        .setViewport(GL::defaultFramebuffer.viewport().size());
+
+    /* Audio playable. Make it directional and start playing on repeat.
+       Visualize as a pink cone and direct it on the listener. */
+    (new Audio::Playable3D{_sourceObject, -Vector3::yAxis(), &_playables})->source()
+        .setInnerConeAngle(60.0_degf)
+        .setOuterConeAngle(90.0_degf)
+        .setBuffer(&_buffer)
+        .setLooping(true)
+        .play();
+    new WireframeDrawable{_sourceObject, 0xff00ff_rgbf, _shader,
+        MeshTools::compile(Primitives::coneWireframe(32, 0.5f)), &_drawables};
+    _sourceObject.translate(Vector3::yAxis(5.0f));
+    _sourceRig.rotateX(-60.0_degf).rotateY(-45.0_degf);
+
+    /* Listener is at the center of the scene. Draw it as a cylinder. */
+    new WireframeDrawable{_scene, 0xffffff_rgbf, _shader,
+        MeshTools::compile(Primitives::cylinderWireframe(1, 32, 1.0f)), &_drawables};
 
     /* Print HRTF status information */
-    Debug() << "HRTF status:" << _context.hrtfStatus();
-    Debug() << "HRTF enabled:" << _context.isHrtfEnabled();
-    Debug() << "HRTF specifier:" << _context.hrtfSpecifierString();
+    Debug{} << "HRTF status:" << _context.hrtfStatus();
+    Debug{} << "HRTF enabled:" << _context.isHrtfEnabled();
+    Debug{} << "HRTF specifier:" << _context.hrtfSpecifierString();
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
@@ -171,11 +178,8 @@ AudioExample::AudioExample(const Arguments& arguments):
 void AudioExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-    _shapes.setClean();
-
-    /* Update listener and sound source positions */
+    /* Update listener and sound source positions and draw them */
     _listener.update({_playables});
-
     _camera.draw(_drawables);
 
     swapBuffers();
@@ -183,26 +187,21 @@ void AudioExample::drawEvent() {
 }
 
 void AudioExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Down) {
-        _sourceRig.rotateXLocal(Deg(-5.0f));
-        _sourceRig.normalizeRotation();
-    } else if(event.key() == KeyEvent::Key::Up) {
-        _sourceRig.rotateXLocal(Deg(5.0f));
-        _sourceRig.normalizeRotation();
-    } else if(event.key() == KeyEvent::Key::Left) {
-        _sourceRig.rotateY(Deg(5.0f));
-        _sourceRig.normalizeRotation();
-    } else if(event.key() == KeyEvent::Key::Right) {
-        _sourceRig.rotateY(Deg(-5.0f));
-        _sourceRig.normalizeRotation();
-    } else if(event.key() == KeyEvent::Key::PageUp)
-        _sourceObject.translate({0.0f, 0.0f, -.25f});
+    if(event.key() == KeyEvent::Key::Down)
+        _sourceRig.rotateXLocal(-5.0_degf);
+    else if(event.key() == KeyEvent::Key::Up)
+        _sourceRig.rotateXLocal(5.0_degf);
+    else if(event.key() == KeyEvent::Key::Left)
+        _sourceRig.rotateY(5.0_degf);
+    else if(event.key() == KeyEvent::Key::Right)
+        _sourceRig.rotateY(-5.0_degf);
+    else if(event.key() == KeyEvent::Key::PageUp)
+        _sourceObject.translate(Vector3::zAxis(-0.25f));
     else if(event.key() == KeyEvent::Key::PageDown && _sourceObject.transformation().translation().z() < 0.0f)
-        _sourceObject.translate({0.0f, 0.0f, .25f});
-    else if(event.key() == KeyEvent::Key::Esc)
-        this->exit();
+        _sourceObject.translate(Vector3::zAxis(0.25f));
+    else return;
 
-    event.setAccepted();
+    _sourceRig.normalizeRotation();
 }
 
 }}

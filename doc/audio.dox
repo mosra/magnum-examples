@@ -47,7 +47,6 @@ keyboard.
     --- rotate source on the local X axis
 -   @m_class{m-label m-default} **Page Up** / @m_class{m-label m-default} **Page Down**
     --- move the source away/towards the listener
--   @m_class{m-label m-default} **Escape** --- close the application
 
 @section examples-audio-credits Credits
 
