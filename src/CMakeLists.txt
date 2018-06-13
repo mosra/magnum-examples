@@ -62,6 +62,10 @@ if(WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()
 
+if(WITH_MULTIWINDOW_EXAMPLE)
+    add_subdirectory(multiwindow)
+endif()
+
 if(WITH_OVR_EXAMPLE)
     add_subdirectory(ovr)
 endif()

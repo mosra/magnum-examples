@@ -64,6 +64,7 @@ option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires BulletInt
 cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires JpegImporter plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 option(WITH_LEAPMOTION_EXAMPLE "Build LeapMotion example" OFF)
 cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build MotionBlur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+option(WITH_MULTIWINDOW_EXAMPLE "Build MultiWindow example" OFF)
 option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
 option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
 option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
