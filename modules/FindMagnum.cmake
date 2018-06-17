@@ -59,6 +59,7 @@
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
 #  Trade                        - Trade library
+#  Vk                           - Vk library
 #  GlfwApplication              - GLFW application
 #  GlutApplication              - GLUT application
 #  GlxApplication               - GLX application
@@ -128,6 +129,7 @@
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #  MAGNUM_TARGET_HEADLESS       - Defined if compiled for headless machines
+#  MAGNUM_TARGET_VK             - Defined if compiled with Vulkan interop
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -255,7 +257,8 @@ set(_magnumFlags
     TARGET_GLES3
     TARGET_DESKTOP_GLES
     TARGET_WEBGL
-    TARGET_HEADLESS)
+    TARGET_HEADLESS
+    TARGET_VK)
 foreach(_magnumFlag ${_magnumFlags})
     string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
     if(NOT _magnum_${_magnumFlag} EQUAL -1)
@@ -332,7 +335,7 @@ endif()
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENT_LIST
     Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Shapes Text
-    TextureTools Trade
+    TextureTools Trade Vk
     AndroidApplication GlfwApplication GlutApplication GlxApplication
     Sdl2Application XEglApplication WindowlessCglApplication
     WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication WindowlessWindowsEglApplication
@@ -590,6 +593,27 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES GLFW::GLFW)
 
+                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
+                # our own EGL find module, which makes things simpler. The
+                # upstream FindOpenGL is anything but simple. Also can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. WTF.
+                if(MAGNUM_TARGET_GL)
+                    if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
+                        set(OpenGL_GL_PREFERENCE GLVND)
+                        find_package(OpenGL)
+                        if(OPENGL_opengl_LIBRARY)
+                            set_property(TARGET Magnum::${_component} APPEND
+                            PROPERTY INTERFACE_LINK_LIBRARIES OpenGL::GLX)
+                        endif()
+                    elseif(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
+                        find_package(EGL)
+                        set_property(TARGET Magnum::${_component} APPEND
+                            PROPERTY INTERFACE_LINK_LIBRARIES EGL::EGL)
+                    endif()
+                endif()
+
             # GLUT application dependencies
             elseif(_component STREQUAL GlutApplication)
                 find_package(GLUT)
@@ -598,11 +622,44 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${GLUT_glut_LIBRARY})
 
+                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # GLX because libOpenGL doesn't provide it. Also can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. WTF. I don't think GLUT works with EGL, so not
+                # handling that.
+                set(OpenGL_GL_PREFERENCE GLVND)
+                find_package(OpenGL)
+                if(OPENGL_opengl_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES OpenGL::GLX)
+                endif()
+
             # SDL2 application dependencies
             elseif(_component STREQUAL Sdl2Application)
                 find_package(SDL2)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES SDL2::SDL2)
+
+                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
+                # our own EGL find module, which makes things simpler. The
+                # upstream FindOpenGL is anything but simple. Also can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. WTF.
+                if(MAGNUM_TARGET_GL)
+                    if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
+                        set(OpenGL_GL_PREFERENCE GLVND)
+                        find_package(OpenGL)
+                        if(OPENGL_opengl_LIBRARY)
+                            set_property(TARGET Magnum::${_component} APPEND
+                            PROPERTY INTERFACE_LINK_LIBRARIES OpenGL::GLX)
+                        endif()
+                    elseif(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
+                        find_package(EGL)
+                        set_property(TARGET Magnum::${_component} APPEND
+                            PROPERTY INTERFACE_LINK_LIBRARIES EGL::EGL)
+                    endif()
+                endif()
 
             # (Windowless) GLX application dependencies
             elseif(_component STREQUAL GlxApplication OR _component STREQUAL WindowlessGlxApplication)
@@ -611,6 +668,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
+
+                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # GLX because libOpenGL doesn't provide it. Also can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. WTF.
+                set(OpenGL_GL_PREFERENCE GLVND)
+                find_package(OpenGL)
+                if(OPENGL_opengl_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES OpenGL::GLX)
+                endif()
 
             # Windowless CGL application has no additional dependencies
 
@@ -686,9 +754,20 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
 
             if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+                # If the GLVND library (CMake 3.11+) was found, link to the
+                # imported target. Otherwise (and also on all systems except
+                # Linux) link to the classic libGL. Can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. WTF.
+                set(OpenGL_GL_PREFERENCE GLVND)
                 find_package(OpenGL REQUIRED)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ${OPENGL_gl_LIBRARY})
+                if(OPENGL_opengl_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES OpenGL::OpenGL)
+                else()
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${OPENGL_gl_LIBRARY})
+                endif()
             elseif(MAGNUM_TARGET_GLES2)
                 find_package(OpenGLES2 REQUIRED)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
@@ -734,6 +813,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL Trade)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
+
+        # Vk library
+        elseif(_component STREQUAL Vk)
+            set(Vulkan_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumExternal/Vulkan)
+            find_package(Vulkan REQUIRED)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)
         endif()
 
         # No special setup for AnyAudioImporter plugin
@@ -755,8 +841,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             mark_as_advanced(_MAGNUM_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
-        # Automatic import of static plugins on CMake >= 3.1
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND NOT CMAKE_VERSION VERSION_LESS 3.1)
+        # Automatic import of static plugins on CMake >= 3.1. Skip in case the
+        # include dir was not found -- that'll fail later with a proper
+        # message.
+        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND NOT CMAKE_VERSION VERSION_LESS 3.1 AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
             # Automatic import of static plugins
             file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
             string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)
