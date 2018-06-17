@@ -42,7 +42,6 @@ class TriangleExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        GL::Buffer _buffer;
         GL::Mesh _mesh;
         Shaders::VertexColor2D _shader;
 };
@@ -62,10 +61,11 @@ TriangleExample::TriangleExample(const Arguments& arguments):
         {{ 0.0f,  0.5f}, 0x0000ff_rgbf}     /* Top vertex, blue color */
     };
 
-    _buffer.setData(data, GL::BufferUsage::StaticDraw);
-    _mesh.setPrimitive(GL::MeshPrimitive::Triangles)
-        .setCount(3)
-        .addVertexBuffer(_buffer, 0,
+    GL::Buffer buffer;
+    buffer.setData(data);
+
+    _mesh.setCount(3)
+         .addVertexBuffer(std::move(buffer), 0,
             Shaders::VertexColor2D::Position{},
             Shaders::VertexColor2D::Color3{});
 }

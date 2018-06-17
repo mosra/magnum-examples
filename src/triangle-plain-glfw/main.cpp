@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
         };
 
         GL::Buffer buffer;
-        buffer.setData(data, GL::BufferUsage::StaticDraw);
+        buffer.setData(data);
 
         GL::Mesh mesh;
         mesh.setPrimitive(GL::MeshPrimitive::Triangles)
