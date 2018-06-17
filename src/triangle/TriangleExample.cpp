@@ -67,7 +67,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
         .setCount(3)
         .addVertexBuffer(_buffer, 0,
             Shaders::VertexColor2D::Position{},
-            Shaders::VertexColor2D::Color{Shaders::VertexColor2D::Color::Components::Three});
+            Shaders::VertexColor2D::Color3{});
 }
 
 void TriangleExample::drawEvent() {

@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
             .setCount(3)
             .addVertexBuffer(buffer, 0,
                 Shaders::VertexColor2D::Position{},
-                Shaders::VertexColor2D::Color{Shaders::VertexColor2D::Color::Components::Three});
+                Shaders::VertexColor2D::Color3{});
 
         Shaders::VertexColor2D shader;
 
