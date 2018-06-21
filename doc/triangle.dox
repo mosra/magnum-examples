@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page examples-triangle Your first triangle
 @brief Basic rendering with builtin shaders.
 
+@m_keywords{Triangle}
+
 @m_footernavigation
 
 @image html triangle.png

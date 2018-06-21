@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page examples-viewer Model viewer
 @brief Scene graph, resource manager and model importing.
 
+@m_keywords{Viewer}
+
 @tableofcontents
 @m_footernavigation
 
