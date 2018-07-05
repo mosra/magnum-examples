@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page examples-triangle Your first triangle
 @brief Basic rendering with builtin shaders.
 
+@m_keywords{Triangle}
+
 @m_footernavigation
 
 @image html triangle.png
@@ -59,7 +61,9 @@ read more about platform support and various portability tricks in
     @cpp using namespace Magnum; @ce would be present) in order to avoid long
     name prefixes.
 
-In the constructor we pass all necessary arguments to the application class.
+In the constructor we pass arguments to the application class. The
+@ref Platform::Sdl2Application::Configuration "Configuration" configuration is
+optional and allows us to set a window title and other things.
 
 @skip TriangleExample::TriangleExample
 @until {
@@ -71,30 +75,32 @@ are in one continuous place in memory. In this case, because we need just three
 vertices, we will interleave them manually in-place. In the next tutorial we
 will learn how to interleave them programatically. See @ref types for more
 information about scalar and vector types used in Magnum --- one of the notable
-convenience features is ability to use a custom literal to specify hexadecimal
-colors, just like you are used to from CSS and various graphics editors.
+convenience features is an ability to use a custom literal to specify
+hexadecimal colors, just like you are used to from CSS and various graphics
+editors.
 
 @skip using namespace
 @until };
 @until };
 
-We then create vertex buffer and fill it with data. The data won't be changed
-or read back into main memory during application lifetime, so we mark them with
-appropriate @ref GL::BufferUsage.
+We then create vertex buffer and fill it with data.
 
 @skip GL::Buffer
 @until setData
 
-Now we configure the mesh --- we specify @ref GL::MeshPrimitive and vertex
-count, add vertex buffer and specify attribute locations for use with the
-shader. We need to describe physical location of vertex attributes in the
-buffer --- zero offset from the beginning, first the position, then the color;
-with no gaps in between. Position is implicitly three-component float vector,
-colors are implicitly also floats, but because it's not immediately clear
-whether we want to use RGB or RGBA colors, the shader attribute requires to say
-how many components our colors have. Note that it's also possible to override
-attribute type and  many other things --- see the @ref GL::Attribute class for
-details.
+Now we configure the mesh. The mesh is @ref GL::MeshPrimitive::Triangles by
+default, so we need to specify just vertex count and add the vertex buffer with
+specified attribute locations for use with the shader. We need to describe
+physical location of vertex attributes in the buffer --- zero offset from the
+beginning, first the position, then the color; with no gaps in between. Because
+we use a 2D shader, position is implicitly a two-component float vector and we
+use three-component RGB colors (we could also say @ref Shaders::VertexColor::Color4
+for RGBA).
+
+Here we use @ref std::move() instead of just passing it by reference to make
+the mesh an owner of the buffer. In this case it simplifies things for us,
+otherwise we would need to ensure `buffer` exists for the whole mesh lifetime.
+On the other hand, we lose the ability to modify that buffer afterwards.
 
 @skip _mesh.
 @until }

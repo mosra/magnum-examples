@@ -2,12 +2,14 @@
 # Find GLFW
 # ---------
 #
-# Finds the GLFW library. This module defines:
+# Finds the GLFW library using its cmake config if that exists, otherwise
+# falls back to finding it manually. This module defines:
 #
 #  GLFW_FOUND               - True if GLFW library is found
 #  GLFW::GLFW               - GLFW imported target
 #
-# Additionally these variables are defined for internal usage:
+# Additionally, in case the config was not found, these variables are defined
+# for internal usage:
 #
 #  GLFW_LIBRARY             - GLFW library
 #  GLFW_INCLUDE_DIR         - Root include dir
@@ -39,6 +41,31 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# GLFW installs cmake package config files to shared/ folder which handles
+# dependencies in case GLFW is built statically. We're making an INTERFACE
+# target for it, which is supported only since CMake 3.0.
+if(NOT CMAKE_VERSION VERSION_LESS 3.0.0)
+    find_package(glfw3 CONFIG)
+endif()
+
+if(TARGET glfw)
+    if(NOT TARGET GLFW::GLFW)
+        # Aliases of (global) targets are only supported in CMake 3.11, so we
+        # work around it by this. This is easier than fetching all possible
+        # properties (which are impossible to track of) and then attempting to
+        # rebuild them into a new target.
+        add_library(GLFW::GLFW INTERFACE IMPORTED)
+        set_target_properties(GLFW::GLFW PROPERTIES INTERFACE_LINK_LIBRARIES glfw)
+    endif()
+
+    # Just to make FPHSA print some meaningful location, nothing else
+    get_target_property(_GLFW_INTERFACE_INCLUDE_DIRECTORIES glfw INTERFACE_INCLUDE_DIRECTORIES)
+    find_package_handle_standard_args("GLFW" DEFAULT_MSG
+        _GLFW_INTERFACE_INCLUDE_DIRECTORIES)
+    return()
+endif()
+
+# In case no config file was found, try manually finding the library.
 find_library(GLFW_LIBRARY NAMES glfw glfw3)
 
 # Include dir
@@ -80,3 +107,5 @@ if(NOT TARGET GLFW::GLFW)
     set_property(TARGET GLFW::GLFW PROPERTY
         INTERFACE_INCLUDE_DIRECTORIES ${GLFW_INCLUDE_DIR})
 endif()
+
+mark_as_advanced(GLFW_LIBRARY GLFW_INCLUDE_DIR)

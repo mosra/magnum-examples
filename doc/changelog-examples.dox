@@ -30,9 +30,19 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2018.02
+@section changelog-examples-latest Changes since 2018.04
 
-@subsection changelog-examples-latest-dependencies Dependency changes
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   There's now a PPA for Ubuntu packages. See @ref building-examples-packages-deb
+    for more information.
+
+@section changelog-examples-2018-04 2018.04
+
+Released 2018-05-01, tagged as
+[v2018.04](https://github.com/mosra/magnum-examples/releases/tag/v2018.04).
+
+@subsection changelog-examples-2018-04-dependencies Dependency changes
 
 -   Building for Android now requires CMake 3.7 with builtin Android
     crosscompilation support, the old toolchains were removed. Only the Clang
@@ -40,25 +50,32 @@ namespace Magnum {
     dropped, as it was still missing some important C++11 functionality. See
     @ref building-cross-android for more information.
 
-@subsection changelog-examples-latest-new New features
+@subsection changelog-examples-2018-04-new New features
 
 -   New @ref examples-leapmotion example showcasing hand tracking
+    (see [mosra/magnum-examples#40](https://github.com/mosra/magnum-examples/pull/40))
+-   New @ref examples-triangle-sokol example showcasing use of Magnum with
+    custom renderers
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2018-04-changes Changes and improvements
 
 -   Simplified the @ref examples-ovr example to a single file with minimal
-    dependencies
+    dependencies (see [mosra/magnum-examples#39](https://github.com/mosra/magnum-examples/pull/39))
 
-@subsection changelog-examples-latest-buildsystem Build system
+@subsection changelog-examples-2018-04-buildsystem Build system
 
 -   It's now possible to build particular examples as if they would be a
-    project root. See @ref building-examples-features for more information.
+    project root. See @ref building-examples-features and
+    [mosra/magnum#241](https://github.com/mosra/magnum/issues/241) for more information.
+-   Homebrew macOS packages were updated to install the stable version by
+    default
 -   Fixed the Debian package to not include a revision. While just a warning on
-    Ubuntu, it's a hard error on Debian.
+    Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
 
-@subsection changelog-examples-latest-bugfixes Bug fixes
+@subsection changelog-examples-2018-04-bugfixes Bug fixes
 
 -   The @ref examples-webvr example was fixed to work on Android phones
+    (see [mosra/magnum-examples#38](https://github.com/mosra/magnum-examples/pull/38))
 
 @section changelog-examples-2018-02 2018.02
 

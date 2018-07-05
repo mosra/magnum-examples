@@ -1,0 +1,95 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-triangle-sokol Triangle using sokol_gfx
+@brief Shows how to use custom renderers with Magnum
+
+@m_footernavigation
+
+@image html triangle.png
+
+While Magnum provides the @ref GL library as a rendering abstraction, you are
+not required to use it --- it's possible to use a completely custom renderer
+while taking advantage of all other things that Magnum has, such as math
+library or asset management APIs. While this example works with standard Magnum
+installations that include the @ref GL library, it's also possible to build a
+renderer-less version by toggling `WITH_GL` and all other options that depend
+on it off. See @ref building-features for more information.
+
+This example uses the [sokol_gfx](https://github.com/floooh/sokol)
+single-header C library that abstracts OpenGL (ES), D3D and Metal APIs. For
+simplicity only the OpenGL API together with extension loading using
+[GLEW](http://glew.sourceforge.net/) is used in this example.
+
+The key part here is using just the core Magnum functionality and instructing
+the @ref Platform::Sdl2Application "Platform::Application" class to not do
+any implicit setup of the @ref GL library by enabling the
+@ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless "Configuration::WindowFlag::Contextless" flag:
+
+@dontinclude triangle-sokol/TriangleSokolExample.cpp
+@skip TriangleSokolExample::TriangleSokolExample
+@until Contextless
+@until {
+
+Setting this flag means the application acts only as a platform-independent
+window and event handler and you are responsible for creating your own context
+(GL, D3D, Vulkan, Metal etc.). A step even further is to not use any @ref Platform::Sdl2Application "Platform::Application"
+class at all (as shown in @ref examples-triangle-plain-glfw, for example) and
+use only the @ref Math library, @ref Trade, @ref MeshTools or other things.
+
+After the setup is done, all that remains is calling renderer-specific APIs
+to set up the buffers, shaders and various state:
+
+@skip Setup sokol_gfx
+@until sg_make_pipeline
+@until }
+@until }
+
+And then rendering the scene in the draw event:
+
+@skip drawEvent
+@until swapBuffers
+@until }
+
+@section examples-triangle-sokol-credits Credits
+
+This example uses the [sokol_gfx](https://github.com/floooh/sokol) library by
+Andre Weissflog, licensed under the [zlib/libpng license](https://github.com/floooh/sokol/blob/master/LICENSE).
+
+@section examples-triangle-sokol-source Source
+
+Full source code is linked below and together with assets also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree-sokol/master/src/text).
+
+-   @ref triangle-sokol/CMakeLists.txt "CMakeLists.txt"
+-   @ref triangle-sokol/TriangleSokolExample.cpp "TriangleSokolExample.cpp"
+
+@example triangle-sokol/TriangleSokolExample.cpp @m_examplenavigation{examples-triangle-sokol,triangle-sokol/} @m_footernavigation
+@example triangle-sokol/CMakeLists.txt @m_examplenavigation{examples-triangle-sokol,triangle-sokol/} @m_footernavigation
+
+*/
+}
+

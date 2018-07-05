@@ -79,8 +79,23 @@ Edit the PKGBUILDs if you want to pass additional flags to CMake or
 
 @subsection building-examples-packages-deb Packages for Debian, Ubuntu and derivatives
 
-The `package/debian/` directory contains all files needed for building Debian
-packages. You need @ref building-corrade-packages-deb "Corrade",
+Prebuilt packages of the latest stable version for Ubuntu 14.04, 16.04 and
+18.04 are available through a PPA. To install packages related to Magnum and
+Corrade, you can add the repository and then install the packages with the
+following commands:
+
+@code{.sh}
+sudo add-apt-repository ppa:chrome/magnum.graphics
+sudo apt-get update
+sudo apt-get install magnum-examples magnum-examples-dev
+@endcode
+
+For more information about these packages, please visit
+[the PPA page](https://launchpad.net/~chrome/+archive/ubuntu/magnum.graphics).
+
+To build your own package, the `package/debian/` directory contains all files
+needed for building Debian packages. You need
+@ref building-corrade-packages-deb "Corrade",
 @ref building-packages-deb "Magnum",
 @ref building-plugins-packages-deb "Magnum Plugins",
 @ref building-integration-packages-deb "Magnum Integration" and
@@ -131,13 +146,15 @@ them to `mycmakeargs` in the `*.ebuild` file.
 
 macOS [Homebrew](https://brew.sh) formulas building the latest Git revision are
 in the `package/homebrew` directory. Either use the `*.rb` files directly or
-use the tap at https://github.com/mosra/homebrew-magnum. When installing from
-the `*.rb` files you need to install the @ref building-corrade-packages-brew "Corrade",
-@ref building-packages-brew "Magnum",
-@ref building-plugins-packages-brew "Magnum Plugins",
-@ref building-integration-packages-brew "Magnum Integration" and
-@ref building-extras-packages-brew "Magnum Extras" Homebrew packages first,
-otherwise you can do just this:
+use the tap at https://github.com/mosra/homebrew-magnum. This will install the
+latest stable version of Magnum Examples with all dependencies:
+
+@code{.sh}
+brew install mosra/magnum/magnum-examples
+@endcode
+
+But often you may want to install the latest Git revision of all Magnum
+projects instead:
 
 @code{.sh}
 brew install --HEAD mosra/magnum/corrade
@@ -148,7 +165,13 @@ brew install --HEAD mosra/magnum/magnum-extras
 brew install --HEAD mosra/magnum/magnum-examples
 @endcode
 
-If you want to pass additional flags to CMake or
+When installing from the `*.rb` files you need to install the
+@ref building-corrade-packages-brew "Corrade",
+@ref building-packages-brew "Magnum",
+@ref building-plugins-packages-brew "Magnum Plugins",
+@ref building-integration-packages-brew "Magnum Integration" and
+@ref building-extras-packages-brew "Magnum Extras" Homebrew packages first. If
+you want to pass additional flags to CMake or
 @ref building-examples-features "enable / disable additional features", edit
 the `*.rb` file.
 
@@ -198,6 +221,9 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
     @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example. Depends on
     [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
+-   `WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
+    @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
+    [GLEW](http://glew.sourceforge.net/).
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 -   `WITH_WEBVRE_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
