@@ -71,7 +71,7 @@ class ViewerExample: public Platform::Application {
         void mouseMoveEvent(MouseMoveEvent& event) override;
         void mouseScrollEvent(MouseScrollEvent& event) override;
 
-        Vector3 positionOnSphere(const Vector2i& _position) const;
+        Vector3 positionOnSphere(const Vector2i& position) const;
 
         void addObject(Trade::AbstractImporter& importer, Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials, Object3D& parent, UnsignedInt i);
 
