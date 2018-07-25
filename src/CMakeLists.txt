@@ -66,6 +66,10 @@ if(WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()
 
+if(WITH_MOUSEINTERACTION_EXAMPLE)
+    add_subdirectory(mouseinteraction)
+endif()
+
 if(WITH_OVR_EXAMPLE)
     add_subdirectory(ovr)
 endif()
