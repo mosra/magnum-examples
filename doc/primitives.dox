@@ -148,6 +148,33 @@ The main function is just the macro call, as previously.
 MAGNUM_APPLICATION_MAIN(PrimitivesExample)
 @endcode
 
+Once again, this code displays a grid primitive:
+
+@code{.cpp}
+			_transformation = Matrix4::rotationX(30.0_degf)*
+				Matrix4::rotationY(40.0_degf);
+			_color = Color3::fromHsv(35.0_degf, 1.0f, 1.0f);
+
+			_projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{ GL::defaultFramebuffer.viewport().size() }.aspectRatio(), 0.01f, 100.0f)*
+				Matrix4::translation(Vector3::zAxis(-10.0f));
+			{
+				Trade::MeshData3D cube = Primitives::grid3DWireframe({ 5,3 });
+				_vertexBuffer = GL::Buffer{};
+				_indexBuffer = GL::Buffer{};
+				_vertexBuffer.setData(cube.positions(0), GL::BufferUsage::StaticDraw);
+				Containers::Array<char> indexData;
+				MeshIndexType indexType;
+				UnsignedInt indexStart, indexEnd;
+				std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
+				_indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
+				// do not use normals at all when rendering lines
+				_mesh.setPrimitive(cube.primitive())
+					.setCount(cube.indices().size())
+					.addVertexBuffer(_vertexBuffer, 0, Shaders::Flat3D::Position{})
+					.setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
+			}
+@endcode
+
 @section examples-primitives-compilation Compilation
 
 Compilation is pretty straigtforward. We now need some additional libraries,
@@ -156,6 +183,40 @@ like `MeshTools` and `Primitives`, everything else is the same as previously:
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED
 @until Magnum::Shaders)
+
+If you like, you may include the required lib files manually without using CMake, in a good old way. This list will do (THE ORDER MAY MATTER!):
+
+CorradePluginManager-d.lib;
+MagnumSceneGraph-d.lib;
+MagnumPrimitives-d.lib;
+MagnumTrade-d.lib;
+MagnumMeshTools-d.lib;
+MagnumSDL2Application-d.lib;
+MagnumShaders-d.lib;
+MagnumDebugTools-d.lib;
+Magnum-d.lib;
+MagnumGL-d.lib;
+SDL2-staticd.lib;
+CorradeUtility-d.lib;
+opengl32.lib;
+glu32.lib;
+winmm.lib;
+imm32.lib;
+version.lib;
+kernel32.lib;
+user32.lib;
+gdi32.lib;
+winspool.lib;
+comdlg32.lib;
+advapi32.lib;
+shell32.lib;
+ole32.lib;
+oleaut32.lib;
+uuid.lib;
+odbc32.lib;
+odbccp32.lib
+
+Make sure that you have compiled SDL2 library (and constructed/configured a SDL2 sources project using CMAKE), and built Magnum setting -WITH-SDL2APPLICATION key.
 
 You can now try using another primitive from @ref Primitives namespace or
 render the mesh with different shader from @ref Shaders namespace. The full
