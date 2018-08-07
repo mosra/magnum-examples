@@ -184,7 +184,7 @@ like `MeshTools` and `Primitives`, everything else is the same as previously:
 @skip find_package(Magnum REQUIRED
 @until Magnum::Shaders)
 
-If you like, you may include the required lib files manually without using CMake, in a good old way. This list will do (THE ORDER MAY MATTER!):
+If you like, you may include the required lib files manually to project without using CMake. This list will work for Windows OS, it was tested in Visual Studio environment (THE ORDER MAY MATTER!):
 
 CorradePluginManager-d.lib;
 MagnumSceneGraph-d.lib;
