@@ -55,7 +55,7 @@ class MotionBlurExample: public Platform::Application {
         Scene3D scene;
         SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
-        SceneGraph::Camera3D* camera;
+        MotionBlurCamera* camera;
         GL::Buffer buffer;
         GL::Buffer indexBuffer;
         GL::Mesh mesh;
