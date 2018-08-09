@@ -105,3 +105,7 @@ endif()
 if(WITH_WEBVR_EXAMPLE)
     add_subdirectory(webvr)
 endif()
+
+if(WITH_INTERACTION_EXAMPLE)
+    add_subdirectory(interaction)
+endif()
