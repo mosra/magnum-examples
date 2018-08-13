@@ -25,6 +25,13 @@ branch contains additional patches for mobile and web platform support that
 aren't present in `master` in order to keep the example code as simple as
 possible.
 
+WHAT'S NEW?
+===========
+
+Curious about what was added or improved recently? Check out the
+[Changelog](http://doc.magnum.graphics/magnum/changelog-examples.html#changelog-examples-latest)
+page in the documentation.
+
 BUILDING MAGNUM EXAMPLES
 ========================
 
