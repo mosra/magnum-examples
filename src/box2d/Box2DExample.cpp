@@ -29,10 +29,12 @@
 */
 
 #include <Box2D/Box2D.h>
+#include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Mesh.h>
+#include <Magnum/Math/DualComplex.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Square.h>
@@ -58,7 +60,7 @@ class Box2DExample: public Platform::Application {
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
 
-        b2Body* createBody(Object2D& object, const Vector2& size, b2BodyType type, const Vector2& position, Float density = 1.0f);
+        b2Body* createBody(Object2D& object, const Vector2& size, b2BodyType type, const DualComplex& transformation, Float density = 1.0f);
 
         GL::Mesh _mesh;
         Shaders::Flat2D _shader;
@@ -87,9 +89,10 @@ class BoxDrawable: public SceneGraph::Drawable2D {
         Color4 _color;
 };
 
-b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, const b2BodyType type, const Vector2& position, const Float density) {
+b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, const b2BodyType type, const DualComplex& transformation, const Float density) {
     b2BodyDef bodyDefinition;
-    bodyDefinition.position.Set(position.x(), position.y());
+    bodyDefinition.position.Set(transformation.translation().x(), transformation.translation().y());
+    bodyDefinition.angle = Float(transformation.rotation().angle());
     bodyDefinition.type = type;
     b2Body* body = _world->CreateBody(&bodyDefinition);
 
@@ -111,6 +114,14 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
 Box2DExample::Box2DExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Box2D Example")}
 {
+    /* Make it possible for the user to have some fun */
+    Utility::Arguments args;
+    args.addOption("transformation", "1 0 0 0").setHelp("transformation", "initial pyramid transformation")
+        .addSkippedPrefix("magnum").setHelp("engine-specific options")
+        .parse(arguments.argc, arguments.argv);
+
+    const DualComplex globalTransformation = args.value<DualComplex>("transformation").normalized();
+
     /* Configure camera */
     _cameraObject = new Object2D{&_scene};
     _camera = new SceneGraph::Camera2D{*_cameraObject};
@@ -126,15 +137,16 @@ Box2DExample::Box2DExample(const Arguments& arguments):
 
     /* Create the ground */
     auto ground = new Object2D{&_scene};
-    createBody(*ground, {11.0f, 0.5f}, b2_staticBody, Vector2::yAxis(-8.0f));
+    createBody(*ground, {11.0f, 0.5f}, b2_staticBody, DualComplex::translation(Vector2::yAxis(-8.0f)));
     new BoxDrawable{*ground, _mesh, _shader, 0xa5c9ea_rgbf, _drawables};
 
     /* Create a pyramid of boxes */
     for(std::size_t row = 0; row != 15; ++row) {
         for(std::size_t item = 0; item != 15 - row; ++item) {
             auto box = new Object2D{&_scene};
-            createBody(*box, {0.5f, 0.5f}, b2_dynamicBody,
+            const DualComplex transformation = globalTransformation*DualComplex::translation(
                 {Float(row)*0.6f + Float(item)*1.2f - 8.5f, Float(row)*1.0f - 6.0f});
+            createBody(*box, {0.5f, 0.5f}, b2_dynamicBody, transformation);
             new BoxDrawable{*box, _mesh, _shader, 0x2f83cc_rgbf, _drawables};
         }
     }
@@ -151,7 +163,7 @@ void Box2DExample::mousePressEvent(MouseEvent& event) {
     const auto position = _camera->projectionSize()*Vector2::yScale(-1.0f)*(Vector2{event.position()}/Vector2{windowSize()} - Vector2{0.5f});
 
     auto destroyer = new Object2D{&_scene};
-    createBody(*destroyer, {0.5f, 0.5f}, b2_dynamicBody, position, 2.0f);
+    createBody(*destroyer, {0.5f, 0.5f}, b2_dynamicBody, DualComplex::translation(position), 2.0f);
     new BoxDrawable{*destroyer, _mesh, _shader, 0xffff66_rgbf, _drawables};
 }
 
