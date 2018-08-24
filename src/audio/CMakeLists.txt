@@ -57,9 +57,12 @@ endif()
 
 find_package(Magnum REQUIRED
     Audio
-    DebugTools
     GL
+    MeshTools
+    Primitives
     SceneGraph
+    Shaders
+    Trade
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -73,8 +76,11 @@ target_link_libraries(magnum-audio PRIVATE
     Magnum::Application
     Magnum::Audio
     Magnum::GL
-    Magnum::DebugTools
     Magnum::Magnum
-    Magnum::SceneGraph)
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::SceneGraph
+    Magnum::Shaders
+    Magnum::Trade)
 
 install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
