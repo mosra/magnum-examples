@@ -380,7 +380,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _flatShader = Shaders::Flat3D{};
 
     /* Create the UI */
-    _ui.emplace(Vector2{windowSize()}, windowSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
+    _ui.emplace(Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
     Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetFocused, *this, &AreaLightsExample::startTextInput);
     Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetBlurred, *this, &AreaLightsExample::stopTextInput);
 
