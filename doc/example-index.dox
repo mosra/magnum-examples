@@ -44,35 +44,37 @@ present in `master` in order to keep the example code as simple as possible.
 The following examples explain the basic principles and have fully documented
 tutorials:
 
--   @subpage examples-triangle @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-triangle @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-triangle
--   @subpage examples-primitives @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-primitives @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-primitives
--   @subpage examples-textured-triangle @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-textured-triangle @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-textured-triangle
--   @subpage examples-viewer @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-viewer @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-viewer
 -   @subpage examples-triangle-plain-glfw --- @copybrief examples-triangle-plain-glfw
 -   @subpage examples-triangle-sokol --- @copybrief examples-triangle-sokol
 
 The following consist of documented source code only:
 
--   @subpage examples-arealights @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-arealights @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-arealights
--   @subpage examples-audio @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-audio @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-audio
--   @subpage examples-bullet @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-box2d @m_class{m-label m-default m-flat} **live web demo**
+    --- @copybrief examples-box2d
+-   @subpage examples-bullet @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-bullet
 -   @subpage examples-cubemap --- @copybrief examples-cubemap
 -   @subpage examples-leapmotion --- @copybrief examples-leapmotion
 -   @subpage examples-motionblur --- @copybrief examples-motionblur
 -   @subpage examples-ovr --- @copybrief examples-ovr
--   @subpage examples-picking @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-picking
 -   @subpage examples-shadows --- @copybrief examples-shadows
--   @subpage examples-text @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-text @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-text
--   @subpage examples-webvr @m_span{m-label m-default m-flat} live web demo @m_endspan
+-   @subpage examples-webvr @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-webvr
 
 There are also @ref corrade-example-index "examples for the Corrade library"

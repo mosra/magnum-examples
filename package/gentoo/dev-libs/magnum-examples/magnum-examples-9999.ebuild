@@ -17,6 +17,7 @@ RDEPEND="
 	dev-libs/magnum-plugins
 	dev-libs/magnum-integration
 	dev-libs/magnum-extras
+	dev-libs/box2d
 	media-libs/openal
 	sci-physics/bullet
 "
@@ -29,6 +30,7 @@ src_configure() {
 		-DCMAKE_BUILD_TYPE=Debug
 		-DWITH_AREALIGHTS_EXAMPLE=ON
 		-DWITH_AUDIO_EXAMPLE=ON
+		-DWITH_BOX2D_EXAMPLE=ON
 		-DWITH_BULLET_EXAMPLE=ON
 		-DWITH_CUBEMAP_EXAMPLE=ON
 		-DWITH_MOTIONBLUR_EXAMPLE=ON

@@ -56,11 +56,13 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
-    DebugTools
     GL
+    MeshTools
+    Primitives
     SceneGraph
-    Shapes
-    Sdl2Application)
+    Sdl2Application
+    Shaders
+    Trade)
 find_package(MagnumIntegration REQUIRED Bullet)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -68,11 +70,13 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 add_executable(magnum-bullet BulletExample.cpp)
 target_link_libraries(magnum-bullet PRIVATE
     Magnum::Application
-    Magnum::DebugTools
     Magnum::GL
     Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
     Magnum::SceneGraph
-    Magnum::Shapes
+    Magnum::Shaders
+    Magnum::Trade
     MagnumIntegration::Bullet)
 
 install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

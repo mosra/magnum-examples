@@ -1,4 +1,4 @@
-/build*
+build*/
 /debian
 /obj-*
 pkg
@@ -6,3 +6,7 @@ pkg
 *~
 *.pkg.tar.xz
 CMakeLists.txt.user*
+
+# Android-specific stuff
+.externalNativeBuild
+.gradle

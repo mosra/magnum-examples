@@ -44,7 +44,7 @@ class TriangleExample: public Platform::Application {
         explicit TriangleExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
 
         GL::Mesh _mesh;
@@ -79,8 +79,8 @@ TriangleExample::TriangleExample(const Arguments& arguments):
             Shaders::VertexColor2D::Color3{});
 }
 
-void TriangleExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void TriangleExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void TriangleExample::drawEvent() {

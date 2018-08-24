@@ -107,7 +107,9 @@ void displayPresentCallback(void* app) {
 }
 
 WebVrExample::WebVrExample(const Arguments& arguments):
-    Platform::Application(arguments, Configuration{}.setSampleCount(4).setSize({640, 320}))
+    Platform::Application(arguments,
+        Configuration{}.setSize({640, 320}),
+        GLConfiguration{}.setSampleCount(4))
 {
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 

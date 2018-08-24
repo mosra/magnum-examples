@@ -5,7 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2015, 2017 — Jonathan Hale <squareys@googlemail.com>
+#       2018 — Michal Mikula <miso.mikula@gmail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -48,7 +48,7 @@ if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(MagnumAudioExample)
+project(MagnumBox2DExample)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -56,56 +56,27 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Magnum REQUIRED
-    Audio
     GL
     MeshTools
     Primitives
     SceneGraph
+    Sdl2Application
     Shaders
-    Trade
-    Sdl2Application)
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(MagnumPlugins REQUIRED StbVorbisAudioImporter)
-endif()
+    Trade)
+find_package(Box2D REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(AudioExample_RESOURCES resources.conf)
-
-add_executable(magnum-audio
-    AudioExample.cpp
-    ${AudioExample_RESOURCES})
-target_link_libraries(magnum-audio PRIVATE
+add_executable(magnum-box2d Box2DExample.cpp)
+target_link_libraries(magnum-box2d PRIVATE
     Magnum::Application
-    Magnum::Audio
     Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders
-    Magnum::Trade)
+    Magnum::Trade
+    Box2D::Box2D)
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(magnum-audio PRIVATE
-        MagnumPlugins::StbVorbisAudioImporter)
-endif()
-
-# Installation for Emscripten
-if(CORRADE_TARGET_EMSCRIPTEN)
-    install(FILES audio.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio RENAME index.html)
-    install(TARGETS magnum-audio DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
-    install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
-    install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.wasm
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio OPTIONAL)
-
-# Installation for desktop
-else()
-    install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-endif()
+install(TARGETS magnum-box2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

@@ -15,6 +15,7 @@ addons:
     - libxinerama-dev
     - libxcursor-dev
     #- libxi-dev
+    - libbox2d-dev
     - libglew-dev # needed by the triangle-sokol example
 
 matrix:
@@ -135,7 +136,9 @@ before_install:
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "android" ]; then export CXX=g++-4.7; fi
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
+# box2d is not in homebrew anymore: https://github.com/erincatto/Box2D/issues/431
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; export WITH_BOX2D=ON; fi
+- if [ ! "$WITH_BOX2D" == "ON" ]; then export WITH_BOX2D=OFF; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip && unzip -q android-*.zip; fi
 # Download CMake 2.8.12 to ensure we're still compatible with it (Travis has
 # 3.9 since December 2017). Also, the PATH setting can't be cached, so it's

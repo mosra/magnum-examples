@@ -46,6 +46,10 @@ if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
 
+if(WITH_BOX2D_EXAMPLE)
+    add_subdirectory(box2d)
+endif()
+
 if(WITH_BULLET_EXAMPLE)
     add_subdirectory(bullet)
 endif()
