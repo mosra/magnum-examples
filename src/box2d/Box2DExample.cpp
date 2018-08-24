@@ -120,13 +120,18 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
 
     const DualComplex globalTransformation = args.value<DualComplex>("transformation").normalized();
 
-    /* Try 8x MSAA, fall back to zero samples if not possible */
-    Configuration conf;
-    conf.setTitle("Magnum Box2D Example");
-    GLConfiguration glConf;
-    glConf.setSampleCount(8);
-    if(!tryCreate(conf, glConf))
-        create(conf, glConf.setSampleCount(0));
+    /* Try 8x MSAA, fall back to zero samples if not possible. Enable only 2x
+       MSAA if we have enough DPI. */
+    {
+        const Vector2 dpiScaling = this->dpiScaling({});
+        Configuration conf;
+        conf.setTitle("Magnum Box2D Example")
+            .setSize(conf.size(), dpiScaling);
+        GLConfiguration glConf;
+        glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
+        if(!tryCreate(conf, glConf))
+            create(conf, glConf.setSampleCount(0));
+    }
 
     /* Configure camera */
     _cameraObject = new Object2D{&_scene};
