@@ -39,6 +39,14 @@
 #  MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
 #   audio importer plugins
 #
+# If Magnum is built for Emscripten, the following variables contain paths to
+# various support files:
+#
+#  MAGNUM_EMSCRIPTENAPPLICATION_JS - Path to the EmscriptenApplication.js file
+#  MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS - Path to the
+#   WindowlessEmscriptenApplication.js file
+#  MAGNUM_WEBAPPLICATION_CSS    - Path to the WebApplication.css file
+#
 # This command will try to find only the base library, not the optional
 # components. The base library depends on Corrade and OpenGL libraries (or
 # OpenGL ES libraries). Additional dependencies are specified by the
@@ -639,6 +647,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(SDL2)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES SDL2::SDL2)
+                # Use the Foundation framework on Apple to query the DPI awareness
+                if(CORRADE_TARGET_APPLE)
+                    find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+                    mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+                # Needed for opt-in DPI queries
+                elseif(CORRADE_TARGET_UNIX)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+                endif()
 
                 # With GLVND (since CMake 3.11) we need to explicitly link to
                 # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
@@ -911,10 +930,28 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     endif()
 endforeach()
 
+# Emscripten-specific files
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_file(MAGNUM_EMSCRIPTENAPPLICATION_JS EmscriptenApplication.js
+        PATH_SUFFIXES share/magnum)
+    find_file(MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS WindowlessEmscriptenApplication.js
+        PATH_SUFFIXES share/magnum)
+    find_file(MAGNUM_WEBAPPLICATION_CSS WebApplication.css
+        PATH_SUFFIXES share/magnum)
+    mark_as_advanced(
+        MAGNUM_EMSCRIPTENAPPLICATION_JS
+        MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS
+        MAGNUM_WEBAPPLICATION_CSS)
+    set(MAGNUM_EXTRAS_NEEDED
+        MAGNUM_EMSCRIPTENAPPLICATION_JS
+        MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS
+        MAGNUM_WEBAPPLICATION_CSS)
+endif()
+
 # Complete the check with also all components
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
-    REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
+    REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY ${MAGNUM_EXTRAS_NEEDED}
     HANDLE_COMPONENTS)
 
 # Create Windowless*Application, *Application and *Context aliases
@@ -1040,6 +1077,7 @@ set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBU
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/Magnum)
+set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/MagnumExternal)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/MagnumPlugins)
 
 # Get base plugin directory from main library location. This is *not* PATH,
