@@ -86,8 +86,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES bullet.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet RENAME index.html)
     install(TARGETS magnum-bullet DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-bullet.js.mem

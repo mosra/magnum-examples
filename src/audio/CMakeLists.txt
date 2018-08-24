@@ -97,8 +97,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES audio.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio RENAME index.html)
     install(TARGETS magnum-audio DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.js.mem

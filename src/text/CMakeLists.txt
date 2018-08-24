@@ -90,8 +90,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES text.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text RENAME index.html)
     install(TARGETS magnum-text DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.js.mem

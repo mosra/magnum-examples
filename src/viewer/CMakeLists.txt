@@ -91,8 +91,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES viewer.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer RENAME index.html)
     install(TARGETS magnum-viewer DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-viewer.js.mem

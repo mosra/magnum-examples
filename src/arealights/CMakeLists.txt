@@ -92,8 +92,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES arealights.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights RENAME index.html)
     install(TARGETS magnum-arealights DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-arealights.js.mem

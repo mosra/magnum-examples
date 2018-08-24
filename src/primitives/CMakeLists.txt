@@ -94,8 +94,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES primitives.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives RENAME index.html)
     install(TARGETS magnum-primitives DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-primitives.js.mem

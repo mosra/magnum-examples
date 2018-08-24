@@ -103,8 +103,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES textured-triangle.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle RENAME index.html)
     install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
     install(FILES
-        ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-        ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/magnum-textured-triangle.js.mem
