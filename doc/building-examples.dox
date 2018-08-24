@@ -41,10 +41,21 @@ packages for your platform of choice. See @ref building-examples-manual if you
 want to have more control. Cross-compiling is very similar to
 @ref building-cross "cross-compiling of Magnum itself".
 
+-   @ref building-examples-packages-vcpkg
 -   @ref building-examples-packages-arch
 -   @ref building-examples-packages-deb
 -   @ref building-examples-packages-gentoo
 -   @ref building-examples-packages-brew
+
+@subsection building-examples-packages-vcpkg Vcpkg packages on Windows
+
+Unlike with other repositories, Magnum Examples are not available as a
+[Vcpkg](https://github.com/Microsoft/vcpkg) package because Vcpkg primary use
+is for providing libraries to be used by other projects, not for installing
+general-purpose apps.
+
+Please follow the @ref building-examples-manual "manual build instructions"
+below.
 
 @subsection building-examples-packages-arch ArchLinux packages
 
