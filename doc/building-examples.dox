@@ -208,6 +208,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     Requires the @ref Ui library and some `TrueTypeFont` plugin.
 -   `WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example. Requires
     the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
+-   `WITH_BOX2D_EXAMPLE` --- Build the @ref examples-box2d example. Depends on
+    [Box2D](https://box2d.org/).
 -   `WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example. Requires
     the @ref BulletIntegration library.
 -   `WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example. Requires

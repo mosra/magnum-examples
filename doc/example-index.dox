@@ -61,6 +61,8 @@ The following consist of documented source code only:
     --- @copybrief examples-arealights
 -   @subpage examples-audio @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-audio
+-   @subpage examples-box2d @m_class{m-label m-default m-flat} **live web demo**
+    --- @copybrief examples-box2d
 -   @subpage examples-bullet @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-bullet
 -   @subpage examples-cubemap --- @copybrief examples-cubemap
