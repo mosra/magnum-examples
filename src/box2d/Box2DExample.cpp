@@ -62,8 +62,8 @@ class Box2DExample: public Platform::Application {
 
         b2Body* createBody(Object2D& object, const Vector2& size, b2BodyType type, const DualComplex& transformation, Float density = 1.0f);
 
-        GL::Mesh _mesh;
-        Shaders::Flat2D _shader;
+        GL::Mesh _mesh{NoCreate};
+        Shaders::Flat2D _shader{NoCreate};
 
         Scene2D _scene;
         Object2D* _cameraObject;
@@ -111,9 +111,7 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
     return body;
 }
 
-Box2DExample::Box2DExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Box2D Example")}
-{
+Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Make it possible for the user to have some fun */
     Utility::Arguments args;
     args.addOption("transformation", "1 0 0 0").setHelp("transformation", "initial pyramid transformation")
@@ -121,6 +119,14 @@ Box2DExample::Box2DExample(const Arguments& arguments):
         .parse(arguments.argc, arguments.argv);
 
     const DualComplex globalTransformation = args.value<DualComplex>("transformation").normalized();
+
+    /* Try 8x MSAA, fall back to zero samples if not possible */
+    Configuration conf;
+    conf.setTitle("Magnum Box2D Example");
+    GLConfiguration glConf;
+    glConf.setSampleCount(8);
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     /* Configure camera */
     _cameraObject = new Object2D{&_scene};
@@ -132,7 +138,8 @@ Box2DExample::Box2DExample(const Arguments& arguments):
     /* Create the Box2D world with the usual gravity vector */
     _world.emplace(b2Vec2{0.0f, -9.81f});
 
-    /* Create the box mesh */
+    /* Create the shader and the box mesh */
+    _shader = Shaders::Flat2D{};
     _mesh = MeshTools::compile(Primitives::squareSolid());
 
     /* Create the ground */
