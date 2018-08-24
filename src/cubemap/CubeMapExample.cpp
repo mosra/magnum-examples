@@ -54,7 +54,7 @@ class CubeMapExample: public Platform::Application {
         explicit CubeMapExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
@@ -102,9 +102,9 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     _resourceManager.free<Trade::AbstractImporter>();
 }
 
-void CubeMapExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
-    _camera->setViewport(size);
+void CubeMapExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+    _camera->setViewport(event.windowSize());
 }
 
 void CubeMapExample::drawEvent() {

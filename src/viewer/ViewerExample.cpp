@@ -65,7 +65,7 @@ class ViewerExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
@@ -316,9 +316,9 @@ void ViewerExample::drawEvent() {
     swapBuffers();
 }
 
-void ViewerExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
-    _camera->setViewport(size);
+void ViewerExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+    _camera->setViewport(event.windowSize());
 }
 
 void ViewerExample::mousePressEvent(MouseEvent& event) {

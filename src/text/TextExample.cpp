@@ -49,7 +49,7 @@ class TextExample: public Platform::Application {
         explicit TextExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void mouseScrollEvent(MouseScrollEvent& event) override;
 
@@ -101,10 +101,10 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
     updateText();
 }
 
-void TextExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void TextExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
-    _projection = Matrix3::scaling(Vector2::yScale(Vector2(size).aspectRatio()));
+    _projection = Matrix3::scaling(Vector2::yScale(Vector2(event.windowSize()).aspectRatio()));
 }
 
 void TextExample::drawEvent() {
