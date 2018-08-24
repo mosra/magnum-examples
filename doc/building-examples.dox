@@ -87,7 +87,7 @@ following commands:
 @code{.sh}
 sudo add-apt-repository ppa:chrome/magnum.graphics
 sudo apt-get update
-sudo apt-get install magnum-examples magnum-examples-dev
+sudo apt-get install magnum-examples
 @endcode
 
 For more information about these packages, please visit
