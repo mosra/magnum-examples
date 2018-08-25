@@ -60,8 +60,13 @@ class TexturedTriangleExample: public Platform::Application {
 };
 
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
-    }, _shader{Shaders::Flat2D::Flag::Textured}
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum Textured Triangle Example")
+        #ifndef CORRADE_TARGET_ANDROID
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        #endif
+        },
+    _shader{Shaders::Flat2D::Flag::Textured}
 {
     struct TriangleVertex {
         Vector2 position;

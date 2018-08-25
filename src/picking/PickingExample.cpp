@@ -176,6 +176,7 @@ class PickingExample: public Platform::Application {
         explicit PickingExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
@@ -201,7 +202,10 @@ class PickingExample: public Platform::Application {
         Vector2i _previousMousePosition, _mousePressPosition;
 };
 
-PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")},
+PickingExample::PickingExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum object picking example")
+        .setWindowFlags(Configuration::WindowFlag::Resizable)},
     _cubeVertices{GL::Buffer::TargetHint::Array}, _cubeIndices{GL::Buffer::TargetHint::ElementArray},
     _sphereVertices{GL::Buffer::TargetHint::Array}, _sphereIndices{GL::Buffer::TargetHint::ElementArray},
     _planeVertices{GL::Buffer::TargetHint::Array}, _framebuffer{GL::defaultFramebuffer.viewport()}
@@ -276,6 +280,10 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 4.0f/3.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
+}
+
+void PickingExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void PickingExample::drawEvent() {

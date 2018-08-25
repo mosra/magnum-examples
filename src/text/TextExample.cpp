@@ -70,7 +70,14 @@ class TextExample: public Platform::Application {
         Matrix3 _projection;
 };
 
-TextExample::TextExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum Text Example")}, _text{NoCreate}, _vertices(GL::Buffer::TargetHint::Array), _indices(GL::Buffer::TargetHint::ElementArray) {
+TextExample::TextExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum Text Example")
+        .setWindowFlags(Configuration::WindowFlag::Resizable)},
+    _text{NoCreate},
+    _vertices(GL::Buffer::TargetHint::Array),
+    _indices(GL::Buffer::TargetHint::ElementArray)
+{
     /* Load MagnumFont plugin */
     _font = _manager.loadAndInstantiate("MagnumFont");
     if(!_font) std::exit(1);

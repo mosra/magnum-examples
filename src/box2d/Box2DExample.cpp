@@ -57,6 +57,7 @@ class Box2DExample: public Platform::Application {
         explicit Box2DExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
 
@@ -126,6 +127,7 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum Box2D Example")
+            .setWindowFlags(Configuration::WindowFlag::Resizable)
             .setSize(conf.size(), dpiScaling);
         GLConfiguration glConf;
         glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
@@ -177,6 +179,10 @@ void Box2DExample::mousePressEvent(MouseEvent& event) {
     auto destroyer = new Object2D{&_scene};
     createBody(*destroyer, {0.5f, 0.5f}, b2_dynamicBody, DualComplex::translation(position), 2.0f);
     new BoxDrawable{*destroyer, _mesh, _shader, 0xffff66_rgbf, _drawables};
+}
+
+void Box2DExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void Box2DExample::drawEvent() {

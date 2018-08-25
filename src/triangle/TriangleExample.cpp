@@ -52,7 +52,12 @@ class TriangleExample: public Platform::Application {
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")}
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum Triangle Example")
+        #ifndef CORRADE_TARGET_ANDROID
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        #endif
+        }
 {
     using namespace Math::Literals;
 

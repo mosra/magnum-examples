@@ -67,7 +67,13 @@ class PrimitivesExample: public Platform::Application {
 };
 
 PrimitivesExample::PrimitivesExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum Primitives Example")
+        #ifndef CORRADE_TARGET_ANDROID
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        #endif
+        },
+    _indexBuffer{GL::Buffer::TargetHint::ElementArray}
 {
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);

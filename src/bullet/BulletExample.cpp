@@ -62,6 +62,7 @@ class BulletExample: public Platform::Application {
         explicit BulletExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
@@ -111,6 +112,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum Bullet Integration Example")
+            .setWindowFlags(Configuration::WindowFlag::Resizable)
             .setSize(conf.size(), dpiScaling);
         GLConfiguration glConf;
         glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
@@ -200,6 +202,10 @@ btRigidBody* BulletExample::createRigidBody(Object3D& object, Float mass, btColl
     _bWorld->addRigidBody(bRigidBody);
 
     return bRigidBody;
+}
+
+void BulletExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void BulletExample::drawEvent() {

@@ -63,6 +63,7 @@ class AudioExample: public Platform::Application {
         explicit AudioExample(const Arguments& arguments);
 
     private:
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
@@ -99,6 +100,7 @@ AudioExample::AudioExample(const Arguments& arguments):
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum Audio Example")
+            .setWindowFlags(Configuration::WindowFlag::Resizable)
             .setSize(conf.size(), dpiScaling);
         GLConfiguration glConf;
         glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
@@ -180,6 +182,10 @@ AudioExample::AudioExample(const Arguments& arguments):
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     setMinimalLoopPeriod(16);
     #endif
+}
+
+void AudioExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void AudioExample::drawEvent() {
