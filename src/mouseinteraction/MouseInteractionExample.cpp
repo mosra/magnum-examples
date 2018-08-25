@@ -33,13 +33,17 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Primitives/Grid.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
 
@@ -61,8 +65,9 @@ class MouseInteractionExample: public Platform::Application {
         void mouseScrollEvent(MouseScrollEvent &event) override;
         void drawEvent() override;
 
-        Shaders::Flat3D _shader{NoCreate};
-        GL::Mesh _mesh{NoCreate};
+        Shaders::VertexColor3D _vertexColorShader{NoCreate};
+        Shaders::Flat3D _flatShader{NoCreate};
+        GL::Mesh _mesh{NoCreate}, _grid{NoCreate};
 
         Scene3D _scene;
         SceneGraph::DrawableGroup3D _drawables;
@@ -74,9 +79,9 @@ class MouseInteractionExample: public Platform::Application {
         Vector3 _rotationPoint, _translationPoint;
 };
 
-class Drawable: public SceneGraph::Drawable3D {
+class VertexColorDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit Drawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
+        explicit VertexColorDrawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
             _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
@@ -85,6 +90,21 @@ class Drawable: public SceneGraph::Drawable3D {
 
     private:
         Shaders::VertexColor3D& _shader;
+        GL::Mesh& _mesh;
+};
+
+class FlatDrawable: public SceneGraph::Drawable3D {
+    public:
+        explicit FlatDrawable(Object3D& object, Shaders::Flat3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
+
+        void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
+            _shader.setColor(0x747474_rgbf)
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
+            _mesh.draw(_shader);
+        }
+
+    private:
+        Shaders::Flat3D& _shader;
         GL::Mesh& _mesh;
 };
 
@@ -102,8 +122,9 @@ MouseInteractionExample::MouseInteractionExample(const Arguments &arguments): Pl
             create(conf, glConf.setSampleCount(0));
     }
 
-    /* Shader, renderer setup */
-    _shaderShader = Shaders::VertexColor3D{};
+    /* Shaders, renderer setup */
+    _vertexColorShader = Shaders::VertexColor3D{};
+    _flatShader = Shaders::Flat3D{};
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Triangle data */
@@ -125,11 +146,22 @@ MouseInteractionExample::MouseInteractionExample(const Arguments &arguments): Pl
 
     /* Triangle object */
     auto triangle = new Object3D{&_scene};
-    new Drawable{*triangle, _shader, _mesh, _drawables};
+    new VertexColorDrawable{*triangle, _vertexColorShader, _mesh, _drawables};
+
+    /* Grid */
+    _grid = MeshTools::compile(Primitives::grid3DWireframe({15, 15}));
+    auto grid = new Object3D{&_scene};
+    (*grid)
+        .rotateX(90.0_degf)
+        .scale(Vector3{8.0f});
+    new FlatDrawable{*grid, _flatShader, _grid, _drawables};
 
     /* Set up the camera */
     _cameraObject = new Object3D{&_scene};
-    _cameraObject->setTransformation(Matrix4::lookAt(Vector3::zAxis(5), {}, Vector3::yAxis()));
+    (*_cameraObject)
+        .translate(Vector3::zAxis(5.0f))
+        .rotateX(-15.0_degf)
+        .rotateY(30.0_degf);
     _camera = new SceneGraph::Camera3D{*_cameraObject};
     _camera->setProjectionMatrix(Matrix4::perspectiveProjection(
         45.0_degf, Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f));

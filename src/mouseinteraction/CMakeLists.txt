@@ -58,6 +58,7 @@ endif()
 find_package(Magnum REQUIRED
     GL
     MeshTools
+    Primitives
     SceneGraph
     Shaders
     Sdl2Application)
@@ -70,6 +71,7 @@ target_link_libraries(magnum-mouseinteraction PRIVATE
     Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
+    Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders)
 
