@@ -61,8 +61,8 @@ class MouseInteractionExample: public Platform::Application {
         void mouseScrollEvent(MouseScrollEvent &event) override;
         void drawEvent() override;
 
-        Shaders::VertexColor3D _shader;
-        GL::Mesh _mesh;
+        Shaders::Flat3D _shader{NoCreate};
+        GL::Mesh _mesh{NoCreate};
 
         Scene3D _scene;
         SceneGraph::DrawableGroup3D _drawables;
@@ -88,10 +88,22 @@ class Drawable: public SceneGraph::Drawable3D {
         GL::Mesh& _mesh;
 };
 
-MouseInteractionExample::MouseInteractionExample(const Arguments &arguments):
-    Platform::Application{arguments, Configuration{}
-        .setTitle("Magnum Mouse Interaction Example")}
-{
+MouseInteractionExample::MouseInteractionExample(const Arguments &arguments): Platform::Application{arguments, NoCreate} {
+    /* Try 8x MSAA, fall back to zero samples if not possible. Enable only 2x
+       MSAA if we have enough DPI. */
+    {
+        const Vector2 dpiScaling = this->dpiScaling({});
+        Configuration conf;
+        conf.setTitle("Magnum Mouse Interaction Example")
+            .setSize(conf.size(), dpiScaling);
+        GLConfiguration glConf;
+        glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
+        if(!tryCreate(conf, glConf))
+            create(conf, glConf.setSampleCount(0));
+    }
+
+    /* Shader, renderer setup */
+    _shaderShader = Shaders::VertexColor3D{};
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Triangle data */
@@ -105,6 +117,7 @@ MouseInteractionExample::MouseInteractionExample(const Arguments &arguments):
     /* Triangle mesh */
     GL::Buffer buffer;
     buffer.setData(data);
+    _mesh = GL::Mesh{};
     _mesh.setCount(3)
         .addVertexBuffer(std::move(buffer), 0,
             Shaders::VertexColor3D::Position{},
