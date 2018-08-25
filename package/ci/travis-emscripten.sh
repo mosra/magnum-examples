@@ -35,6 +35,26 @@ cmake .. \
 ninja install
 cd ../..
 
+# Crosscompile Box2D
+wget https://github.com/erincatto/Box2D/archive/v2.3.1.tar.gz
+tar -xzf v2.3.1.tar.gz && cd Box2D-2.3.1
+mkdir build-emscripten && cd build-emscripten
+cmake ../Box2D \
+    -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten.cmake" \
+    -DEMSCRIPTEN_PREFIX=$(echo /usr/local/Cellar/emscripten/*/libexec) \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
+    -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DBOX2D_INSTALL=ON \
+    -DBOX2D_INSTALL_DOC=OFF \
+    -DBOX2D_BUILD_SHARED=OFF \
+    -DBOX2D_BUILD_STATIC=ON \
+    -DBOX2D_BUILD_EXAMPLES=OFF \
+    -G Ninja
+ninja install
+cd ../..
+
 # Crosscompile Bullet
 wget https://github.com/bulletphysics/bullet3/archive/2.87.tar.gz
 tar -xzf 2.87.tar.gz && cd bullet3-2.87
@@ -168,7 +188,7 @@ cmake .. \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DWITH_AREALIGHTS_EXAMPLE=$TARGET_GLES3 \
     -DWITH_AUDIO_EXAMPLE=ON \
-    -DWITH_BOX2D_EXAMPLE=OFF \
+    -DWITH_BOX2D_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=OFF \
     -DWITH_MOTIONBLUR_EXAMPLE=OFF \

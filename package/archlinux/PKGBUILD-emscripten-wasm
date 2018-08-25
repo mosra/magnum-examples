@@ -6,7 +6,7 @@ pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten, wasm)"
 arch=('any')
 url="http://magnum.graphics"
 license=('MIT')
-depends=('emscripten-magnum=dev.wasm' 'emscripten-magnum-plugins=dev.wasm' 'emscripten-bullet' 'emscripten-magnum-integration=dev.wasm')
+depends=('emscripten-magnum=dev.wasm' 'emscripten-magnum-plugins=dev.wasm' 'emscripten-bullet' 'emscripten-magnum-integration=dev.wasm' 'emscripten-box2d')
 makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
@@ -30,7 +30,7 @@ build() {
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
         -DWITH_AREALIGHTS_EXAMPLE=OFF \
         -DWITH_AUDIO_EXAMPLE=ON \
-        -DWITH_BOX2D_EXAMPLE=OFF \
+        -DWITH_BOX2D_EXAMPLE=ON \
         -DWITH_BULLET_EXAMPLE=ON \
         -DWITH_CUBEMAP_EXAMPLE=OFF \
         -DWITH_MOTIONBLUR_EXAMPLE=OFF \

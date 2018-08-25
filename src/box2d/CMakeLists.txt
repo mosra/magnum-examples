@@ -79,4 +79,20 @@ target_link_libraries(magnum-box2d PRIVATE
     Magnum::Trade
     Box2D::Box2D)
 
-install(TARGETS magnum-box2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES box2d.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d RENAME index.html)
+    install(TARGETS magnum-box2d DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-box2d.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-box2d.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-box2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
