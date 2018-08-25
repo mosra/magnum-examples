@@ -54,7 +54,7 @@ class TriangleExample: public Platform::Application {
 TriangleExample::TriangleExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example")
         #ifdef CORRADE_TARGET_IOS
-        .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
+        .setWindowFlags(Configuration::WindowFlag::Borderless)
         #endif
     }
 {

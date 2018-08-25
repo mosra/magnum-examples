@@ -50,7 +50,7 @@ class TexturedTriangleExample: public Platform::Application {
         explicit TexturedTriangleExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
 
         GL::Buffer _buffer;
@@ -62,7 +62,7 @@ class TexturedTriangleExample: public Platform::Application {
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
         #ifdef CORRADE_TARGET_IOS
-        .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
+        .setWindowFlags(Configuration::WindowFlag::Borderless)
         #endif
     }, _shader{Shaders::Flat2D::Flag::Textured}
 {
@@ -107,8 +107,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         .setSubImage(0, {}, *image);
 }
 
-void TexturedTriangleExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void TexturedTriangleExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 
 void TexturedTriangleExample::drawEvent() {

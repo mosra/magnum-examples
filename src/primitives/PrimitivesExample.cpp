@@ -52,7 +52,7 @@ class PrimitivesExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
@@ -69,7 +69,7 @@ class PrimitivesExample: public Platform::Application {
 PrimitivesExample::PrimitivesExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Primitives Example")
         #ifdef CORRADE_TARGET_IOS
-        .setWindowFlags(Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi)
+        .setWindowFlags(Configuration::WindowFlag::Borderless)
         #endif
     }, _indexBuffer{GL::Buffer::TargetHint::ElementArray}
 {
@@ -114,8 +114,8 @@ void PrimitivesExample::drawEvent() {
     swapBuffers();
 }
 
-void PrimitivesExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void PrimitivesExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     _projection = Matrix4::perspectiveProjection(35.0_degf, Vector2{GL::defaultFramebuffer.viewport().size()}.aspectRatio(), 0.01f, 100.0f)*
                   Matrix4::translation(Vector3::zAxis(-10.0f));
