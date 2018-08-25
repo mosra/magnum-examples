@@ -32,6 +32,12 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2018.04
 
+@subsection changelog-examples-latest-new New features
+
+-   New @ref examples-box2d example showing usage with Box2D
+-   New @ref examples-mouseinteraction example showing advanced mouse
+    interaction (see [mosra/magnum-examples#46](https://github.com/mosra/magnum-examples/pull/46))
+
 @subsection changelog-examples-latest-buildsystem Build system
 
 -   There's now a PPA for Ubuntu packages. See @ref building-examples-packages-deb
