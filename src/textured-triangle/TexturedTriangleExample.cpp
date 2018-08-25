@@ -61,9 +61,6 @@ class TexturedTriangleExample: public Platform::Application {
 
 TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Textured Triangle Example")
-        #ifdef CORRADE_TARGET_IOS
-        .setWindowFlags(Configuration::WindowFlag::Borderless)
-        #endif
     }, _shader{Shaders::Flat2D::Flag::Textured}
 {
     struct TriangleVertex {
