@@ -29,6 +29,7 @@ cmake .. ^
     -DWITH_INTERCONNECT=OFF ^
     -DWITH_PLUGINMANAGER=OFF ^
     -DWITH_TESTSUITE=OFF ^
+    -DWITH_UTILITY=OFF ^
     -G Ninja || exit /b
 cmake --build . --target install || exit /b
 cd .. || exit /b
@@ -139,6 +140,7 @@ cmake .. ^
     -DWITH_BULLET_EXAMPLE=OFF ^
     -DWITH_CUBEMAP_EXAMPLE=OFF ^
     -DWITH_MOTIONBLUR_EXAMPLE=OFF ^
+    -DWITH_MOUSEINTERACTION_EXAMPLE=ON ^
     -DWITH_OVR_EXAMPLE=OFF ^
     -DWITH_PICKING_EXAMPLE=OFF ^
     -DWITH_PRIMITIVES_EXAMPLE=OFF ^

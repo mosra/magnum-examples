@@ -218,6 +218,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
 -   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
     Not available on OpenGL ES.
+-   `WITH_MOUSEINTERACTION_EXAMPLE` --- Build the @ref examples-mouseinteraction
+    example.
 -   `WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
     the @ref OvrIntegration library.
 -   `WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.

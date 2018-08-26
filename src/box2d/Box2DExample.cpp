@@ -172,6 +172,8 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
 }
 
 void Box2DExample::mousePressEvent(MouseEvent& event) {
+    if(event.button() != MouseEvent::Button::Left) return;
+
     /* Calculate mouse position in the Box2D world. Make it relative to window,
        with origin at center and then scale to world size with Y inverted. */
     const auto position = _camera->projectionSize()*Vector2::yScale(-1.0f)*(Vector2{event.position()}/Vector2{windowSize()} - Vector2{0.5f});

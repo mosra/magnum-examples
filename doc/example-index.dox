@@ -68,6 +68,7 @@ The following consist of documented source code only:
 -   @subpage examples-cubemap --- @copybrief examples-cubemap
 -   @subpage examples-leapmotion --- @copybrief examples-leapmotion
 -   @subpage examples-motionblur --- @copybrief examples-motionblur
+-   @subpage examples-mouseinteraction --- @copybrief examples-mouseinteraction
 -   @subpage examples-ovr --- @copybrief examples-ovr
 -   @subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
     --- @copybrief examples-picking

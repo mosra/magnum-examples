@@ -29,5 +29,7 @@ Contributors to Magnum examples
 -   Michal Mikula -- Box2D example
 -   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
     package updates, a PPA repository for stable versions
+-   scturtle ([@scturtle](https://github.com/scturtle)) -- Mouse Interaction
+    example
 
 Big thanks to everyone involved!
