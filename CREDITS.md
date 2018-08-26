@@ -20,16 +20,25 @@ Third-party components
 Contributors to Magnum examples
 -------------------------------
 
+Listing only people with code contributions, because otherwise there's too many
+:) Big thanks to everyone involved!
+
+-   Bill Robinson ([@wivlaro](https://github.com/wivlaro) -- Shadows example
+-   Gabriel de Perthuis ([@g2p](https://github.com/g2p)) -- buildsystem fixes
+-   Jan Dupal ([@JanDupal](https://github.com/JanDupal) -- Bullet example
+-   Janick Martinez Esturo ([@ph03](https://github.com/ph03)) -- build fixes
 -   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Oculus VR,
     Audio, Area Lights, WebVR and Leap Motion example
--   Jan Dupal ([@JanDupal](https://github.com/JanDupal) -- Bullet example
--   Bill Robinson ([@wivlaro](https://github.com/wivlaro) -- Shadows example
+-   Leon Moctezuma ([@leonidax](https://github.com/leonidax)) -- bugreports,
+    buildsystem fixes
 -   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
 -   Michal Mikula -- Box2D example
 -   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
     package updates, a PPA repository for stable versions
+-   Nicholas "LB" Branden ([@LB--](https://github.com/LB--)) -- bugfixes
 -   scturtle ([@scturtle](https://github.com/scturtle)) -- Mouse Interaction
     example
 
-Big thanks to everyone involved!
+Is this list missing your name or something's wrong?
+[Let us know!](http://magnum.graphics/contact/)

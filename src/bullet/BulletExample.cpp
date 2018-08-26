@@ -115,7 +115,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
             .setWindowFlags(Configuration::WindowFlag::Resizable)
             .setSize(conf.size(), dpiScaling);
         GLConfiguration glConf;
-        glConf.setSampleCount((Vector2{framebufferSize()}*dpiScaling/Vector2{windowSize()}).max() < 2.0f ? 8 : 2);
+        glConf.setSampleCount(dpiScaling.max() < 2.0f ? 8 : 2);
         if(!tryCreate(conf, glConf))
             create(conf, glConf.setSampleCount(0));
     }
