@@ -48,6 +48,8 @@
 
 namespace Magnum { namespace Examples {
 
+using namespace Math::Literals;
+
 class LeapMotionExample: public Platform::Application {
     public:
         explicit LeapMotionExample(const Arguments& arguments);
@@ -70,7 +72,7 @@ class LeapMotionExample: public Platform::Application {
 };
 
 LeapMotionExample::LeapMotionExample(const Arguments& arguments):
-    Platform::Application(arguments, Configuration{}.setTitle("Magnum Leap Motion Example").setSampleCount(16))
+    Platform::Application(arguments, Configuration{}.setTitle("Magnum Leap Motion Example"), GLConfiguration{}.setSampleCount(16))
 {
     /* To use LeapMotion with VR, you should set
        _controller.setPolicy(Leap::Controller::PolicyFlag::POLICY_OPTIMIZE_HMD); */
