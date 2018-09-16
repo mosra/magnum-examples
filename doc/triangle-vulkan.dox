@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-triangle-vulkan Triangle using plain Vulkan
+/** @page examples-triangle-vulkan Triangle using Vulkan
 @brief Directly using Vulkan with hand-written SPIR-V to produce a triangle offscreen.
 
 @m_footernavigation
