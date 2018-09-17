@@ -65,7 +65,15 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-mouseinteraction MouseInteractionExample.cpp)
+set(MouseInteraction_SRCS
+    MouseInteractionExample.cpp)
+
+# if(MAGNUM_TARGET_WEBGL)
+    corrade_add_resource(MouseInteraction_RESOURCES resources.conf)
+    list(APPEND MouseInteraction_SRCS ${MouseInteraction_RESOURCES})
+# endif()
+
+add_executable(magnum-mouseinteraction ${MouseInteraction_SRCS})
 target_link_libraries(magnum-mouseinteraction PRIVATE
     Magnum::Application
     Magnum::GL
@@ -75,4 +83,20 @@ target_link_libraries(magnum-mouseinteraction PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders)
 
-install(TARGETS magnum-mouseinteraction DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES mouseinteraction.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction RENAME index.html)
+    install(TARGETS magnum-mouseinteraction DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-mouseinteraction.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-mouseinteraction.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction OPTIONAL)
+
+# Installation for desktop
+elseif(NOT CORRADE_TARGET_IOS)
+    install(TARGETS magnum-mouseinteraction DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
