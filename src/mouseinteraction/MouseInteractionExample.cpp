@@ -101,6 +101,7 @@ class MouseInteractionExample: public Platform::Application {
         Float depthAt(const Vector2i& position);
         Vector3 unproject(const Vector2i& position, Float depth);
 
+        void viewportEvent(ViewportEvent& event) override;
         void mousePressEvent(MouseEvent &event) override;
         void mouseMoveEvent(MouseMoveEvent &event) override;
         void mouseScrollEvent(MouseScrollEvent &event) override;
@@ -167,6 +168,7 @@ MouseInteractionExample::MouseInteractionExample(const Arguments &arguments): Pl
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum Mouse Interaction Example")
+            .setWindowFlags(Configuration::WindowFlag::Resizable)
             .setSize(conf.size(), dpiScaling);
         GLConfiguration glConf;
         glConf.setSampleCount(dpiScaling.max() < 2.0f ? 8 : 2);
@@ -315,6 +317,26 @@ Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth
         (_cameraObject->absoluteTransformationMatrix()*_camera->projectionMatrix().inverted()).transformPoint(in)
     */
     return _camera->projectionMatrix().inverted().transformPoint(in);
+}
+
+void MouseInteractionExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+
+    /* Recreate textures and renderbuffers that depend on viewport size */
+    #ifdef MAGNUM_TARGET_WEBGL
+    _depth = GL::Texture2D{};
+    _depth.setMinificationFilter(GL::SamplerFilter::Nearest)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, GL::TextureFormat::Depth24Stencil8, event.framebufferSize());
+    _depthFramebuffer.attachTexture(GL::Framebuffer::BufferAttachment::Depth, _depth, 0);
+
+    _reinterpretDepth = GL::Renderbuffer{};
+    _reinterpretDepth.setStorage(GL::RenderbufferFormat::RGBA8, event.framebufferSize());
+    _reinterpretFramebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _reinterpretDepth);
+
+    _reinterpretFramebuffer.setViewport({{}, event.framebufferSize()});
+    #endif
 }
 
 void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
