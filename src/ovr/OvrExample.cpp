@@ -116,11 +116,12 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
     /* Create a context with the HMD display resolution */
     Configuration conf;
     conf.setTitle("Magnum OculusVR Example")
-        .setSize(resolution)
-        .setSampleCount(16)
-        .setSRGBCapable(true);
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
+        .setSize(resolution);
+    GLConfiguration glConf;
+    glConf.setSampleCount(16)
+          .setSRGBCapable(true);
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     /* The oculus sdk compositor does some "magic" to reduce latency. For
        that to work, VSync needs to be turned off. */

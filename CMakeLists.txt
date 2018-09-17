@@ -75,6 +75,7 @@ option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires T
 option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
 option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" OFF)
 option(WITH_TRIANGLE_SOKOL_EXAMPLE "Build sokol_gfx Triangle example" OFF)
+option(WITH_TRIANGLE_VULKAN_EXAMPLE "Build Vulkan Triangle example" OFF)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires ColladaImporter plugin)" OFF)
 if(CORRADE_TARGET_EMSCRIPTEN)
     option(WITH_WEBVR_EXAMPLE "Build WebVR example" OFF)

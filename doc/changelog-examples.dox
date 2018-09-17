@@ -37,6 +37,8 @@ namespace Magnum {
 -   New @ref examples-box2d example showing usage with Box2D
 -   New @ref examples-mouseinteraction example showing advanced mouse
     interaction (see [mosra/magnum-examples#46](https://github.com/mosra/magnum-examples/pull/46))
+-   New @ref examples-triangle-vulkan example showcasing basic Vulkan usage
+    with Magnum
 
 @subsection changelog-examples-latest-buildsystem Build system
 

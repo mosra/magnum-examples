@@ -24,15 +24,15 @@
 */
 
 namespace Magnum {
-/** @page example-index Examples
+/** @page example-index Examples and tutorials
 @brief Learn by example to get quickly up to speed.
 
-The examples assume that you have at least basic knowledge about graphics
-(what are homogeneous coordinates, what is mesh, vertex, texture...), how
-OpenGL works (what are buffers, what is depth test for...) and basics of GLSL
-(attributes, uniforms, vertex/fragment shaders...). Deep knowledge of OpenGL
-API itself is not required, as Magnum wraps the functionality in its own
-classes.
+The examples assume that you have at least basic knowledge about graphics (what
+are homogeneous coordinates, what is mesh, vertex, texture...), how GPU APIs
+work (what are buffers, what is depth test for...) and basics of GLSL
+(attributes, uniforms, vertex/fragment shaders...). Deep knowledge of OpenGL /
+Vulkan APIs themselves is not required, as Magnum wraps most of the
+functionality in its own classes.
 
 Full source code for all examples is available in the
 [GitHub repository](https://github.com/mosra/magnum-examples), see
@@ -41,42 +41,171 @@ Full source code for all examples is available in the
 contains additional patches for mobile and web platform support that aren't
 present in `master` in order to keep the example code as simple as possible.
 
+@section example-index-tutorials Fully documented tutorials
+
 The following examples explain the basic principles and have fully documented
 tutorials:
 
--   @subpage examples-triangle @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-triangle
--   @subpage examples-primitives @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-primitives
--   @subpage examples-textured-triangle @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-textured-triangle
--   @subpage examples-viewer @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-viewer
--   @subpage examples-triangle-plain-glfw --- @copybrief examples-triangle-plain-glfw
--   @subpage examples-triangle-sokol --- @copybrief examples-triangle-sokol
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html triangle.png
+@subpage examples-triangle @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-triangle
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html primitives.png
+@subpage examples-primitives @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-primitives
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html textured-triangle.png
+@subpage examples-textured-triangle @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-textured-triangle
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html viewer.png
+@subpage examples-viewer @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-viewer
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html triangle.png
+@subpage examples-triangle-plain-glfw \n @copybrief examples-triangle-plain-glfw
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html triangle.png
+@subpage examples-triangle-sokol \n @copybrief examples-triangle-sokol
+@m_enddiv
+
+@endparblock
+
+@section example-index-source Other examples
 
 The following consist of documented source code only:
 
--   @subpage examples-arealights @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-arealights
--   @subpage examples-audio @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-audio
--   @subpage examples-box2d @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-box2d
--   @subpage examples-bullet @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-bullet
--   @subpage examples-cubemap --- @copybrief examples-cubemap
--   @subpage examples-leapmotion --- @copybrief examples-leapmotion
--   @subpage examples-motionblur --- @copybrief examples-motionblur
--   @subpage examples-mouseinteraction --- @copybrief examples-mouseinteraction
--   @subpage examples-ovr --- @copybrief examples-ovr
--   @subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-picking
--   @subpage examples-shadows --- @copybrief examples-shadows
--   @subpage examples-text @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-text
--   @subpage examples-webvr @m_class{m-label m-default m-flat} **live web demo**
-    --- @copybrief examples-webvr
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html arealights.png
+@subpage examples-arealights @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-arealights
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html audio.png
+@subpage examples-audio @m_class{m-label m-warning} **sound** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-audio
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html box2d.png
+@subpage examples-box2d @m_class{m-label m-warning} **physics** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-box2d
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html bullet.png
+@subpage examples-bullet @m_class{m-label m-warning} **physics** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-bullet
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html cubemap.jpg
+@subpage examples-cubemap \n @copybrief examples-cubemap
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html leapmotion.png
+@subpage examples-leapmotion @m_class{m-label m-primary} **vr** \n
+@copybrief examples-leapmotion
+@m_enddiv
+
+@endparblock
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html motionblur.png
+@subpage examples-motionblur \n @copybrief examples-motionblur
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html mouseinteraction.png
+@subpage examples-mouseinteraction \n @copybrief examples-mouseinteraction
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html picking.png
+@subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-picking
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html shadows2.png
+@subpage examples-shadows \n @copybrief examples-shadows
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html text.png
+@subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
+@copybrief examples-text
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html triangle-vulkan.png
+@subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
+\n @copybrief examples-triangle-vulkan
+@m_enddiv
+
+@endparblock
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@image html ovr.png
+@subpage examples-ovr @m_class{m-label m-primary} **vr** \n @copybrief examples-ovr
+@m_enddiv
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@image html webvr.png
+@subpage examples-webvr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-webvr
+@m_enddiv
+
+@endparblock
+
+- - -
 
 There are also @ref corrade-example-index "examples for the Corrade library"
 itself.

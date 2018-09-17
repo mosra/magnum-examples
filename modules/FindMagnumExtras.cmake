@@ -79,7 +79,7 @@ find_package(Corrade REQUIRED ${_MAGNUMEXTRAS_CORRADE_DEPENDENCIES})
 set(_MAGNUMEXTRAS_MAGNUM_DEPENDENCIES )
 foreach(_component ${MagnumExtras_FIND_COMPONENTS})
     if(_component STREQUAL Ui)
-        set(_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES Text)
+        set(_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES Text GL)
     endif()
 
     list(APPEND _MAGNUMEXTRAS_MAGNUM_DEPENDENCIES ${_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES})

@@ -327,7 +327,7 @@ if(NOT TARGET Magnum::Magnum)
         ${MAGNUM_INCLUDE_DIR})
     # Some deprecated APIs use headers (but not externally defined symbols)
     # from the GL library, link those includes as well
-    if(MAGNUM_BUILD_DEPRECATED)
+    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_TARGET_GL)
         set_property(TARGET Magnum::Magnum APPEND PROPERTY
             INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
     endif()
@@ -342,13 +342,16 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENT_LIST
-    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Shapes Text
+    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Text
     TextureTools Trade Vk
     AndroidApplication GlfwApplication GlutApplication GlxApplication
     Sdl2Application XEglApplication WindowlessCglApplication
     WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication WindowlessWindowsEglApplication
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENT_LIST Shapes)
+endif()
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneImporter
     MagnumFont MagnumFontConverter ObjImporter TgaImageConverter TgaImporter
@@ -362,14 +365,25 @@ set(_MAGNUM_Audio_DEPENDENCIES )
 set(_MAGNUM_DebugTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
     # MeshTools, Primitives, SceneGraph, Shaders and Shapes are used only for
-    # GL renderers
-    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade GL)
+    # GL renderers. All of this is optional, compiled in only if the base
+    # library was selected.
+    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Trade GL)
+    set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_SceneGraph_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
+    if(MAGNUM_BUILD_DEPRECATED)
+        list(APPEND _MAGNUM_DebugTools_DEPENDENCIES Shapes)
+        set(_MAGNUM_DebugTools_Shapes_DEPENDENCY_IS_OPTIONAL ON)
+    endif()
 endif()
 
 set(_MAGNUM_MeshTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
     # Trade is used only in compile(), which needs GL as well
-    list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Trade GL)
+    list(APPEND _MAGNUM_MeshTools_DEPENDENCIES Trade GL)
 endif()
 
 set(_MAGNUM_OpenGLTester_DEPENDENCIES GL)
@@ -396,7 +410,9 @@ endif()
 set(_MAGNUM_Primitives_DEPENDENCIES Trade)
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
-set(_MAGNUM_Shapes_DEPENDENCIES SceneGraph)
+if(MAGNUM_BUILD_DEPRECATED)
+    set(_MAGNUM_Shapes_DEPENDENCIES SceneGraph)
+endif()
 set(_MAGNUM_Text_DEPENDENCIES TextureTools GL)
 
 set(_MAGNUM_TextureTools_DEPENDENCIES )
@@ -448,10 +464,14 @@ endforeach()
 # Ensure that all inter-component dependencies are specified as well
 set(_MAGNUM_ADDITIONAL_COMPONENTS )
 foreach(_component ${Magnum_FIND_COMPONENTS})
-    # Mark the dependencies as required if the component is also required
+    # Mark the dependencies as required if the component is also required, but
+    # only if they themselves are not optional (for example parts of DebugTools
+    # are present only if their respective base library is compiled)
     if(Magnum_FIND_REQUIRED_${_component})
         foreach(_dependency ${_MAGNUM_${_component}_DEPENDENCIES})
-            set(Magnum_FIND_REQUIRED_${_dependency} TRUE)
+            if(NOT _MAGNUM_${_component}_${_dependency}_DEPENDENCY_IS_OPTIONAL)
+                set(Magnum_FIND_REQUIRED_${_dependency} TRUE)
+            endif()
         endforeach()
     endif()
 
@@ -473,7 +493,9 @@ foreach(_WHAT LIBRARY PLUGIN EXECUTABLE)
     set(_MAGNUM_${_WHAT}_COMPONENTS "^(${_MAGNUM_${_WHAT}_COMPONENTS})$")
 endforeach()
 
-# Find all components
+# Find all components. Maintain a list of components that'll need to have
+# their optional dependencies checked.
+set(_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD )
 foreach(_component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
 
@@ -600,6 +622,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(GLFW)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES GLFW::GLFW)
+                # Use the Foundation framework on Apple to query the DPI awareness
+                if(CORRADE_TARGET_APPLE)
+                    find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+                    mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+                # Needed for opt-in DPI queries
+                elseif(CORRADE_TARGET_UNIX)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+                endif()
 
                 # With GLVND (since CMake 3.11) we need to explicitly link to
                 # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
@@ -905,14 +938,25 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # Link to core Magnum library, add inter-library dependencies
+        # Link to core Magnum library, add inter-library dependencies. If there
+        # are optional dependencies, defer adding them to later once we know if
+        # they were found or not.
         if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
+            set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
             foreach(_dependency ${_MAGNUM_${_component}_DEPENDENCIES})
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                if(NOT _MAGNUM_${_component}_${_dependency}_DEPENDENCY_IS_OPTIONAL)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                else()
+                    list(APPEND _MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD
+                        ${_dependency})
+                endif()
             endforeach()
+            if(_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD)
+                list(APPEND _MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD ${_component})
+            endif()
         endif()
 
         # Decide if the library was found
@@ -974,6 +1018,17 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY ${MAGNUM_EXTRAS_NEEDED}
     HANDLE_COMPONENTS)
+
+# Components with optional dependencies -- add them once we know if they were
+# found or not.
+foreach(_component ${_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD})
+    foreach(_dependency ${_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD})
+        if(Magnum_${_dependency}_FOUND)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+        endif()
+    endforeach()
+endforeach()
 
 # Create Windowless*Application, *Application and *Context aliases
 # TODO: ugh why can't I make an alias of IMPORTED target?

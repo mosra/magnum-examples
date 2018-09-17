@@ -80,15 +80,20 @@
 set(_MAGNUMINTEGRATION_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
-        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shapes Shaders GL)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES Shapes)
     endif()
     if(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     endif()
 
     list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
 endforeach()
 find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
+if(_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES)
+    find_package(Magnum OPTIONAL_COMPONENTS ${_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES})
+endif()
 
 # Global integration include dir
 find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum
@@ -227,12 +232,19 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         endif()
 
         if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})
-            # Link to core Magnum library, add other Magnum dependencies
+            # Link to core Magnum library, add other Magnum required and
+            # optional dependencies
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
             foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+            endforeach()
+            foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
+                if(Magnum_${_dependency}_FOUND)
+                    set_property(TARGET MagnumIntegration::${_component} APPEND     PROPERTY
+                        INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                endif()
             endforeach()
 
             # Add inter-project dependencies

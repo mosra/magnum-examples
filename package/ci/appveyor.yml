@@ -7,52 +7,56 @@ environment:
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-desktop-msvc2015
+    APPVEYOR_JOB_NAME: ports-windows-gl-msvc2015
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-desktop-msvc2017
+    APPVEYOR_JOB_NAME: ports-windows-gl-msvc2017
+  - TARGET: desktop-vulkan
+    COMPILER: msvc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_JOB_NAME: ports-windows-vulkan-msvc2017
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-desktop-mingw
+    APPVEYOR_JOB_NAME: ports-windows-gl-mingw
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-es2-msvc2015
+    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2015
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-es2-msvc2017
+    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2017
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-es3-msvc2015
+    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2015
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-es3-msvc2017
+    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2017
   # Disabled because SDL_WinRTRunApp: identifier not found
   #- TARGET: rt
     #TARGET_GLES2: ON
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2015
+    #APPVEYOR_JOB_NAME: ports-windows-rt-gles2-msvc2015
   #- TARGET: rt
     #TARGET_GLES2: ON
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: ports-windows-rt-es2-msvc2017
+    #APPVEYOR_JOB_NAME: ports-windows-rt-gles2-msvc2017
   #- TARGET: rt
     #TARGET_GLES2: OFF
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2015
+    #APPVEYOR_JOB_NAME: ports-windows-rt-gles3-msvc2015
   #- TARGET: rt
     #TARGET_GLES2: OFF
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: ports-windows-rt-es3-msvc2017
+    #APPVEYOR_JOB_NAME: ports-windows-rt-gles3-msvc2017
 
 notifications:
 - provider: Webhook
@@ -91,6 +95,10 @@ build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
+# Vulkan needs to be in a separate build, because in the future it'll need
+# C++14 and building it together with C++11 code would harm verifiability of
+# C++11 compatibility.
+- IF "%TARGET%" == "desktop-vulkan" call package\ci\appveyor-desktop-vulkan.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
