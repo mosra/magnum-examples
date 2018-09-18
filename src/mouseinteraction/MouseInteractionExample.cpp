@@ -55,15 +55,15 @@ using namespace Math::Literals;
 
 class MouseInteractionExample: public Platform::Application {
     public:
-        explicit MouseInteractionExample(const Arguments &arguments);
+        explicit MouseInteractionExample(const Arguments& arguments);
 
     private:
         Float depthAt(const Vector2i& position);
-        Vector3 unproject(const Vector2i& position, Float depth);
+        Vector3 unproject(const Vector2i& position, Float depth) const;
 
-        void mousePressEvent(MouseEvent &event) override;
-        void mouseMoveEvent(MouseMoveEvent &event) override;
-        void mouseScrollEvent(MouseScrollEvent &event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
         void drawEvent() override;
 
         Shaders::VertexColor3D _vertexColorShader{NoCreate};
@@ -109,7 +109,7 @@ class FlatDrawable: public SceneGraph::Drawable3D {
         GL::Mesh& _mesh;
 };
 
-MouseInteractionExample::MouseInteractionExample(const Arguments &arguments): Platform::Application{arguments, NoCreate} {
+MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try 8x MSAA, fall back to zero samples if not possible. Enable only 2x
        MSAA if we have enough DPI. */
     {
@@ -179,7 +179,7 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
     return Math::min(Containers::arrayCast<const Float>(data.data()));
 }
 
-Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth) {
+Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth) const {
     const Range2Di view = GL::defaultFramebuffer.viewport();
     const Vector2i fbPosition{position.x(), view.sizeY() - position.y() - 1};
     const Vector3 in{2*Vector2{fbPosition - view.min()}/Vector2{view.size()} - Vector2{1.0f}, depth*2.0f - 1.0f};
@@ -225,7 +225,7 @@ void MouseInteractionExample::mouseMoveEvent(MouseMoveEvent& event) {
     redraw();
 }
 
-void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent &event) {
+void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     const Vector3 p = unproject(event.position(), depth);
