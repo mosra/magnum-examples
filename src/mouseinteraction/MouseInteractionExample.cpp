@@ -196,9 +196,18 @@ Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth
 }
 
 void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
+    /* Due to compatibility reasons, scroll is also reported as a press event,
+       so filter that out. Could be removed once MouseEvent::Button::Wheel is
+       gone from Magnum. */
+    if(event.button() != MouseEvent::Button::Left &&
+       event.button() != MouseEvent::Button::Middle)
+        return;
+
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     _translationPoint = unproject(event.position(), depth);
+    /* Update the rotation point only if we're not rotating against infinite
+       depth */
     if(currentDepth != 1.0f) {
         _rotationPoint = _translationPoint;
         _lastDepth = depth;
@@ -232,7 +241,9 @@ void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     const Vector3 p = unproject(event.position(), depth);
-    if(currentDepth != 1.0f) {
+    /* Update the rotation point only if we're not zooming against infinite
+       depth or if the original rotation point is not yet initialized */
+    if(currentDepth != 1.0f || _rotationPoint.isZero()) {
         _rotationPoint = p;
         _lastDepth = depth;
     }
