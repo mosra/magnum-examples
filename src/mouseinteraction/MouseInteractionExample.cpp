@@ -75,7 +75,7 @@ class MouseInteractionExample: public Platform::Application {
         Object3D* _cameraObject;
         SceneGraph::Camera3D* _camera;
 
-        Float _lastDepth{0.8f};
+        Float _lastDepth;
         Vector2i _lastPosition{-1};
         Vector3 _rotationPoint, _translationPoint;
 };
@@ -166,6 +166,9 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
     _camera = new SceneGraph::Camera3D{*_cameraObject};
     _camera->setProjectionMatrix(Matrix4::perspectiveProjection(
         45.0_degf, Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f));
+
+    /* Initialize initial depth to the value at scene center */
+    _lastDepth = (_camera->projectionMatrix().transformPoint(-_cameraObject->transformation().translation()).z() + 1.0f)*0.5f;
 }
 
 Float MouseInteractionExample::depthAt(const Vector2i& position) {
