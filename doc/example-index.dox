@@ -154,7 +154,8 @@ The following consist of documented source code only:
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html mouseinteraction.png
-@subpage examples-mouseinteraction \n @copybrief examples-mouseinteraction
+@subpage examples-mouseinteraction @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-mouseinteraction
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv

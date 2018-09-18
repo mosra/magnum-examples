@@ -30,16 +30,19 @@ namespace Magnum {
 
 @m_footernavigation
 
-Provides rotation, panning and zooming control that is relative to depth at
+Provides rotation, panning and zooming controls that are relative to depth at
 mouse cursor for more convenient interaction with complex scenes.
 
 @image html mouseinteraction.png
 
-@section examples-mouseinteraction-controls Key controls
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/mouseinteraction/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+
+@section examples-mouseinteraction-controls Controls
 
 Similar to [Blender](https://www.blender.org/).
 
--   @m_class{m-label m-default} **mouse drag** rotates the scene around the cursor
+-   @m_class{m-label m-default} **mouse drag** rotates the scene around the
+    cursor
 -   @m_class{m-label m-warning} **shift** @m_class{m-label m-default} **mouse drag**
     pans the scene at depth of the cursor
 
@@ -54,6 +57,11 @@ Full source code is linked below and also available in the
 
 -   @ref mouseinteraction/CMakeLists.txt "CMakeLists.txt"
 -   @ref mouseinteraction/MouseInteractionExample.cpp "MouseInteractionExample.cpp"
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/mouseinteraction)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
 
 @example mouseinteraction/CMakeLists.txt @m_examplenavigation{examples-mouseinteraction,mouseinteraction/} @m_footernavigation
 @example mouseinteraction/MouseInteractionExample.cpp @m_examplenavigation{examples-mouseinteraction,mouseinteraction/} @m_footernavigation
