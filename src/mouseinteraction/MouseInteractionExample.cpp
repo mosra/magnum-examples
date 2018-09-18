@@ -61,6 +61,7 @@ class MouseInteractionExample: public Platform::Application {
         Float depthAt(const Vector2i& position);
         Vector3 unproject(const Vector2i& position, Float depth) const;
 
+        void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
         void mouseScrollEvent(MouseScrollEvent& event) override;
@@ -193,6 +194,42 @@ Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth
         (_cameraObject->absoluteTransformationMatrix()*_camera->projectionMatrix().inverted()).transformPoint(in)
     */
     return _camera->projectionMatrix().inverted().transformPoint(in);
+}
+
+void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
+    /* Reset the transformation to the original view */
+    if(event.key() == KeyEvent::Key::NumZero) {
+        (*_cameraObject)
+            .resetTransformation()
+            .translate(Vector3::zAxis(5.0f))
+            .rotateX(-15.0_degf)
+            .rotateY(30.0_degf);
+        redraw();
+        return;
+
+    /* Axis-aligned view */
+    } else if(event.key() == KeyEvent::Key::NumOne ||
+              event.key() == KeyEvent::Key::NumThree ||
+              event.key() == KeyEvent::Key::NumSeven)
+    {
+        /* Start with current camera translation with the rotation inverted */
+        const Vector3 viewTranslation = _cameraObject->transformation().rotationScaling().inverted()*_cameraObject->transformation().translation();
+
+        /* Front/back */
+        const Float multiplier = event.modifiers() & KeyEvent::Modifier::Ctrl ? -1.0f : 1.0f;
+
+        Matrix4 transformation;
+        if(event.key() == KeyEvent::Key::NumSeven) /* Top/bottom */
+            transformation = Matrix4::rotationX(-90.0_degf*multiplier);
+        else if(event.key() == KeyEvent::Key::NumOne) /* Front/back */
+            transformation = Matrix4::rotationY(90.0_degf - 90.0_degf*multiplier);
+        else if(event.key() == KeyEvent::Key::NumThree) /* Right/left */
+            transformation = Matrix4::rotationY(90.0_degf*multiplier);
+        else CORRADE_ASSERT_UNREACHABLE();
+
+        _cameraObject->setTransformation(transformation*Matrix4::translation(viewTranslation));
+        redraw();
+    }
 }
 
 void MouseInteractionExample::mousePressEvent(MouseEvent& event) {

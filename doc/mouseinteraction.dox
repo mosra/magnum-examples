@@ -39,12 +39,21 @@ mouse cursor for more convenient interaction with complex scenes.
 
 @section examples-mouseinteraction-controls Controls
 
-Similar to [Blender](https://www.blender.org/).
+Behavior similar to [Blender](https://www.blender.org/) with *Zoom To Mouse
+Position* enabled.
 
 -   @m_class{m-label m-default} **mouse drag** rotates the scene around the
     cursor
--   @m_class{m-label m-warning} **shift** @m_class{m-label m-default} **mouse drag**
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse drag**
     pans the scene at depth of the cursor
+-   @m_class{m-label m-default} **Num 1** / @m_class{m-label m-warning} **Ctrl**
+    @m_class{m-label m-default} **Num 1** switches to a front / back view
+-   @m_class{m-label m-default} **Num 3** / @m_class{m-label m-warning} **Ctrl**
+    @m_class{m-label m-default} **Num 3** switches to a right / left view
+-   @m_class{m-label m-default} **Num 7** / @m_class{m-label m-warning} **Ctrl**
+    @m_class{m-label m-default} **Num 7** switches to a top / bottom view
+-   @m_class{m-label m-default} **Num 0** resets the camera back to the
+    original view
 
 @section examples-mouseinteraction-credits Credits
 
