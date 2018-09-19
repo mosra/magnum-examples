@@ -260,7 +260,7 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
         45.0_degf, Vector2{windowSize()}.aspectRatio(), 0.01f, 100.0f));
 
     /* Initialize initial depth to the value at scene center */
-    _lastDepth = (_camera->projectionMatrix().transformPoint(-_cameraObject->transformation().translation()).z() + 1.0f)*0.5f;
+    _lastDepth = ((_camera->projectionMatrix()*_camera->cameraMatrix()).transformPoint({}).z() + 1.0f)*0.5f;
 }
 
 Float MouseInteractionExample::depthAt(const Vector2i& position) {
@@ -383,9 +383,9 @@ void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     _translationPoint = unproject(event.position(), depth);
-    /* Update the rotation point only if we're not rotating against infinite
-       depth */
-    if(currentDepth != 1.0f) {
+    /* Update the rotation point only if we're not zooming against infinite
+       depth or if the original rotation point is not yet initialized */
+    if(currentDepth != 1.0f || _rotationPoint.isZero()) {
         _rotationPoint = _translationPoint;
         _lastDepth = depth;
     }
