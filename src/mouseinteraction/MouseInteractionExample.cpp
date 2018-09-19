@@ -292,19 +292,12 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
 
     Image2D image = _reinterpretFramebuffer.read(area, {PixelFormat::RGBA8Unorm});
 
-    /* Unpack the values back. Basically inverse of what the shader does ---
-       unpack from 0-255 to 0.0f-1.0f, then combine the continued fractions
-       back, then rescale to make the largest value 0x100000000 instead of
-       0xffffffff. */
+    /* Unpack the values back. Can't just use UnsignedInt as the values are
+       packed as big-endian. */
     Float depth[25];
     auto packed = Containers::arrayCast<const Math::Vector4<UnsignedByte>>(image.data());
-    for(std::size_t i = 0; i != packed.size(); ++i) {
-        depth[i] = (Math::unpack<Float>(packed[i].x()) +
-                    Math::unpack<Float>(packed[i].y())/256.0f +
-                    Math::unpack<Float>(packed[i].z())/(256.0f*256.0f) +
-                    Math::unpack<Float>(packed[i].w())/(256.0f*256.0f*256.0f))*
-                   ((256.0f*256.0f*256.0f*256.0f)/(256.0f*256.0f*256.0f*256.0f - 1.0f));
-    }
+    for(std::size_t i = 0; i != packed.size(); ++i)
+        depth[i] = Math::unpack<Float, UnsignedInt, 24>((packed[i].x() << 16) | (packed[i].y() << 8) | packed[i].z());
 
     return Math::min(depth);
     #endif

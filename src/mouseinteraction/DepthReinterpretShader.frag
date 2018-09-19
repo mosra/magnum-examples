@@ -31,19 +31,18 @@ uniform highp sampler2D depthTexture;
 
 in mediump vec2 textureCoordinates;
 
-out highp vec4 reinterpretDepth;
+out highp vec3 reinterpretDepth;
 
 void main() {
-    /* Rescale so 1.0 is mapped to 0xffffffff instead of 0x100000000 */
-    highp float depth = texture(depthTexture, textureCoordinates).r*((256.0*256.0*256.0*256.0 - 1.0)/(256.0*256.0*256.0*256.0));
-
-    /* Store continued fractions in the resulting 8bit vector. We don't want
-       rounding to happen because we store remaining fraction in the
-       immediately next component, so ensure the stored values are clearly
-       mappable to 0-255 */
-    reinterpretDepth = floor(255.0*fract(depth*vec4(
-        1.0,
-        256.0,
-        256.0*256.0,
-        256.0*256.0*256.0)))/255.0;
+    /* Convert from range 0.0 - 1.0 to 0 - 0xffffff (we have a 24bit depth and
+       floats have 24bit mantissa so this should preserve everything), then
+       separate that into three 8bit values and then unpack each 8bit value
+       back to 0.0 - 1.0 again in order to make the WebGL RGBA8 pipeline happy.
+       All the fancy packing algos from https://stackoverflow.com/q/9882716 and
+       elsewhere were not treating depth = 1.0 correctly, so I'm doing my own
+       thing here. */
+    highp float depth = texture(depthTexture, textureCoordinates).r;
+    highp uint depthI = uint(depth*float(0xffffffu));
+    highp uvec3 depthIV = uvec3((depthI >> 16), (depthI >> 8), depthI) & 0xffu;
+    reinterpretDepth = vec3(depthIV)/255.0;
 }
