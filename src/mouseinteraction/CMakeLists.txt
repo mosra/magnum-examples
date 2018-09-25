@@ -68,10 +68,10 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 set(MouseInteraction_SRCS
     MouseInteractionExample.cpp)
 
-# if(MAGNUM_TARGET_WEBGL)
+if(MAGNUM_TARGET_WEBGL)
     corrade_add_resource(MouseInteraction_RESOURCES resources.conf)
     list(APPEND MouseInteraction_SRCS ${MouseInteraction_RESOURCES})
-# endif()
+endif()
 
 add_executable(magnum-mouseinteraction ${MouseInteraction_SRCS})
 target_link_libraries(magnum-mouseinteraction PRIVATE
