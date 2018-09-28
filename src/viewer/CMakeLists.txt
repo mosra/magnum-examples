@@ -59,10 +59,15 @@ find_package(Magnum REQUIRED
     MeshTools
     Shaders
     SceneGraph
-    Trade
-    Sdl2Application)
+    Trade)
 
-if(CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
+
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     find_package(MagnumPlugins REQUIRED OpenGexImporter)
 endif()
 
@@ -70,9 +75,15 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(Viewer_RESOURCES resources.conf)
 
-add_executable(magnum-viewer
-    ViewerExample.cpp
-    ${Viewer_RESOURCES})
+if(NOT CORRADE_TARGET_ANDROID)
+    add_executable(magnum-viewer
+        ViewerExample.cpp
+        ${Viewer_RESOURCES})
+else()
+    add_library(magnum-viewer SHARED
+        ViewerExample.cpp
+        ${Viewer_RESOURCES})
+endif()
 target_link_libraries(magnum-viewer PRIVATE
     Magnum::Application
     Magnum::GL
@@ -82,7 +93,7 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Shaders
     Magnum::Trade)
 
-if(CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::OpenGexImporter)
 endif()
 

@@ -37,7 +37,11 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
+#ifdef CORRADE_TARGET_ANDROID
+#include <Magnum/Platform/AndroidApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -68,7 +72,9 @@ class ViewerExample: public Platform::Application {
         void mousePressEvent(MouseEvent& event) override;
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
+        #ifndef CORRADE_TARGET_ANDROID
         void mouseScrollEvent(MouseScrollEvent& event) override;
+        #endif
 
         Vector3 positionOnSphere(const Vector2i& position) const;
 
@@ -112,8 +118,10 @@ class TexturedDrawable: public SceneGraph::Drawable3D {
 
 ViewerExample::ViewerExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
-        .setTitle("Magnum Viewer Example")
-        .setWindowFlags(Configuration::WindowFlag::Resizable)}
+        #ifndef CORRADE_TARGET_ANDROID
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        #endif
+        .setTitle("Magnum Viewer Example")}
 {
     /* Every scene needs a camera */
     _cameraObject
@@ -323,15 +331,24 @@ void ViewerExample::viewportEvent(ViewportEvent& event) {
 }
 
 void ViewerExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
     if(event.button() == MouseEvent::Button::Left)
+    #endif
+    {
         _previousPosition = positionOnSphere(event.position());
+    }
 }
 
 void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
     if(event.button() == MouseEvent::Button::Left)
+    #endif
+    {
         _previousPosition = Vector3();
+    }
 }
 
+#ifndef CORRADE_TARGET_ANDROID
 void ViewerExample::mouseScrollEvent(MouseScrollEvent& event) {
     if(!event.offset().y()) return;
 
@@ -344,6 +361,7 @@ void ViewerExample::mouseScrollEvent(MouseScrollEvent& event) {
 
     redraw();
 }
+#endif
 
 Vector3 ViewerExample::positionOnSphere(const Vector2i& position) const {
     const Vector2 positionNormalized = Vector2{position}/Vector2{_camera->viewport()} - Vector2{0.5f};
@@ -353,7 +371,9 @@ Vector3 ViewerExample::positionOnSphere(const Vector2i& position) const {
 }
 
 void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
+    #ifndef CORRADE_TARGET_ANDROID
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+    #endif
 
     const Vector3 currentPosition = positionOnSphere(event.position());
     const Vector3 axis = Math::cross(_previousPosition, currentPosition);
