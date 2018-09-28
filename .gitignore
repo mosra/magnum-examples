@@ -10,3 +10,4 @@ CMakeLists.txt.user*
 # Android-specific stuff
 .externalNativeBuild
 .gradle
+local.properties
