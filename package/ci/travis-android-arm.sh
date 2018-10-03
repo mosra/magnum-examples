@@ -62,10 +62,30 @@ cmake .. \
     -DWITH_TRADE=ON \
     -DWITH_SDL2APPLICATION=OFF \
     -DWITH_ANDROIDAPPLICATION=ON \
+    -DWITH_ANYIMAGEIMPORTER=ON \
     -DWITH_TGAIMPORTER=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -G Ninja
 ninja install
+cd ../..
+
+# Crosscompile Magnum Plugins
+git clone --depth 1 git://github.com/mosra/magnum-plugins.git
+cd magnum-plugins
+mkdir build-android-arm && cd build-android-arm
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
+    -DWITH_OPENGEXIMPORTER=ON
+make -j install
 cd ../..
 
 # Crosscompile Magnum Integration
