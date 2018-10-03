@@ -346,6 +346,10 @@ void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
     {
         _previousPosition = Vector3();
     }
+
+    #ifdef CORRADE_TARGET_ANDROID
+    static_cast<void>(event);
+    #endif
 }
 
 #ifndef CORRADE_TARGET_ANDROID
