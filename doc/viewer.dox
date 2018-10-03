@@ -326,8 +326,13 @@ available in the [magnum-examples GitHub repository](https://github.com/mosra/ma
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-support that aren't present in `master` in order to keep the example code as
-simple as possible.
+and @ref CORRADE_TARGET_ANDROID "Android" support that aren't present in
+`master` in order to keep the example code as simple as possible.
+
+@section examples-viewer-credits Credits
+
+The bundled model is [Blender Suzanne](https://en.wikipedia.org/wiki/Blender_(software)#Suzanne). Android port was contributed by
+[Patrick Werner](https://github.com/boonto).
 
 @example viewer/CMakeLists.txt @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation
 @example viewer/ViewerExample.cpp @m_examplenavigation{examples-viewer,viewer/} @m_footernavigation

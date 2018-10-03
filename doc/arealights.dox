@@ -65,6 +65,9 @@ The implementation is based on the paper
 by Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt. The `*.dds`
 files are republished with a permission from Eric Heitz.
 
+There's also a [Guest Post introducing this example](http://blog.magnum.graphics/guest-posts/area-lights-with-ltcs/)
+on the Magnum Blog.
+
 @section examples-arealights-source Source
 
 Full source code is linked below and together with assets also available in the

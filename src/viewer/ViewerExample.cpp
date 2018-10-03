@@ -300,7 +300,7 @@ void ColoredDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Came
         .setDiffuseColor(_color)
         .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotation())
+        .setNormalMatrix(transformationMatrix.rotationScaling())
         .setProjectionMatrix(camera.projectionMatrix());
 
     _mesh.draw(_shader);
@@ -310,7 +310,7 @@ void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Cam
     _shader
         .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
         .setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotation())
+        .setNormalMatrix(transformationMatrix.rotationScaling())
         .setProjectionMatrix(camera.projectionMatrix())
         .bindDiffuseTexture(_texture);
 
