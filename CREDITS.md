@@ -16,6 +16,8 @@ Third-party components
     [Modified BSD License](http://glew.sourceforge.net/glew.txt), the
     [Mesa 3-D License](http://glew.sourceforge.net/mesa.txt) (MIT) and the
     [Khronos License](http://glew.sourceforge.net/khronos.txt) (MIT).
+-   The Viewer example bundles the [Blender Suzanne](https://en.wikipedia.org/wiki/Blender_(software)#Suzanne)
+    model.
 
 Contributors to Magnum examples
 -------------------------------
@@ -34,9 +36,11 @@ Listing only people with code contributions, because otherwise there's too many
 -   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
 -   Michal Mikula -- Box2D example
--   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
+-   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) -- Ubuntu
     package updates, a PPA repository for stable versions
 -   Nicholas "LB" Branden ([@LB--](https://github.com/LB--)) -- bugfixes
+-   Patrick Werner ([@boonto](https://github.com/boonto)) -- Android port of
+    the Viewer example
 -   scturtle ([@scturtle](https://github.com/scturtle)) -- Mouse Interaction
     example
 
