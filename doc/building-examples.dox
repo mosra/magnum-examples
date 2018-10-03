@@ -205,7 +205,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 
 -   `WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights example.
-    Requires the @ref Ui library and some `TrueTypeFont` plugin.
+    Requires the @ref Ui library and some TTF font plugin such as
+    @ref Text::FreeTypeFont "FreeTypeFont".
 -   `WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example. Requires
     the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
 -   `WITH_BOX2D_EXAMPLE` --- Build the @ref examples-box2d example. Depends on
@@ -213,8 +214,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example. Requires
     the @ref BulletIntegration library.
 -   `WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example. Requires
-    the @ref Trade::JpegImporter "JpegImporter" plugin, not available in OpenGL
-    ES.
+    some JPEG importer plugin such as @ref Trade::JpegImporter "JpegImporter",
+    not available in OpenGL ES.
 -   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
 -   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
     Not available on OpenGL ES.
@@ -227,10 +228,11 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     example.
 -   `WITH_SHADOWS_EXAMPLE` --- Build the @ref examples-shadows example.
 -   `WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example. Requires
-    the @ref Text library and the @ref Text::FreeTypeFont "FreeTypeFont" plugin.
+    the @ref Text library and some TTF font plugin such as
+    @ref Text::FreeTypeFont "FreeTypeFont".
 -   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build the @ref examples-textured-triangle
-    example. Requires the @ref Trade::JpegImporter "JpegImporter" plugin, not
-    available in OpenGL ES.
+    example. Requires some TGA importer plugin such as
+    @ref Trade::TgaImporter "TgaImporter", not available in OpenGL ES.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build the @ref examples-triangle "Triangle"
     example. Enabled by default.
 -   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
@@ -241,7 +243,7 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     [GLEW](http://glew.sourceforge.net/).
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
--   `WITH_WEBVRE_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
+-   `WITH_WEBVR_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 
 Besides building the whole project and enabling a particular subset of
