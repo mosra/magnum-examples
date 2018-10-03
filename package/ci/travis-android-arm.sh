@@ -127,3 +127,8 @@ cd ../..
 cd src/textured-triangle
 gradle build
 cd ../..
+
+# Build the Viewer example
+cd src/viewer
+gradle build
+cd ../..
