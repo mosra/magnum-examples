@@ -43,6 +43,10 @@ the screen. The tutorial covers these new features:
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/viewer/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
+Note that this example is deliberately simplified to highlight the above
+features. For a full-featured model viewer and animation player see the
+@ref magnum-player "magnum-player" app.
+
 @section examples-viewer-scenegraph Scene graph
 
 In previous examples we managed our scene manually, because there was just one

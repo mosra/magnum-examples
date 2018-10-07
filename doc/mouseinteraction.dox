@@ -72,7 +72,8 @@ Full source code is linked below and also available in the
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/mouseinteraction)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
 support that aren't present in `master` in order to keep the example code as
-simple as possible.
+simple as possible. Code from this example is used in full in the
+@ref magnum-player "magnum-player" app.
 
 @example mouseinteraction/CMakeLists.txt @m_examplenavigation{examples-mouseinteraction,mouseinteraction/} @m_footernavigation
 @example mouseinteraction/MouseInteractionExample.cpp @m_examplenavigation{examples-mouseinteraction,mouseinteraction/} @m_footernavigation
