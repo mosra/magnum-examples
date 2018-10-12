@@ -7,51 +7,55 @@ environment:
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-desktop-msvc2015
+    APPVEYOR_JOB_NAME: windows-gl-msvc2015
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-desktop-msvc2017
+    APPVEYOR_JOB_NAME: windows-gl-msvc2017
+  - TARGET: desktop-vulkan
+    COMPILER: msvc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_JOB_NAME: windows-vulkan-msvc2017
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-desktop-mingw
+    APPVEYOR_JOB_NAME: windows-gl-mingw
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-es2-msvc2015
+    APPVEYOR_JOB_NAME: windows-gles2-msvc2015
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-es2-msvc2017
+    APPVEYOR_JOB_NAME: windows-gles2-msvc2017
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-es3-msvc2015
+    APPVEYOR_JOB_NAME: windows-gles3-msvc2015
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-es3-msvc2017
+    APPVEYOR_JOB_NAME: windows-gles3-msvc2017
   #- TARGET: rt
     #TARGET_GLES2: ON
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #APPVEYOR_JOB_NAME: windows-rt-es2-msvc2015
+    #APPVEYOR_JOB_NAME: windows-rt-gles2-msvc2015
   #- TARGET: rt
     #TARGET_GLES2: ON
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: windows-rt-es2-msvc2017
+    #APPVEYOR_JOB_NAME: windows-rt-gles2-msvc2017
   #- TARGET: rt
     #TARGET_GLES2: OFF
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #APPVEYOR_JOB_NAME: windows-rt-es3-msvc2015
+    #APPVEYOR_JOB_NAME: windows-rt-gles3-msvc2015
   #- TARGET: rt
     #TARGET_GLES2: OFF
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: windows-rt-es3-msvc2017
+    #APPVEYOR_JOB_NAME: windows-rt-gles3-msvc2017
 
 notifications:
 - provider: Webhook
@@ -83,17 +87,21 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
 # OVR SDK
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.4.0_public.zip appveyor DownloadFile https://static.oculus.com/sdk-downloads/1.4.0/Public/1463687419/ovr_sdk_win_1.4.0_public.zip
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.4.0_public.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.26.0_public_minimal.zip appveyor DownloadFile http://ci.magnum.graphics/ovr_sdk_win_1.26.0_public_minimal.zip
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.26.0_public_minimal.zip -o%APPVEYOR_BUILD_FOLDER%\deps
 
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
+# Vulkan needs to be in a separate build, because in the future it'll need
+# C++14 and building it together with C++11 code would harm verifiability of
+# C++11 compatibility.
+- IF "%TARGET%" == "desktop-vulkan" call package\ci\appveyor-desktop-vulkan.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
 - openal-soft-1.17.2-bin.zip -> package/ci/appveyor-cache-reset.txt
 - SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
-- ovr_sdk_win_1.4.0_public.zip -> package/ci/appveyor-cache-reset.txt
+- ovr_sdk_win_1.26.0_public_minimal.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt

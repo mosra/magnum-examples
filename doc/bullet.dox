@@ -30,16 +30,23 @@ namespace Magnum {
 
 @m_footernavigation
 
-Shows a rotating table full of cubes that you can shoot down.
+A rotating table full of cubes that you can shoot down, showcasing the
+@ref BulletIntegration library together with @ref SceneGraph using
+@ref BulletIntegration::MotionState. It's also possible to visualize various
+properties of the Bullet physics world using @ref BulletIntegration::DebugDraw.
 
 @image html bullet.png
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/bullet/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/bullet/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-bullet-controls Key controls
 
-@m_class{m-label m-default} **Arrow keys** *rotate* the camera around,
-@m_class{m-label m-default} **mouse click** shoots a cube.
+-   @m_class{m-label m-default} **Arrow keys** rotate the camera around
+-   @m_class{m-label m-default} **mouse click** shoots an object
+-   @m_class{m-label m-default} **S** toggles between a box (larger, lighter)
+    or a sphere (smaller but heavier) to shoot
+-   @m_class{m-label m-default} **D** toggles draw mode (solid + wireframe debug
+    overlay, just solid or just wireframe debug)
 
 @section examples-bullet-credits Credits
 

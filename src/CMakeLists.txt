@@ -46,6 +46,10 @@ if(WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
 
+if(WITH_BOX2D_EXAMPLE)
+    add_subdirectory(box2d)
+endif()
+
 if(WITH_BULLET_EXAMPLE)
     add_subdirectory(bullet)
 endif()
@@ -60,6 +64,10 @@ endif()
 
 if(WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
+endif()
+
+if(WITH_MOUSEINTERACTION_EXAMPLE)
+    add_subdirectory(mouseinteraction)
 endif()
 
 if(WITH_OVR_EXAMPLE)
@@ -96,6 +104,10 @@ endif()
 
 if(WITH_TRIANGLE_SOKOL_EXAMPLE)
     add_subdirectory(triangle-sokol)
+endif()
+
+if(WITH_TRIANGLE_VULKAN_EXAMPLE)
+    add_subdirectory(triangle-vulkan)
 endif()
 
 if(WITH_VIEWER_EXAMPLE)

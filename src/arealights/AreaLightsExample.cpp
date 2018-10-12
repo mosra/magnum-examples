@@ -313,13 +313,17 @@ constexpr struct {
 
 AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try to create multisampled context, but be nice and fall back if not
-       available */
-    Configuration conf;
-    conf.setTitle("Magnum Area Lights Example");
-    GLConfiguration glConf;
-    glConf.setSampleCount(8);
-    if(!tryCreate(conf, glConf))
-        create(conf, glConf.setSampleCount(0));
+       available. Enable only 2x MSAA if we have enough DPI. */
+    {
+        const Vector2 dpiScaling = this->dpiScaling({});
+        Configuration conf;
+        conf.setTitle("Magnum Area Lights Example")
+            .setSize(conf.size(), dpiScaling);
+        GLConfiguration glConf;
+        glConf.setSampleCount(dpiScaling.max() < 2.0f ? 8 : 2);
+        if(!tryCreate(conf, glConf))
+            create(conf, glConf.setSampleCount(0));
+    }
 
     /* Make it all DARK, eanble face culling so one-sided lights are properly
        visualized */
@@ -376,7 +380,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _flatShader = Shaders::Flat3D{};
 
     /* Create the UI */
-    _ui.emplace(Vector2{windowSize()}, windowSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
+    _ui.emplace(Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
     Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetFocused, *this, &AreaLightsExample::startTextInput);
     Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetBlurred, *this, &AreaLightsExample::stopTextInput);
 

@@ -15,6 +15,7 @@
 #
 #  Bullet                       - Bullet Physics integration library
 #  Dart                         - Dart Physics integration library
+#  Glm                          - GLM integration library
 #  Ovr                          - Oculus SDK integration library
 #
 # Example usage with specifying additional components is:
@@ -79,15 +80,20 @@
 set(_MAGNUMINTEGRATION_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
-        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shapes)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES Shapes)
     endif()
     if(_component STREQUAL Dart)
-        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     endif()
 
     list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
 endforeach()
 find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
+if(_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES)
+    find_package(Magnum OPTIONAL_COMPONENTS ${_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES})
+endif()
 
 # Global integration include dir
 find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum
@@ -96,7 +102,7 @@ mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Ovr)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Glm Ovr)
 
 # Inter-component dependencies (none yet)
 # set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
@@ -184,6 +190,21 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
 
+        # GLM integration library
+        elseif(_component STREQUAL Glm)
+            find_package(GLM)
+            # GLM::GLM is an INTERFACE target, not supported on 2.8.12
+            if(NOT CMAKE_VERSION VERSION_LESS 3.0)
+                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES GLM::GLM)
+            else()
+                # Suppress warnings from GLM includes
+                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                    INTERFACE_INCLUDE_DIRECTORIES ${GLM_INCLUDE_DIR})
+            endif()
+
+            set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
+
         # Dart integration library
         elseif(_component STREQUAL Dart)
             find_package(DART 6.0.0 CONFIG REQUIRED)
@@ -198,9 +219,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         elseif(_component STREQUAL Ovr)
             find_package(OVR)
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                INTERFACE_INCLUDE_DIRECTORIES ${OVR_INCLUDE_DIR})
-            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${OVR_LIBRARY})
+                INTERFACE_LINK_LIBRARIES OVR::OVR)
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES OvrIntegration.h)
         endif()
@@ -213,12 +232,19 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         endif()
 
         if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})
-            # Link to core Magnum library, add other Magnum dependencies
+            # Link to core Magnum library, add other Magnum required and
+            # optional dependencies
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
             foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+            endforeach()
+            foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
+                if(Magnum_${_dependency}_FOUND)
+                    set_property(TARGET MagnumIntegration::${_component} APPEND     PROPERTY
+                        INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                endif()
             endforeach()
 
             # Add inter-project dependencies

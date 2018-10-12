@@ -9,7 +9,8 @@
 #
 # Additionally these variables are defined for internal usage:
 #
-#  SDL2_LIBRARY             - SDL2 library
+#  SDL2_LIBRARY_DEBUG       - SDL2 debug library, if found
+#  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
 #  SDL2_INCLUDE_DIR         - Root include dir
 #
 
@@ -18,6 +19,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -50,15 +52,25 @@ else()
         set(_SDL_LIBRARY_PATH_SUFFIX lib/x86)
     endif()
 
-    find_library(SDL2_LIBRARY
+    find_library(SDL2_LIBRARY_RELEASE
         # Compiling SDL2 from scratch on macOS creates dead libSDL2.so symlink
         # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
-        # the dylib first so it is preferred.
+        # the dylib first so it is preferred. Not sure how this maps to debug
+        # config though :/
         NAMES SDL2-2.0 SDL2
         PATH_SUFFIXES ${_SDL_LIBRARY_PATH_SUFFIX})
+    find_library(SDL2_LIBRARY_DEBUG
+        NAMES SDL2d
+        PATH_SUFFIXES ${_SDL_LIBRARY_PATH_SUFFIX})
+    # FPHSA needs one of the _DEBUG/_RELEASE variables to check that the
+    # library was found -- using SDL_LIBRARY, which will get populated by
+    # select_library_configurations() below.
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
+
+include(SelectLibraryConfigurations)
+select_library_configurations(SDL2)
 
 # Include dir
 find_path(SDL2_INCLUDE_DIR
@@ -120,10 +132,28 @@ if(NOT TARGET SDL2::SDL2)
 
         # Work around BUGGY framework support on macOS
         # https://cmake.org/Bug/view.php?id=14105
-        if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
-            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)
+        if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY_RELEASE MATCHES "\\.framework$")
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION_RELEASE ${SDL2_LIBRARY_RELEASE}/SDL2)
         else()
-            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
+            if(SDL2_LIBRARY_RELEASE)
+                set_property(TARGET SDL2::SDL2 APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+                set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION_RELEASE ${SDL2_LIBRARY_RELEASE})
+            endif()
+
+            if(SDL2_LIBRARY_DEBUG)
+                set_property(TARGET SDL2::SDL2 APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+                set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION_DEBUG ${SDL2_LIBRARY_DEBUG})
+            endif()
+        endif()
+
+        # Link additional `dl` and `pthread` libraries required by a static
+        # build of SDL on Unixy platforms (except Apple, where it is most
+        # probably some frameworks instead)
+        if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+            find_package(Threads)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
         endif()
 
         # Link frameworks on iOS

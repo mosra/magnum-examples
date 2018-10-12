@@ -49,13 +49,13 @@ class MotionBlurExample: public Platform::Application {
         explicit MotionBlurExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
 
         Scene3D scene;
         SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
-        SceneGraph::Camera3D* camera;
+        MotionBlurCamera* camera;
         GL::Buffer buffer;
         GL::Buffer indexBuffer;
         GL::Mesh mesh;
@@ -126,9 +126,9 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     setMinimalLoopPeriod(40);
 }
 
-void MotionBlurExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
-    camera->setViewport(size);
+void MotionBlurExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+    camera->setViewport(event.windowSize());
 }
 
 void MotionBlurExample::drawEvent() {

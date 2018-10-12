@@ -47,8 +47,8 @@ class MotionBlurCamera: public SceneGraph::Camera3D {
 
         ~MotionBlurCamera();
 
-        void setViewport(const Vector2i& size) override;
-        void draw(SceneGraph::DrawableGroup3D& group) override;
+        void setViewport(const Vector2i& size);
+        void draw(SceneGraph::DrawableGroup3D& group);
 
     private:
         class MotionBlurShader: public GL::AbstractShaderProgram {

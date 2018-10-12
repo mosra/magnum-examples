@@ -30,6 +30,21 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@section changelog-examples-latest Changes since 2018.04
+
+@subsection changelog-examples-latest-new New features
+
+-   New @ref examples-box2d example showing usage with Box2D
+-   New @ref examples-mouseinteraction example showing advanced mouse
+    interaction (see [mosra/magnum-examples#46](https://github.com/mosra/magnum-examples/pull/46))
+-   New @ref examples-triangle-vulkan example showcasing basic Vulkan usage
+    with Magnum
+
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   There's now a PPA for Ubuntu packages. See @ref building-examples-packages-deb
+    for more information.
+
 @section changelog-examples-2018-04 2018.04
 
 Released 2018-05-01, tagged as

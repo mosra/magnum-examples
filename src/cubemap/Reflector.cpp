@@ -107,11 +107,11 @@ Reflector::Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group): Obje
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotation())
+        .setNormalMatrix(transformationMatrix.rotationScaling())
         .setProjectionMatrix(camera.projectionMatrix())
         .setReflectivity(2.0f)
         .setDiffuseColor(Color3(0.3f))
-        .setCameraMatrix(static_cast<Object3D&>(camera.object()).absoluteTransformation().rotation())
+        .setCameraMatrix(static_cast<Object3D&>(camera.object()).absoluteTransformation().rotationScaling())
         .setTexture(*_texture)
         .setTarnishTexture(*_tarnishTexture);
 

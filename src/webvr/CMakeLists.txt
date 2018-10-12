@@ -83,8 +83,8 @@ target_link_libraries(magnum-webvr PRIVATE
 install(FILES webvr.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr RENAME index.html)
 install(TARGETS magnum-webvr DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
 install(FILES
-    ${CMAKE_SOURCE_DIR}/src/WebApplication.css
-    ${CMAKE_SOURCE_DIR}/src/EmscriptenApplication.js
+    ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+    ${MAGNUM_WEBAPPLICATION_CSS}
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem
