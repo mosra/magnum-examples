@@ -47,6 +47,14 @@
 #include "Reflector.h"
 #include "Types.h"
 
+#include <iostream>
+#include <fstream>
+
+inline bool file_exists(const std::string& name) {
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
 namespace Magnum { namespace Examples {
 
 class CubeMapExample: public Platform::Application {
@@ -63,6 +71,8 @@ class CubeMapExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
         Object3D* _cameraObject;
         SceneGraph::Camera3D* _camera;
+
+        std::string _assetPath;
 };
 
 CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
@@ -85,8 +95,27 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     _resourceManager.set<Trade::AbstractImporter>("jpeg-importer",
         importer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
+    // If we don't have any path argument, then we need to look for the assets
+    if (arguments.argc < 2) {
+        if (file_exists(std::string("/usr/share/magnum/examples/cubemap/+x.jpg"))) {
+            _assetPath = std::string("/usr/share/magnum/examples/cubemap/");
+        } else if (file_exists("+x.jpg")) {
+            _assetPath = std::string("");
+        } else {
+            std::cerr << "Unable to find cubemap assets. Please provide a path where the assets can be found." << std::endl;
+            std::exit(1);
+        }
+    } else {
+        if (file_exists(std::string(arguments.argv[1]) + std::string("/+x.jpg"))) {
+            _assetPath = std::string(arguments.argv[1]);
+        } else {
+            std::cerr << "Provided path does not have the required assets. Please provide a path where the assets can be found." << std::endl;
+            std::exit(1);
+        }
+    }
+
     /* Add objects to scene */
-    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &_scene, &_drawables))
+    (new CubeMap(_assetPath, &_scene, &_drawables))
         ->scale(Vector3(20.0f));
 
     (new Reflector(&_scene, &_drawables))

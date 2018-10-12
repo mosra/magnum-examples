@@ -52,6 +52,14 @@
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>
 
+#include <iostream>
+#include <fstream>
+
+inline bool file_exists(const std::string& name) {
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
 namespace Magnum { namespace Examples {
 
 using namespace Math::Literals;
@@ -85,6 +93,8 @@ class ViewerExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
         Vector3 _previousPosition;
+
+        std::string _assetPath;
 };
 
 class ColoredDrawable: public SceneGraph::Drawable3D {
@@ -117,11 +127,13 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
     Utility::Arguments args;
+  
     args.addArgument("file").setHelp("file", "file to load")
         .addOption("importer", "AnySceneImporter").setHelp("importer", "importer plugin to use")
         .addSkippedPrefix("magnum").setHelp("engine-specific options")
         .setHelp("Displays a 3D scene file provided on command line.")
         .parse(arguments.argc, arguments.argv);
+
 
     /* Every scene needs a camera */
     _cameraObject
@@ -152,10 +164,10 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate(args.value("importer"));
     if(!importer) std::exit(1);
 
-    Debug{} << "Opening file" << args.value("file");
+    Debug{} << "Opening file" << _assetPath;
 
     /* Load file */
-    if(!importer->openFile(args.value("file")))
+    if(!importer->openFile(_assetPath))
         std::exit(4);
 
     /* Load all textures. Textures that fail to load will be NullOpt. */
