@@ -108,7 +108,18 @@ data are used.
 @skip _mesh.setPrimitive
 @until .setIndexBuffer
 
-We now specify the initial transformation, color and projection. See
+@m_class{m-block m-success}
+
+@par Using other primitives
+    Please note that the above isn't a one-size-fits-all recipe. Other
+    primitives may not be indexed, some (such as wireframe primitives) may not
+    contain normals and may be suited for use with different shaders. Covering
+    all differences is out of the scope of this tutorial, see documentation of
+    particular primitives in the @ref Primitives namespace, the @ref MeshTools
+    functions, the @ref Shaders namespace and the @ref GL::Mesh class for the
+    full picture.
+
+We now specify the initial transformation, projection and color. See
 @ref matrix-vector and @ref transformations for more thorough introduction to
 transformations.
 
