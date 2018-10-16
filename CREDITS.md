@@ -25,9 +25,11 @@ Contributors to Magnum examples
 Listing only people with code contributions, because otherwise there's too many
 :) Big thanks to everyone involved!
 
--   Bill Robinson ([@wivlaro](https://github.com/wivlaro) -- Shadows example
+-   Bill Robinson ([@wivlaro](https://github.com/wivlaro)) -- Shadows example
 -   Gabriel de Perthuis ([@g2p](https://github.com/g2p)) -- buildsystem fixes
--   Jan Dupal ([@JanDupal](https://github.com/JanDupal) -- Bullet example
+-   Ivan P. ([@uzername](https://github.com/uzername)) --- documentation
+    improvements
+-   Jan Dupal ([@JanDupal](https://github.com/JanDupal)) -- Bullet example
 -   Janick Martinez Esturo ([@ph03](https://github.com/ph03)) -- build fixes
 -   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Oculus VR,
     Audio, Area Lights, WebVR and Leap Motion example
