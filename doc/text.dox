@@ -36,7 +36,7 @@ converted into a signed distance field texture. The texture is then used for
 rendering the text. Both glyph pre-rendering and the actual text layouting
 supports UTF-8. For mutable text buffer mapping is used.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/text/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/text/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-text-usage Usage
 

@@ -34,7 +34,7 @@ namespace Magnum {
 
 Released 2015-05-09, tagged as
 [v2015.05](https://github.com/mosra/magnum-examples/releases/tag/v2015.05). See
-the [release announcement](http://blog.magnum.graphics/announcements/may-2015-updates/)
+the [release announcement](https://blog.magnum.graphics/announcements/may-2015-updates/)
 for a high-level overview.
 
 @subsection changelog-examples-2015-05-changes Changes
@@ -65,7 +65,7 @@ for a high-level overview.
 
 Released 2014-06-30, tagged as
 [v2014.06](https://github.com/mosra/magnum-examples/releases/tag/v2014.06). See
-the [release announcement](http://blog.magnum.graphics/announcements/june-2014-updates/)
+the [release announcement](https://blog.magnum.graphics/announcements/june-2014-updates/)
 for a high-level overview.
 
 @subsection changelog-examples-2014-06-bugfixes Bug fixes

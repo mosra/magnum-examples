@@ -37,7 +37,7 @@ visualized as a sphere and a box respectively, the listener initially facing
 the sound source. The sound source can be moved around the listener using the
 keyboard.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/audio/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly, WebAudio & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/audio/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly, WebAudio & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-audio-controls Key controls
 

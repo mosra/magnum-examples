@@ -36,7 +36,7 @@ This example is a basic implementation of Real-Time Polygonal-Light Shading
 with Linearly Transformed Cosines. Three lights are displayed, each with
 different orientation and parameters.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/arealights/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/arealights/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
 
 @section examples-arealights-controls Controls
 
@@ -65,7 +65,7 @@ The implementation is based on the paper
 by Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt. The `*.dds`
 files are republished with a permission from Eric Heitz.
 
-There's also a [Guest Post introducing this example](http://blog.magnum.graphics/guest-posts/area-lights-with-ltcs/)
+There's also a [Guest Post introducing this example](https://blog.magnum.graphics/guest-posts/area-lights-with-ltcs/)
 on the Magnum Blog.
 
 @section examples-arealights-source Source

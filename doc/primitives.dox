@@ -42,7 +42,7 @@ basic user interaction, introducing these new features:
 This example displays colored cube with ability to change its color and rotate
 it using mouse.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-primitives-setup Setting up and preparing the mesh
 

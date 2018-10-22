@@ -47,4 +47,4 @@ Listing only people with code contributions, because otherwise there's too many
     example
 
 Is this list missing your name or something's wrong?
-[Let us know!](http://magnum.graphics/contact/)
+[Let us know!](https://magnum.graphics/contact/)

@@ -36,7 +36,7 @@ namespace Magnum {
 The Hello World of 3D graphics, rendering a single colored triangle using
 OpenGL.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 For this example we will use SDL2, which is the most widely used multiplatform
 windowing toolkit. Support for it is in the @ref Platform::Sdl2Application
