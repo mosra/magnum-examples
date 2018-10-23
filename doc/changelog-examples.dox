@@ -30,9 +30,14 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2018.04
+@anchor changelog-examples-latest
 
-@subsection changelog-examples-latest-new New features
+@section changelog-examples-2018-10 2018.10
+
+Released 2018-10-23, tagged as
+[v2018.10](https://github.com/mosra/magnum-examples/releases/tag/v2018.10).
+
+@subsection changelog-examples-2018-10-new New features
 
 -   New @ref examples-box2d example showing usage with Box2D
 -   New @ref examples-mouseinteraction example showing advanced mouse
@@ -40,10 +45,27 @@ namespace Magnum {
 -   New @ref examples-triangle-vulkan example showcasing basic Vulkan usage
     with Magnum
 
-@subsection changelog-examples-latest-buildsystem Build system
+@subsection changelog-examples-2018-10-changes Changes and improvements
+
+-   Simplified the @ref examples-bullet and @ref examples-audio, removing use
+    of the deprecated `Shapes` library.
+-   The @ref examples-viewer tutorial is greatly simplified to make use only of
+    the most essential APIs needed to make it working
+-   The @ref examples-ovr and @ref examples-leapmotion examples were updated to
+    not depend on deprecated functionality (see
+    [mosra/magnum-examples#49](https://github.com/mosra/magnum-examples/pull/49))
+-   The @ref examples-viewer example is now ported to Android (see
+    [mosra/magnum-examples#50](https://github.com/mosra/magnum-examples/pull/50))
+
+@subsection changelog-examples-2018-10-buildsystem Build system
 
 -   There's now a PPA for Ubuntu packages. See @ref building-examples-packages-deb
-    for more information.
+    for more information. See also [mosra/magnum-examples#43](https://github.com/mosra/magnum-examples/pull/43).
+
+@subsection changelog-examples-2018-10-documentation Documentation
+
+-   Extended the @ref examples-primitives example with info about handling of
+    generic mesh data (see [mosra/magnum-examples#48](https://github.com/mosra/magnum-examples/pull/48))
 
 @section changelog-examples-2018-04 2018.04
 
@@ -89,7 +111,7 @@ Released 2018-05-01, tagged as
 
 Released 2018-02-15, tagged as
 [v2018.02](https://github.com/mosra/magnum-examples/releases/tag/v2018.02). See
-the [release announcement](http://blog.magnum.graphics/announcements/2018.02/)
+the [release announcement](https://blog.magnum.graphics/announcements/2018.02/)
 for a high-level overview.
 
 @subsection changelog-examples-2018-02-dependencies Dependency changes

@@ -4,7 +4,7 @@ pkgver=dev.wasm
 pkgrel=1
 pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten, wasm)"
 arch=('any')
-url="http://magnum.graphics"
+url="https://magnum.graphics"
 license=('MIT')
 depends=('emscripten-magnum=dev.wasm' 'emscripten-magnum-plugins=dev.wasm' 'emscripten-bullet' 'emscripten-magnum-integration=dev.wasm' 'emscripten-box2d')
 makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
@@ -19,7 +19,6 @@ build() {
 
         cmake .. \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten-wasm.cmake" \
-            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
             -G Ninja
     fi
 

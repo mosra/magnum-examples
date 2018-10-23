@@ -35,7 +35,7 @@ more. Uses the @ref SceneGraph library directly with Box2D.
 
 @image html box2d.png
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/box2d/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/box2d/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-box2d-controls Key controls
 

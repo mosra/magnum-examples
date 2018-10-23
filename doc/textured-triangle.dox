@@ -41,7 +41,7 @@ these features:
 -   Storing resources in the executable, so they don't have to be carried as
     separate files along the application.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/textured-triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/textured-triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-textured-triangle-skeleton Basic skeleton
 

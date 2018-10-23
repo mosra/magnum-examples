@@ -4,7 +4,7 @@ Maintainer: Vladimír Vondruš <mosra@centrum.cz>
 Build-Depends: debhelper (>= 9), cmake (>= 2.8.12), magnum-dev, magnum-plugins-dev, magnum-integration-dev, magnum-extras-dev, libbox2d-dev, libbullet-dev, libopenal-dev
 Standards-Version: 3.9.2
 Section: libs
-Homepage: http://magnum.graphics
+Homepage: https://magnum.graphics
 Vcs-Git: git://github.com/mosra/magnum-examples.git
 Vcs-Browser: https://github.com/mosra/magnum-examples
 

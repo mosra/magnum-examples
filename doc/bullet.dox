@@ -37,7 +37,7 @@ properties of the Bullet physics world using @ref BulletIntegration::DebugDraw.
 
 @image html bullet.png
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/bullet/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/bullet/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-bullet-controls Key controls
 

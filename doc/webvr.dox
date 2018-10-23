@@ -41,7 +41,7 @@ a VR headset. You may need to enable WebVR support explicitly on your browser
 --- on Chrome go into `chrome://flags` and search for WebVR. Works on Android
 as well.
 
-@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/webvr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/webvr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 Note that there is also a @ref examples-ovr "Oculus VR example" and a
 @ref examples-leapmotion "Leap Motion example".
