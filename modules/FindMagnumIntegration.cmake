@@ -16,6 +16,7 @@
 #  Bullet                       - Bullet Physics integration library
 #  Dart                         - Dart Physics integration library
 #  Glm                          - GLM integration library
+#  ImGui                        - ImGui integration library
 #  Ovr                          - Oculus SDK integration library
 #
 # Example usage with specifying additional components is:
@@ -74,9 +75,10 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES Shapes)
-    endif()
-    if(_component STREQUAL Dart)
+    elseif(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
+    elseif(_component STREQUAL ImGui)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL)
     endif()
 
     list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
@@ -94,7 +96,7 @@ mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Glm Ovr)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart ImGui Glm Ovr)
 
 # Inter-component dependencies (none yet)
 # set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
@@ -181,6 +183,14 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             endforeach()
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
+
+        # ImGui integration library
+        elseif(_component STREQUAL ImGui)
+            find_package(ImGui)
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ImGui::ImGui)
+
+            set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
 
         # GLM integration library
         elseif(_component STREQUAL Glm)

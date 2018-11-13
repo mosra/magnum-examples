@@ -78,8 +78,10 @@ cmake .. \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
+    -DIMGUI_DIR=$HOME/imgui \
     -DWITH_BULLET=OFF \
     -DWITH_OVR=OFF \
+    -DWITH_IMGUI=$TARGET_GLES3 \
     -DBUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
@@ -111,11 +113,13 @@ cmake .. \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$TRAVIS_BUILD_DIR/sdl2" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DIMGUI_DIR=$HOME/imgui \
     -DWITH_AREALIGHTS_EXAMPLE=OFF \
     -DWITH_AUDIO_EXAMPLE=OFF \
     -DWITH_BOX2D_EXAMPLE=OFF \
     -DWITH_BULLET_EXAMPLE=OFF \
     -DWITH_CUBEMAP_EXAMPLE=OFF \
+    -DWITH_IMGUI_EXAMPLE=$TARGET_GLES3 \
     -DWITH_MOTIONBLUR_EXAMPLE=OFF \
     -DWITH_MOUSEINTERACTION_EXAMPLE=OFF \
     -DWITH_OVR_EXAMPLE=OFF \

@@ -45,7 +45,9 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
+    -DIMGUI_DIR=$HOME/imgui \
     -DWITH_BULLET=ON \
+    -DWITH_IMGUI=$TARGET_GLES3 \
     -DWITH_OVR=OFF \
     -G Ninja
 ninja install
@@ -67,11 +69,13 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
+    -DIMGUI_DIR=$HOME/imgui \
     -DWITH_AREALIGHTS_EXAMPLE=OFF \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BOX2D_EXAMPLE=ON \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=OFF \
+    -DWITH_IMGUI_EXAMPLE=$TARGET_GLES3 \
     -DWITH_MOTIONBLUR_EXAMPLE=OFF \
     -DWITH_MOUSEINTERACTION_EXAMPLE=OFF \
     -DWITH_OVR_EXAMPLE=OFF \
