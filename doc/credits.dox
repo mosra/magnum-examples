@@ -41,7 +41,8 @@ namespace Magnum {
     fixes
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the
     @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
-    @ref examples-webvr and @ref examples-leapmotion examples
+    @ref examples-webvr, @ref examples-leapmotion and @ref examples-imgui
+    examples
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
     bugreports, buildsystem fixes
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
@@ -54,6 +55,17 @@ namespace Magnum {
     of the @ref examples-viewer example
 -   **[\@scturtle](https://github.com/scturtle)** --- the
     @ref examples-mouseinteraction example
+-   **[\@ShaddyDC](https://github.com/ShaddyDC)** --- original
+    @ref magnum-imgui example
+-   **Tomáš Skřivan** [\@lecopivo](https://github.com/lecopivo) --- original
+    @ref magnum-imgui example
+-   **Natesh Narain** [\@nnarain](https://github.com/nnarain) --- original
+    @ref magnum-imgui example
+-   **Guillaume Jacquemin** [\@williamjcm](https://github.com/williamjcm) ---
+    original @ref magnum-imgui example
+-   **[\@denesik](https://github.com/denesik)** --- original
+    @ref magnum-imgui example
+
 */
 
 }

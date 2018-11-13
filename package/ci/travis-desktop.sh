@@ -44,8 +44,10 @@ cd magnum-integration
 mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DIMGUI_DIR=$HOME/imgui \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_BULLET=ON \
+    -DWITH_IMGUI=ON \
     -DWITH_OVR=OFF \
     -G Ninja
 ninja install
@@ -72,6 +74,7 @@ cmake .. \
     -DWITH_BOX2D_EXAMPLE=$WITH_BOX2D \
     -DWITH_BULLET_EXAMPLE=ON \
     -DWITH_CUBEMAP_EXAMPLE=ON \
+    -DWITH_IMGUI_EXAMPLE=ON \
     -DWITH_MOTIONBLUR_EXAMPLE=ON \
     -DWITH_MOUSEINTERACTION_EXAMPLE=ON \
     -DWITH_OVR_EXAMPLE=OFF \

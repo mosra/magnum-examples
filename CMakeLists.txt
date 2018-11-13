@@ -45,6 +45,7 @@ option(WITH_AUDIO_EXAMPLE "Build Audio example (requires the Audio library and t
 option(WITH_BOX2D_EXAMPLE "Build Box2D integration example" OFF)
 option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires the BulletIntegration library)" OFF)
 cmake_dependent_option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires some JPEG importer plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+option(WITH_IMGUI_EXAMPLE "Build ImGui example" OFF)
 option(WITH_LEAPMOTION_EXAMPLE "Build LeapMotion example" OFF)
 option(WITH_MOUSEINTERACTION_EXAMPLE "Build Mouse Interaction example" OFF)
 cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)

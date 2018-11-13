@@ -136,6 +136,14 @@ The following consist of documented source code only:
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html imgui.png
+@subpage examples-imgui @m_class{m-label m-default} **ui** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-imgui
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html leapmotion.png
 @subpage examples-leapmotion @m_class{m-label m-primary} **vr** \n
 @copybrief examples-leapmotion
