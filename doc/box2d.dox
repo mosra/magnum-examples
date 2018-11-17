@@ -45,6 +45,14 @@ more. Uses the @ref SceneGraph library directly with Box2D.
 
 This example was originally contributed by Michal Mikula.
 
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [Box2D](https://box2d.org/) library,
+    released under the @m_class{m-label m-success} **zlib license**
+    ([license text](https://github.com/erincatto/Box2D/blob/master/LICENSE),
+    [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
+    Attribution is appreciated but not required.
+
 @section examples-box2d-source Source
 
 Full source code is linked below and also available in the

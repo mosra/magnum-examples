@@ -76,8 +76,24 @@ And then rendering the scene in the draw event:
 
 @section examples-triangle-sokol-credits Credits
 
-This example uses the [sokol_gfx](https://github.com/floooh/sokol) library by
-Andre Weissflog, licensed under the [zlib/libpng license](https://github.com/floooh/sokol/blob/master/LICENSE).
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [sokol_gfx](https://github.com/floooh/sokol)
+    library, released under the @m_class{m-label m-success} **zlib license**
+    ([license text](https://github.com/floooh/sokol/blob/master/LICENSE),
+    [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
+    Attribution is appreciated but not required. In addition, it uses the
+    [GLEW](http://glew.sourceforge.net/) library, licensed under
+    @m_class{m-label m-success} **BSD 3-clause**
+    ([license text](http://glew.sourceforge.net/glew.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/bsd-3-clause/)),
+    the @m_class{m-label m-success} **Mesa 3D License**
+    ([license text](http://glew.sourceforge.net/mesa.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/mit/))
+    and the @m_class{m-label m-success} **Khronos License**
+    ([license text](http://glew.sourceforge.net/khronos.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/mit/)). It
+    requires attribution for public use.
 
 @section examples-triangle-sokol-source Source
 
