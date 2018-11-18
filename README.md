@@ -4,7 +4,7 @@ demonstrating its features, usage and capabilities.
 [![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples)
 [![Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
-[![UNLICENSE](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+[![UNLICENSE](https://img.shields.io/badge/license-UNLICENSE-blue.svg)](http://unlicense.org/)
 
 -   Project homepage — https://magnum.graphics/
 -   Documentation — https://doc.magnum.graphics/
