@@ -4,7 +4,7 @@ addons:
   apt:
     packages:
     - libgl1-mesa-dev
-    - g++-4.7
+    - g++-4.8
     - ninja-build
     - "libc6:i386" # CMake 2.8.12 is 32bit
     - libsdl2-dev
@@ -145,7 +145,7 @@ before_install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then yes | sdkmanager "cmake;3.6.4111459"; fi
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "android" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export CXX=g++-4.7; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "android" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export CXX=g++-4.8; fi
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
 # box2d is not in homebrew anymore: https://github.com/erincatto/Box2D/issues/431
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; export WITH_BOX2D=ON; fi
