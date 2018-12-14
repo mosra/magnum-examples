@@ -41,14 +41,6 @@
 #  MAGNUMINTEGRATION_*_LIBRARY_RELEASE - Release version of given library, if
 #   found
 #
-# Workflows without imported targets are deprecated and the following variables
-# are included just for backwards compatibility and only if
-# :variable:`MAGNUM_BUILD_DEPRECATED` is enabled:
-#
-#  MAGNUM_*INTEGRATION_LIBRARIES - Expands to ``MagnumIntegration::*` target.
-#   Use ``MagnumIntegration::*` target directly instead.
-#
-#
 
 #
 #   This file is part of Magnum.
@@ -193,15 +185,8 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         # GLM integration library
         elseif(_component STREQUAL Glm)
             find_package(GLM)
-            # GLM::GLM is an INTERFACE target, not supported on 2.8.12
-            if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES GLM::GLM)
-            else()
-                # Suppress warnings from GLM includes
-                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    INTERFACE_INCLUDE_DIRECTORIES ${GLM_INCLUDE_DIR})
-            endif()
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES GLM::GLM)
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
 
@@ -260,11 +245,6 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         else()
             set(MagnumIntegration_${_component}_FOUND FALSE)
         endif()
-    endif()
-
-    # Deprecated variables
-    if(MAGNUM_BUILD_DEPRECATED AND _component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})
-        set(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARIES MagnumIntegration::${_component})
     endif()
 endforeach()
 
