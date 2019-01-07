@@ -31,27 +31,23 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <imgui.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
-#include <Magnum/GL/Version.h>
+#include <Magnum/ImGuiIntegration/Context.hpp>
 
 #ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
-#include <Magnum/GL/DefaultFramebuffer.h>
-
-#include <Magnum/ImGuiIntegration/Integration.h>
-#include <Magnum/ImGuiIntegration/Integration.hpp>
-#include <imgui.h>
-
 
 namespace Magnum { namespace Examples {
 
 using namespace Math::Literals;
 
-class ImGuiExample : public Platform::Application {
+class ImGuiExample: public Platform::Application {
     public:
         explicit ImGuiExample(const Arguments& arguments);
 
@@ -74,8 +70,7 @@ class ImGuiExample : public Platform::Application {
         bool _showTestWindow = true;
         bool _showAnotherWindow = false;
         Color4 _clearColor = 0x72909aff_rgbaf;
-
-        float _floatValue = 0.0f;
+        Float _floatValue = 0.0f;
 };
 
 ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{arguments,
@@ -93,10 +88,9 @@ void ImGuiExample::drawEvent() {
 
     _imgui.newFrame(windowSize(), GL::defaultFramebuffer.viewport().size());
 
-    /* 1. Show a simple window
-
-       Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in a
-       window called "Debug" automatically */
+    /* 1. Show a simple window.
+       Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in
+       a window called "Debug" automatically */
     {
         ImGui::Text("Hello, world!");
         ImGui::SliderFloat("Float", &_floatValue, 0.0f, 1.0f);
@@ -107,10 +101,10 @@ void ImGuiExample::drawEvent() {
         if(ImGui::Button("Another Window"))
             _showAnotherWindow ^= true;
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0f/ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            1000.0/Double(ImGui::GetIO().Framerate), Double(ImGui::GetIO().Framerate));
     }
 
-    /* 2. Show another simple window, this time using an explicit Begin/End pair */
+    /* 2. Show another simple window, now using an explicit Begin/End pair */
     if(_showAnotherWindow) {
         ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Another Window", &_showAnotherWindow);
@@ -125,8 +119,8 @@ void ImGuiExample::drawEvent() {
         ImGui::ShowTestWindow();
     }
 
-    /* Set appropriate states. If you only draw imgui UI, it is sufficient
-       to do this once in the constructor. */
+    /* Set appropriate states. If you only draw imgui UI, it is sufficient to
+       do this once in the constructor. */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
         GL::Renderer::BlendEquation::Add);
@@ -142,8 +136,9 @@ void ImGuiExample::drawEvent() {
     /* Reset state. Only needed if you want to draw something else with
        different state next frame. */
     GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
-    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     swapBuffers();
     redraw();

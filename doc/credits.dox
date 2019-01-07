@@ -31,8 +31,12 @@ namespace Magnum {
 
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaro)) --- the
     @ref examples-shadows example
+-   **[\@denesik](https://github.com/denesik)** --- original
+    @ref examples-imgui example
 -   **Gabriel de Perthuis** ([\@g2p](https://github.com/g2p)) --- buildsystem
     fixes
+-   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
+    original @ref examples-imgui example
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- the
@@ -48,6 +52,8 @@ namespace Magnum {
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
     Gentoo ebuild
 -   **Michal Mikula** --- the @ref examples-box2d example
+-   **Natesh Narain** ([\@nnarain](https://github.com/nnarain)) --- original
+    @ref examples-imgui example
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
     package updates, a PPA repository for stable versions
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
@@ -56,15 +62,9 @@ namespace Magnum {
 -   **[\@scturtle](https://github.com/scturtle)** --- the
     @ref examples-mouseinteraction example
 -   **[\@ShaddyDC](https://github.com/ShaddyDC)** --- original
-    @ref magnum-imgui example
--   **Tomáš Skřivan** [\@lecopivo](https://github.com/lecopivo) --- original
-    @ref magnum-imgui example
--   **Natesh Narain** [\@nnarain](https://github.com/nnarain) --- original
-    @ref magnum-imgui example
--   **Guillaume Jacquemin** [\@williamjcm](https://github.com/williamjcm) ---
-    original @ref magnum-imgui example
--   **[\@denesik](https://github.com/denesik)** --- original
-    @ref magnum-imgui example
+    @ref examples-imgui example
+-   **Tomáš Skřivan** ([\@lecopivo](https://github.com/lecopivo)) --- original
+    @ref examples-imgui example
 
 */
 
