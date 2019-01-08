@@ -80,6 +80,14 @@ ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{ar
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
         windowSize(), framebufferSize());
 
+    /* Set up proper blending to be used by ImGui. There's a great chance
+       you'll need this exact behavior for the rest of your scene. If not, set
+       this only for the drawFrame() call. */
+    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
+        GL::Renderer::BlendEquation::Add);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
+        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_ANDROID)
     /* Have some sane speed, please */
     setMinimalLoopPeriod(16);
@@ -125,11 +133,6 @@ void ImGuiExample::drawEvent() {
     /* Set appropriate states. If you only draw imgui UI, it is sufficient to
        do this once in the constructor. */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
-    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
-        GL::Renderer::BlendEquation::Add);
-    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
-        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
