@@ -65,7 +65,7 @@ class ImGuiExample: public Platform::Application {
         void textInputEvent(TextInputEvent& event) override;
 
     private:
-        ImGuiIntegration::Context _imgui;
+        ImGuiIntegration::Context _imgui{NoCreate};
 
         bool _showTestWindow = true;
         bool _showAnotherWindow = false;
@@ -77,6 +77,9 @@ ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{ar
     Configuration{}.setTitle("Magnum ImGui Example")
                    .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
+    _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
+        windowSize(), framebufferSize());
+
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_ANDROID)
     /* Have some sane speed, please */
     setMinimalLoopPeriod(16);
@@ -86,7 +89,7 @@ ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{ar
 void ImGuiExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
-    _imgui.newFrame(windowSize(), GL::defaultFramebuffer.viewport().size());
+    _imgui.newFrame();
 
     /* 1. Show a simple window.
        Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in
@@ -146,6 +149,9 @@ void ImGuiExample::drawEvent() {
 
 void ImGuiExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+
+    _imgui.relayout(Vector2{event.windowSize()}/event.dpiScaling(),
+        event.windowSize(), event.framebufferSize());
 }
 
 void ImGuiExample::keyPressEvent(KeyEvent& event) {
