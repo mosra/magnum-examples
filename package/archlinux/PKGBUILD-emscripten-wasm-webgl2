@@ -6,7 +6,7 @@ pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten WebGL 2, wasm)"
 arch=('any')
 url="https://magnum.graphics"
 license=('MIT')
-depends=('emscripten-magnum=dev.wasm.webgl2')
+depends=('emscripten-magnum=dev.wasm.webgl2' 'imgui-src')
 makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
@@ -27,11 +27,13 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
+        -DIMGUI_DIR=/opt/imgui \
         -DWITH_AREALIGHTS_EXAMPLE=OFF \
         -DWITH_AUDIO_EXAMPLE=OFF \
         -DWITH_BOX2D_EXAMPLE=OFF \
         -DWITH_BULLET_EXAMPLE=OFF \
         -DWITH_CUBEMAP_EXAMPLE=OFF \
+        -DWITH_IMGUI_EXAMPLE=ON \
         -DWITH_MOTIONBLUR_EXAMPLE=OFF \
         -DWITH_MOUSEINTERACTION_EXAMPLE=OFF \
         -DWITH_PRIMITIVES_EXAMPLE=OFF \

@@ -79,11 +79,11 @@ cd package/archlinux
 makepkg -fp PKGBUILD # or any other PKGBUILD file
 @endcode
 
-@note In case of Emscripten, the PKGBUILDs reference a few external
-    dependencies such as `emscripten-box2d`, which are not in AUR. You can find
-    PKGBUILDs for these in https://github.com/mosra/archlinux. You can also
-    edit the package, disable building of affected features and remove the
-    dependency.
+@note The PKGBUILDs reference a few external dependencies such as `imgui-src`
+    or (in case of Emscripten) `emscripten-bullet` and `emscripten-box2d`,
+    which are not in AUR. You can find PKGBUILDs for these in
+    https://github.com/mosra/archlinux. You can also edit the package, disable
+    building of affected features and remove the dependency.
 
 Once built, install the package using `pacman`:
 
