@@ -117,6 +117,12 @@ void ImGuiExample::drawEvent() {
 
     _imgui.newFrame();
 
+    /* Enable text input, if needed */
+    if(ImGui::GetIO().WantTextInput && !isTextInputActive())
+        startTextInput();
+    else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
+        stopTextInput();
+
     /* 1. Show a simple window.
        Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in
        a window called "Debug" automatically */
