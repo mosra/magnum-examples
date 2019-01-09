@@ -52,4 +52,20 @@ target_link_libraries(magnum-imgui PRIVATE
     Magnum::Magnum
     MagnumIntegration::ImGui)
 
-install(TARGETS magnum-imgui DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# Installation for Emscripten
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(FILES imgui.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui RENAME index.html)
+    install(TARGETS magnum-imgui DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-imgui.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/magnum-imgui.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui OPTIONAL)
+
+# Installation elsewhere
+else()
+    install(TARGETS magnum-imgui DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
