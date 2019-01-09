@@ -63,10 +63,12 @@ This example was originally contributed by [Jonathan Hale](https://github.com/Sq
 The implementation is based on the paper
 ["Real-Time Polygonal-Light Shading with Linearly Transformed Cosines"](https://eheitzresearch.wordpress.com/415-2/)
 by Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt. The `*.dds`
-files are republished with a permission from Eric Heitz.
-
-There's also a [Guest Post introducing this example](https://blog.magnum.graphics/guest-posts/area-lights-with-ltcs/)
+files are republished with a permission from Eric Heitz. There's also a
+[Guest Post introducing this example](https://blog.magnum.graphics/guest-posts/area-lights-with-ltcs/)
 on the Magnum Blog.
+
+The example makes use of the Adobe Source Sans Pro font through the @ref Ui
+library, see its documentation for license information.
 
 @section examples-arealights-source Source
 
