@@ -45,7 +45,10 @@ find_package(MagnumIntegration REQUIRED ImGui)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-imgui ImGuiExample.cpp)
+# Bundle a better font
+corrade_add_resource(ImGuiExample_RESOURCES resources.conf)
+
+add_executable(magnum-imgui ImGuiExample.cpp ${ImGuiExample_RESOURCES})
 target_link_libraries(magnum-imgui PRIVATE
     Magnum::Application
     Magnum::GL

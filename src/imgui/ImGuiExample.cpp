@@ -77,7 +77,25 @@ ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{ar
     Configuration{}.setTitle("Magnum ImGui Example")
                    .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
-    _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
+    ImGui::CreateContext();
+
+    const Vector2 size = Vector2{windowSize()}/dpiScaling();
+
+    /* Add a font that actually looks acceptable on HiDPI screens. ImGui by
+       default takes ownership of the passed data pointer and then frees it
+       (using what? free()?), that's why the non-const pointer. We have to
+       explicitly tell it to *not* do that, since the resources are always in
+       memory and on a static place. */
+    {
+        ImFontConfig fontConfig;
+        fontConfig.FontDataOwnedByAtlas = false;
+        const Containers::ArrayView<const char> font =
+            Utility::Resource{"font"}.getRaw("SourceSansPro-Regular.ttf");
+        ImGui::GetIO().Fonts->AddFontFromMemoryTTF(const_cast<char*>(font.data()), font.size(),
+            16.0f*framebufferSize().x()/size.x(), &fontConfig);
+    }
+
+    _imgui = ImGuiIntegration::Context(*ImGui::GetCurrentContext(), Vector2{windowSize()}/dpiScaling(),
         windowSize(), framebufferSize());
 
     /* Set up proper blending to be used by ImGui. There's a great chance
