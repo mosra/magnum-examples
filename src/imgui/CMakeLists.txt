@@ -5,7 +5,10 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 —
 #           Vladimír Vondruš <mosra@centrum.cz>
+#       2018 — ShaddyAQN <ShaddyAQN@gmail.com>
 #       2018 — Jonathan Hale <squareys@googlemail.com>
+#       2018 — Tomáš Skřivan <skrivantomas@seznam.cz>
+#       2018 — Natesh Narain <nnaraindev@gmail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -30,29 +33,23 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-project(MagnumLeapMotionExample)
+project(MagnumImGuiExample)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-find_package(Magnum REQUIRED
-    MeshTools
-    Primitives
-    Shaders
-    Sdl2Application)
-find_package(Leap REQUIRED)
+find_package(Magnum REQUIRED GL Sdl2Application)
+find_package(MagnumIntegration REQUIRED ImGui)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-leapmotion LeapMotionExample.cpp)
-target_link_libraries(magnum-leapmotion PRIVATE
+add_executable(magnum-imgui ImGuiExample.cpp)
+target_link_libraries(magnum-imgui PRIVATE
     Magnum::Application
+    Magnum::GL
     Magnum::Magnum
-    Magnum::MeshTools
-    Magnum::Primitives
-    Magnum::Shaders
-    Leap::Leap)
+    MagnumIntegration::ImGui)
 
-install(TARGETS magnum-leapmotion DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(TARGETS magnum-imgui DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

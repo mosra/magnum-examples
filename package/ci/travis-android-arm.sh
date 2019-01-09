@@ -103,7 +103,9 @@ cmake .. \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
+    -DIMGUI_DIR=$HOME/imgui \
     -DWITH_BULLET=OFF \
+    -DWITH_IMGUI=$TARGET_GLES3 \
     -DWITH_OVR=OFF \
     -G Ninja
 ninja install

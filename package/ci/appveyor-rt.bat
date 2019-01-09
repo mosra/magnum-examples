@@ -97,6 +97,7 @@ cmake .. ^
     -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
     -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
     -DWITH_BULLET=OFF ^
+    -DWITH_IMGUI=OFF ^
     -DWITH_OVR=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
@@ -138,6 +139,7 @@ cmake .. ^
     -DWITH_BOX2D_EXAMPLE=OFF ^
     -DWITH_BULLET_EXAMPLE=OFF ^
     -DWITH_CUBEMAP_EXAMPLE=OFF ^
+    -DWITH_IMGUI_EXAMPLE=OFF ^
     -DWITH_MOTIONBLUR_EXAMPLE=OFF ^
     -DWITH_MOUSEINTERACTION_EXAMPLE=OFF ^
     -DWITH_OVR_EXAMPLE=OFF ^

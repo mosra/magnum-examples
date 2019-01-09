@@ -16,6 +16,7 @@
 #  Bullet                       - Bullet Physics integration library
 #  Dart                         - Dart Physics integration library
 #  Glm                          - GLM integration library
+#  ImGui                        - ImGui integration library
 #  Ovr                          - Oculus SDK integration library
 #
 # Example usage with specifying additional components is:
@@ -40,14 +41,6 @@
 #  MAGNUMINTEGRATION_*_LIBRARY_DEBUG - Debug version of given library, if found
 #  MAGNUMINTEGRATION_*_LIBRARY_RELEASE - Release version of given library, if
 #   found
-#
-# Workflows without imported targets are deprecated and the following variables
-# are included just for backwards compatibility and only if
-# :variable:`MAGNUM_BUILD_DEPRECATED` is enabled:
-#
-#  MAGNUM_*INTEGRATION_LIBRARIES - Expands to ``MagnumIntegration::*` target.
-#   Use ``MagnumIntegration::*` target directly instead.
-#
 #
 
 #
@@ -82,9 +75,10 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES Shapes)
-    endif()
-    if(_component STREQUAL Dart)
+    elseif(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
+    elseif(_component STREQUAL ImGui)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL)
     endif()
 
     list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
@@ -102,7 +96,7 @@ mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Glm Ovr)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart ImGui Glm Ovr)
 
 # Inter-component dependencies (none yet)
 # set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
@@ -190,18 +184,19 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
 
+        # ImGui integration library
+        elseif(_component STREQUAL ImGui)
+            find_package(ImGui)
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ImGui::ImGui)
+
+            set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
+
         # GLM integration library
         elseif(_component STREQUAL Glm)
             find_package(GLM)
-            # GLM::GLM is an INTERFACE target, not supported on 2.8.12
-            if(NOT CMAKE_VERSION VERSION_LESS 3.0)
-                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES GLM::GLM)
-            else()
-                # Suppress warnings from GLM includes
-                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    INTERFACE_INCLUDE_DIRECTORIES ${GLM_INCLUDE_DIR})
-            endif()
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES GLM::GLM)
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
 
@@ -260,11 +255,6 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         else()
             set(MagnumIntegration_${_component}_FOUND FALSE)
         endif()
-    endif()
-
-    # Deprecated variables
-    if(MAGNUM_BUILD_DEPRECATED AND _component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})
-        set(MAGNUM_${_COMPONENT}INTEGRATION_LIBRARIES MagnumIntegration::${_component})
     endif()
 endforeach()
 

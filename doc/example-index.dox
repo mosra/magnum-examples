@@ -102,7 +102,7 @@ The following consist of documented source code only:
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html arealights.png
-@subpage examples-arealights @m_class{m-label m-default m-flat} **live web demo**
+@subpage examples-arealights @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-arealights
 @m_enddiv
 
@@ -182,9 +182,9 @@ The following consist of documented source code only:
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html triangle-vulkan.png
-@subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
-\n @copybrief examples-triangle-vulkan
+@image html imgui.png
+@subpage examples-imgui @m_class{m-label m-primary} **ui**
+\n @copybrief examples-imgui
 @m_enddiv
 
 @endparblock
@@ -202,6 +202,18 @@ The following consist of documented source code only:
 @image html webvr.png
 @subpage examples-webvr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-webvr
+@m_enddiv
+
+@endparblock
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-push-m-4 m-col-s-6 m-text-center}
+@image html triangle-vulkan.png
+@subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
+\n @copybrief examples-triangle-vulkan
 @m_enddiv
 
 @endparblock

@@ -87,6 +87,10 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
+# ImGui
+- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/65dac021712f99ba954392734ceafe43392efe59.zip -FileName imgui.zip
+- 7z x imgui.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-65dac021712f99ba954392734ceafe43392efe59 imgui
+
 # OVR SDK
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.26.0_public_minimal.zip appveyor DownloadFile https://ci.magnum.graphics/ovr_sdk_win_1.26.0_public_minimal.zip
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.26.0_public_minimal.zip -o%APPVEYOR_BUILD_FOLDER%\deps
@@ -106,3 +110,4 @@ cache:
 - SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.26.0_public_minimal.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
+- imgui.zip -> package/ci/appveyor-cache-reset.txt

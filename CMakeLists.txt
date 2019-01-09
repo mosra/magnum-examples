@@ -27,25 +27,7 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.12)
-
-# CMake policies. 0025 needs to be before project(), so putting all there.
-# Use AppleClang instead of Clang on Apple
-if(POLICY CMP0025)
-    cmake_policy(SET CMP0025 NEW)
-endif()
-# Don't treat imported targets with :: as files
-if(POLICY CMP0028)
-    cmake_policy(SET CMP0028 NEW)
-endif()
-# Enable MACOSX_RPATH by default
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW)
-endif()
-# Quoted variables should not be dereferenced
-if(POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
+cmake_minimum_required(VERSION 3.1)
 
 # Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
 # macro called from FindX11)
@@ -63,6 +45,7 @@ option(WITH_AUDIO_EXAMPLE "Build Audio example (requires the Audio library and t
 option(WITH_BOX2D_EXAMPLE "Build Box2D integration example" OFF)
 option(WITH_BULLET_EXAMPLE "Build Bullet integration example (requires the BulletIntegration library)" OFF)
 option(WITH_CUBEMAP_EXAMPLE "Build CubeMap example (requires some JPEG importer plugin)" OFF)
+option(WITH_IMGUI_EXAMPLE "Build ImGui example" OFF)
 option(WITH_LEAPMOTION_EXAMPLE "Build LeapMotion example" OFF)
 option(WITH_MOUSEINTERACTION_EXAMPLE "Build Mouse Interaction example" OFF)
 cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
