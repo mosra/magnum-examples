@@ -35,6 +35,8 @@ immediate-mode GUI using the @ref ImGuiIntegration library.
 
 @image html imgui.png width=400px
 
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/imgui/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+
 @section examples-imgui-controls Controls
 
 -   @m_class{m-label m-default} **Mouse** interaction with widgets and dragging
@@ -53,6 +55,17 @@ This example originated from community projects by
 ImGui library, see documentation of the @ref ImGuiIntegration namespace for
 license information.
 
+@m_class{m-block m-success}
+
+@thirdparty The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/imgui)
+    of this example and the above-linked
+    [live web demo](https://magnum.graphics/showcase/imgui/) make use of the
+    [Adobe Source Sans Pro](https://github.com/adobe-fonts/source-sans-pro)
+    font, licensed under @m_class{m-label m-success} **OFL 1.1**
+    ([license text](https://github.com/adobe-fonts/source-sans-pro/blob/release/LICENSE.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/ofl-1.1/)).
+    Attribution is required for public use.
+
 @section examples-imgui-source Source
 
 Full source code is linked below and also available in the
@@ -60,6 +73,11 @@ Full source code is linked below and also available in the
 
 -   @ref imgui/ImGuiExample.cpp "ImGuiExample.cpp"
 -   @ref imgui/CMakeLists.txt "CMakeLists.txt"
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/imgui)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
 
 @example imgui/ImGuiExample.cpp @m_examplenavigation{examples-imgui,imgui/} @m_footernavigation
 @example imgui/CMakeLists.txt @m_examplenavigation{examples-imgui,imgui/} @m_footernavigation

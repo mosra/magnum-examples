@@ -183,7 +183,7 @@ The following consist of documented source code only:
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html imgui.png
-@subpage examples-imgui @m_class{m-label m-primary} **ui**
+@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-imgui
 @m_enddiv
 
