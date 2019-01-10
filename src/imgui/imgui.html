@@ -15,6 +15,13 @@
       <div id="status-description"></div>
       <script async="async" src="magnum-imgui.js"></script>
       <script src="EmscriptenApplication.js"></script>
+      <script>
+      "use strict"; /* it summons the Cthulhu in a proper way, they say */
+
+      Module.canvas.addEventListener('contextmenu', function(event) {
+          event.preventDefault();
+      }, true);
+      </script>
     </div></div></div>
   </div>
 </body>
