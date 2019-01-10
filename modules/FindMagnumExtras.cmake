@@ -14,6 +14,7 @@
 #
 #  Ui                       - Ui library
 #  ui-gallery               - magnum-ui-gallery executable
+#  player                   - magnum-player executable
 #
 # Example usage with specifying additional components is:
 #
@@ -94,7 +95,7 @@ mark_as_advanced(MAGNUMEXTRAS_INCLUDE_DIR)
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUMEXTRAS_LIBRARY_COMPONENT_LIST Ui)
-set(_MAGNUMEXTRAS_EXECUTABLE_COMPONENT_LIST ui-gallery)
+set(_MAGNUMEXTRAS_EXECUTABLE_COMPONENT_LIST player ui-gallery)
 
 # Inter-component dependencies
 set(_MAGNUMEXTRAS_ui-gallery_DEPENDENCIES Ui)
