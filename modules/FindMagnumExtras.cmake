@@ -14,6 +14,7 @@
 #
 #  Ui                       - Ui library
 #  ui-gallery               - magnum-ui-gallery executable
+#  player                   - magnum-player executable
 #
 # Example usage with specifying additional components is:
 #
@@ -42,7 +43,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -94,7 +95,7 @@ mark_as_advanced(MAGNUMEXTRAS_INCLUDE_DIR)
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUMEXTRAS_LIBRARY_COMPONENT_LIST Ui)
-set(_MAGNUMEXTRAS_EXECUTABLE_COMPONENT_LIST ui-gallery)
+set(_MAGNUMEXTRAS_EXECUTABLE_COMPONENT_LIST player ui-gallery)
 
 # Inter-component dependencies
 set(_MAGNUMEXTRAS_ui-gallery_DEPENDENCIES Ui)
