@@ -30,6 +30,7 @@
 
 #include <btBulletDynamicsCommon.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pointer.h>
 #include <Magnum/Timeline.h>
 #include <Magnum/BulletIntegration/Integration.h>
 #include <Magnum/BulletIntegration/MotionState.h>
@@ -60,13 +61,15 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 class BulletExample: public Platform::Application {
     public:
         explicit BulletExample(const Arguments& arguments);
+        ~BulletExample();
 
     private:
+
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
 
-        btRigidBody* createRigidBody(Object3D& object, Float mass, btCollisionShape* bShape);
+        Containers::Pointer<btRigidBody> createRigidBody(Object3D& object, Float mass, btCollisionShape* bShape);
 
         GL::Mesh _box{NoCreate}, _sphere{NoCreate};
         Shaders::Phong _shader{NoCreate};
@@ -78,11 +81,26 @@ class BulletExample: public Platform::Application {
         Timeline _timeline;
 
         Object3D *_cameraRig, *_cameraObject;
-        btDiscreteDynamicsWorld* _bWorld;
-        btCollisionShape *_bBoxShape, *_bSphereShape;
-        btRigidBody* _bGround;
+
+        btDbvtBroadphase _bBroadphase;
+        btDefaultCollisionConfiguration _bCollisionConfig;
+        btCollisionDispatcher _bDispatcher{&_bCollisionConfig};
+        btSequentialImpulseConstraintSolver _bSolver;
+        btDiscreteDynamicsWorld _bWorld{&_bDispatcher, &_bBroadphase, &_bSolver, &_bCollisionConfig};
+
+        btBoxShape _bBoxShape{{0.5f, 0.5f, 0.5f}};
+        btSphereShape _bSphereShape{0.25f};
+
+        btBoxShape _bGroundShape{{4.0f, 0.5f, 4.0f}};
+
+        Containers::Pointer<btRigidBody> _bGround;
 
         bool _drawCubes{true}, _drawDebug{true}, _shootBox{true};
+
+        std::vector<Containers::Pointer<btRigidBody>> m_cubes;
+
+        Containers::Pointer<Object3D> _object;
+        Containers::Pointer<btRigidBody> _objectRigidBody;
 };
 
 class ColoredDrawable: public SceneGraph::Drawable3D {
@@ -147,19 +165,12 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     GL::Renderer::setPolygonOffset(2.0f, 0.5f);
 
     /* Bullet setup */
-    auto* broadphase = new btDbvtBroadphase;
-    auto* collisionConfiguration = new btDefaultCollisionConfiguration;
-    auto* dispatcher = new btCollisionDispatcher{collisionConfiguration};
-    auto* solver = new btSequentialImpulseConstraintSolver;
-    _bWorld = new btDiscreteDynamicsWorld{dispatcher, broadphase, solver, collisionConfiguration};
-    _bWorld->setGravity({0.0f, -10.0f, 0.0f});
-    _bWorld->setDebugDrawer(&_debugDraw);
-    _bBoxShape = new btBoxShape{{0.5f, 0.5f, 0.5f}};
-    _bSphereShape = new btSphereShape{0.25f};
+    _bWorld.setGravity({0.0f, -10.0f, 0.0f});
+    _bWorld.setDebugDrawer(&_debugDraw);
 
     /* Create the ground */
     auto* ground = new Object3D{&_scene};
-    _bGround = createRigidBody(*ground, 0.0f, new btBoxShape{{4.0f, 0.5f, 4.0f}});
+    _bGround = createRigidBody(*ground, 0.0f, &_bGroundShape);
     new ColoredDrawable{*ground, _shader, _box, 0xffffff_rgbf,
         Matrix4::scaling({4.0f, 0.5f, 4.0f}), _drawables};
 
@@ -173,7 +184,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
                 new ColoredDrawable{*o, _shader, _box,
                     Color3::fromHsv(hue += 137.5_degf, 0.75f, 0.9f),
                     Matrix4::scaling(Vector3{0.5f}), _drawables};
-                createRigidBody(*o, 1.0f, _bBoxShape);
+                m_cubes.push_back(std::move(createRigidBody(*o, 1.0f, &_bBoxShape)));
             }
         }
     }
@@ -184,7 +195,23 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     _timeline.start();
 }
 
-btRigidBody* BulletExample::createRigidBody(Object3D& object, Float mass, btCollisionShape* bShape) {
+BulletExample::~BulletExample()
+{
+    /* Sadly, btRigidBodies cannot remove themselves on destruction :-( */
+    if(_objectRigidBody)
+        _bWorld.removeCollisionObject(_objectRigidBody.get());
+
+    for(auto& obj : m_cubes)
+    {
+        if(obj)
+            _bWorld.removeCollisionObject(obj.get());
+    }
+
+    if(_bGround)
+        _bWorld.removeCollisionObject(_bGround.get());
+}
+
+Containers::Pointer<btRigidBody> BulletExample::createRigidBody(Object3D& object, Float mass, btCollisionShape* bShape) {
     /* Calculate inertia so the object reacts as it should with rotation and
        everything */
     btVector3 bInertia(0.0f, 0.0f, 0.0f);
@@ -195,16 +222,16 @@ btRigidBody* BulletExample::createRigidBody(Object3D& object, Float mass, btColl
     auto* bRigidBody = new btRigidBody{btRigidBody::btRigidBodyConstructionInfo{
         mass, &motionState->btMotionState(), bShape, bInertia}};
     bRigidBody->forceActivationState(DISABLE_DEACTIVATION);
-    _bWorld->addRigidBody(bRigidBody);
+    _bWorld.addRigidBody(bRigidBody);
 
-    return bRigidBody;
+    return Containers::pointer(bRigidBody);
 }
 
 void BulletExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     /* Step bullet simulation */
-    _bWorld->stepSimulation(_timeline.previousFrameDuration(), 5);
+    _bWorld.stepSimulation(_timeline.previousFrameDuration(), 5);
 
     /* Draw the cubes */
     if(_drawCubes) _camera->draw(_drawables);
@@ -217,7 +244,7 @@ void BulletExample::drawEvent() {
 
         _debugDraw.setTransformationProjectionMatrix(
             _camera->projectionMatrix()*_camera->cameraMatrix());
-        _bWorld->debugDrawWorld();
+        _bWorld.debugDrawWorld();
 
         if(_drawCubes)
             GL::Renderer::setDepthFunction(GL::Renderer::DepthFunction::Less);
@@ -265,17 +292,26 @@ void BulletExample::mousePressEvent(MouseEvent& event) {
         const Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2{event.position()}/Vector2{GL::defaultFramebuffer.viewport().size()} - Vector2{0.5f})* _camera->projectionSize();
         const Vector3 direction = (_cameraObject->absoluteTransformation().rotationScaling()*Vector3{clickPoint, -1.0f}).normalized();
 
-        Object3D* o = new Object3D(&_scene);
-        o->translate(_cameraObject->absoluteTransformation().translation());
+        /* Important: If we destroy a btRigidBody, we have to remove it from
+           the scene first */
+        if(_objectRigidBody)
+            _bWorld.removeCollisionObject(_objectRigidBody.get());
+
+        _object.emplace(&_scene);
+        _object->translate(_cameraObject->absoluteTransformation().translation());
 
         /* Create either a box or a sphere */
-        new ColoredDrawable{*o, _shader, _shootBox ? _box : _sphere,
+        new ColoredDrawable{*_object, _shader, _shootBox ? _box : _sphere,
             _shootBox ? 0x880000_rgbf : 0x220000_rgbf,
             Matrix4::scaling(Vector3{_shootBox ? 0.5f : 0.25f}), _drawables};
-        createRigidBody(*o,
-            _shootBox ? 1.0f : 5.0f,
-            _shootBox ? _bBoxShape : _bSphereShape)
-                ->setLinearVelocity(btVector3{direction*25.f});
+
+        if(_shootBox)
+            _objectRigidBody = createRigidBody(*_object, 1.0f, &_bBoxShape);
+        else
+            _objectRigidBody = createRigidBody(*_object, 5.0f, &_bSphereShape);
+
+        /* Give it an initial velocity */
+        _objectRigidBody->setLinearVelocity(btVector3{direction*25.f});
 
         event.setAccepted();
     }
