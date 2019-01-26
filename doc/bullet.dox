@@ -50,8 +50,9 @@ properties of the Bullet physics world using @ref BulletIntegration::DebugDraw.
 
 @section examples-bullet-credits Credits
 
-This example was originally contributed by [Jan Dupal](https://github.com/JanDupal).
-The example makes use of the Bullet Physics library, see documentation of the
+This example was originally contributed by [Jan Dupal](https://github.com/JanDupal)
+and further improved by [Max Schwarz](https://github.com/xqms). The example
+makes use of the Bullet Physics library, see documentation of the
 @ref BulletIntegration namespace for license information.
 
 @section examples-bullet-source Source

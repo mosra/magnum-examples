@@ -6,6 +6,7 @@
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
             Vladimír Vondruš <mosra@centrum.cz>
         2013 — Jan Dupal <dupal.j@gmail.com>
+        2019 — Max Schwarz <max.schwarz@online.de>
 
     This is free and unencumbered software released into the public domain.
 
@@ -75,6 +76,9 @@ class BulletExample: public Platform::Application {
         btDefaultCollisionConfiguration _bCollisionConfig;
         btCollisionDispatcher _bDispatcher{&_bCollisionConfig};
         btSequentialImpulseConstraintSolver _bSolver;
+
+        /* The world has to live longer than the scene because RigidBody
+           instances have to remove themselves from it on destruction */
         btDiscreteDynamicsWorld _bWorld{&_bDispatcher, &_bBroadphase, &_bSolver, &_bCollisionConfig};
 
         Scene3D _scene;
@@ -295,6 +299,8 @@ void BulletExample::mousePressEvent(MouseEvent& event) {
             _shootBox ? static_cast<btCollisionShape*>(&_bBoxShape) : &_bSphereShape,
             _bWorld};
         object->translate(_cameraObject->absoluteTransformation().translation());
+        /* Has to be done explicitly after the translate() above, as Magnum ->
+           Bullet updates are implicitly done only for kinematic bodies */
         object->syncPose();
 
         /* Create either a box or a sphere */
