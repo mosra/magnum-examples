@@ -116,7 +116,7 @@ class ColoredDrawable: public SceneGraph::Drawable3D {
 
 class RigidBody: public Object3D {
     public:
-        RigidBody(Object3D* parent, Float mass, btCollisionShape* bShape, btDynamicsWorld& bWorld): Object3D{parent}, _bWorld{bWorld} {
+        RigidBody(Object3D* parent, Float mass, btCollisionShape* bShape, btDynamicsWorld& bWorld): Object3D{parent}, _bWorld(bWorld) {
             /* Calculate inertia so the object reacts as it should with
                rotation and everything */
             btVector3 bInertia(0.0f, 0.0f, 0.0f);
