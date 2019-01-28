@@ -29,6 +29,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 #include <Magnum/Audio/AbstractImporter.h>
 #include <Magnum/Audio/Buffer.h>
 #include <Magnum/Audio/Context.h>
@@ -110,7 +111,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     {
         /* Load importer plugin */
         PluginManager::Manager<Audio::AbstractImporter> manager;
-        std::unique_ptr<Audio::AbstractImporter> importer = manager.loadAndInstantiate("StbVorbisAudioImporter");
+        Containers::Pointer<Audio::AbstractImporter> importer = manager.loadAndInstantiate("StbVorbisAudioImporter");
         if(!importer)
             std::exit(1);
 

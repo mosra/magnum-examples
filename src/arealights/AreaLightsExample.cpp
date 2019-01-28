@@ -33,6 +33,7 @@
 #include <iomanip>
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/Resource.h>
@@ -345,7 +346,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Load LTC matrix and BRDF textures */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
     if(!importer) std::exit(1);
 
     const Utility::Resource rs{"arealights-data"};

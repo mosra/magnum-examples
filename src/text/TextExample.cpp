@@ -56,12 +56,12 @@ class TextExample: public Platform::Application {
         void updateText();
 
         PluginManager::Manager<Text::AbstractFont> _manager;
-        std::unique_ptr<Text::AbstractFont> _font;
+        Containers::Pointer<Text::AbstractFont> _font;
 
         Text::DistanceFieldGlyphCache _cache;
         GL::Mesh _text;
         GL::Buffer _vertices, _indices;
-        std::unique_ptr<Text::Renderer2D> _text2;
+        Containers::Pointer<Text::Renderer2D> _text2;
         Shaders::DistanceFieldVector2D _shader;
 
         Matrix3 _transformation;
