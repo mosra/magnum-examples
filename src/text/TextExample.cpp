@@ -27,8 +27,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <iomanip>
-#include <sstream>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
@@ -144,13 +143,9 @@ void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
 }
 
 void TextExample::updateText() {
-    std::ostringstream out;
-    out << std::setprecision(2)
-        << "Rotation: "
-        << Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle()))
-        << "°\nScale: "
-        << _transformation.uniformScaling();
-    _text2->render(out.str());
+    _text2->render(Utility::formatString("Rotation: {:.2}°\nScale: {:.2}",
+        Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle())),
+        _transformation.uniformScaling()));
 }
 
 }}

@@ -29,9 +29,9 @@
 
 #include "MotionBlurCamera.h"
 
-#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -93,12 +93,8 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    std::stringstream ss;
-    for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i) {
-        ss.str("");
-        ss << "frame[" << i << "]";
-        setUniform(uniformLocation(ss.str()), i);
-    }
+    for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i)
+        setUniform(uniformLocation(Utility::formatString("frame[{}]", i)), i);
 }
 
 MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(GL::Texture2D** frames, Object3D* parent): Object3D(parent), frames(frames) {
