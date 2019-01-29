@@ -47,6 +47,7 @@
 #include <Magnum/Trade/MeshData3D.h>
 
 #ifdef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Texture.h>
