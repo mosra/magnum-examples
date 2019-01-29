@@ -28,6 +28,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
@@ -149,7 +150,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load a scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
     if(!importer) std::exit(1);
 
     Debug{} << "Opening file scene.ogex";
@@ -211,7 +212,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         Debug{} << "Importing material" << i << importer->materialName(i);
 
-        std::unique_ptr<Trade::AbstractMaterialData> materialData = importer->material(i);
+        Containers::Pointer<Trade::AbstractMaterialData> materialData = importer->material(i);
         if(!materialData || materialData->type() != Trade::MaterialType::Phong) {
             Warning{} << "Cannot load material, skipping";
             continue;
@@ -257,7 +258,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
 void ViewerExample::addObject(Trade::AbstractImporter& importer, Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials, Object3D& parent, UnsignedInt i) {
     Debug{} << "Importing object" << i << importer.object3DName(i);
-    std::unique_ptr<Trade::ObjectData3D> objectData = importer.object3D(i);
+    Containers::Pointer<Trade::ObjectData3D> objectData = importer.object3D(i);
     if(!objectData) {
         Error{} << "Cannot import object, skipping";
         return;

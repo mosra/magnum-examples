@@ -28,6 +28,7 @@
 */
 
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -87,7 +88,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
     if(!importer) std::exit(1);
 
     /* Load the texture */

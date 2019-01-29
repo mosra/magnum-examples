@@ -29,6 +29,7 @@
 
 #include "CubeMapShader.h"
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/CubeMapTexture.h>
 #include <Magnum/GL/Shader.h>

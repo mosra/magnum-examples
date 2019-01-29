@@ -30,6 +30,7 @@
 
 #include "ShadowReceiverShader.h"
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
@@ -39,7 +40,7 @@
 
 namespace Magnum { namespace Examples {
 
-ShadowReceiverShader::ShadowReceiverShader(Int numShadowLevels) {
+ShadowReceiverShader::ShadowReceiverShader(std::size_t numShadowLevels) {
     MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL330);
 
     const Utility::Resource rs{"shadow-data"};

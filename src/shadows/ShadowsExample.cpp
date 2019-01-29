@@ -90,7 +90,7 @@ class ShadowsExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _shadowCasterDrawables;
         SceneGraph::DrawableGroup3D _shadowReceiverDrawables;
         ShadowCasterShader _shadowCasterShader;
-        std::unique_ptr<ShadowReceiverShader> _shadowReceiverShader;
+        ShadowReceiverShader _shadowReceiverShader{NoCreate};
 
         DebugLines _debugLines;
 
@@ -130,8 +130,8 @@ ShadowsExample::ShadowsExample(const Arguments& arguments):
     _shadowStaticAlignment{false}
 {
     _shadowLight.setupShadowmaps(3, _shadowMapSize);
-    _shadowReceiverShader.reset(new ShadowReceiverShader(_shadowLight.layerCount()));
-    _shadowReceiverShader->setShadowBias(_shadowBias);
+    _shadowReceiverShader = ShadowReceiverShader{_shadowLight.layerCount()};
+    _shadowReceiverShader.setShadowBias(_shadowBias);
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
@@ -183,7 +183,7 @@ Object3D* ShadowsExample::createSceneObject(Model& model, bool makeCaster, bool 
 
     if(makeReceiver) {
         auto receiver = new ShadowReceiverDrawable(*object, &_shadowReceiverDrawables);
-        receiver->setShader(*_shadowReceiverShader);
+        receiver->setShader(_shadowReceiverShader);
         receiver->setMesh(model.mesh);
     }
 
@@ -261,7 +261,7 @@ void ShadowsExample::drawEvent() {
     for(std::size_t layerIndex = 0; layerIndex != _shadowLight.layerCount(); ++layerIndex)
         shadowMatrices[layerIndex] = _shadowLight.layerMatrix(layerIndex);
 
-    _shadowReceiverShader->setShadowmapMatrices(shadowMatrices)
+    _shadowReceiverShader.setShadowmapMatrices(shadowMatrices)
         .setShadowmapTexture(_shadowLight.shadowTexture())
         .setLightDirection(_shadowLightObject.transformation().backward());
 
@@ -370,11 +370,11 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
         setShadowSplitExponent(_layerSplitExponent /= 1.125f);
 
     } else if(event.key() == KeyEvent::Key::F7) {
-        _shadowReceiverShader->setShadowBias(_shadowBias /= 1.125f);
+        _shadowReceiverShader.setShadowBias(_shadowBias /= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
     } else if(event.key() == KeyEvent::Key::F8) {
-        _shadowReceiverShader->setShadowBias(_shadowBias *= 1.125f);
+        _shadowReceiverShader.setShadowBias(_shadowBias *= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
     } else if(event.key() == KeyEvent::Key::F9) {
@@ -427,11 +427,11 @@ void ShadowsExample::setShadowMapSize(const Vector2i& shadowMapSize) {
 }
 
 void ShadowsExample::recompileReceiverShader(const std::size_t numLayers) {
-    _shadowReceiverShader.reset(new ShadowReceiverShader(numLayers));
-    _shadowReceiverShader->setShadowBias(_shadowBias);
+    _shadowReceiverShader = ShadowReceiverShader{numLayers};
+    _shadowReceiverShader.setShadowBias(_shadowBias);
     for(std::size_t i = 0; i != _shadowReceiverDrawables.size(); ++i) {
         auto& drawable = static_cast<ShadowReceiverDrawable&>(_shadowReceiverDrawables[i]);
-        drawable.setShader(*_shadowReceiverShader);
+        drawable.setShader(_shadowReceiverShader);
     }
 }
 

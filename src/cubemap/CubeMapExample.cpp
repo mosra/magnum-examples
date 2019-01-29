@@ -96,7 +96,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
     if(!importer) std::exit(1);
 
     _resourceManager.set<Trade::AbstractImporter>("jpeg-importer",

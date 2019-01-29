@@ -41,7 +41,9 @@ class ShadowReceiverShader: public GL::AbstractShaderProgram {
         typedef Shaders::Generic3D::Position Position;
         typedef Shaders::Generic3D::Normal Normal;
 
-        explicit ShadowReceiverShader(Int numShadowLevels);
+        explicit ShadowReceiverShader(NoCreateT): GL::AbstractShaderProgram{NoCreate} {}
+
+        explicit ShadowReceiverShader(std::size_t numShadowLevels);
 
         /**
          * @brief Set transformation and projection matrix

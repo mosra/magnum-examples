@@ -30,11 +30,11 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <iomanip>
-#include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
@@ -353,7 +353,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Load LTC matrix and BRDF textures */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
     if(!importer) std::exit(1);
 
     const Utility::Resource rs{"arealights-data"};
@@ -440,14 +440,6 @@ void AreaLightsExample::enableApplyButton(const std::string&) {
         _baseUiPlane->f0}));
 }
 
-namespace {
-    std::string toStringWithReasonablePrecision(Float f) { /* :( */
-        std::stringstream out;
-        out << std::setprecision(5) << f;
-        return out.str();
-    }
-}
-
 void AreaLightsExample::apply() {
     _metalness = Math::clamp(std::stof(_baseUiPlane->metalness.value()), 0.1f, 1.0f);
     _roughness = Math::clamp(std::stof(_baseUiPlane->roughness.value()), 0.1f, 1.0f);
@@ -458,9 +450,9 @@ void AreaLightsExample::apply() {
         .setF0(_f0);
 
     /* Set the clamped values back */
-    _baseUiPlane->metalness.setValue(toStringWithReasonablePrecision(_metalness));
-    _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
-    _baseUiPlane->f0.setValue(toStringWithReasonablePrecision(_f0));
+    _baseUiPlane->metalness.setValue(Utility::formatString("{:.5}", _metalness));
+    _baseUiPlane->roughness.setValue(Utility::formatString("{:.5}", _roughness));
+    _baseUiPlane->f0.setValue(Utility::formatString("{:.5}", _f0));
 }
 
 void AreaLightsExample::reset() {
@@ -582,7 +574,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _roughness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setRoughness(_roughness);
-        _baseUiPlane->roughness.setValue(toStringWithReasonablePrecision(_roughness));
+        _baseUiPlane->roughness.setValue(Utility::formatString("{:.5}", _roughness));
 
     /* Increase/decrease metalness */
     } else if(event.key() == KeyEvent::Key::M) {
@@ -590,7 +582,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _metalness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setMetalness(_metalness);
-        _baseUiPlane->metalness.setValue(toStringWithReasonablePrecision(_metalness));
+        _baseUiPlane->metalness.setValue(Utility::formatString("{:.5}", _metalness));
 
     /* Increase/decrease f0 */
     } else if(event.key() == KeyEvent::Key::F) {
@@ -598,7 +590,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _f0 + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setF0(_f0);
-        _baseUiPlane->f0.setValue(toStringWithReasonablePrecision(_f0));
+        _baseUiPlane->f0.setValue(Utility::formatString("{:.5}", _f0));
 
     /* Reload shader */
     } else if(event.key() == KeyEvent::Key::F5) {

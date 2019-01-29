@@ -29,6 +29,7 @@
 
 #include "CubeMap.h"
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/Buffer.h>

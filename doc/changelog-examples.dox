@@ -47,6 +47,12 @@ namespace Magnum {
 -   New @ref examples-imgui example showing integration with ImGui using
     @ref ImGuiIntegration (see [mosra/magnum-examples#51](https://github.com/mosra/magnum-examples/pull/51))
 
+@subsection changelog-examples-latest-changes Changes and improvements
+
+-   Plugged memory leaks in the @ref examples-bullet example, automatically
+    removing fallen objects thats are too no longer visible
+    (see [mosra/magnum-examples#52](https://github.com/mosra/magnum-examples/pull/52))
+
 @section changelog-examples-2018-10 2018.10
 
 Released 2018-10-23, tagged as

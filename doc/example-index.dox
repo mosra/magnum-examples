@@ -210,7 +210,7 @@ The following consist of documented source code only:
 
 @parblock
 
-@m_div{m-col-m-4 m-push-m-4 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-push-m-4 m-col-s-6 m-push-s-3 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan

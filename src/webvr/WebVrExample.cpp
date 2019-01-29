@@ -28,7 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
 #include <Corrade/Containers/Array.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/GL/Buffer.h>

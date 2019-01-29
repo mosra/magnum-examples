@@ -29,6 +29,7 @@
 
 #include "Reflector.h"
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Mesh.h>

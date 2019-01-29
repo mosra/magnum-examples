@@ -27,8 +27,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <iomanip>
-#include <sstream>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
@@ -58,12 +57,12 @@ class TextExample: public Platform::Application {
 
         PluginManager::Manager<Trade::AbstractImporter> _importerManager;
         PluginManager::Manager<Text::AbstractFont> _manager;
-        std::unique_ptr<Text::AbstractFont> _font;
-        std::unique_ptr<Text::GlyphCache> _cache;
+        Containers::Pointer<Text::AbstractFont> _font;
+        Containers::Pointer<Text::GlyphCache> _cache;
 
         GL::Mesh _text;
         GL::Buffer _vertices, _indices;
-        std::unique_ptr<Text::Renderer2D> _text2;
+        Containers::Pointer<Text::Renderer2D> _text2;
         Shaders::DistanceFieldVector2D _shader;
 
         Matrix3 _transformation;
@@ -157,13 +156,9 @@ void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
 }
 
 void TextExample::updateText() {
-    std::ostringstream out;
-    out << std::setprecision(2)
-        << "Rotation: "
-        << Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle()))
-        << "°\nScale: "
-        << _transformation.uniformScaling();
-    _text2->render(out.str());
+    _text2->render(Utility::formatString("Rotation: {:.2}°\nScale: {:.2}",
+        Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle())),
+        _transformation.uniformScaling()));
 }
 
 }}
