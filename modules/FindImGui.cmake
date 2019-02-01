@@ -6,7 +6,8 @@
 #
 #  ImGui_FOUND                - True if ImGui is found
 #  ImGui::ImGui               - ImGui interface target
-#  ImGui::Sources             - ImGui source target
+#  ImGui::Sources             - ImGui source target for core functionality
+#  ImGui::SourcesMiscCpp      - ImGui source target for misc/cpp
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -21,6 +22,9 @@
 # You can supply their location via an ``IMGUI_DIR`` variable. Once found, the
 # ``ImGui::ImGui`` target contains just the header file, while
 # ``ImGui::Sources`` contains the source files in ``INTERFACE_SOURCES``.
+#
+# The ``ImGui::SourcesMiscCpp`` component, if requested, is always searched for
+# in the form of C++ sources. Vcpkg doesn't distribute these.
 #
 # The desired usage that covers both cases is to link ``ImGui::Sources``
 # ``PRIVATE``\ ly to a *single* target, which will then contain either the
@@ -92,58 +96,85 @@ else()
     endif()
 endif()
 
+macro(_imgui_setup_source_file source)
+    # Handle export and import of imgui symbols via IMGUI_API
+    # definition in visibility.h of Magnum ImGuiIntegration.
+    set_property(SOURCE ${source} APPEND PROPERTY COMPILE_DEFINITIONS
+        "IMGUI_USER_CONFIG=\"Magnum/ImGuiIntegration/visibility.h\"")
+
+    # Hide warnings from imgui source files
+
+    # GCC- and Clang-specific flags
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang"
+        AND NOT CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC") OR CORRADE_TARGET_EMSCRIPTEN)
+        set_property(SOURCE ${source} APPEND_STRING PROPERTY COMPILE_FLAGS
+            " -Wno-old-style-cast -Wno-zero-as-null-pointer-constant")
+    endif()
+
+    # GCC-specific flags
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set_property(SOURCE ${source} APPEND_STRING PROPERTY COMPILE_FLAGS
+            " -Wno-double-promotion")
+    endif()
+endmacro()
+
 # Find components
 foreach(_component IN LISTS ImGui_FIND_COMPONENTS)
     if(_component STREQUAL "Sources")
-        set(ImGui_Sources_FOUND TRUE)
-        set(ImGui_SOURCES )
-
-        foreach(_file imgui imgui_widgets imgui_draw imgui_demo)
-            # Disable the find root path here, it overrides the
-            # CMAKE_FIND_ROOT_PATH_MODE_INCLUDE setting potentially set in
-            # toolchains.
-            find_file(ImGui_${_file}_SOURCE NAMES ${_file}.cpp
-                HINTS ${IMGUI_DIR} NO_CMAKE_FIND_ROOT_PATH)
-            list(APPEND ImGui_SOURCES ${ImGui_${_file}_SOURCE})
-
-            if(NOT ImGui_${_file}_SOURCE)
-                set(ImGui_Sources_FOUND FALSE)
-                break()
-            endif()
-
-            # Hide warnings from imgui source files
-
-            # Handle export and import of imgui symbols via IMGUI_API definition
-            # in visibility.h of Magnum ImGuiIntegration.
-            set_property(SOURCE ${ImGui_${_file}_SOURCE} APPEND PROPERTY COMPILE_DEFINITIONS
-                "IMGUI_USER_CONFIG=\"Magnum/ImGuiIntegration/visibility.h\"")
-
-            # GCC- and Clang-specific flags
-            if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang"
-                AND NOT CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC") OR CORRADE_TARGET_EMSCRIPTEN)
-                set_property(SOURCE ${ImGui_${_file}_SOURCE} APPEND_STRING PROPERTY COMPILE_FLAGS
-                    " -Wno-old-style-cast -Wno-zero-as-null-pointer-constant")
-                set_property(SOURCE ${ImGui_${_file}_SOURCE} PROPERTY CORRADE_USE_PEDANTIC_FLAGS OFF)
-                set_property(SOURCE ${ImGui_${_file}_SOURCE} PROPERTY CORRADE_USE_PEDANTIC_DEFINITIONS OFF)
-            endif()
-
-            # GCC-specific flags
-            if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-                 set_property(SOURCE ${ImGui_${_file}_SOURCE} APPEND_STRING PROPERTY COMPILE_FLAGS
-                     " -Wno-double-promotion")
-            endif()
-        endforeach()
-
         if(NOT TARGET ImGui::Sources)
+            set(ImGui_Sources_FOUND TRUE)
+            set(ImGui_SOURCES )
+
+            foreach(_file imgui imgui_widgets imgui_draw imgui_demo)
+                # Disable the find root path here, it overrides the
+                # CMAKE_FIND_ROOT_PATH_MODE_INCLUDE setting potentially set in
+                # toolchains.
+                find_file(ImGui_${_file}_SOURCE NAMES ${_file}.cpp
+                    HINTS ${IMGUI_DIR} NO_CMAKE_FIND_ROOT_PATH)
+                list(APPEND ImGui_SOURCES ${ImGui_${_file}_SOURCE})
+
+                if(NOT ImGui_${_file}_SOURCE)
+                    set(ImGui_Sources_FOUND FALSE)
+                    break()
+                endif()
+
+                _imgui_setup_source_file(${ImGui_${_file}_SOURCE})
+            endforeach()
+
             add_library(ImGui::Sources INTERFACE IMPORTED)
             set_property(TARGET ImGui::Sources APPEND PROPERTY
                 INTERFACE_SOURCES "${ImGui_SOURCES}")
             set_property(TARGET ImGui::Sources APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ImGui::ImGui)
-
-            set(ImGui_Sources_FOUND ${ImGui_SOURCES})
         else()
             set(ImGui_Sources_FOUND TRUE)
+        endif()
+    elseif(_component STREQUAL "SourcesMiscCpp")
+        set(ImGui_SourcesMiscCpp_FOUND TRUE)
+        set(ImGui_SOURCES )
+
+        foreach(_file imgui_stdlib)
+            # Disable the find root path here, it overrides the
+            # CMAKE_FIND_ROOT_PATH_MODE_INCLUDE setting potentially set in
+            # toolchains.
+            find_file(ImGui_${_file}_MISC_CPP_SOURCE NAMES ${_file}.cpp
+                HINTS ${IMGUI_DIR}/misc/cpp NO_CMAKE_FIND_ROOT_PATH)
+            list(APPEND ImGui_MISC_CPP_SOURCES ${ImGui_${_file}_MISC_CPP_SOURCE})
+
+            if(NOT ImGui_${_file}_MISC_CPP_SOURCE)
+                set(ImGui_SourcesMiscCpp_FOUND FALSE)
+                break()
+            endif()
+
+            _imgui_setup_source_file(${ImGui_${_file}_MISC_CPP_SOURCE})
+        endforeach()
+
+        if(NOT TARGET ImGui::SourcesMiscCpp)
+            add_library(ImGui::SourcesMiscCpp INTERFACE IMPORTED)
+            set_property(TARGET ImGui::SourcesMiscCpp APPEND PROPERTY
+                INTERFACE_SOURCES "${ImGui_MISC_CPP_SOURCES}")
+            set_property(TARGET ImGui::SourcesMiscCpp APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ImGui::ImGui)
         endif()
     endif()
 endforeach()
