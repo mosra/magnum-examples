@@ -161,8 +161,10 @@ MAGNUM_APPLICATION_MAIN(PrimitivesExample)
 
 @section examples-primitives-compilation Compilation
 
-Compilation is pretty straigtforward. We now need some additional libraries,
-like `MeshTools` and `Primitives`, everything else is the same as previously:
+Compilation is pretty straigtforward, similar to the @ref examples-triangle "Triangle example".
+Again omitting the basic setup described in the @ref getting-started "Getting Started Guide",
+we now need some additional libraries, like `MeshTools` and `Primitives`,
+everything else is the same as previously:
 
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(Magnum REQUIRED

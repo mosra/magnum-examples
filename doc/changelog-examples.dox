@@ -53,6 +53,11 @@ namespace Magnum {
     removing fallen objects thats are too no longer visible
     (see [mosra/magnum-examples#52](https://github.com/mosra/magnum-examples/pull/52))
 
+@subsection changelog-examples-latest-documentation Documentation
+
+-   Mention the required extra CMake boilerplate in the first two examples
+    (see [mosra/magnum#309](https://github.com/mosra/magnum/issues/309))
+
 @section changelog-examples-2018-10 2018.10
 
 Released 2018-10-23, tagged as
