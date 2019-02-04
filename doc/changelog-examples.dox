@@ -30,9 +30,14 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2018.10
+@anchor changelog-examples-latest
 
-@subsection changelog-examples-latest-dependencies Dependency changes
+@section changelog-examples-2019-01 2019.01
+
+Released 2019-02-04, tagged as
+[v2019.01](https://github.com/mosra/magnum-examples/releases/tag/v2019.01).
+
+@subsection changelog-examples-2019-01-dependencies Dependency changes
 
 -   Minimal supported GCC version is now 4.8.1, GCC 4.7 is not supported
     anymore. Minimal Clang version is now 3.3, since that's the first version
@@ -44,18 +49,18 @@ namespace Magnum {
     systems (such as Ubuntu 14.04 or Debian 8). See also
     [mosra/magnum#274](https://github.com/mosra/magnum/issues/274).
 
-@subsection changelog-examples-latest-new New features
+@subsection changelog-examples-2019-01-new New features
 
 -   New @ref examples-imgui example showing integration with ImGui using
     @ref ImGuiIntegration (see [mosra/magnum-examples#51](https://github.com/mosra/magnum-examples/pull/51))
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2019-01-changes Changes and improvements
 
 -   Plugged memory leaks in the @ref examples-bullet example, automatically
     removing fallen objects thats are too no longer visible
     (see [mosra/magnum-examples#52](https://github.com/mosra/magnum-examples/pull/52))
 
-@subsection changelog-examples-latest-documentation Documentation
+@subsection changelog-examples-2019-01-documentation Documentation
 
 -   Mention the required extra CMake boilerplate in the first two examples
     (see [mosra/magnum#309](https://github.com/mosra/magnum/issues/309))
