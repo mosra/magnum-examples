@@ -129,11 +129,14 @@ background:
 MAGNUM_APPLICATION_MAIN(TriangleExample)
 @endcode
 
-That's all, now we can compile the whole example using CMake. First we require
-the `Magnum` package with `GL`, `Shaders` and `Sdl2Application` components.
-It's recommended to use also Corrade's set of compiler flags to enable
-additional warnings. Then we create our executable and link to all Magnum
-libraries we requested. See @ref cmake for more information.
+That's all, now we can compile the whole example using CMake. Apart from the
+standard CMake setup related to version requirements and paths to
+`FindMagnum.cmake`, `FindSDL2.cmake` and `FindCorrade.cmake`, as described in
+the @ref getting-started "Getting Started Guide", the setup is as follows.
+First we require the `Magnum` package with `GL`, `Shaders` and
+`Sdl2Application` components. It's recommended to also use Corrade's set of
+compiler flags to enable additional warnings. Then we create our executable and
+link to all Magnum libraries we requested. See @ref cmake for more information.
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
