@@ -61,8 +61,6 @@ target_link_libraries(magnum-bullet PRIVATE
     Magnum::Trade
     MagnumIntegration::Bullet)
 
-install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES bullet.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet RENAME index.html)
