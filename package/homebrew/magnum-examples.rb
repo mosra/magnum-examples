@@ -1,5 +1,3 @@
-# kate: indent-width 2;
-
 class MagnumExamples < Formula
   desc "Examples for the Magnum C++11/C++14 graphics engine"
   homepage "https://github.com/mosra/magnum"
