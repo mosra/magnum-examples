@@ -183,6 +183,7 @@ foreach(_component ${MagnumExtras_FIND_COMPONENTS})
             find_path(_MAGNUMEXTRAS_${_COMPONENT}_INCLUDE_DIR
                 NAMES ${_component}.h
                 HINTS ${MAGNUMEXTRAS_INCLUDE_DIR}/Magnum/${_component})
+            mark_as_advanced(_MAGNUMEXTRAS_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
         if(_component MATCHES ${_MAGNUMEXTRAS_LIBRARY_COMPONENTS})
