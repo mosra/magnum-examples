@@ -1,8 +1,9 @@
 class MagnumExamples < Formula
   desc "Examples for the Magnum C++11/C++14 graphics engine"
   homepage "https://github.com/mosra/magnum"
-  url "https://github.com/mosra/magnum-examples/archive/v2018.10.tar.gz"
-  sha256 "d0baac64102f274aedb04dea47434d65ce1ab3338466a629a68bc6ac86facee4"
+  url "https://github.com/mosra/magnum-examples/archive/v2019.01.tar.gz"
+  # wget https://github.com/mosra/magnum-examples/archive/v2019.01.tar.gz -O - | sha256sum
+  sha256 "260f63b88f703c8bdf458a76b1b1b5da1bc3e4182ac6c52308b958d16f2b9522"
   head "git://github.com/mosra/magnum-examples.git"
 
   depends_on "cmake"
