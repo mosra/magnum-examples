@@ -30,8 +30,8 @@ namespace Magnum {
 
 @m_footernavigation
 
-The ImGui demo and two example windows which demonstrate rendering of
-immediate-mode GUI using the @ref ImGuiIntegration library.
+Shows the Dear ImGui demo and two example windows which demonstrate rendering
+of immediate-mode GUI using the @ref ImGuiIntegration library.
 
 @image html imgui.png width=400px
 
