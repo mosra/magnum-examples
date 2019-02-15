@@ -77,7 +77,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(55.0f), 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
-    /* Load TGA importer plugin */
+    /* Load image importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
     if(!importer) std::exit(1);
