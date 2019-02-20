@@ -5,13 +5,9 @@ addons:
     - g++-4.8
     - ninja-build
     - libsdl2-dev
+    - libglfw3-dev
     - libopenal-dev
     - libbullet-dev
-    # GLFW dependencies, libxi-dev will be needed in the future
-    - libxrandr-dev
-    - libxinerama-dev
-    - libxcursor-dev
-    #- libxi-dev
     - libbox2d-dev
     - libglew-dev # needed by the triangle-sokol example
 
@@ -19,14 +15,14 @@ matrix:
   include:
   - language: cpp
     os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-gl
     - TARGET=desktop
   - language: cpp
     os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-nondeprecated
@@ -34,7 +30,7 @@ matrix:
     - BUILD_DEPRECATED=OFF
   - language: cpp
     os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-gles2
@@ -42,7 +38,7 @@ matrix:
     - TARGET_GLES2=ON
   - language: cpp
     os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-gles3
@@ -50,7 +46,7 @@ matrix:
     - TARGET_GLES2=OFF
   - language: cpp
     os: linux
-    dist: trusty
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-vulkan
@@ -95,6 +91,8 @@ matrix:
     - TARGET_GLES2=OFF
   #- language: android
     #os: linux
+    ## Setting xenial here will cause it to use 12.04, with GCC 4.6 and other
+    ## prehistoric nightmares. So staying with 14.04 for the time being.
     #dist: trusty
     #env:
     #- JOBID=android-gles2
@@ -110,6 +108,8 @@ matrix:
       #- android-22
   #- language: android
     #os: linux
+    ## Setting xenial here will cause it to use 12.04, with GCC 4.6 and other
+    ## prehistoric nightmares. So staying with 14.04 for the time being.
     #dist: trusty
     #env:
     #- JOBID=android-gles3
@@ -135,7 +135,6 @@ notifications:
 cache:
   directories:
   - $HOME/sdl2
-  - $HOME/glfw
   - $HOME/cmake
   - $HOME/imgui
 
@@ -169,9 +168,8 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then curl -O https://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4/Xcode-iOS/SDL && xcodebuild -sdk iphonesimulator9.3 | xcpretty && mkdir -p ../../../sdl2/lib && cp build/Release-iphonesimulator/libSDL2.a ../../../sdl2/lib && mkdir -p ../../../sdl2/include/SDL2 && cp -R ../../include/* ../../../sdl2/include/SDL2 && cd ../../..; fi
 
-# GLFW (cached)
+# GLFW
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw3; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ) && [ ! -e "$HOME/glfw/include" ]; then wget https://github.com/glfw/glfw/releases/download/3.1.2/glfw-3.1.2.zip && unzip glfw-3.1.2.zip && cd glfw-3.1.2 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/glfw -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DBUILD_SHARED_LIBS=ON && cmake --build . --target install && cd ../..; fi
 
 # Bullet
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install bullet; fi
