@@ -58,9 +58,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Vcpkg distributes imgui as a library with a config file, so try that forst
+# Vcpkg distributes imgui as a library with a config file, so try that first --
+# but only if IMGUI_DIR wasn't explicitly passed, in which case we'll look
+# there instead
 find_package(imgui CONFIG QUIET)
-if(imgui_FOUND)
+if(imgui_FOUND AND NOT IMGUI_DIR)
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
