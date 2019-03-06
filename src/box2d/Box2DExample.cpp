@@ -115,7 +115,7 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     /* Make it possible for the user to have some fun */
     Utility::Arguments args;
     args.addOption("transformation", "1 0 0 0").setHelp("transformation", "initial pyramid transformation")
-        .addSkippedPrefix("magnum").setHelp("engine-specific options")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .parse(arguments.argc, arguments.argv);
 
     const DualComplex globalTransformation = args.value<DualComplex>("transformation").normalized();
