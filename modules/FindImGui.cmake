@@ -58,9 +58,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Vcpkg distributes imgui as a library with a config file, so try that forst
+# Vcpkg distributes imgui as a library with a config file, so try that first --
+# but only if IMGUI_DIR wasn't explicitly passed, in which case we'll look
+# there instead
 find_package(imgui CONFIG QUIET)
-if(imgui_FOUND)
+if(imgui_FOUND AND NOT IMGUI_DIR)
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
@@ -83,6 +85,7 @@ else()
     # toolchains.
     find_path(ImGui_INCLUDE_DIR NAMES imgui.h HINTS ${IMGUI_DIR}
         NO_CMAKE_FIND_ROOT_PATH)
+    mark_as_advanced(ImGui_INCLUDE_DIR)
 
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
@@ -96,10 +99,10 @@ else()
     endif()
 endif()
 
-macro(_imgui_setup_source_file source)
+macro(_imgui_setup_source_file source_var)
     # Handle export and import of imgui symbols via IMGUI_API
     # definition in visibility.h of Magnum ImGuiIntegration.
-    set_property(SOURCE ${source} APPEND PROPERTY COMPILE_DEFINITIONS
+    set_property(SOURCE ${${source_var}} APPEND PROPERTY COMPILE_DEFINITIONS
         "IMGUI_USER_CONFIG=\"Magnum/ImGuiIntegration/visibility.h\"")
 
     # Hide warnings from imgui source files
@@ -107,15 +110,17 @@ macro(_imgui_setup_source_file source)
     # GCC- and Clang-specific flags
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang"
         AND NOT CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC") OR CORRADE_TARGET_EMSCRIPTEN)
-        set_property(SOURCE ${source} APPEND_STRING PROPERTY COMPILE_FLAGS
+        set_property(SOURCE ${${source_var}} APPEND_STRING PROPERTY COMPILE_FLAGS
             " -Wno-old-style-cast -Wno-zero-as-null-pointer-constant")
     endif()
 
     # GCC-specific flags
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set_property(SOURCE ${source} APPEND_STRING PROPERTY COMPILE_FLAGS
+        set_property(SOURCE ${${source_var}} APPEND_STRING PROPERTY COMPILE_FLAGS
             " -Wno-double-promotion")
     endif()
+
+    mark_as_advanced(${source_var})
 endmacro()
 
 # Find components
@@ -138,7 +143,7 @@ foreach(_component IN LISTS ImGui_FIND_COMPONENTS)
                     break()
                 endif()
 
-                _imgui_setup_source_file(${ImGui_${_file}_SOURCE})
+                _imgui_setup_source_file(ImGui_${_file}_SOURCE)
             endforeach()
 
             add_library(ImGui::Sources INTERFACE IMPORTED)
@@ -166,7 +171,7 @@ foreach(_component IN LISTS ImGui_FIND_COMPONENTS)
                 break()
             endif()
 
-            _imgui_setup_source_file(${ImGui_${_file}_MISC_CPP_SOURCE})
+            _imgui_setup_source_file(ImGui_${_file}_MISC_CPP_SOURCE)
         endforeach()
 
         if(NOT TARGET ImGui::SourcesMiscCpp)
@@ -182,5 +187,3 @@ endforeach()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(ImGui
     REQUIRED_VARS ImGui_INCLUDE_DIR HANDLE_COMPONENTS)
-
-unset(_FIND_SOURCES)

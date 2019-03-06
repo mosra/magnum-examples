@@ -224,6 +224,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             find_path(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR
                 NAMES ${_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES}
                 HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
+            mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
         if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})

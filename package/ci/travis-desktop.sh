@@ -67,7 +67,7 @@ cd ../..
 
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/glfw" \
+    -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DIMGUI_DIR=$HOME/imgui \
     -DWITH_AREALIGHTS_EXAMPLE=ON \
