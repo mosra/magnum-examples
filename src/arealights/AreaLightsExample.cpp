@@ -430,7 +430,7 @@ void AreaLightsExample::reset() {
 }
 
 void AreaLightsExample::drawEvent() {
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -438,8 +438,9 @@ void AreaLightsExample::drawEvent() {
             Matrix4::rotationY(Rad{_cameraRotation.x()})*
             Matrix4::translation(-_cameraPosition);
 
-    /* Draw light on the floor. Cheat a bit and just add everything together.
-       Will work as long as the background is black. */
+    /* Draw light on the floor. Cheat a bit and just add everything together,
+       enabling depth test for the first only. Will work as long as the
+       background is black. */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     _areaLightShader.bindTextures(_ltcMat, _ltcAmp);
@@ -458,11 +459,20 @@ void AreaLightsExample::drawEvent() {
             .setBaseColor(_lightColor[i])
             .setLightIntensity(_lightIntensity[i])
             .setTwoSided(_lightTwoSided[i]);
+
+        if(i == 0)
+            GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+
         _plane.draw(_areaLightShader);
+
+        if(i == 0)
+            GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
     }
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
-    /* Draw light visualization. Draw twice for two-sided lights. */
+    /* Draw light visualization, this time with depth test enabled for all.
+       Draw twice for two-sided lights. */
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     for(std::size_t i: {0, 1, 2}) {
         _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
             .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]);
@@ -473,6 +483,7 @@ void AreaLightsExample::drawEvent() {
             _plane.draw(_flatShader);
         }
     }
+    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
 
     /* Draw the UI */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);

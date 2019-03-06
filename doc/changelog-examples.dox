@@ -30,7 +30,12 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@anchor changelog-examples-latest
+@section changelog-examples-latest Changes since 2019.01
+
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   The @ref examples-arealights example wasn't using the depth buffer
+    (see [mosra/magnum-examples#57](https://github.com/mosra/magnum-examples/issues/57))
 
 @section changelog-examples-2019-01 2019.01
 
