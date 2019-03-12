@@ -27,6 +27,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -83,10 +84,17 @@ TextExample::TextExample(const Arguments& arguments):
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!_font->openData(std::vector<std::pair<std::string, Containers::ArrayView<const char>>>{
-        {"DejaVuSans.conf", rs.getRaw("DejaVuSans.conf")},
-        {"DejaVuSans.tga", rs.getRaw("DejaVuSans.tga")}}, 0.0f))
-    {
+    /* Load MagnumFont plugin */
+    _font = _manager.loadAndInstantiate("MagnumFont");
+    if(!_font) std::exit(1);
+    _font->setFileCallback([](const std::string& filename,
+        InputFileCallbackPolicy, void*) {
+            Utility::Resource rs("fonts");
+            return Containers::optional(rs.getRaw(filename));
+        });
+
+    /* Open the font and fill glyph cache */
+    if(!_font->openFile("DejaVuSans.conf", 0.0f)) {
         Error() << "Cannot open font file";
         std::exit(1);
     }
