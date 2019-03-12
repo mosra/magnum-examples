@@ -74,7 +74,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!_font->openSingleData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
+    if(!_font->openData(rs.getRaw("DejaVuSans.ttf"), 110.0f)) {
         Error() << "Cannot open font file";
         std::exit(1);
     }
