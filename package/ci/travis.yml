@@ -89,7 +89,6 @@ matrix:
     - JOBID=ports-emscripten-webgl2
     - TARGET=emscripten
     - TARGET_GLES2=OFF
-<<<<<<< HEAD
   - language: android
     os: linux
     # Setting xenial here will cause it to use 12.04, with GCC 4.6 and other
