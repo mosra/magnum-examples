@@ -98,7 +98,8 @@ TextExample::TextExample(const Arguments& arguments):
         Error() << "Cannot open font file";
         std::exit(1);
     }
-    _cache = _font->createGlyphCache();
+    /* We know it's Text::GlyphCache, so cast it. Sigh, this is awful. */
+    _cache = Containers::pointerCast<Text::GlyphCache>(_font->createGlyphCache());
     CORRADE_INTERNAL_ASSERT(_cache);
 
     std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.1295f,
