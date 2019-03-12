@@ -98,7 +98,7 @@
 #
 # Example usage with specifying additional components is::
 #
-#  find_package(Magnum REQUIRED Trade MeshTools Primitives GlutApplication)
+#  find_package(Magnum REQUIRED Trade MeshTools Primitives GlfwApplication)
 #
 # For each component is then defined:
 #
@@ -241,6 +241,9 @@ endif()
 # Read flags from configuration
 file(READ ${_MAGNUM_CONFIGURE_FILE} _magnumConfigure)
 set(_magnumFlags
+    # WARNING: CAREFUL HERE, the string(FIND) succeeds even if a subset is
+    # found -- so e.g. looking for TARGET_GL will match TARGET_GLES2 as well.
+    # So far that's not a problem, but might become an issue for new flags.
     BUILD_DEPRECATED
     BUILD_STATIC
     BUILD_MULTITHREADED
@@ -398,7 +401,10 @@ set(_MAGNUM_Shaders_DEPENDENCIES GL)
 if(MAGNUM_BUILD_DEPRECATED)
     set(_MAGNUM_Shapes_DEPENDENCIES SceneGraph)
 endif()
-set(_MAGNUM_Text_DEPENDENCIES TextureTools GL)
+set(_MAGNUM_Text_DEPENDENCIES TextureTools)
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_Text_DEPENDENCIES GL)
+endif()
 
 set(_MAGNUM_TextureTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
@@ -433,7 +439,7 @@ set(_MAGNUM_EglContext_DEPENDENCIES GL)
 set(_MAGNUM_GlxContext_DEPENDENCIES GL)
 set(_MAGNUM_WglContext_DEPENDENCIES GL)
 
-set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter) # and below
+set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter GL) # and below
 set(_MAGNUM_MagnumFontConverter_DEPENDENCIES Trade TgaImageConverter) # and below
 set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
 foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
@@ -442,7 +448,7 @@ foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
     elseif(_component MATCHES ".+(Importer|ImageConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
-        list(APPEND _MAGNUM_${_component}_DEPENDENCIES Text TextureTools GL)
+        list(APPEND _MAGNUM_${_component}_DEPENDENCIES Text TextureTools)
     endif()
 endforeach()
 
@@ -826,12 +832,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
             endif()
 
-            # Emscripten needs a special flag to use WebGL 2
-            if(CORRADE_TARGET_EMSCRIPTEN AND NOT MAGNUM_TARGET_GLES2)
-                # TODO: give me INTERFACE_LINK_OPTIONS or something, please
-                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
-            endif()
-
         # MeshTools library
         elseif(_component STREQUAL MeshTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
@@ -953,7 +953,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     endif()
 endforeach()
 
-# Emscripten-specific files
+# Emscripten-specific files and flags
 if(CORRADE_TARGET_EMSCRIPTEN)
     find_file(MAGNUM_EMSCRIPTENAPPLICATION_JS EmscriptenApplication.js
         PATH_SUFFIXES share/magnum)
@@ -969,6 +969,20 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         MAGNUM_EMSCRIPTENAPPLICATION_JS
         MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS
         MAGNUM_WEBAPPLICATION_CSS)
+
+    # If we are on CMake 3.13 and up, `-s USE_WEBGL2=1` linker option is
+    # propagated from FindOpenGLES3.cmake already. If not (and the GL library
+    # is used), we need to modify the global CMAKE_EXE_LINKER_FLAGS. Do it here
+    # instead of in FindOpenGLES3.cmake so it works also for CMake subprojects
+    # (in which case find_package(OpenGLES3) is called in (and so
+    # CMAKE_EXE_LINKER_FLAGS would be modified in) Magnum's root CMakeLists.txt
+    # and thus can't affect the variable in the outer project). CMake supports
+    # IN_LIST as an operator since 3.1 (Emscripten needs at least 3.7), but
+    # it's behind a policy, so enable that one as well.
+    cmake_policy(SET CMP0057 NEW)
+    if(CMAKE_VERSION VERSION_LESS 3.13 AND GL IN_LIST Magnum_FIND_COMPONENTS AND NOT MAGNUM_TARGET_GLES2 AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-s USE_WEBGL2=1")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
+    endif()
 endif()
 
 # Complete the check with also all components
