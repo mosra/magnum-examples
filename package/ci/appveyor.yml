@@ -73,10 +73,10 @@ install:
 - IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.17.2-bin.zip && ren openal-soft-1.17.2-bin openal
 
 # SDL2
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.4-VC.zip && ren SDL2-2.0.4 SDL
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
 
 # GLFW
 - IF "%TARGET%" == "desktop" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
@@ -104,7 +104,8 @@ build_script:
 
 cache:
 - openal-soft-1.17.2-bin.zip -> package/ci/appveyor-cache-reset.txt
-- SDL2-devel-2.0.4-VC.zip -> package/ci/appveyor-cache-reset.txt
+- SDL2-devel-2.0.9-VC.zip -> package/ci/appveyor-cache-reset.txt
+- SDL2-devel-2.0.9-mingw.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.26.0_public_minimal.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
 - imgui-1.67.zip -> package/ci/appveyor-cache-reset.txt
