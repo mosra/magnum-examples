@@ -49,6 +49,7 @@
 #ifdef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
