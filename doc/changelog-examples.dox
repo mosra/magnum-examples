@@ -190,7 +190,7 @@ for a high-level overview.
         [mosra/magnum-examples#22](https://github.com/mosra/magnum-examples/pull/22),
         [mosra/magnum-examples#26](https://github.com/mosra/magnum-examples/pull/26))
     -   @ref examples-picking example showing object picking using mouse cursor
-        and @ref Framebuffer readout (see
+        and `Framebuffer` readout (see
         [mosra/magnum-examples#12](https://github.com/mosra/magnum-examples/issues/12),
         [mosra/magnum-examples#17](https://github.com/mosra/magnum-examples/issues/17))
     -   @ref examples-shadows example implementing cascaded shadow mapping (see

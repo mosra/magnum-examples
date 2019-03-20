@@ -31,6 +31,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
@@ -42,7 +43,6 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
-#include <Magnum/Context.h>
 
 #include <emscripten.h>
 #include <emscripten/vr.h>
