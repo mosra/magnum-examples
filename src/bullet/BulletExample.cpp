@@ -206,7 +206,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
                 o->translate({i - 2.0f, j + 4.0f, k - 2.0f});
                 o->syncPose();
                 new ColoredDrawable{*o, _shader, _box,
-                    Color3::fromHsv(hue += 137.5_degf, 0.75f, 0.9f),
+                    Color3::fromHsv({hue += 137.5_degf, 0.75f, 0.9f}),
                     Matrix4::scaling(Vector3{0.5f}), _drawables};
             }
         }
