@@ -226,13 +226,14 @@ displayed with proper lighting.
 @until }
 @until }
 
-Last reamining part is to populate the actual scene. If the format supports
+Last remaining part is to populate the actual scene. If the format supports
 scene hierarchy, we recursively import all objects in the scene. If it doesn't
 (which is the case for the simplest mesh formats), we just add a single object
 with the first imported mesh and put a simple color-only material on it.
 
 @skip Load the scene
 @until new ColoredDrawable
+@until }
 
 The actual function that adds objects into the scene isn't very complex. First
 it creates the object with correct parent and transformation, then attaches

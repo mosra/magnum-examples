@@ -287,9 +287,9 @@ void ShadowsExample::renderDebugLines() {
         const Matrix4 layerMatrix = _shadowLight.layerMatrix(layerIndex);
         const Deg hue = layerIndex*360.0_degf/_shadowLight.layerCount();
         _debugLines.addFrustum((unbiasMatrix*layerMatrix).inverted(),
-            Color3::fromHsv(hue, 1.0f, 0.5f));
+            Color3::fromHsv({hue, 1.0f, 0.5f}));
         _debugLines.addFrustum(imvp,
-            Color3::fromHsv(hue, 1.0f, 1.0f),
+            Color3::fromHsv({hue, 1.0f, 1.0f}),
             layerIndex == 0 ? 0 : _shadowLight.cutZ(layerIndex - 1), _shadowLight.cutZ(layerIndex));
     }
 

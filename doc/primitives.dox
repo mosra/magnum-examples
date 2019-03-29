@@ -126,6 +126,7 @@ transformations.
 @skip _transformation =
 @until }
 @until }
+@until }
 
 @section examples-primitives-rendering Rendering
 
@@ -137,6 +138,7 @@ parameters and draw the mesh.
 @until }
 @until }
 @until }
+@until }
 
 @section examples-primitives-events Mouse event handling
 
@@ -145,6 +147,7 @@ change color hue to some other and on mouse drag we rotate the object based on
 relative mouse position to previous event.
 
 @skip void PrimitivesExample::mousePressEvent
+@until }
 @until }
 @until }
 @until }
