@@ -15,6 +15,7 @@
 #
 #  Bullet                       - Bullet Physics integration library
 #  Dart                         - Dart Physics integration library
+#  Eigen                        - Eigen integration library
 #  Glm                          - GLM integration library
 #  ImGui                        - ImGui integration library
 #  Ovr                          - Oculus SDK integration library
@@ -74,7 +75,6 @@ set(_MAGNUMINTEGRATION_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
-        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES Shapes)
     elseif(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     elseif(_component STREQUAL ImGui)
@@ -96,7 +96,8 @@ mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart ImGui Glm Ovr)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENT_LIST Bullet Dart Eigen ImGui Glm Ovr)
+set(_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENT_LIST Eigen)
 
 # Inter-component dependencies (none yet)
 # set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
@@ -124,7 +125,7 @@ endif()
 
 # Convert components lists to regular expressions so I can use if(MATCHES).
 # TODO: Drop this once CMake 3.3 and if(IN_LIST) can be used
-foreach(_WHAT LIBRARY)
+foreach(_WHAT LIBRARY HEADER_ONLY)
     string(REPLACE ";" "|" _MAGNUMINTEGRATION_${_WHAT}_COMPONENTS "${_MAGNUMINTEGRATION_${_WHAT}_COMPONENT_LIST}")
     set(_MAGNUMINTEGRATION_${_WHAT}_COMPONENTS "^(${_MAGNUMINTEGRATION_${_WHAT}_COMPONENTS})$")
 endforeach()
@@ -140,7 +141,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         set(MagnumIntegration_${_component}_FOUND TRUE)
     else()
         # Library components
-        if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS})
+        if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS} AND NOT _component MATCHES ${_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS})
             add_library(MagnumIntegration::${_component} UNKNOWN IMPORTED)
 
             # Try to find both debug and release version
@@ -164,6 +165,11 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             endif()
         endif()
 
+        # Header-only library components
+        if(_component MATCHES ${_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS})
+            add_library(MagnumIntegration::${_component} INTERFACE IMPORTED)
+        endif()
+
         # Bullet integration library
         if(_component STREQUAL Bullet)
             find_package(Bullet)
@@ -183,6 +189,23 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             endforeach()
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES MotionState.h)
+
+        # Eigen integration library
+        elseif(_component STREQUAL Eigen)
+            find_package(Eigen3)
+            # We could drop this once we can use at least 3.3.1 (Ubuntu 16.04
+            # has only 3.3 beta, which doesn't have this target yet), however
+            # for Travis and AppVeyor we're using FindEigen3.cmake from the
+            # downloaded sources (because the Eigen3Config.cmake, which
+            # produces the actual targets, is not there -- only
+            # Eigen3Config.cmake.in). See the YML files for an extended rant.
+            # Also, FindEigen3 only defines EIGEN3_INCLUDE_DIR, not even
+            # EIGEN3_INCLUDE_DIRS, so be extra careful.
+            # http://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.1
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
+
+            set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES Integration.h)
 
         # ImGui integration library
         elseif(_component STREQUAL ImGui)
@@ -251,7 +274,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         endif()
 
         # Decide if the library was found
-        if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS} AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE))
+        if(_component MATCHES ${_MAGNUMINTEGRATION_LIBRARY_COMPONENTS} AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR AND (_component MATCHES ${_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS} OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE))
             set(MagnumIntegration_${_component}_FOUND TRUE)
         else()
             set(MagnumIntegration_${_component}_FOUND FALSE)
