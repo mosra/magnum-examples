@@ -41,7 +41,17 @@ find_package(GLEW REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-triangle-sokol TriangleSokolExample.cpp)
+# Compile the sokol sources separately with C++11 warnings disabled
+add_library(SokolObjects OBJECT sokol.cpp)
+set_target_properties(SokolObjects PROPERTIES
+    CORRADE_CXX_STANDARD 11
+    CORRADE_USE_PEDANTIC_FLAGS OFF)
+target_include_directories(SokolObjects PRIVATE
+    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
+
+add_executable(magnum-triangle-sokol
+    TriangleSokolExample.cpp
+    $<TARGET_OBJECTS:SokolObjects>)
 target_include_directories(magnum-triangle-sokol PRIVATE ${GLEW_INCLUDE_DIRS})
 target_link_libraries(magnum-triangle-sokol PRIVATE
     Magnum::Application
