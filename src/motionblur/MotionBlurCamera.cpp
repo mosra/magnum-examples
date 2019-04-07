@@ -31,7 +31,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/GL/DefaultFramebuffer.h>

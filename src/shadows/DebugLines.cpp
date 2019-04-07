@@ -30,6 +30,7 @@
 
 #include "DebugLines.h"
 
+#include <Corrade/Containers/ArrayViewStl.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/SceneGraph/Camera.h>
 
