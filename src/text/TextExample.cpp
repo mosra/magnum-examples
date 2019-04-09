@@ -28,8 +28,8 @@
 */
 
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Utility/Format.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>

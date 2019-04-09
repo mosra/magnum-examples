@@ -30,6 +30,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Magnum/Audio/AbstractImporter.h>
 #include <Magnum/Audio/Buffer.h>
 #include <Magnum/Audio/Context.h>
