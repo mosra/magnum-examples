@@ -120,7 +120,8 @@ class RigidBody: public Object3D {
             /* Calculate inertia so the object reacts as it should with
                rotation and everything */
             btVector3 bInertia(0.0f, 0.0f, 0.0f);
-            if(mass != 0.0f) bShape->calculateLocalInertia(mass, bInertia);
+            if(!Math::TypeTraits<Float>::equals(mass, 0.0f))
+                bShape->calculateLocalInertia(mass, bInertia);
 
             /* Bullet rigid body setup */
             auto* motionState = new BulletIntegration::MotionState{*this};
