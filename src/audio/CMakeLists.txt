@@ -44,11 +44,13 @@ find_package(Magnum REQUIRED
     Primitives
     SceneGraph
     Shaders
-    Trade
-    Sdl2Application)
+    Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
     find_package(MagnumPlugins REQUIRED StbVorbisAudioImporter)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)

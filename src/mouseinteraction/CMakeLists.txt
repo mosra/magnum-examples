@@ -42,8 +42,13 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
-    Shaders
-    Sdl2Application)
+    Shaders)
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
