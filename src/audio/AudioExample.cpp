@@ -42,7 +42,11 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/MeshTools/Compile.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Shaders/Flat.h>
@@ -180,8 +184,8 @@ AudioExample::AudioExample(const Arguments& arguments):
     Debug{} << "HRTF specifier:" << _context.hrtfSpecifierString();
 
     /* Loop at 60 Hz max */
-    setSwapInterval(1);
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    setSwapInterval(1);
     setMinimalLoopPeriod(16);
     #endif
 }

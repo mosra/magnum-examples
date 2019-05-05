@@ -34,7 +34,11 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Complex.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Shaders/DistanceFieldVector.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Text/AbstractFont.h>

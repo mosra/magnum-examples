@@ -47,7 +47,11 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/Primitives/UVSphere.h>

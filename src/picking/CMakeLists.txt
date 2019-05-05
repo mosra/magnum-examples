@@ -33,8 +33,13 @@ find_package(Magnum REQUIRED
     GL
     MeshTools
     Primitives
-    SceneGraph
-    Sdl2Application)
+    SceneGraph)
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 project(MagnumPickingExample)
 

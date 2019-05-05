@@ -42,7 +42,11 @@
 #include <Magnum/Math/Constants.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Transform.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/UVSphere.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -215,8 +219,8 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     }
 
     /* Loop at 60 Hz max */
-    setSwapInterval(1);
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    setSwapInterval(1);
     setMinimalLoopPeriod(16);
     #endif
     _timeline.start();

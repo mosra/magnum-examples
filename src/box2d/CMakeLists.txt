@@ -42,10 +42,16 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
-    Sdl2Application
     Shaders
     Trade)
 find_package(Box2D REQUIRED)
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+    find_package(MagnumPlugins REQUIRED StbVorbisAudioImporter)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 

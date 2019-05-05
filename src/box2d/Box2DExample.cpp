@@ -37,7 +37,11 @@
 #include <Magnum/Math/ConfigurationValue.h>
 #include <Magnum/Math/DualComplex.h>
 #include <Magnum/MeshTools/Compile.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -166,7 +170,10 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
         }
     }
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     setSwapInterval(1);
+    #endif
+
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
     setMinimalLoopPeriod(16);
     #endif

@@ -40,14 +40,16 @@ endif()
 find_package(Magnum REQUIRED
     GL
     Shaders
-    Trade
-    Sdl2Application)
+    Trade)
 find_package(MagnumExtras REQUIRED Ui)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
     find_package(MagnumPlugins REQUIRED
         DdsImporter
         StbTrueTypeFont)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)

@@ -41,6 +41,8 @@
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
+#elif defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Magnum/Platform/EmscriptenApplication.h>
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif

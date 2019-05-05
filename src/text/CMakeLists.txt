@@ -40,8 +40,13 @@ find_package(Magnum REQUIRED
     GL
     Shaders
     Text
-    Trade
-    Sdl2Application)
+    Trade)
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 if(MAGNUM_BUILD_STATIC)
     find_package(Magnum REQUIRED TgaImporter MagnumFont)

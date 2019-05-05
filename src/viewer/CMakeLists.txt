@@ -45,6 +45,8 @@ find_package(Magnum REQUIRED
 
 if(CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED AndroidApplication)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
 endif()
