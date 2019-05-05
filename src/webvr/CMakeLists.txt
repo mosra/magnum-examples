@@ -48,7 +48,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     Shaders
-    Sdl2Application)
+    EmscriptenApplication)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 

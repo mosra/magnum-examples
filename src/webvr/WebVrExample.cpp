@@ -39,7 +39,7 @@
 #include <Magnum/Math/Range.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Platform/EmscriptenApplication.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
