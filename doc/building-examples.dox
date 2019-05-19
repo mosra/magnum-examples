@@ -206,7 +206,7 @@ possible.
 
 By default only the *Triangle* example is built. All examples depend on various
 libraries from the core Magnum repository and the @ref Platform::Sdl2Application
-class, unless said otherwise  Some examples depend on plugins, extras and
+class, unless said otherwise. Some examples depend on plugins, extras and
 integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 
