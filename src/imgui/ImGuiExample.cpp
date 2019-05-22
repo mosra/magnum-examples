@@ -184,7 +184,11 @@ void ImGuiExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 void ImGuiExample::mouseScrollEvent(MouseScrollEvent& event) {
-    if(_imgui.handleMouseScrollEvent(event)) return;
+    if(_imgui.handleMouseScrollEvent(event)) {
+        /* Prevent scrolling the page */
+        event.setAccepted();
+        return;
+    }
 }
 
 void ImGuiExample::textInputEvent(TextInputEvent& event) {
