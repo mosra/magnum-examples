@@ -29,6 +29,8 @@ namespace Magnum {
 
 @section credits-contributors-examples Magnum Examples
 
+-   **Alex Forrence** ([\@aforren1](https://github.com/aforren1)) --- fixes to
+    Python examples
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaro)) --- the
     @ref examples-shadows example
 -   **[\@denesik](https://github.com/denesik)** --- original
