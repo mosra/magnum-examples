@@ -82,6 +82,8 @@ class PrimitivesSceneGraphExample(platform.Application):
             meshtools.compile(primitives.cube_solid()), shaders.Phong(),
             Color3.from_hsv(Deg(35.0), 1.0, 1.0))
 
+        self._previous_mouse_position = Vector2i()
+
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR|
                                      gl.FramebufferClear.DEPTH)
@@ -89,12 +91,12 @@ class PrimitivesSceneGraphExample(platform.Application):
         self._camera.draw(self._drawables)
         self.swap_buffers()
 
-    def mouse_release_event(self, event: self.MouseEvent):
+    def mouse_release_event(self, event: platform.Application.MouseEvent):
         self._cube_drawable.color = Color3.from_hsv(
             self._cube_drawable.color.hue() + Deg(50.0), 1.0, 1.0)
         self.redraw()
 
-    def mouse_move_event(self, event: self.MouseMoveEvent):
+    def mouse_move_event(self, event: platform.Application.MouseMoveEvent):
         if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
             delta = 1.0*(
                 Vector2(event.position - self._previous_mouse_position)/
