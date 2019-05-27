@@ -181,7 +181,7 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
         Range2Di::fromSize(fbPosition, Vector2i{1}).padded(Vector2i{2}),
         {GL::PixelFormat::DepthComponent, GL::PixelType::Float});
 
-    return Math::min(Containers::arrayCast<const Float>(data.data()));
+    return Math::min<Float>(Containers::arrayCast<const Float>(data.data()));
 }
 
 Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth) const {
