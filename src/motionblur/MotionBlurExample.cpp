@@ -38,6 +38,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/MeshTools/Compile.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
@@ -56,8 +57,6 @@ class MotionBlurExample: public Platform::Application {
         SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
         MotionBlurCamera* camera;
-        GL::Buffer buffer;
-        GL::Buffer indexBuffer;
         GL::Mesh mesh;
         Shaders::Phong shader;
         Object3D* spheres[3];
@@ -74,20 +73,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
-    const Trade::MeshData3D data = Primitives::icosphereSolid(3);
-
-    buffer.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
-
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
-    indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
-    mesh.setPrimitive(data.primitive())
-        .setCount(data.indices().size())
-        .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-        .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
+    mesh = MeshTools::compile(Primitives::icosphereSolid(3));
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
