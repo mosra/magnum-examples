@@ -34,6 +34,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
+    Shaders
     Sdl2Application)
 
 project(MagnumPickingExample)
@@ -56,6 +57,7 @@ target_link_libraries(magnum-picking PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::SceneGraph)
+    Magnum::SceneGraph
+    Magnum::Shaders)
 
 install(TARGETS magnum-picking DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

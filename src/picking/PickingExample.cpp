@@ -32,7 +32,6 @@
 #include <Magnum/Image.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
-#include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Framebuffer.h>
@@ -45,8 +44,7 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Plane.h>
@@ -56,6 +54,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/Shaders/Generic.h>
 
 namespace Magnum { namespace Examples {
 
@@ -66,8 +65,11 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class PhongIdShader: public GL::AbstractShaderProgram {
     public:
-        typedef GL::Attribute<0, Vector3> Position;
-        typedef GL::Attribute<1, Vector3> Normal;
+        /* Not actually used, just for documentation purposes --- but attribute
+           locations in the vertex shader source have to match these in order
+           to make MeshTools::compile() work */
+        typedef Shaders::Generic3D::Position Position;
+        typedef Shaders::Generic3D::Normal Normal;
 
         enum: UnsignedInt {
             ColorOutput = 0,
@@ -183,9 +185,6 @@ class PickingExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
 
         PhongIdShader _shader;
-        GL::Buffer _cubeVertices, _cubeIndices,
-            _sphereVertices, _sphereIndices,
-            _planeVertices;
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };
@@ -215,29 +214,9 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     /* Set up meshes */
-    {
-        Trade::MeshData3D data = Primitives::cubeSolid();
-        _cubeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
-        _cubeIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), GL::BufferUsage::StaticDraw);
-        _cube.setCount(data.indices().size())
-            .setPrimitive(data.primitive())
-            .addVertexBuffer(_cubeVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
-            .setIndexBuffer(_cubeIndices, 0, MeshIndexType::UnsignedShort);
-    } {
-        Trade::MeshData3D data = Primitives::uvSphereSolid(16, 32);
-        _sphereVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
-        _sphereIndices.setData(MeshTools::compressIndicesAs<UnsignedShort>(data.indices()), GL::BufferUsage::StaticDraw);
-        _sphere.setCount(data.indices().size())
-            .setPrimitive(data.primitive())
-            .addVertexBuffer(_sphereVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{})
-            .setIndexBuffer(_sphereIndices, 0, MeshIndexType::UnsignedShort);
-    } {
-        Trade::MeshData3D data = Primitives::planeSolid();
-        _planeVertices.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
-        _plane.setCount(data.positions(0).size())
-            .setPrimitive(data.primitive())
-            .addVertexBuffer(_planeVertices, 0, PhongIdShader::Position{}, PhongIdShader::Normal{});
-    }
+    _cube = MeshTools::compile(Primitives::cubeSolid());
+    _sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+    _plane = MeshTools::compile(Primitives::planeSolid());
 
     /* Set up objects */
     (*(_objects[0] = new PickableObject{1, _shader, 0x3bd267_rgbf, _cube, _scene, _drawables}))
