@@ -31,8 +31,6 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
