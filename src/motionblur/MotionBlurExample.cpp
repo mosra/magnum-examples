@@ -31,12 +31,12 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData3D.h>
-#include <Magnum/MeshTools/Compile.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"
