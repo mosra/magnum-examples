@@ -40,8 +40,16 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
-find_package(Magnum REQUIRED GL Sdl2Application)
+find_package(Magnum REQUIRED GL)
 find_package(MagnumIntegration REQUIRED ImGui)
+
+if(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 

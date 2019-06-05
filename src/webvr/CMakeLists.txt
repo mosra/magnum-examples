@@ -43,6 +43,10 @@ if(NOT HAS_WEBVR_1_1)
     message(ERROR "webvr-example requires WebVR 1.1 API in emscripten.")
 endif()
 
+# Closure compiler is not happy about WebVR, complaining about sourceStr and
+# sourceStrPtr that probably got mangled by accident. Let's disable it for now.
+string(REPLACE "--closure 1" "" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+
 find_package(Magnum REQUIRED
     GL
     MeshTools
