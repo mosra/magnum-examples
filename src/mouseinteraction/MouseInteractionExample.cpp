@@ -275,7 +275,7 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
     GL::defaultFramebuffer.mapForRead(GL::DefaultFramebuffer::ReadAttachment::Front);
     Image2D image = GL::defaultFramebuffer.read(area, {GL::PixelFormat::DepthComponent, GL::PixelType::Float});
 
-    return Math::min(Containers::arrayCast<const Float>(image.data()));
+    return Math::min<Float>(Containers::arrayCast<const Float>(image.data()));
 
     /* On WebGL we first need to resolve the multisampled backbuffer depth to a
        texture -- that needs to be done right in the draw event otherwise the
@@ -302,7 +302,7 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
     for(std::size_t i = 0; i != packed.size(); ++i)
         depth[i] = Math::unpack<Float, UnsignedInt, 24>((packed[i].x() << 16) | (packed[i].y() << 8) | packed[i].z());
 
-    return Math::min(depth);
+    return Math::min<Float>(depth);
     #endif
 }
 

@@ -96,23 +96,8 @@ Edit the PKGBUILDs if you want to pass additional flags to CMake or
 
 @subsection building-examples-packages-deb Packages for Debian, Ubuntu and derivatives
 
-Prebuilt packages of the latest stable version for Ubuntu 14.04, 16.04 and
-18.04 are available through a PPA. To install packages related to Magnum and
-Corrade, you can add the repository and then install the packages with the
-following commands:
-
-@code{.sh}
-sudo add-apt-repository ppa:chrome/magnum.graphics
-sudo apt-get update
-sudo apt-get install magnum-examples
-@endcode
-
-For more information about these packages, please visit
-[the PPA page](https://launchpad.net/~chrome/+archive/ubuntu/magnum.graphics).
-
-To build your own package, the `package/debian/` directory contains all files
-needed for building Debian packages. You need
-@ref building-corrade-packages-deb "Corrade",
+The `package/debian/` directory contains all files needed for building Debian
+packages. You need @ref building-corrade-packages-deb "Corrade",
 @ref building-packages-deb "Magnum",
 @ref building-plugins-packages-deb "Magnum Plugins",
 @ref building-integration-packages-deb "Magnum Integration" and
@@ -206,7 +191,7 @@ possible.
 
 By default only the *Triangle* example is built. All examples depend on various
 libraries from the core Magnum repository and the @ref Platform::Sdl2Application
-class, unless said otherwise  Some examples depend on plugins, extras and
+class, unless said otherwise. Some examples depend on plugins, extras and
 integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 

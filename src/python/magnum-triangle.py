@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #
 #   This file is part of Magnum.
 #
@@ -27,35 +29,37 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+import array
 
-project(MagnumTriangleSokolExample)
+from magnum import *
+from magnum import gl, platform, shaders
 
-# Add module path in case this is project root
-if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
-endif()
+class TriangleExample(platform.Application):
+    def __init__(self):
+        configuration = self.Configuration()
+        configuration.title = "Magnum Python Triangle Example"
+        platform.Application.__init__(self, configuration)
 
-find_package(Magnum REQUIRED Sdl2Application)
-find_package(GLEW REQUIRED)
+        buffer = gl.Buffer()
+        buffer.set_data(array.array('f', [
+            -0.5, -0.5, 1.0, 0.0, 0.0,
+             0.5, -0.5, 0.0, 1.0, 0.0,
+             0.0,  0.5, 0.0, 0.0, 1.0
+        ]))
 
-set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
+        self._mesh = gl.Mesh()
+        self._mesh.count = 3
+        self._mesh.add_vertex_buffer(buffer, 0, 5*4,
+            shaders.VertexColor2D.POSITION)
+        self._mesh.add_vertex_buffer(buffer, 2*4, 5*4,
+            shaders.VertexColor2D.COLOR3)
 
-# Compile the sokol sources separately with C++11 warnings disabled
-add_library(SokolObjects OBJECT sokol.cpp)
-set_target_properties(SokolObjects PROPERTIES
-    CORRADE_CXX_STANDARD 11
-    CORRADE_USE_PEDANTIC_FLAGS OFF)
-target_include_directories(SokolObjects PRIVATE
-    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
+        self._shader = shaders.VertexColor2D()
 
-add_executable(magnum-triangle-sokol
-    TriangleSokolExample.cpp
-    $<TARGET_OBJECTS:SokolObjects>)
-target_include_directories(magnum-triangle-sokol PRIVATE ${GLEW_INCLUDE_DIRS})
-target_link_libraries(magnum-triangle-sokol PRIVATE
-    Magnum::Application
-    Magnum::Magnum
-    ${GLEW_LIBRARIES})
+    def draw_event(self):
+        gl.default_framebuffer.clear(gl.FramebufferClear.COLOR)
 
-install(TARGETS magnum-triangle-sokol DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+        self._mesh.draw(self._shader)
+        self.swap_buffers()
+
+exit(TriangleExample().exec())

@@ -34,13 +34,14 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
+    Shaders
     Sdl2Application)
 
 project(MagnumPickingExample)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -56,7 +57,8 @@ target_link_libraries(magnum-picking PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::SceneGraph)
+    Magnum::SceneGraph
+    Magnum::Shaders)
 
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)

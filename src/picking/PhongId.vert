@@ -32,8 +32,9 @@ uniform highp mat4 projectionMatrix;
 uniform mediump mat3 normalMatrix;
 uniform highp vec3 light;
 
+/* Matches PhongIdShader::Position and PhongIdShader::Normal definitions */
 layout(location = 0) in highp vec4 position;
-layout(location = 1) in mediump vec3 normal;
+layout(location = 2) in mediump vec3 normal;
 
 out mediump vec3 transformedNormal;
 out highp vec3 lightDirection;
