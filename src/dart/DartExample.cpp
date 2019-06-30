@@ -22,6 +22,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include "DartExampleHelpers.h"
+
 #include <dart/collision/dart/DARTCollisionDetector.hpp>
 #include <dart/constraint/ConstraintSolver.hpp>
 #include <dart/dynamics/BallJoint.hpp>
@@ -69,46 +71,6 @@
     #define DartLoader dart::io::DartLoader
 #endif
 
-namespace {
-const double default_domino_height = 0.25;
-const double default_domino_width = 0.4 * default_domino_height;
-const double default_domino_depth = default_domino_width / 5.0;
-
-const double default_domino_density = 260; // kg/m^3
-const double default_domino_mass =
-    default_domino_density
-    * default_domino_height
-    * default_domino_width
-    * default_domino_depth;
-
-inline dart::dynamics::SkeletonPtr createDomino()
-{
-    /* Create a Skeleton with the name "domino" */
-    dart::dynamics::SkeletonPtr domino = dart::dynamics::Skeleton::create("domino");
-
-    /* Create a body for the domino */
-    dart::dynamics::BodyNodePtr body =
-        domino->createJointAndBodyNodePair<dart::dynamics::FreeJoint>(nullptr).second;
-
-    /* Create a shape for the domino */
-    std::shared_ptr<dart::dynamics::BoxShape> box(
-        new dart::dynamics::BoxShape(Eigen::Vector3d(default_domino_depth,
-                                        default_domino_width,
-                                        default_domino_height)));
-    auto shapeNode = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(box);
-    shapeNode->getVisualAspect()->setColor(Eigen::Vector3d(0.6, 0.6, 0.6));
-
-    /* Set up inertia for the domino */
-    dart::dynamics::Inertia inertia;
-    inertia.setMass(default_domino_mass);
-    inertia.setMoment(box->computeInertia(default_domino_mass));
-    body->setInertia(inertia);
-
-    domino->getDof("Joint_pos_z")->setPosition(default_domino_height / 2.0);
-
-    return domino;
-}}
-
 namespace Magnum { namespace Examples {
 
 using namespace Magnum::Math::Literals;
@@ -152,8 +114,7 @@ class DartExample: public Platform::Application {
         void keyPressEvent(KeyEvent& event) override;
 
         void updateGraphics();
-        void updateManipulator(dart::dynamics::SkeletonPtr skel);
-        dart::dynamics::SkeletonPtr createNewDomino(Eigen::Vector6d position, double angle, double& totalAngle);
+        void updateManipulator();
 
         ViewerResourceManager _resourceManager;
 
@@ -168,15 +129,24 @@ class DartExample: public Platform::Application {
         std::unique_ptr<Magnum::DartIntegration::World> _dartWorld;
         std::unordered_map<DartIntegration::Object*, ColoredObject*> _coloredObjects;
         std::vector<Object3D*> _dartObjs;
-        size_t _dominoId;
-        dart::dynamics::SkeletonPtr _manipulator, _dominoSkel;
+        dart::dynamics::SkeletonPtr _manipulator, _model, _redBoxSkel, _greenBoxSkel, _blueBoxSkel;
         dart::simulation::WorldPtr _world;
 
         /* DART control */
-        Eigen::VectorXd _desiredPositions;
-        Eigen::MatrixXd _desired_transform;
-        const double _pGain = 200.0;
-        const double _dGain = 20.0;
+        Eigen::VectorXd _desiredPosition;
+        Eigen::MatrixXd _desiredOrientation;
+        double _gripperDesiredPosition;
+        const double _pGripperGain = 100.;
+        const double _pLinearGain = 500.;
+        const double _dLinearGain = 200.;
+        const double _pOrientationGain = 100.;
+        const double _dOrientationGain = 50.;
+        const double _dRegularization = 10.;
+        const double _pGain = 40.;
+        const double _dGain = 10.;
+
+        /* Simple State Machine */
+        size_t state = 0; /* 0: go to home position, 1: go to active box */
 };
 
 DartExample::DartExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
@@ -205,71 +175,72 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* DART: Load Skeleton */
     DartLoader loader;
+    /* Add packages (need for URDF loading) */
     loader.addPackageDirectory("iiwa_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
     loader.addPackageDirectory("robotiq_arg85_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
     std::string filename = std::string(DARTEXAMPLE_DIR) + "/urdf/iiwa14_simple.urdf";
+
+    /* First load the KUKA manipulator */
     _manipulator = loader.parseSkeleton(filename);
     for(size_t i = 0; i < _manipulator->getNumJoints(); i++)
         _manipulator->getJoint(i)->setPositionLimitEnforced(true);
-    // _manipulator->setPosition(7, 0.04);
-    _manipulator->enableSelfCollisionCheck();
 
+    _manipulator->disableSelfCollisionCheck();
+
+    /* Clone the KUKA manipulator to use it as model in a model-based controller */
+#if DART_VERSION_AT_LEAST(6, 7, 2)
+    _model = _manipulator->cloneSkeleton();
+#else
+    _model = _manipulator->clone();
+#endif
+
+    /* Load the Robotiq 2-finger gripper */
     filename = std::string(DARTEXAMPLE_DIR) + "/urdf/robotiq.urdf";
     auto gripper_skel = loader.parseSkeleton(filename);
+    /* The gripper is controlled in velocity mode: servo actuator */
+    gripper_skel->getJoint("finger_joint")->setActuatorType(dart::dynamics::Joint::SERVO);
+
+    /* Attach gripper to manipulator */
     dart::dynamics::WeldJoint::Properties properties = dart::dynamics::WeldJoint::Properties();
     properties.mT_ChildBodyToJoint.translation() = Eigen::Vector3d(0, 0, 0);
+    gripper_skel->getRootBodyNode()->moveTo<dart::dynamics::WeldJoint>(_manipulator->getBodyNode("iiwa_link_ee"), properties);
 
-    // gripper_skel->getRootBodyNode()->moveTo<dart::dynamics::WeldJoint>(_manipulator->getBodyNode("iiwa_link_ee"), properties);
-    // _manipulator->setPosition(7, 0.7);
+    /* Create floor */
+    auto floorSkel = createFloor();
 
-    // /* Position its base in a reasonable way */
-    // Eigen::Isometry3d tf2 = Eigen::Isometry3d::Identity();
-    // tf2.translation() = Eigen::Vector3d(-1.25, 0.0, 0.0);
-    // _manipulator->getJoint(0)->setTransformFromParentBodyNode(tf2);
-
-    /* Get it into a useful configuration */
-    // _manipulator->getDof(1)->setPosition(M_PI / 3. + 0.2);
-    // _manipulator->getDof(3)->setPosition(-M_PI / 4.);
-    // _manipulator->getDof(5)->setPosition(M_PI / 4.);
-    _manipulator->disableSelfCollisionCheck();
-    // Debug{} << _manipulator->getBodyNode("iiwa_link_ee")->getWorldTransform().matrix();
-    _desired_transform = Eigen::MatrixXd(4,4);
-    _desired_transform << -0.948097, -7.64642e-12, 0.317981, 0.796367,
-                         -8.07922e-12, 1, -4.22101e-14,  5.64684e-12,
-                         -0.317981,-2.60896e-12,-0.948097, 0.195868,
-                          0, 0, 0, 1;
-
-    _desiredPositions = _manipulator->getPositions();
-    // _desiredPositions[7] = 0.7;
-
-    /* Create a floor */
-    dart::dynamics::SkeletonPtr floorSkel = dart::dynamics::Skeleton::create("floor");
-    /* Give the floor a body */
-    dart::dynamics::BodyNodePtr body =
-        floorSkel->createJointAndBodyNodePair<dart::dynamics::WeldJoint>(nullptr).second;
-
-    /* Give the floor a shape */
-    double floor_width = 10.0;
-    double floor_height = 0.1;
-    std::shared_ptr<dart::dynamics::BoxShape> box(
-            new dart::dynamics::BoxShape(Eigen::Vector3d(floor_width, floor_width, floor_height)));
-    auto shapeNode
-        = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(box);
-    shapeNode->getVisualAspect()->setColor(Eigen::Vector3d(0.3, 0.3, 0.4));
-
-    /* Put the floor into position */
-    Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
-    tf.translation() = Eigen::Vector3d(0.0, 0.0, -floor_height / 2.0);
-    body->getParentJoint()->setTransformFromParentBodyNode(tf);
-
-    /* Create first domino */
-    _dominoSkel = createDomino();
+    /* Create red box */
+    _redBoxSkel = createBox("red", Eigen::Vector3d(0.8, 0., 0.));
+    _redBoxSkel->setPosition(3, 0.5);
+    /* Create green box */
+    _greenBoxSkel = createBox("green", Eigen::Vector3d(0., 0.8, 0.));
+    _greenBoxSkel->setPosition(3, 0.5);
+    _greenBoxSkel->setPosition(4, 0.2);
+    /* Create blue box */
+    _blueBoxSkel = createBox("blue", Eigen::Vector3d(0., 0., 0.8));
+    _blueBoxSkel->setPosition(3, 0.5);
+    _blueBoxSkel->setPosition(4, -0.2);
 
     _world = dart::simulation::WorldPtr(new dart::simulation::World);
     _world->getConstraintSolver()->setCollisionDetector(dart::collision::DARTCollisionDetector::create());
     _world->addSkeleton(_manipulator);
     _world->addSkeleton(floorSkel);
-    // _world->addSkeleton(_dominoSkel);
+    _world->addSkeleton(_redBoxSkel);
+    _world->addSkeleton(_greenBoxSkel);
+    _world->addSkeleton(_blueBoxSkel);
+
+    /* Setup desired locations/orientations */
+    _desiredOrientation = Eigen::MatrixXd(3, 3); /* 3D rotation matrix */
+    /* Looking towards -Z direction (towards the floor) */
+    _desiredOrientation << 1, 0, 0,
+                           0, -1, 0,
+                           0, 0, -1;
+
+    /* Default desired position is the red box position */
+    _desiredPosition = _redBoxSkel->getPositions().tail(3);
+    _desiredPosition[2] += 0.17;
+
+    /* Gripper default desired position: stay in the initial configuration (i.e., open) */
+    _gripperDesiredPosition = _manipulator->getPosition(7);
 
     // /* faster simulation step; less accurate simulation/collision detection */
     // _world->setTimeStep(0.015);
@@ -281,19 +252,6 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* Phong shader instance */
     _resourceManager.set("color", new Shaders::Phong);
-
-    /* Add more dominoes for fun! */
-    const double default_angle = 20 * M_PI / 180.0;
-
-    Eigen::Vector6d positions = _dominoSkel->getPositions();
-    double totalAngle = 0.;
-    _dominoId = 0;
-
-    for (int i = 0; i < 10; i++) {
-        auto domino = createNewDomino(positions, default_angle, totalAngle);
-        // _world->addSkeleton(domino);
-        positions = domino->getPositions();
-    }
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
@@ -317,7 +275,7 @@ void DartExample::drawEvent() {
 
     /* Step DART simulation */
     for (UnsignedInt i = 0; i < steps; i++) {
-        updateManipulator(_manipulator);
+        updateManipulator();
         _dartWorld->step();
     }
 
@@ -339,9 +297,51 @@ void DartExample::keyPressEvent(KeyEvent& event) {
         _cameraRig->rotateY(Deg(-5.0f));
     else if(event.key() == KeyEvent::Key::Right)
         _cameraRig->rotateY(Deg(5.0f));
-    else if(event.key() == KeyEvent::Key::P)
+    else if(event.key() == KeyEvent::Key::C)
     {
-        _desiredPositions(3) = -M_PI / 3. + 0.2;
+        _gripperDesiredPosition = 0.3;
+    }
+    else if(event.key() == KeyEvent::Key::O)
+    {
+        _gripperDesiredPosition = 0.;
+    }
+    else if(event.key() == KeyEvent::Key::U && state == 1)
+    {
+        _desiredPosition[2] += 0.1;
+    }
+    else if(event.key() == KeyEvent::Key::D && state == 1)
+    {
+        _desiredPosition[2] -= 0.1;
+    }
+    else if(event.key() == KeyEvent::Key::Z && state == 1)
+    {
+        _desiredPosition[1] += 0.2;
+    }
+    else if(event.key() == KeyEvent::Key::X && state == 1)
+    {
+        _desiredPosition[1] -= 0.2;
+    }
+    else if(event.key() == KeyEvent::Key::R)
+    {
+        _desiredPosition = _redBoxSkel->getPositions().tail(3);
+        _desiredPosition[2] += 0.25;
+        state = 1;
+    }
+    else if(event.key() == KeyEvent::Key::G)
+    {
+        _desiredPosition = _greenBoxSkel->getPositions().tail(3);
+        _desiredPosition[2] += 0.25;
+        state = 1;
+    }
+    else if(event.key() == KeyEvent::Key::B)
+    {
+        _desiredPosition = _blueBoxSkel->getPositions().tail(3);
+        _desiredPosition[2] += 0.25;
+        state = 1;
+    }
+    else if(event.key() == KeyEvent::Key::H)
+    {
+        state = 0;
     }
     else return;
 
@@ -391,69 +391,54 @@ void DartExample::updateGraphics() {
     _dartWorld->clearUpdatedShapeObjects();
 }
 
-void DartExample::updateManipulator(dart::dynamics::SkeletonPtr skel) {
-    // Eigen::VectorXd q = skel->getPositions();
-    // Eigen::VectorXd dq = skel->getVelocities();
+void DartExample::updateManipulator() {
+    Eigen::VectorXd forces;
+    /* Update our model with manipulator's measured joint positions and velocities */
+    _model->setPositions(_manipulator->getPositions().head(7));
+    _model->setVelocities(_manipulator->getVelocities().head(7));
+    /* Get joint velocities of manipulator */
+    Eigen::VectorXd dq = _model->getVelocities();
 
-    // q += dq * skel->getTimeStep();
+    if (state == 0)
+    {
+        forces = -_pGain * _manipulator->getPositions().head(7) - _dGain * _manipulator->getVelocities().head(7) + _model->getCoriolisAndGravityForces();
+        // Debug{} << _manipulator->getPositions().head(7).transpose();
+    }
+    else
+    {
+        /* Get full Jacobian of our end-effector */
+        Eigen::MatrixXd J = _model->getBodyNode("iiwa_link_ee")->getWorldJacobian();
 
-    // Eigen::VectorXd q_err = _desiredPositions - q;
-    // Eigen::VectorXd dq_err = -dq;
+        /* Get current state of the end-effector */
+        Eigen::MatrixXd currentWorldTransformation = _model->getBodyNode("iiwa_link_ee")->getWorldTransform().matrix();
+        Eigen::VectorXd currentWorldPosition = currentWorldTransformation.block(0, 3, 3, 1);
+        Eigen::MatrixXd currentWorldOrientation = currentWorldTransformation.block(0, 0, 3, 3);
+        Eigen::VectorXd currentWorldSpatialVelocity = _model->getBodyNode("iiwa_link_ee")->getSpatialVelocity(dart::dynamics::Frame::World(), dart::dynamics::Frame::World());
 
-    // const Eigen::MatrixXd& M = skel->getMassMatrix();
-    // const Eigen::VectorXd& Cg = skel->getCoriolisAndGravityForces();
+        /* Compute desired forces and torques */
+        Eigen::VectorXd linearError = _desiredPosition - currentWorldPosition;
+        Eigen::VectorXd desiredForces = _pLinearGain * linearError - _dLinearGain * currentWorldSpatialVelocity.tail(3);
 
-    // Eigen::VectorXd forces = M * (_pGain * q_err + _dGain * dq_err) + Cg;
+        Eigen::VectorXd orientationError = rotation_error(_desiredOrientation, currentWorldOrientation);
+        Eigen::VectorXd desiredTorques = _pOrientationGain * orientationError - _dOrientationGain * currentWorldSpatialVelocity.head(3);
 
-    // skel->setForces(forces);
-    // TO-DO: This properly
-    Eigen::VectorXd desired_position = _desired_transform.block(0, 3, 3, 1);
-    // desired_position[2] += 0.2;
-    // desired_position[1] += 0.4;
-    // desired_position[0] -= 0.1;
-    Eigen::MatrixXd J = skel->getBodyNode("iiwa_link_ee")->getLinearJacobian();
-    Eigen::MatrixXd pinv_J = J.transpose() * (J * J.transpose() + 0.0025 * Eigen::Matrix3d::Identity()).inverse();
-    Eigen::MatrixXd mass_matrix = skel->getMassMatrix();
-    Eigen::MatrixXd L = pinv_J.transpose() * mass_matrix * pinv_J;
+        /* Combine forces and torques in one vector */
+        Eigen::VectorXd tau(6);
+        tau.head(3) = desiredTorques;
+        tau.tail(3) = desiredForces;
 
-    Eigen::MatrixXd current_tr = skel->getBodyNode("iiwa_link_ee")->getWorldTransform().matrix();;
-    Eigen::VectorXd current_pos = current_tr.block(0, 3, 3, 1);
-    Eigen::VectorXd current_vel = skel->getBodyNode("iiwa_link_ee")->getLinearVelocity();
+        /* Compute final forces + gravity compensation + regularization */
+        forces = J.transpose() * tau + _model->getCoriolisAndGravityForces() - _dRegularization * dq;
+    }
 
-    double Kp = 10.;
-    double Kd = 10.;
-    Eigen::VectorXd acc = Kp * (desired_position - current_pos) - Kd * current_vel;
-    // Debug{} << (desired_position - current_pos).transpose();
+    /* Compute final command signal */
+    Eigen::VectorXd commands = _manipulator->getCommands();
+    commands.setZero();
+    commands.head(7) = forces;
 
-    Eigen::VectorXd forces = J.transpose() * L * acc + skel->getCoriolisAndGravityForces();
-    skel->setCommands(forces);
-}
-
-dart::dynamics::SkeletonPtr DartExample::createNewDomino(Eigen::Vector6d position, double angle, double& totalAngle)
-{
-    const double default_distance = default_domino_height / 2.0;
-    /* Create a new domino */
-#if DART_VERSION_AT_LEAST(6, 7, 2)
-    dart::dynamics::SkeletonPtr newDomino = _dominoSkel->cloneSkeleton();
-#else
-    dart::dynamics::SkeletonPtr newDomino = _dominoSkel->clone();
-#endif
-    newDomino->setName("domino #" + std::to_string(_dominoId++));
-
-    /* Compute the position for the new domino */
-    Eigen::Vector3d dx = default_distance * Eigen::Vector3d(
-            std::cos(totalAngle), std::sin(totalAngle), 0.0);
-
-    Eigen::Vector6d x = position;
-    x.tail<3>() += dx;
-
-    /* Adjust the angle for the new domino */
-    x[2] = totalAngle + angle;
-    totalAngle += angle;
-
-    newDomino->setPositions(x);
-
-    return newDomino;
+    /* Compute command for gripper */
+    commands[7] = _pGripperGain * (_gripperDesiredPosition - _manipulator->getPosition(7));
+    _manipulator->setCommands(commands);
 }
 
 ColoredObject::ColoredObject(GL::Mesh* mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group):
