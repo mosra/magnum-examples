@@ -131,6 +131,7 @@ class DartExample: public Platform::Application {
         std::vector<Object3D*> _dartObjs;
         dart::dynamics::SkeletonPtr _manipulator, _model, _redBoxSkel, _greenBoxSkel, _blueBoxSkel;
         dart::simulation::WorldPtr _world;
+        Eigen::VectorXd _redInitPosition, _greenInitPosition, _blueInitPosition;
 
         /* DART control */
         Eigen::VectorXd _desiredPosition;
@@ -212,16 +213,22 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     _redBoxSkel = createBox("red", Eigen::Vector3d(0.8, 0., 0.));
     /* Position it at (0.5, 0.) [x,y] */
     _redBoxSkel->setPosition(3, 0.5);
+    /* Save initial position for resetting */
+    _redInitPosition = _redBoxSkel->getPositions();
     /* Create green box */
     _greenBoxSkel = createBox("green", Eigen::Vector3d(0., 0.8, 0.));
     /* Position it at (0.5, 0.2) */
     _greenBoxSkel->setPosition(3, 0.5);
     _greenBoxSkel->setPosition(4, 0.2);
+    /* Save initial position for resetting */
+    _greenInitPosition = _greenBoxSkel->getPositions();
     /* Create blue box */
     _blueBoxSkel = createBox("blue", Eigen::Vector3d(0., 0., 0.8));
     /* Position it at (0.5, -0.2) */
     _blueBoxSkel->setPosition(3, 0.5);
     _blueBoxSkel->setPosition(4, -0.2);
+    /* Save initial position for resetting */
+    _blueInitPosition = _blueBoxSkel->getPositions();
 
     /* Create the DART world */
     _world = dart::simulation::WorldPtr(new dart::simulation::World);
@@ -362,22 +369,14 @@ void DartExample::keyPressEvent(KeyEvent& event) {
 
         /* Reset boxes */
         /* Red box */
-        _redBoxSkel->resetPositions();
         _redBoxSkel->resetVelocities();
-        _redBoxSkel->setPosition(3, 0.5);
-        _redBoxSkel->setPosition(5, 0.03);
+        _redBoxSkel->setPositions(_redInitPosition);
         /* Green box */
-        _greenBoxSkel->resetPositions();
         _greenBoxSkel->resetVelocities();
-        _greenBoxSkel->setPosition(3, 0.5);
-        _greenBoxSkel->setPosition(4, 0.2);
-        _greenBoxSkel->setPosition(5, 0.03);
+        _greenBoxSkel->setPositions(_greenInitPosition);
         /* Blue box */
-        _blueBoxSkel->resetPositions();
         _blueBoxSkel->resetVelocities();
-        _blueBoxSkel->setPosition(3, 0.5);
-        _blueBoxSkel->setPosition(4, -0.2);
-        _blueBoxSkel->setPosition(5, 0.03);
+        _blueBoxSkel->setPositions(_blueInitPosition);
     }
     else return;
 
