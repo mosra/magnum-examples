@@ -164,17 +164,15 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* Camera setup */
     (_cameraRig = new Object3D(&_scene));
-        // ->translate({0.f, 4.f, 0.f});
     (_cameraObject = new Object3D(_cameraRig));
-        // ->translate({0.f, 0.f, 20.f});
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
-    // _cameraObject->setTransformation(Magnum::Matrix4::lookAt(Vector3{0.f, 15.f, 2.f}, Vector3{0.f, 0.f, 0.f}, Vector3{0.f, 0.f, 1.f}));
-    _cameraObject->setTransformation(Magnum::Matrix4::lookAt(Vector3{0.f, 3.f, 1.f}, Vector3{0.f, 0.f, 0.5f}, Vector3{0.f, 0.f, 1.f}));
+    /* DART has +Z-axis as up direction*/
+    _cameraObject->setTransformation(Magnum::Matrix4::lookAt(Vector3{0.f, 3.f, 1.5f}, Vector3{0.f, 0.f, 0.5f}, Vector3{0.f, 0.f, 1.f}));
 
-    /* DART: Load Skeleton */
+    /* DART: Load Skeletons/Robots */
     DartLoader loader;
     /* Add packages (need for URDF loading) */
     loader.addPackageDirectory("iiwa_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
@@ -265,7 +263,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     _dartWorld.reset(new DartIntegration::World(*dartObj, *_world));
 
     /* Phong shader instance */
-    _resourceManager.set("color", new Shaders::Phong);
+    _resourceManager.set("color", new Shaders::Phong({}, 2));
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
@@ -384,7 +382,7 @@ void DartExample::keyPressEvent(KeyEvent& event) {
 }
 
 void DartExample::updateGraphics() {
-    /* We refresh the graphical models only once per 60Hz */
+    /* We refresh the graphical models at 60Hz */
     _dartWorld->refresh();
 
     for(auto& object : _dartWorld->updatedShapeObjects()){
@@ -472,7 +470,8 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera
         .setDiffuseColor(_material._diffuseColor)
         .setSpecularColor(_material._specularColor)
         .setShininess(_material._shininess)
-        .setLightPosition(camera.cameraMatrix().transformPoint({0.f, 2.f, 3.f}))
+        .setLightPosition(0, camera.cameraMatrix().transformPoint({0.f, 2.f, 3.f}))
+        .setLightPosition(1, camera.cameraMatrix().transformPoint({0.f, -2.f, 3.f}))
         .setTransformationMatrix(transformationMatrix * scalingMatrix)
         .setNormalMatrix((transformationMatrix * scalingMatrix).rotation())
         .setProjectionMatrix(camera.projectionMatrix());
