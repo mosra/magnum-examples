@@ -36,20 +36,6 @@
 #include <dart/dynamics/WeldJoint.hpp>
 
 namespace {
-inline Eigen::MatrixXd pseudo_inverse(const Eigen::MatrixXd &mat, bool damped = true)
-{	
-	double lambda = damped ? 0.01 : 0.0;
-
-	Eigen::JacobiSVD<Eigen::MatrixXd> svd(mat, Eigen::ComputeFullU | Eigen::ComputeFullV);
-	Eigen::JacobiSVD<Eigen::MatrixXd>::SingularValuesType sing_vals = svd.singularValues();
-	Eigen::MatrixXd S(mat.rows(), mat.cols());	// copying the dimensions of mat, its content is not needed.
-
-    for (int i = 0; i < sing_vals.size(); i++)
-        S(i,i) = sing_vals(i) / (sing_vals(i) * sing_vals(i) + lambda * lambda);
-
-    return Eigen::MatrixXd(svd.matrixV() * S.transpose() * svd.matrixU().transpose());
-}
-
 // This is copied from: https://github.com/jrl-umi3218/SpaceVecAlg
 inline double sinc_inv(double x)
 {

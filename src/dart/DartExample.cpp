@@ -210,18 +210,24 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* Create red box */
     _redBoxSkel = createBox("red", Eigen::Vector3d(0.8, 0., 0.));
+    /* Position it at (0.5, 0.) [x,y] */
     _redBoxSkel->setPosition(3, 0.5);
     /* Create green box */
     _greenBoxSkel = createBox("green", Eigen::Vector3d(0., 0.8, 0.));
+    /* Position it at (0.5, 0.2) */
     _greenBoxSkel->setPosition(3, 0.5);
     _greenBoxSkel->setPosition(4, 0.2);
     /* Create blue box */
     _blueBoxSkel = createBox("blue", Eigen::Vector3d(0., 0., 0.8));
+    /* Position it at (0.5, -0.2) */
     _blueBoxSkel->setPosition(3, 0.5);
     _blueBoxSkel->setPosition(4, -0.2);
 
+    /* Create the DART world */
     _world = dart::simulation::WorldPtr(new dart::simulation::World);
+    /* Use a simple but very fast collision detector. This plays the most important role for having a fast simulation. */
     _world->getConstraintSolver()->setCollisionDetector(dart::collision::DARTCollisionDetector::create());
+    /* Add the robot/objects in our DART world */
     _world->addSkeleton(_manipulator);
     _world->addSkeleton(floorSkel);
     _world->addSkeleton(_redBoxSkel);
@@ -242,11 +248,12 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     /* Gripper default desired position: stay in the initial configuration (i.e., open) */
     _gripperDesiredPosition = _manipulator->getPosition(7);
 
-    // /* faster simulation step; less accurate simulation/collision detection */
-    // _world->setTimeStep(0.015);
+    /* faster simulation step; less accurate simulation/collision detection */
+    /* _world->setTimeStep(0.015); */
     /* slower simulation step; better accuracy */
     _world->setTimeStep(0.001);
 
+    /* Create our DARTIntegration object/world */
     auto dartObj = new Object3D{&_scene};
     _dartWorld.reset(new DartIntegration::World(*dartObj, *_world));
 
@@ -270,6 +277,7 @@ void DartExample::viewportEvent(const Vector2i& size) {
 void DartExample::drawEvent() {
     GL::defaultFramebuffer.clear(
         GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+    /* Measure time spent and make as many simulation steps */
     double dt = _timeline.previousFrameDuration();
     UnsignedInt steps = std::ceil(dt / _world->getTimeStep());
 
@@ -343,6 +351,34 @@ void DartExample::keyPressEvent(KeyEvent& event) {
     {
         state = 0;
     }
+    else if(event.key() == KeyEvent::Key::Space)
+    {
+        /* Reset state machine */
+        state = 0;
+        /* Reset manipulator */
+        _manipulator->resetPositions();
+        _manipulator->resetVelocities();
+        _gripperDesiredPosition = 0.;
+
+        /* Reset boxes */
+        /* Red box */
+        _redBoxSkel->resetPositions();
+        _redBoxSkel->resetVelocities();
+        _redBoxSkel->setPosition(3, 0.5);
+        _redBoxSkel->setPosition(5, 0.03);
+        /* Green box */
+        _greenBoxSkel->resetPositions();
+        _greenBoxSkel->resetVelocities();
+        _greenBoxSkel->setPosition(3, 0.5);
+        _greenBoxSkel->setPosition(4, 0.2);
+        _greenBoxSkel->setPosition(5, 0.03);
+        /* Blue box */
+        _blueBoxSkel->resetPositions();
+        _blueBoxSkel->resetVelocities();
+        _blueBoxSkel->setPosition(3, 0.5);
+        _blueBoxSkel->setPosition(4, -0.2);
+        _blueBoxSkel->setPosition(5, 0.03);
+    }
     else return;
 
     event.setAccepted();
@@ -359,20 +395,6 @@ void DartExample::updateGraphics() {
         mat._specularColor = object.get().drawData().materials[0].specularColor().rgb();
         mat._shininess = object.get().drawData().materials[0].shininess();
         mat._scaling = object.get().drawData().scaling;
-
-        // Debug{} << "Ambient: " << mat._ambientColor;
-        // Debug{} << "Diffuse: " << mat._diffuseColor;
-        // Debug{} << "Specular: " << mat._specularColor;
-        // Debug{} << "Shininess: " << mat._shininess;
-
-        // if(mat._ambientColor == Vector3{1.f, 1.f, 1.f}) {
-        //     mat._ambientColor = Vector3{0.f, 0.f, 0.f};
-        //     mat._diffuseColor = Vector3{0.6f, 0.6f, 0.6f};
-        // }
-        // mat._specularColor = Vector3{1.f, 1.f, 1.f};
-
-        // if (mat._shininess < 1e-4f)
-        //     mat._shininess = 80.f;
 
         GL::Mesh* mesh = &object.get().drawData().meshes[0];
 
@@ -401,8 +423,8 @@ void DartExample::updateManipulator() {
 
     if (state == 0)
     {
+        /* Go to zero (home) position */
         forces = -_pGain * _manipulator->getPositions().head(7) - _dGain * _manipulator->getVelocities().head(7) + _model->getCoriolisAndGravityForces();
-        // Debug{} << _manipulator->getPositions().head(7).transpose();
     }
     else
     {
