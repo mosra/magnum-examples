@@ -143,8 +143,8 @@ class DartExample: public Platform::Application {
         const double _pOrientationGain = 100.;
         const double _dOrientationGain = 50.;
         const double _dRegularization = 10.;
-        const double _pGain = 40.;
-        const double _dGain = 10.;
+        const double _pGain = 2.25;
+        const double _dGain = 5.;
 
         /* Simple State Machine */
         size_t state = 0; /* 0: go to home position, 1: go to active box */
@@ -201,7 +201,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* Attach gripper to manipulator */
     dart::dynamics::WeldJoint::Properties properties = dart::dynamics::WeldJoint::Properties();
-    properties.mT_ChildBodyToJoint.translation() = Eigen::Vector3d(0, 0, 0);
+    properties.mT_ChildBodyToJoint.translation() = Eigen::Vector3d(0, 0, 0.0001);
     gripper_skel->getRootBodyNode()->moveTo<dart::dynamics::WeldJoint>(_manipulator->getBodyNode("iiwa_link_ee"), properties);
 
     /* Create floor */
@@ -271,6 +271,19 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     _timeline.start();
 
     redraw();
+
+    Debug{} << "DART Integration Example";
+    Debug{} << "========================";
+    Debug{} << "Press 'r' to go above the red box (switches to control mode)";
+    Debug{} << "Press 'g' to go above the green box (switches to control mode)";
+    Debug{} << "Press 'b' to go above the blue box (switches to control mode)";
+    Debug{} << "Press 'c' to close the gripper";
+    Debug{} << "Press 'o' to open the gripper";
+    Debug{} << "Press 'd' to go further down (only in control mode)";
+    Debug{} << "Press 'u' to go further up (only in control mode)";
+    Debug{} << "Press 'z' or 'x' to move sideways (only in control mode)";
+    Debug{} << "Press 'h' to go to home position (switches to idle mode)";
+    Debug{} << "Press 'space' to reset the world";
 }
 
 void DartExample::viewportEvent(const Vector2i& size) {
@@ -411,20 +424,23 @@ void DartExample::updateGraphics() {
 }
 
 void DartExample::updateManipulator() {
-    Eigen::VectorXd forces;
+    Eigen::VectorXd forces(7);
     /* Update our model with manipulator's measured joint positions and velocities */
     _model->setPositions(_manipulator->getPositions().head(7));
     _model->setVelocities(_manipulator->getVelocities().head(7));
-    /* Get joint velocities of manipulator */
-    Eigen::VectorXd dq = _model->getVelocities();
 
     if (state == 0)
     {
         /* Go to zero (home) position */
-        forces = -_pGain * _manipulator->getPositions().head(7) - _dGain * _manipulator->getVelocities().head(7) + _model->getCoriolisAndGravityForces();
+        Eigen::VectorXd q = _model->getPositions();
+        Eigen::VectorXd dq = _model->getVelocities();
+        forces = -_pGain * q - _dGain * dq + _manipulator->getCoriolisAndGravityForces().head(7);
     }
     else
     {
+        /* Get joint velocities of manipulator */
+        Eigen::VectorXd dq = _model->getVelocities();
+
         /* Get full Jacobian of our end-effector */
         Eigen::MatrixXd J = _model->getBodyNode("iiwa_link_ee")->getWorldJacobian();
 
