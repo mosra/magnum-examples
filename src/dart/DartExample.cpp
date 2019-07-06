@@ -174,7 +174,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 
     /* DART: Load Skeletons/Robots */
     DartLoader loader;
-    /* Add packages (need for URDF loading) */
+    /* Add packages (needed for URDF loading) */
     loader.addPackageDirectory("iiwa_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
     loader.addPackageDirectory("robotiq_arg85_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
     std::string filename = std::string(DARTEXAMPLE_DIR) + "/urdf/iiwa14_simple.urdf";
@@ -398,7 +398,9 @@ void DartExample::updateGraphics() {
     /* We refresh the graphical models at 60Hz */
     _dartWorld->refresh();
 
+    /* For each update object */
     for(auto& object : _dartWorld->updatedShapeObjects()){
+        /* Get material information */
         MaterialData mat;
         mat._ambientColor = object.get().drawData().materials[0].ambientColor().rgb();
         mat._diffuseColor = object.get().drawData().materials[0].diffuseColor().rgb();
@@ -406,16 +408,20 @@ void DartExample::updateGraphics() {
         mat._shininess = object.get().drawData().materials[0].shininess();
         mat._scaling = object.get().drawData().scaling;
 
+        /* Get the modified mesh */
         GL::Mesh* mesh = &object.get().drawData().meshes[0];
 
+        /* Check if we already have it */
         auto it = _coloredObjects.insert(std::make_pair(&object.get(), nullptr));
         if(it.second){
+            /* If not, create a new object and add it to our drawables list */
             auto coloredObj = new ColoredObject(mesh, mat, static_cast<Object3D*>(&(object.get().object())), &_drawables);
             if(object.get().shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
                 coloredObj->setSoftBody();
             it.first->second = coloredObj;
         }
         else {
+            /* Otherwise, update the mesh and the material data */
             it.first->second->setMesh(mesh).setMaterial(mat);
         }
     }

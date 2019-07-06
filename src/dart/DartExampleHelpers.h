@@ -38,8 +38,10 @@
 namespace {
 inline dart::dynamics::SkeletonPtr createBox(const std::string& name = "box", const Eigen::Vector3d& color = Eigen::Vector3d(0.8, 0., 0.))
 {
+    /* The size of our box */
     const double box_size = 0.06;
 
+    /* Calculate the mass of the box */
     const double box_density = 260; // kg/m^3
     const double box_mass = box_density * std::pow(box_size, 3.);
     /* Create a Skeleton with the given name */
@@ -63,6 +65,7 @@ inline dart::dynamics::SkeletonPtr createBox(const std::string& name = "box", co
     inertia.setMoment(box_shape->computeInertia(box_mass));
     body->setInertia(inertia);
 
+    /* Setup the center of the box properly */
     box->getDof("Joint_pos_z")->setPosition(box_size / 2.0);
 
     return box;
