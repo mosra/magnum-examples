@@ -454,7 +454,7 @@ void DartExample::updateManipulator() {
         Eigen::VectorXd linearError = _desiredPosition - currentWorldPosition;
         Eigen::VectorXd desiredForces = _pLinearGain * linearError - _dLinearGain * currentWorldSpatialVelocity.tail(3);
 
-        Eigen::VectorXd orientationError = rotation_error(_desiredOrientation, currentWorldOrientation);
+        Eigen::VectorXd orientationError = dart::math::logMap(_desiredOrientation * currentWorldOrientation.transpose());
         Eigen::VectorXd desiredTorques = _pOrientationGain * orientationError - _dOrientationGain * currentWorldSpatialVelocity.head(3);
 
         /* Combine forces and torques in one vector */
