@@ -32,6 +32,16 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2019.01
 
+@subsection changelog-examples-latest-changes Changes and improvements
+
+-   Switched all examples to use the new
+    @ref Platform::EmscriptenApplication on Emscripten (see
+    [mosra/magnum-examples#60](https://github.com/mosra/magnum-examples/pull/60)
+    and [mosra/magnum-examples#59](https://github.com/mosra/magnum-examples/pull/59))
+-   Switched the @ref examples-motionblur and @ref examples-picking examples
+    to use @ref MeshTools::compile() for a clearer and easier-to-understand
+    code (see also [mosra/magnum-examples#62](https://github.com/mosra/magnum-examples/pull/62))
+
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
 -   The @ref examples-arealights example wasn't using the depth buffer

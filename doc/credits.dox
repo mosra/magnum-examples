@@ -48,7 +48,7 @@ namespace Magnum {
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the
     @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
     @ref examples-webvr, @ref examples-leapmotion and @ref examples-imgui
-    examples
+    examples, porting to @ref Platform::EmscriptenApplication
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
     bugreports, buildsystem fixes
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
@@ -69,6 +69,8 @@ namespace Magnum {
     @ref examples-imgui example
 -   **Tomáš Skřivan** ([\@lecopivo](https://github.com/lecopivo)) --- original
     @ref examples-imgui example
+-   **Winfried Baumann** ([\@codewing](https://github.com/codewing)) ---
+    example code cleanup
 
 */
 

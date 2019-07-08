@@ -5,6 +5,7 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
             Vladimír Vondruš <mosra@centrum.cz>
+        2019 — Winfried Baumann <winfried.baumann@tum.de>
 
     This is free and unencumbered software released into the public domain.
 
@@ -31,8 +32,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -56,8 +56,6 @@ class MotionBlurExample: public Platform::Application {
         SceneGraph::DrawableGroup3D drawables;
         Object3D* cameraObject;
         MotionBlurCamera* camera;
-        GL::Buffer buffer;
-        GL::Buffer indexBuffer;
         GL::Mesh mesh;
         Shaders::Phong shader;
         Object3D* spheres[3];
@@ -74,20 +72,7 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
-    const Trade::MeshData3D data = Primitives::icosphereSolid(3);
-
-    buffer.setData(MeshTools::interleave(data.positions(0), data.normals(0)), GL::BufferUsage::StaticDraw);
-
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
-    indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
-    mesh.setPrimitive(data.primitive())
-        .setCount(data.indices().size())
-        .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-        .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
+    mesh = MeshTools::compile(Primitives::icosphereSolid(3));
 
     /* Add spheres to the scene */
     new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
