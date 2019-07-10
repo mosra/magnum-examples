@@ -1,19 +1,25 @@
 /*
     This file is part of Magnum.
+
     Original authors — credit is appreciated but not required:
+
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
             Vladimír Vondruš <mosra@centrum.cz>
         2019 — Konstantinos Chatzilygeroudis <costashatz@gmail.com>
+
     This is free and unencumbered software released into the public domain.
+
     Anyone is free to copy, modify, publish, use, compile, sell, or distribute
     this software, either in source code form or as a compiled binary, for any
     purpose, commercial or non-commercial, and by any means.
+
     In jurisdictions that recognize copyright laws, the author or authors of
     this software dedicate any and all copyright interest in the software to
     the public domain. We make this dedication for the benefit of the public
     at large and to the detriment of our heirs and successors. We intend this
     dedication to be an overt act of relinquishment in perpetuity of all
     present and future rights to this software under copyright law.
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -21,8 +27,6 @@
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
-#include "DartExampleHelpers.h"
 
 #include <dart/collision/dart/DARTCollisionDetector.hpp>
 #include <dart/constraint/ConstraintSolver.hpp>
@@ -40,12 +44,13 @@
 #include <dart/dynamics/WeldJoint.hpp>
 #include <dart/simulation/World.hpp>
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Directory.h>
 
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
-#include <Magnum/GL/OpenGLTester.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/ResourceManager.h>
@@ -55,7 +60,6 @@
 #include <Magnum/SceneGraph/Object.hpp>
 #include <Magnum/SceneGraph/SceneGraph.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Timeline.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 
 #include <Magnum/DartIntegration/ConvertShapeNode.h>
@@ -70,6 +74,69 @@
     #include <dart/io/urdf/urdf.hpp>
     #define DartLoader dart::io::DartLoader
 #endif
+
+namespace {
+/* Helper functions */
+
+inline dart::dynamics::SkeletonPtr createBox(const std::string& name = "box", const Eigen::Vector3d& color = Eigen::Vector3d(0.8, 0., 0.))
+{
+    /* The size of our box */
+    const double box_size = 0.06;
+
+    /* Calculate the mass of the box */
+    const double box_density = 260; // kg/m^3
+    const double box_mass = box_density * std::pow(box_size, 3.);
+    /* Create a Skeleton with the given name */
+    dart::dynamics::SkeletonPtr box = dart::dynamics::Skeleton::create(name);
+
+    /* Create a body for the box */
+    dart::dynamics::BodyNodePtr body =
+        box->createJointAndBodyNodePair<dart::dynamics::FreeJoint>(nullptr).second;
+
+    /* Create a shape for the box */
+    std::shared_ptr<dart::dynamics::BoxShape> box_shape(
+        new dart::dynamics::BoxShape(Eigen::Vector3d(box_size,
+                                        box_size,
+                                        box_size)));
+    auto shapeNode = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(box_shape);
+    shapeNode->getVisualAspect()->setColor(color);
+
+    /* Set up inertia for the box */
+    dart::dynamics::Inertia inertia;
+    inertia.setMass(box_mass);
+    inertia.setMoment(box_shape->computeInertia(box_mass));
+    body->setInertia(inertia);
+
+    /* Setup the center of the box properly */
+    box->getDof("Joint_pos_z")->setPosition(box_size / 2.0);
+
+    return box;
+}
+
+inline dart::dynamics::SkeletonPtr createFloor()
+{
+    /* Create a floor */
+    dart::dynamics::SkeletonPtr floorSkel = dart::dynamics::Skeleton::create("floor");
+    /* Give the floor a body */
+    dart::dynamics::BodyNodePtr body =
+        floorSkel->createJointAndBodyNodePair<dart::dynamics::WeldJoint>(nullptr).second;
+
+    /* Give the floor a shape */
+    double floor_width = 10.0;
+    double floor_height = 0.1;
+    std::shared_ptr<dart::dynamics::BoxShape> box(
+            new dart::dynamics::BoxShape(Eigen::Vector3d(floor_width, floor_width, floor_height)));
+    auto shapeNode
+        = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(box);
+    shapeNode->getVisualAspect()->setColor(Eigen::Vector3d(0.3, 0.3, 0.4));
+
+    /* Put the floor into position */
+    Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
+    tf.translation() = Eigen::Vector3d(0.0, 0.0, -floor_height / 2.0);
+    body->getParentJoint()->setTransformFromParentBodyNode(tf);
+
+    return floorSkel;
+}}
 
 namespace Magnum { namespace Examples {
 
@@ -89,16 +156,16 @@ struct MaterialData{
 
 class ColoredObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit ColoredObject(GL::Mesh* mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit ColoredObject(GL::Mesh& mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        ColoredObject& setMesh(GL::Mesh* mesh);
+        ColoredObject& setMesh(GL::Mesh& mesh);
         ColoredObject& setMaterial(const MaterialData& material);
         ColoredObject& setSoftBody(bool softBody = true);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        GL::Mesh* _mesh;
+        Containers::Reference<GL::Mesh> _mesh;
         Resource<Shaders::Phong> _shader;
         MaterialData _material;
         bool _isSoftBody = false;
@@ -106,6 +173,9 @@ class ColoredObject: public Object3D, SceneGraph::Drawable3D {
 
 class DartExample: public Platform::Application {
     public:
+        /* home: go to home position, active: go to active box */
+        enum State {home, active};
+
         explicit DartExample(const Arguments& arguments);
 
     private:
@@ -113,7 +183,6 @@ class DartExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-        void updateGraphics();
         void updateManipulator();
 
         ViewerResourceManager _resourceManager;
@@ -121,7 +190,6 @@ class DartExample: public Platform::Application {
         Scene3D _scene;
         SceneGraph::DrawableGroup3D _drawables;
         SceneGraph::Camera3D* _camera;
-        Timeline _timeline;
 
         Object3D *_cameraRig, *_cameraObject;
 
@@ -147,7 +215,7 @@ class DartExample: public Platform::Application {
         const double _dGain = 5.;
 
         /* Simple State Machine */
-        size_t state = 0; /* 0: go to home position, 1: go to active box */
+        State _state = home;
 };
 
 DartExample::DartExample(const Arguments& arguments): Platform::Application(arguments, NoCreate) {
@@ -175,9 +243,10 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     /* DART: Load Skeletons/Robots */
     DartLoader loader;
     /* Add packages (needed for URDF loading) */
-    loader.addPackageDirectory("iiwa_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
-    loader.addPackageDirectory("robotiq_arg85_description", std::string(DARTEXAMPLE_DIR) + "/urdf/");
-    std::string filename = std::string(DARTEXAMPLE_DIR) + "/urdf/iiwa14_simple.urdf";
+    std::string res_path = Utility::Directory::join(std::string(DARTEXAMPLE_DIR), "urdf/");
+    loader.addPackageDirectory("iiwa_description", res_path);
+    loader.addPackageDirectory("robotiq_arg85_description", res_path);
+    std::string filename = Utility::Directory::join(res_path, "iiwa14_simple.urdf");
 
     /* First load the KUKA manipulator */
     _manipulator = loader.parseSkeleton(filename);
@@ -194,7 +263,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
 #endif
 
     /* Load the Robotiq 2-finger gripper */
-    filename = std::string(DARTEXAMPLE_DIR) + "/urdf/robotiq.urdf";
+    filename = Utility::Directory::join(res_path, "robotiq.urdf");
     auto gripper_skel = loader.parseSkeleton(filename);
     /* The gripper is controlled in velocity mode: servo actuator */
     gripper_skel->getJoint("finger_joint")->setActuatorType(dart::dynamics::Joint::SERVO);
@@ -268,22 +337,8 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     /* Loop at 60 Hz max */
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
-    _timeline.start();
 
     redraw();
-
-    Debug{} << "DART Integration Example";
-    Debug{} << "========================";
-    Debug{} << "Press 'r' to go above the red box (switches to control mode)";
-    Debug{} << "Press 'g' to go above the green box (switches to control mode)";
-    Debug{} << "Press 'b' to go above the blue box (switches to control mode)";
-    Debug{} << "Press 'c' to close the gripper";
-    Debug{} << "Press 'o' to open the gripper";
-    Debug{} << "Press 'd' to go further down (only in control mode)";
-    Debug{} << "Press 'u' to go further up (only in control mode)";
-    Debug{} << "Press 'z' or 'x' to move sideways (only in control mode)";
-    Debug{} << "Press 'h' to go to home position (switches to idle mode)";
-    Debug{} << "Press 'space' to reset the world";
 }
 
 void DartExample::viewportEvent(const Vector2i& size) {
@@ -295,22 +350,55 @@ void DartExample::viewportEvent(const Vector2i& size) {
 void DartExample::drawEvent() {
     GL::defaultFramebuffer.clear(
         GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
-    /* Measure time spent and make as many simulation steps */
-    double dt = _timeline.previousFrameDuration();
-    UnsignedInt steps = std::ceil(dt / _world->getTimeStep());
+    /* We want around 60Hz display rate */
+    UnsignedInt steps = std::ceil(1. / (60. * _world->getTimeStep()));
 
     /* Step DART simulation */
     for (UnsignedInt i = 0; i < steps; i++) {
+        /* Compute control signals for manipulator */
         updateManipulator();
+        /* Step the simulated world */
         _dartWorld->step();
     }
 
     /* Update graphic meshes/materials and render */
-    updateGraphics();
+    _dartWorld->refresh();
+
+    /* We make the assumption that each object has
+       only one mesh and one material*/
+    /* For each update object */
+    for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()){
+        /* Get material information */
+        MaterialData mat;
+        mat._ambientColor = object.drawData().materials[0].ambientColor().rgb();
+        mat._diffuseColor = object.drawData().materials[0].diffuseColor().rgb();
+        mat._specularColor = object.drawData().materials[0].specularColor().rgb();
+        mat._shininess = object.drawData().materials[0].shininess();
+        mat._scaling = object.drawData().scaling;
+
+        /* Get the modified mesh */
+        GL::Mesh& mesh = object.drawData().meshes[0];
+
+        /* Check if we already have it */
+        auto it = _coloredObjects.insert(std::make_pair(&object, nullptr));
+        if(it.second){
+            /* If not, create a new object and add it to our drawables list */
+            auto coloredObj = new ColoredObject(mesh, mat, static_cast<Object3D*>(&(object.object())), &_drawables);
+            if(object.shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
+                coloredObj->setSoftBody();
+            it.first->second = coloredObj;
+        }
+        else {
+            /* Otherwise, update the mesh and the material data */
+            it.first->second->setMesh(mesh).setMaterial(mat);
+        }
+    }
+
+    _dartWorld->clearUpdatedShapeObjects();
+
     _camera->draw(_drawables);
 
     swapBuffers();
-    _timeline.nextFrame();
     redraw();
 }
 
@@ -324,55 +412,34 @@ void DartExample::keyPressEvent(KeyEvent& event) {
     else if(event.key() == KeyEvent::Key::Right)
         _cameraRig->rotateY(Deg(5.0f));
     else if(event.key() == KeyEvent::Key::C)
-    {
         _gripperDesiredPosition = 0.3;
-    }
     else if(event.key() == KeyEvent::Key::O)
-    {
         _gripperDesiredPosition = 0.;
-    }
-    else if(event.key() == KeyEvent::Key::U && state == 1)
-    {
+    else if(event.key() == KeyEvent::Key::U && _state == 1)
         _desiredPosition[2] += 0.1;
-    }
-    else if(event.key() == KeyEvent::Key::D && state == 1)
-    {
+    else if(event.key() == KeyEvent::Key::D && _state == 1)
         _desiredPosition[2] -= 0.1;
-    }
-    else if(event.key() == KeyEvent::Key::Z && state == 1)
-    {
+    else if(event.key() == KeyEvent::Key::Z && _state == 1)
         _desiredPosition[1] += 0.2;
-    }
-    else if(event.key() == KeyEvent::Key::X && state == 1)
-    {
+    else if(event.key() == KeyEvent::Key::X && _state == 1)
         _desiredPosition[1] -= 0.2;
-    }
-    else if(event.key() == KeyEvent::Key::R)
-    {
+    else if(event.key() == KeyEvent::Key::R) {
         _desiredPosition = _redBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        state = 1;
-    }
-    else if(event.key() == KeyEvent::Key::G)
-    {
+        _state = active;
+    } else if(event.key() == KeyEvent::Key::G) {
         _desiredPosition = _greenBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        state = 1;
-    }
-    else if(event.key() == KeyEvent::Key::B)
-    {
+        _state = active;
+    } else if(event.key() == KeyEvent::Key::B) {
         _desiredPosition = _blueBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        state = 1;
-    }
-    else if(event.key() == KeyEvent::Key::H)
-    {
-        state = 0;
-    }
-    else if(event.key() == KeyEvent::Key::Space)
-    {
-        /* Reset state machine */
-        state = 0;
+        _state = active;
+    } else if(event.key() == KeyEvent::Key::H)
+        _state = home;
+    else if(event.key() == KeyEvent::Key::Space) {
+        /* Reset _state machine */
+        _state = home;
         /* Reset manipulator */
         _manipulator->resetPositions();
         _manipulator->resetVelocities();
@@ -388,45 +455,9 @@ void DartExample::keyPressEvent(KeyEvent& event) {
         /* Blue box */
         _blueBoxSkel->resetVelocities();
         _blueBoxSkel->setPositions(_blueInitPosition);
-    }
-    else return;
+    } else return;
 
     event.setAccepted();
-}
-
-void DartExample::updateGraphics() {
-    /* We refresh the graphical models at 60Hz */
-    _dartWorld->refresh();
-
-    /* For each update object */
-    for(auto& object : _dartWorld->updatedShapeObjects()){
-        /* Get material information */
-        MaterialData mat;
-        mat._ambientColor = object.get().drawData().materials[0].ambientColor().rgb();
-        mat._diffuseColor = object.get().drawData().materials[0].diffuseColor().rgb();
-        mat._specularColor = object.get().drawData().materials[0].specularColor().rgb();
-        mat._shininess = object.get().drawData().materials[0].shininess();
-        mat._scaling = object.get().drawData().scaling;
-
-        /* Get the modified mesh */
-        GL::Mesh* mesh = &object.get().drawData().meshes[0];
-
-        /* Check if we already have it */
-        auto it = _coloredObjects.insert(std::make_pair(&object.get(), nullptr));
-        if(it.second){
-            /* If not, create a new object and add it to our drawables list */
-            auto coloredObj = new ColoredObject(mesh, mat, static_cast<Object3D*>(&(object.get().object())), &_drawables);
-            if(object.get().shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
-                coloredObj->setSoftBody();
-            it.first->second = coloredObj;
-        }
-        else {
-            /* Otherwise, update the mesh and the material data */
-            it.first->second->setMesh(mesh).setMaterial(mat);
-        }
-    }
-
-    _dartWorld->clearUpdatedShapeObjects();
 }
 
 void DartExample::updateManipulator() {
@@ -435,7 +466,7 @@ void DartExample::updateManipulator() {
     _model->setPositions(_manipulator->getPositions().head(7));
     _model->setVelocities(_manipulator->getVelocities().head(7));
 
-    if (state == 0)
+    if (_state == home)
     {
         /* Go to zero (home) position */
         Eigen::VectorXd q = _model->getPositions();
@@ -450,7 +481,7 @@ void DartExample::updateManipulator() {
         /* Get full Jacobian of our end-effector */
         Eigen::MatrixXd J = _model->getBodyNode("iiwa_link_ee")->getWorldJacobian();
 
-        /* Get current state of the end-effector */
+        /* Get current _state of the end-effector */
         Eigen::MatrixXd currentWorldTransformation = _model->getBodyNode("iiwa_link_ee")->getWorldTransform().matrix();
         Eigen::VectorXd currentWorldPosition = currentWorldTransformation.block(0, 3, 3, 1);
         Eigen::MatrixXd currentWorldOrientation = currentWorldTransformation.block(0, 0, 3, 3);
@@ -482,7 +513,7 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-ColoredObject::ColoredObject(GL::Mesh* mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group):
+ColoredObject::ColoredObject(GL::Mesh& mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
     _mesh{mesh}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")}, _material(material) {}
 
@@ -506,7 +537,7 @@ void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera
 }
 
 
-ColoredObject& ColoredObject::setMesh(GL::Mesh* mesh){
+ColoredObject& ColoredObject::setMesh(GL::Mesh& mesh){
     _mesh = mesh;
     return *this;
 }
