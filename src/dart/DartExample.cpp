@@ -466,14 +466,12 @@ void DartExample::updateManipulator() {
     _model->setPositions(_manipulator->getPositions().head(7));
     _model->setVelocities(_manipulator->getVelocities().head(7));
 
-    if (_state == home)
-    {
+    if (_state == home) {
         /* Go to zero (home) position */
         Eigen::VectorXd q = _model->getPositions();
         Eigen::VectorXd dq = _model->getVelocities();
         forces = -_pGain * q - _dGain * dq + _manipulator->getCoriolisAndGravityForces().head(7);
-    }
-    else
+    } else
     {
         /* Get joint velocities of manipulator */
         Eigen::VectorXd dq = _model->getVelocities();
