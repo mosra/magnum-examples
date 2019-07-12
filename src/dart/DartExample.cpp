@@ -154,21 +154,24 @@ struct MaterialData{
     Vector3 _scaling;
 };
 
-class ColoredObject: public Object3D, SceneGraph::Drawable3D {
+class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit ColoredObject(GL::Mesh& mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit DrawableObject(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes, const std::vector<MaterialData>& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        ColoredObject& setMesh(GL::Mesh& mesh);
-        ColoredObject& setMaterial(const MaterialData& material);
-        ColoredObject& setSoftBody(bool softBody = true);
+        DrawableObject& setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes);
+        DrawableObject& setMaterials(const std::vector<MaterialData>& materials);
+        DrawableObject& setSoftBodies(const std::vector<bool>& softBody);
+        DrawableObject& setTextures(std::vector<Containers::Optional<GL::Texture2D>>& textures);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Containers::Reference<GL::Mesh> _mesh;
-        Resource<Shaders::Phong> _shader;
-        MaterialData _material;
-        bool _isSoftBody = false;
+        std::vector<std::reference_wrapper<GL::Mesh>> _meshes;
+        Resource<Shaders::Phong> _color_shader;
+        Resource<Shaders::Phong> _texture_shader;
+        std::vector<MaterialData> _materials;
+        std::vector<bool> _isSoftBody;
+        std::vector<Containers::Optional<GL::Texture2D>> _textures;
 };
 
 class DartExample: public Platform::Application {
@@ -195,7 +198,7 @@ class DartExample: public Platform::Application {
 
          /* DART */
         std::unique_ptr<Magnum::DartIntegration::World> _dartWorld;
-        std::unordered_map<DartIntegration::Object*, ColoredObject*> _coloredObjects;
+        std::unordered_map<DartIntegration::Object*, DrawableObject*> _drawableObjects;
         std::vector<Object3D*> _dartObjs;
         dart::dynamics::SkeletonPtr _manipulator, _model, _redBoxSkel, _greenBoxSkel, _blueBoxSkel;
         dart::simulation::WorldPtr _world;
@@ -367,30 +370,52 @@ void DartExample::drawEvent() {
     /* We make the assumption that each object has
        only one mesh and one material*/
     /* For each update object */
-    for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()){
+    for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()) {
         /* Get material information */
-        MaterialData mat;
-        mat._ambientColor = object.drawData().materials[0].ambientColor().rgb();
-        mat._diffuseColor = object.drawData().materials[0].diffuseColor().rgb();
-        mat._specularColor = object.drawData().materials[0].specularColor().rgb();
-        mat._shininess = object.drawData().materials[0].shininess();
-        mat._scaling = object.drawData().scaling;
+        std::vector<MaterialData> materials;
+        std::vector<std::reference_wrapper<GL::Mesh>> meshes;
+        std::vector<bool> isSoftBody;
+        std::vector<Containers::Optional<GL::Texture2D>> textures;
 
-        /* Get the modified mesh */
-        GL::Mesh& mesh = object.drawData().meshes[0];
+        for (size_t i = 0; i < object.drawData().meshes.size(); i++) {
+            bool isColor = true;
+
+            if (object.drawData().materials[i].flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
+                textures.push_back(std::move(object.drawData().textures[object.drawData().materials[i].diffuseTexture()]));
+                isColor = false;
+            } else
+                textures.push_back({});
+
+            MaterialData mat;
+            mat._ambientColor = object.drawData().materials[i].ambientColor().rgb();
+            if (isColor)
+                mat._diffuseColor = object.drawData().materials[i].diffuseColor().rgb();
+            mat._specularColor = object.drawData().materials[i].specularColor().rgb();
+            mat._shininess = object.drawData().materials[i].shininess();
+            mat._scaling = object.drawData().scaling;
+
+            /* Get the modified mesh */
+            GL::Mesh& mesh = object.drawData().meshes[i];
+
+            meshes.push_back(mesh);
+            materials.push_back(mat);
+            if (object.shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
+                isSoftBody.push_back(true);
+            else
+                isSoftBody.push_back(false);
+        }
 
         /* Check if we already have it */
-        auto it = _coloredObjects.insert(std::make_pair(&object, nullptr));
-        if(it.second){
+        auto it = _drawableObjects.insert(std::make_pair(&object, nullptr));
+        if (it.second) {
             /* If not, create a new object and add it to our drawables list */
-            auto coloredObj = new ColoredObject(mesh, mat, static_cast<Object3D*>(&(object.object())), &_drawables);
-            if(object.shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
-                coloredObj->setSoftBody();
-            it.first->second = coloredObj;
-        }
-        else {
+            auto drawableObj = new DrawableObject(meshes, materials, static_cast<Object3D*>(&(object.object())), &_drawables);
+            drawableObj->setSoftBodies(isSoftBody);
+            drawableObj->setTextures(textures);
+            it.first->second = drawableObj;
+        } else {
             /* Otherwise, update the mesh and the material data */
-            it.first->second->setMesh(mesh).setMaterial(mat);
+            it.first->second->setMeshes(meshes).setMaterials(materials).setSoftBodies(isSoftBody).setTextures(textures);
         }
     }
 
@@ -511,40 +536,67 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-ColoredObject::ColoredObject(GL::Mesh& mesh, const MaterialData& material, Object3D* parent, SceneGraph::DrawableGroup3D* group):
-    Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _mesh{mesh}, _shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")}, _material(material) {}
-
-void ColoredObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
-    Matrix4 scalingMatrix = Matrix4::scaling(_material._scaling);
-    _shader->setAmbientColor(_material._ambientColor)
-        .setDiffuseColor(_material._diffuseColor)
-        .setSpecularColor(_material._specularColor)
-        .setShininess(_material._shininess)
-        .setLightPosition(0, camera.cameraMatrix().transformPoint({0.f, 2.f, 3.f}))
-        .setLightPosition(1, camera.cameraMatrix().transformPoint({0.f, -2.f, 3.f}))
-        .setTransformationMatrix(transformationMatrix * scalingMatrix)
-        .setNormalMatrix((transformationMatrix * scalingMatrix).rotation())
-        .setProjectionMatrix(camera.projectionMatrix());
-
-    if(_isSoftBody)
-        GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
-    _mesh->draw(*_shader);
-    if(_isSoftBody)
-        GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+DrawableObject::DrawableObject(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes, const std::vector<MaterialData>& materials, 
+Object3D* parent, SceneGraph::DrawableGroup3D* group):
+    Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _meshes{meshes}, _color_shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
+    _texture_shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")}, _materials(materials) {
+            assert(_materials.size() >= meshes.size());
+            _isSoftBody.resize(_meshes.size(), false);
+            _textures.resize(_meshes.size());
 }
 
+void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
+    for (size_t i = 0; i < _meshes.size(); i++) {
+        GL::Mesh& mesh = _meshes[i];
+        Matrix4 scalingMatrix = Matrix4::scaling(_materials[i]._scaling);
+        bool isColor = !_textures[i];
+        if (isColor) {
+            _color_shader->setAmbientColor(_materials[i]._ambientColor)
+                .setDiffuseColor(_materials[i]._diffuseColor)
+                .setSpecularColor(_materials[i]._specularColor)
+                .setShininess(_materials[i]._shininess)
+                .setLightPosition(0, camera.cameraMatrix().transformPoint({0.f, 2.f, 3.f}))
+                .setLightPosition(1, camera.cameraMatrix().transformPoint({0.f, -2.f, 3.f}))
+                .setTransformationMatrix(transformationMatrix * scalingMatrix)
+                .setNormalMatrix((transformationMatrix * scalingMatrix).rotation())
+                .setProjectionMatrix(camera.projectionMatrix());
+        } else {
+            _texture_shader->setAmbientColor(_materials[i]._ambientColor)
+                .bindDiffuseTexture(*_textures[i])
+                .setSpecularColor(_materials[i]._specularColor)
+                .setShininess(_materials[i]._shininess)
+                .setLightPosition(0, camera.cameraMatrix().transformPoint({0.f, 2.f, 3.f}))
+                .setLightPosition(1, camera.cameraMatrix().transformPoint({0.f, -2.f, 3.f}))
+                .setTransformationMatrix(transformationMatrix * scalingMatrix)
+                .setNormalMatrix((transformationMatrix * scalingMatrix).rotation())
+                .setProjectionMatrix(camera.projectionMatrix());
+        }
 
-ColoredObject& ColoredObject::setMesh(GL::Mesh& mesh){
-    _mesh = mesh;
+        if (_isSoftBody[i])
+            GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
+        if (isColor)
+            mesh.draw(*_color_shader);
+        else
+            mesh.draw(*_texture_shader);
+        if (_isSoftBody[i])
+            GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    }
+}
+
+DrawableObject& DrawableObject::setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes) {
+    _meshes = meshes;
     return *this;
 }
-ColoredObject& ColoredObject::setMaterial(const MaterialData& material){
-    _material = material;
+DrawableObject& DrawableObject::setMaterials(const std::vector<MaterialData>& materials) {
+    _materials = materials;
     return *this;
 }
-ColoredObject& ColoredObject::setSoftBody(bool softBody){
+DrawableObject& DrawableObject::setSoftBodies(const std::vector<bool>& softBody) {
     _isSoftBody = softBody;
+    return *this;
+}
+DrawableObject& DrawableObject::setTextures(std::vector<Containers::Optional<GL::Texture2D>>& textures) {
+    _textures = std::move(textures);
     return *this;
 }
 
