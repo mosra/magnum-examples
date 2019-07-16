@@ -298,6 +298,7 @@ void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
     /* Move towards/backwards the rotation point in cam coords */
     _cameraObject->translateLocal(_rotationPoint*(direction < 0 ? -1.0f : 1.0f)*0.1f);
 
+    event.setAccepted();
     redraw();
 }
 
