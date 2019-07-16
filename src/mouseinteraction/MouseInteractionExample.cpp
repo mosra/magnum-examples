@@ -105,8 +105,8 @@ class MouseInteractionExample: public Platform::Application {
         explicit MouseInteractionExample(const Arguments& arguments);
 
     private:
-        Float depthAt(const Vector2i& position);
-        Vector3 unproject(const Vector2i& position, Float depth) const;
+        Float depthAt(const Vector2i& windowPosition);
+        Vector3 unproject(const Vector2i& windowPosition, Float depth) const;
 
         void viewportEvent(ViewportEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
@@ -270,7 +270,11 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
     _lastDepth = ((_camera->projectionMatrix()*_camera->cameraMatrix()).transformPoint({}).z() + 1.0f)*0.5f;
 }
 
-Float MouseInteractionExample::depthAt(const Vector2i& position) {
+Float MouseInteractionExample::depthAt(const Vector2i& windowPosition) {
+    /* First scale the position from being relative to window size to being
+       relative to framebuffer size as those two can be different on HiDPI
+       systems */
+    const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
     const Range2Di area = Range2Di::fromSize(fbPosition, Vector2i{1}).padded(Vector2i{2});
 
@@ -310,10 +314,12 @@ Float MouseInteractionExample::depthAt(const Vector2i& position) {
     #endif
 }
 
-Vector3 MouseInteractionExample::unproject(const Vector2i& position, Float depth) const {
-    const Range2Di view = GL::defaultFramebuffer.viewport();
-    const Vector2i fbPosition{position.x(), view.sizeY() - position.y() - 1};
-    const Vector3 in{2*Vector2{fbPosition - view.min()}/Vector2{view.size()} - Vector2{1.0f}, depth*2.0f - 1.0f};
+Vector3 MouseInteractionExample::unproject(const Vector2i& windowPosition, Float depth) const {
+    /* We have to take window size, not framebuffer size, since the position is
+       in window coordinates and the two can be different on HiDPI systems */
+    const Vector2i viewSize = windowSize();
+    const Vector2i viewPosition{windowPosition.x(), viewSize.y() - windowPosition.y() - 1};
+    const Vector3 in{2*Vector2{viewPosition}/Vector2{viewSize} - Vector2{1.0f}, depth*2.0f - 1.0f};
 
     /*
         Use the following to get global coordinates instead of camera-relative:
@@ -432,12 +438,13 @@ void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
         _lastDepth = depth;
     }
 
-    const Int direction = event.offset().y();
+    const Float direction = event.offset().y();
     if(!direction) return;
 
     /* Move towards/backwards the rotation point in cam coords */
-    _cameraObject->translateLocal(_rotationPoint*(direction < 0 ? -1.0f : 1.0f)*0.1f);
+    _cameraObject->translateLocal(_rotationPoint*direction*0.1f);
 
+    event.setAccepted();
     redraw();
 }
 
