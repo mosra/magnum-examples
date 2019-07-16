@@ -292,11 +292,11 @@ void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
         _lastDepth = depth;
     }
 
-    const Int direction = event.offset().y();
+    const Float direction = event.offset().y();
     if(!direction) return;
 
     /* Move towards/backwards the rotation point in cam coords */
-    _cameraObject->translateLocal(_rotationPoint*(direction < 0 ? -1.0f : 1.0f)*0.1f);
+    _cameraObject->translateLocal(_rotationPoint*direction*0.1f);
 
     event.setAccepted();
     redraw();
