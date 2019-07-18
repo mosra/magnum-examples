@@ -161,7 +161,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
         DrawableObject& setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes);
         DrawableObject& setMaterials(const std::vector<MaterialData>& materials);
         DrawableObject& setSoftBodies(const std::vector<bool>& softBody);
-        DrawableObject& setTextures(std::vector<Containers::Optional<GL::Texture2D>>& textures);
+        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures);
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
@@ -171,7 +171,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
         Resource<Shaders::Phong> _texture_shader;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
-        std::vector<Containers::Optional<GL::Texture2D>> _textures;
+        std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>> _textures;
 };
 
 class DartExample: public Platform::Application {
@@ -367,21 +367,20 @@ void DartExample::drawEvent() {
     /* Update graphic meshes/materials and render */
     _dartWorld->refresh();
 
-    /* We make the assumption that each object has
-       only one mesh and one material*/
     /* For each update object */
     for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()) {
         /* Get material information */
         std::vector<MaterialData> materials;
         std::vector<std::reference_wrapper<GL::Mesh>> meshes;
         std::vector<bool> isSoftBody;
-        std::vector<Containers::Optional<GL::Texture2D>> textures;
+        std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>> textures;
 
         for (size_t i = 0; i < object.drawData().meshes.size(); i++) {
             bool isColor = true;
 
             if (object.drawData().materials[i].flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
-                textures.push_back(std::move(object.drawData().textures[object.drawData().materials[i].diffuseTexture()]));
+                std::reference_wrapper<GL::Texture2D> texture = *object.drawData().textures[object.drawData().materials[i].diffuseTexture()];
+                textures.push_back(texture);
                 isColor = false;
             } else
                 textures.push_back({});
@@ -595,7 +594,7 @@ DrawableObject& DrawableObject::setSoftBodies(const std::vector<bool>& softBody)
     _isSoftBody = softBody;
     return *this;
 }
-DrawableObject& DrawableObject::setTextures(std::vector<Containers::Optional<GL::Texture2D>>& textures) {
+DrawableObject& DrawableObject::setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures) {
     _textures = std::move(textures);
     return *this;
 }
