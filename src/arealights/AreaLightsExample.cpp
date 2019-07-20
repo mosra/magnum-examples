@@ -36,6 +36,7 @@
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/ImageView.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>

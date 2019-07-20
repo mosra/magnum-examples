@@ -32,6 +32,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
