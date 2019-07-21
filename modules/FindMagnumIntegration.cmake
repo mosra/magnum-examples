@@ -230,6 +230,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
                 INTERFACE_INCLUDE_DIRECTORIES ${DART_INCLUDE_DIRS})
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${DART_LIBRARIES})
+            set_property(TARGET MagnumIntegration::${_component} PROPERTY INTERFACE_CORRADE_CXX_STANDARD 14)
 
             set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ConvertShapeNode.h)
 

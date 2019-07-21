@@ -334,8 +334,9 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application(argu
     auto dartObj = new Object3D{&_scene};
     _dartWorld.reset(new DartIntegration::World(*dartObj, *_world));
 
-    /* Phong shader instance */
+    /* Phong shader instances */
     _resourceManager.set("color", new Shaders::Phong({}, 2));
+    _resourceManager.set("texture", new Shaders::Phong({Shaders::Phong::Flag::DiffuseTexture}, 2));
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
@@ -354,7 +355,7 @@ void DartExample::drawEvent() {
     GL::defaultFramebuffer.clear(
         GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
     /* We want around 60Hz display rate */
-    UnsignedInt steps = std::ceil(1. / (60. * _world->getTimeStep()));
+    UnsignedInt steps = std::round(1. / (60. * _world->getTimeStep()));
 
     /* Step DART simulation */
     for (UnsignedInt i = 0; i < steps; i++) {
