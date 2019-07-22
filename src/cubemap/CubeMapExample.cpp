@@ -65,6 +65,8 @@ class CubeMapExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
 };
 
+using namespace Math::Literals;
+
 CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
@@ -74,7 +76,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         ->translate(Vector3::zAxis(3.0f));
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(55.0f), 1.0f, 0.001f, 100.0f))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(55.0_degf, 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Load image importer plugin */
@@ -95,7 +97,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     (new Reflector(&_scene, &_drawables))
         ->scale(Vector3(0.3f))
-        .rotate(Deg(37.0f), Vector3::xAxis())
+        .rotate(37.0_degf, Vector3::xAxis())
         .translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
@@ -117,15 +119,15 @@ void CubeMapExample::drawEvent() {
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        _cameraObject->rotate(Deg(-10.0f), _cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(-10.0_degf, _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        _cameraObject->rotate(Deg(10.0f), _cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(10.0_degf, _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         Float translationY = _cameraObject->transformation().translation().y();
         _cameraObject->translate(Vector3::yAxis(-translationY))
-            .rotateY(event.key() == KeyEvent::Key::Left ? Deg(10.0f) : Deg(-10.0f))
+            .rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
             .translate(Vector3::yAxis(translationY));
 
     } else return;

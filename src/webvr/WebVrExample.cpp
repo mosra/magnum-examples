@@ -78,6 +78,7 @@ class WebVrExample: public Platform::Application {
 };
 
 namespace {
+
 /* Click callback for requesting present */
 EM_BOOL clickCallback(int eventType, const EmscriptenMouseEvent* e, void* app) {
     if(!e || eventType != EMSCRIPTEN_EVENT_CLICK) return EM_FALSE;
@@ -105,6 +106,8 @@ void displayPresentCallback(void* app) {
 
 }
 
+using namespace Math::Literals;
+
 WebVrExample::WebVrExample(const Arguments& arguments):
     Platform::Application(arguments,
         Configuration{}.setSize({640, 320}),
@@ -130,10 +133,10 @@ WebVrExample::WebVrExample(const Arguments& arguments):
         .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
 
     /* Setup scene */
-    _cubeModelMatrices[0] = Matrix4::translation({ 0.0f,  0.0f, -3.0f})*Matrix4::rotationY(Deg(45.0f));
-    _cubeModelMatrices[1] = Matrix4::translation({ 5.0f,  0.0f,  0.0f})*Matrix4::rotationY(Deg(45.0f));
-    _cubeModelMatrices[2] = Matrix4::translation({-10.0f, 0.0f,  0.0f})*Matrix4::rotationY(Deg(45.0f));
-    _cubeModelMatrices[3] = Matrix4::translation({ 0.0f,  0.0f,  7.0f})*Matrix4::rotationY(Deg(45.0f));
+    _cubeModelMatrices[0] = Matrix4::translation({ 0.0f,  0.0f, -3.0f})*Matrix4::rotationY(45.0_degf);
+    _cubeModelMatrices[1] = Matrix4::translation({ 5.0f,  0.0f,  0.0f})*Matrix4::rotationY(45.0_degf);
+    _cubeModelMatrices[2] = Matrix4::translation({-10.0f, 0.0f,  0.0f})*Matrix4::rotationY(45.0_degf);
+    _cubeModelMatrices[3] = Matrix4::translation({ 0.0f,  0.0f,  7.0f})*Matrix4::rotationY(45.0_degf);
 
     _cubeColors[0] = {1.0f, 1.0f, 0.0f};
     _cubeColors[1] = {1.0f, 0.0f, 0.0f};
@@ -245,7 +248,7 @@ void WebVrExample::displayRender() {
         Matrix4::from(fd.leftViewMatrix),
         Matrix4::from(fd.rightViewMatrix)};
     const Matrix4 projMatrix[2] = {
-        inVR ? Matrix4::from(fd.leftProjectionMatrix) : Matrix4::perspectiveProjection(Deg(90.0f), 2.0f, 0.001, 100.0f),
+        inVR ? Matrix4::from(fd.leftProjectionMatrix) : Matrix4::perspectiveProjection(90.0_degf, 2.0f, 0.001, 100.0f),
         Matrix4::from(fd.rightProjectionMatrix)};
 
     const int halfWidth = 0.5f*_displayResolution.x();

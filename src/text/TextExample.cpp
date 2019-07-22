@@ -95,7 +95,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    _transformation = Matrix3::rotation(Deg(-10.0f));
+    _transformation = Matrix3::rotation(-10.0_degf);
     _projection = Matrix3::scaling(Vector2::yScale(Vector2(GL::defaultFramebuffer.viewport().size()).aspectRatio()));
     updateText();
 }
@@ -132,9 +132,9 @@ void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
     if(!event.offset().y()) return;
 
     if(event.offset().y() > 0)
-        _transformation = Matrix3::rotation(Deg(1.0f))*Matrix3::scaling(Vector2(1.1f))* _transformation;
+        _transformation = Matrix3::rotation(1.0_degf)*Matrix3::scaling(Vector2(1.1f))* _transformation;
     else
-        _transformation = Matrix3::rotation(Deg(-1.0f))*Matrix3::scaling(Vector2(1.0f/1.1f))* _transformation;
+        _transformation = Matrix3::rotation(-1.0_degf)*Matrix3::scaling(Vector2(1.0f/1.1f))* _transformation;
 
     updateText();
 
