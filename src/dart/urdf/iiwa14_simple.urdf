@@ -68,14 +68,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_0.stl"/>
+        <mesh filename="package://iiwa14/link_0.stl"/>
       </geometry>
       <material name="Grey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="-0.01 0 0.07875"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_0${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_0${collision_postfix}.stl"/> -->
         <box size="0.24 0.23 0.1575"/>
       </geometry>
       <material name="Grey"/>
@@ -106,14 +106,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_1.stl"/>
+        <mesh filename="package://iiwa14/link_1.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 -0.02 0.13"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_1${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_1${collision_postfix}.stl"/> -->
         <box size="0.175 0.19 0.26"/>
       </geometry>
       <material name="Orange"/>
@@ -138,14 +138,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_2.stl"/>
+        <mesh filename="package://iiwa14/link_2.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0.12 0.02"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_2${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_2${collision_postfix}.stl"/> -->
         <box size="0.175 0.24 0.19"/>
       </geometry>
       <material name="Orange"/>
@@ -170,14 +170,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_3.stl"/>
+        <mesh filename="package://iiwa14/link_3.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0.02 0.13"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_3${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_3${collision_postfix}.stl"/> -->
         <box size="0.125 0.15 0.26"/>
       </geometry>
       <material name="Orange"/>
@@ -202,14 +202,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_4.stl"/>
+        <mesh filename="package://iiwa14/link_4.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0.085 0.02"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_4${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_4${collision_postfix}.stl"/> -->
         <box size="0.125 0.22 0.15"/>
       </geometry>
       <material name="Orange"/>
@@ -234,14 +234,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_5.stl"/>
+        <mesh filename="package://iiwa14/link_5.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0.02 0.12"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_5${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_5${collision_postfix}.stl"/> -->
         <box size="0.125 0.15 0.24"/>
       </geometry>
       <material name="Orange"/>
@@ -266,14 +266,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_6.stl"/>
+        <mesh filename="package://iiwa14/link_6.stl"/>
       </geometry>
       <material name="Orange"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_6${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_6${collision_postfix}.stl"/> -->
         <box size="0.125 0.15 0.125"/>
       </geometry>
       <material name="Orange"/>
@@ -298,14 +298,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://iiwa_description/meshes/iiwa14/visual/link_7.stl"/>
+        <mesh filename="package://iiwa14/link_7.stl"/>
       </geometry>
       <material name="Grey"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0.017"/>
       <geometry>
-        <!-- <mesh filename="package://iiwa_description/meshes/iiwa14/collision/link_7${collision_postfix}.stl"/> -->
+        <!-- <mesh filename="package://iiwa14/collision/link_7${collision_postfix}.stl"/> -->
         <box size="0.1 0.1 0.05"/>
       </geometry>
       <material name="Grey"/>

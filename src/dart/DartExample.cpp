@@ -257,10 +257,10 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     /* DART: Load Skeletons/Robots */
     DartLoader loader;
     /* Add packages (needed for URDF loading) */
-    std::string res_path = Utility::Directory::join(DARTEXAMPLE_DIR, "urdf");
-    loader.addPackageDirectory("iiwa_description", res_path);
-    loader.addPackageDirectory("robotiq_arg85_description", res_path);
-    std::string filename = Utility::Directory::join(res_path, "iiwa14_simple.urdf");
+    std::string resPath = Utility::Directory::join(DARTEXAMPLE_DIR, "urdf");
+    loader.addPackageDirectory("iiwa14", Utility::Directory::join(resPath, "iiwa14"));
+    loader.addPackageDirectory("robotiq", Utility::Directory::join(resPath, "robotiq"));
+    std::string filename = Utility::Directory::join(resPath, "iiwa14_simple.urdf");
 
     /* First load the KUKA manipulator */
     _manipulator = loader.parseSkeleton(filename);
@@ -277,7 +277,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     #endif
 
     /* Load the Robotiq 2-finger gripper */
-    filename = Utility::Directory::join(res_path, "robotiq.urdf");
+    filename = Utility::Directory::join(resPath, "robotiq.urdf");
     auto gripper_skel = loader.parseSkeleton(filename);
     /* The gripper is controlled in velocity mode: servo actuator */
     gripper_skel->getJoint("finger_joint")->setActuatorType(dart::dynamics::Joint::SERVO);
