@@ -233,7 +233,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     (_cameraObject = new Object3D(_cameraRig));
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100.0f))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
     /* DART has +Z-axis as up direction*/
     _cameraObject->setTransformation(Matrix4::lookAt(
@@ -426,13 +426,13 @@ void DartExample::drawEvent() {
 
 void DartExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Down) {
-        _cameraObject->rotateX(Deg(5.0f));
+        _cameraObject->rotateX(5.0_degf);
     } else if(event.key() == KeyEvent::Key::Up) {
-        _cameraObject->rotateX(Deg(-5.0f));
+        _cameraObject->rotateX(-5.0_degf);
     } else if(event.key() == KeyEvent::Key::Left) {
-        _cameraRig->rotateY(Deg(-5.0f));
+        _cameraRig->rotateY(-5.0_degf);
     } else if(event.key() == KeyEvent::Key::Right) {
-        _cameraRig->rotateY(Deg(5.0f));
+        _cameraRig->rotateY(5.0_degf);
     } else if(event.key() == KeyEvent::Key::C) {
         _gripperDesiredPosition = 0.3;
     } else if(event.key() == KeyEvent::Key::O) {
