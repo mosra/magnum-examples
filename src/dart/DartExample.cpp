@@ -283,6 +283,12 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
 
     /* First load the KUKA manipulator */
     _manipulator = loader.parseSkeleton(filename);
+    if(!_manipulator) {
+        Error{} << "Failed to load" << filename << Debug::nospace << ", exiting.";
+        Error{} << "Use the --urdf option to specify where this file is located.";
+        exit(1);
+        return;
+    }
     for(std::size_t i = 0; i < _manipulator->getNumJoints(); ++i)
         _manipulator->getJoint(i)->setPositionLimitEnforced(true);
 
@@ -298,6 +304,12 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     /* Load the Robotiq 2-finger gripper */
     filename = Utility::Directory::join(resPath, "robotiq.urdf");
     auto gripper_skel = loader.parseSkeleton(filename);
+    if(!gripper_skel) {
+        Error{} << "Failed to load" << filename << Debug::nospace << ", exiting.";
+        Error{} << "Use the --urdf option to specify where this file is located.";
+        exit(1);
+        return;
+    }
     /* The gripper is controlled in velocity mode: servo actuator */
     gripper_skel->getJoint("finger_joint")->setActuatorType(dart::dynamics::Joint::SERVO);
 
