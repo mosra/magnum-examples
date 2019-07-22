@@ -151,24 +151,24 @@ struct MaterialData{
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit DrawableObject(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes, const std::vector<MaterialData>& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit DrawableObject(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        DrawableObject& setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes){
-            _meshes = meshes;
+        DrawableObject& setMeshes(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes){
+            _meshes = std::move(meshes);
             return *this;
         }
 
-        DrawableObject& setMaterials(const std::vector<MaterialData>& materials) {
-            _materials = materials;
+        DrawableObject& setMaterials(std::vector<MaterialData>&& materials) {
+            _materials = std::move(materials);
             return *this;
         }
 
-        DrawableObject& setSoftBodies(const std::vector<bool>& softBody){
-            _isSoftBody = softBody;
+        DrawableObject& setSoftBodies(std::vector<bool>&& softBody) {
+            _isSoftBody = std::move(softBody);
             return *this;
         }
 
-        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures){
+        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>&& textures){
             _textures = std::move(textures);
             return *this;
         }
@@ -176,9 +176,9 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        std::vector<std::reference_wrapper<GL::Mesh>> _meshes;
         Resource<Shaders::Phong> _color_shader;
         Resource<Shaders::Phong> _texture_shader;
+        std::vector<std::reference_wrapper<GL::Mesh>> _meshes;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
         std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>> _textures;
@@ -417,17 +417,23 @@ void DartExample::drawEvent() {
                 isSoftBody.push_back(false);
         }
 
-        /* Check if we already have it */
+        /* Check if we already have it and then either add a new one or update
+           the existing. We don't need the mesh / material / texture vectors
+           anywhere else anymore, so move them in to avoid copies. */
         auto it = _drawableObjects.insert(std::make_pair(&object, nullptr));
         if(it.second) {
-            /* If not, create a new object and add it to our drawables list */
-            auto drawableObj = new DrawableObject(meshes, materials, static_cast<Object3D*>(&(object.object())), &_drawables);
-            drawableObj->setSoftBodies(isSoftBody);
-            drawableObj->setTextures(textures);
+            auto drawableObj = new DrawableObject{
+                std::move(meshes), std::move(materials),
+                static_cast<Object3D*>(&(object.object())), &_drawables};
+            drawableObj->setSoftBodies(std::move(isSoftBody));
+            drawableObj->setTextures(std::move(textures));
             it.first->second = drawableObj;
         } else {
-            /* Otherwise, update the mesh and the material data */
-            it.first->second->setMeshes(meshes).setMaterials(materials).setSoftBodies(isSoftBody).setTextures(textures);
+            (*it.first->second)
+                .setMeshes(std::move(meshes))
+                .setMaterials(std::move(materials))
+                .setSoftBodies(std::move(isSoftBody))
+                .setTextures(std::move(textures));
         }
     }
 
@@ -547,10 +553,13 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-DrawableObject::DrawableObject(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes, const std::vector<MaterialData>& materials,
+DrawableObject::DrawableObject(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
 Object3D* parent, SceneGraph::DrawableGroup3D* group):
-    Object3D{parent}, SceneGraph::Drawable3D{*this, group}, _meshes{meshes}, _color_shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
-    _texture_shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")}, _materials(materials)
+    Object3D{parent}, SceneGraph::Drawable3D{*this, group},
+    _color_shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
+    _texture_shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")},
+    _meshes{std::move(meshes)},
+    _materials{std::move(materials)}
 {
     CORRADE_INTERNAL_ASSERT(_materials.size() >= meshes.size());
     _isSoftBody.resize(_meshes.size(), false);
