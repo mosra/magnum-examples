@@ -187,7 +187,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
 class DartExample: public Platform::Application {
     public:
         /* home: go to home position, active: go to active box */
-        enum State {home, active};
+        enum class State { Home, Active };
 
         explicit DartExample(const Arguments& arguments);
 
@@ -228,7 +228,7 @@ class DartExample: public Platform::Application {
         const Double _dGain = 5.0;
 
         /* Simple State Machine */
-        State _state = home;
+        State _state = State::Home;
 };
 
 DartExample::DartExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
@@ -459,31 +459,31 @@ void DartExample::keyPressEvent(KeyEvent& event) {
         _gripperDesiredPosition = 0.3;
     } else if(event.key() == KeyEvent::Key::O) {
         _gripperDesiredPosition = 0.;
-    } else if(event.key() == KeyEvent::Key::U && _state == 1) {
+    } else if(event.key() == KeyEvent::Key::U && _state == State::Active) {
         _desiredPosition[2] += 0.1;
-    } else if(event.key() == KeyEvent::Key::D && _state == 1) {
+    } else if(event.key() == KeyEvent::Key::D && _state == State::Active) {
         _desiredPosition[2] -= 0.1;
-    } else if(event.key() == KeyEvent::Key::Z && _state == 1) {
+    } else if(event.key() == KeyEvent::Key::Z && _state == State::Active) {
         _desiredPosition[1] += 0.2;
-    } else if(event.key() == KeyEvent::Key::X && _state == 1) {
+    } else if(event.key() == KeyEvent::Key::X && _state == State::Active) {
         _desiredPosition[1] -= 0.2;
     } else if(event.key() == KeyEvent::Key::R) {
         _desiredPosition = _redBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        _state = active;
+        _state = State::Active;
     } else if(event.key() == KeyEvent::Key::G) {
         _desiredPosition = _greenBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        _state = active;
+        _state = State::Active;
     } else if(event.key() == KeyEvent::Key::B) {
         _desiredPosition = _blueBoxSkel->getPositions().tail(3);
         _desiredPosition[2] += 0.25;
-        _state = active;
+        _state = State::Active;
     } else if(event.key() == KeyEvent::Key::H) {
-        _state = home;
+        _state = State::Home;
     } else if(event.key() == KeyEvent::Key::Space) {
         /* Reset _state machine */
-        _state = home;
+        _state = State::Home;
         /* Reset manipulator */
         _manipulator->resetPositions();
         _manipulator->resetVelocities();
@@ -510,7 +510,7 @@ void DartExample::updateManipulator() {
     _model->setPositions(_manipulator->getPositions().head(7));
     _model->setVelocities(_manipulator->getVelocities().head(7));
 
-    if(_state == home) {
+    if(_state == State::Home) {
         /* Go to zero (home) position */
         Eigen::VectorXd q = _model->getPositions();
         Eigen::VectorXd dq = _model->getVelocities();
