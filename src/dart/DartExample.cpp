@@ -151,9 +151,9 @@ struct MaterialData{
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit DrawableObject(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        DrawableObject& setMeshes(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes){
+        DrawableObject& setMeshes(std::vector<Containers::Reference<GL::Mesh>>&& meshes){
             _meshes = std::move(meshes);
             return *this;
         }
@@ -178,7 +178,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
 
         Resource<Shaders::Phong> _color_shader;
         Resource<Shaders::Phong> _texture_shader;
-        std::vector<std::reference_wrapper<GL::Mesh>> _meshes;
+        std::vector<Containers::Reference<GL::Mesh>> _meshes;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
         std::vector<GL::Texture2D*> _textures;
@@ -384,7 +384,7 @@ void DartExample::drawEvent() {
     for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()) {
         /* Get material information */
         std::vector<MaterialData> materials;
-        std::vector<std::reference_wrapper<GL::Mesh>> meshes;
+        std::vector<Containers::Reference<GL::Mesh>> meshes;
         std::vector<bool> isSoftBody;
         std::vector<GL::Texture2D*> textures;
 
@@ -410,9 +410,7 @@ void DartExample::drawEvent() {
             mat.scaling = object.drawData().scaling;
 
             /* Get the modified mesh */
-            GL::Mesh& mesh = object.drawData().meshes[i];
-
-            meshes.push_back(mesh);
+            meshes.push_back(object.drawData().meshes[i]);
             materials.push_back(mat);
             if(object.shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
                 isSoftBody.push_back(true);
@@ -556,7 +554,7 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-DrawableObject::DrawableObject(std::vector<std::reference_wrapper<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
+DrawableObject::DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
 Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
     _color_shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
