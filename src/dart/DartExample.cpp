@@ -546,8 +546,11 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
     for(std::size_t i = 0; i < _meshes.size(); ++i) {
         GL::Mesh& mesh = _meshes[i];
         Matrix4 scalingMatrix = Matrix4::scaling(_materials[i]._scaling);
-        const bool isColor = !_textures[i];
-        if(isColor) {
+
+        if(_isSoftBody[i])
+            GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
+
+        if(!_textures[i]) {
             (*_color_shader)
                 .setAmbientColor(_materials[i]._ambientColor)
                 .setDiffuseColor(_materials[i]._diffuseColor)
@@ -558,6 +561,7 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
                 .setProjectionMatrix(camera.projectionMatrix());
+            mesh.draw(*_color_shader);
         } else {
             (*_texture_shader)
                 .setAmbientColor(_materials[i]._ambientColor)
@@ -569,14 +573,9 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
                 .setProjectionMatrix(camera.projectionMatrix());
+            mesh.draw(*_texture_shader);
         }
 
-        if(_isSoftBody[i])
-            GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
-        if(isColor)
-            mesh.draw(*_color_shader);
-        else
-            mesh.draw(*_texture_shader);
         if(_isSoftBody[i])
             GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     }
