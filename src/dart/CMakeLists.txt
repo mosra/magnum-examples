@@ -37,11 +37,8 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
 endif()
 
-if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(DARTEXAMPLE_DIR ".")
-else()
-    set(DARTEXAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-endif()
+set(DART_EXAMPLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/urdf)
+set(DART_EXAMPLE_INSTALL_DIR ${MAGNUM_DATA_INSTALL_DIR}/examples/dart)
 
 # We need the URDF loader of DART for this example
 find_package(DART 6.0.0 CONFIG REQUIRED OPTIONAL_COMPONENTS io-urdf utils-urdf)
@@ -78,3 +75,24 @@ target_link_libraries(magnum-dart PRIVATE
     ${DART_LIBRARIES})
 
 install(TARGETS magnum-dart DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(FILES
+    urdf/iiwa14/link_0.stl
+    urdf/iiwa14/link_1.stl
+    urdf/iiwa14/link_2.stl
+    urdf/iiwa14/link_3.stl
+    urdf/iiwa14/link_4.stl
+    urdf/iiwa14/link_5.stl
+    urdf/iiwa14/link_6.stl
+    urdf/iiwa14/link_7.stl
+    DESTINATION ${DART_EXAMPLE_INSTALL_DIR}/iiwa14)
+install(FILES
+    urdf/robotiq/inner_finger_fine.stl
+    urdf/robotiq/inner_knuckle_fine.stl
+    urdf/robotiq/outer_finger_fine.stl
+    urdf/robotiq/outer_knuckle_fine.stl
+    urdf/robotiq/robotiq_85_base_link_fine.stl
+    DESTINATION ${DART_EXAMPLE_INSTALL_DIR}/robotiq)
+install(FILES
+    urdf/iiwa14_simple.urdf
+    urdf/robotiq.urdf
+    DESTINATION ${DART_EXAMPLE_INSTALL_DIR})

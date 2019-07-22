@@ -44,6 +44,7 @@
 #include <dart/dynamics/WeldJoint.hpp>
 #include <dart/simulation/World.hpp>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Directory.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/DartIntegration/ConvertShapeNode.h>
@@ -232,6 +233,25 @@ class DartExample: public Platform::Application {
 };
 
 DartExample::DartExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    /* Try to locate the models, first in the source directory, then in the
+       installation directory and as a fallback next to the executable */
+    std::string resPath;
+    if(Utility::Directory::exists(DART_EXAMPLE_DIR))
+        resPath = DART_EXAMPLE_DIR;
+    else if(Utility::Directory::exists(DART_EXAMPLE_INSTALL_DIR))
+        resPath = DART_EXAMPLE_INSTALL_DIR;
+    else
+        resPath = Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), "urdf");
+
+    /* Finally, provide a way for the user to override the model directory */
+    Utility::Arguments args;
+    args.addOption("urdf", resPath).setHelp("urdf", "directory where is iiwa14_simple.urdf")
+        .addSkippedPrefix("magnum", "engine-specific options")
+        .setGlobalHelp("Controlls a robotic manipulator with DART")
+        .parse(arguments.argc, arguments.argv);
+    /* DART can't handle relative paths, so prepend CWD to them if needed */
+    resPath = Utility::Directory::join(Utility::Directory::current(), args.value("urdf"));
+
     /* Try 8x MSAA */
     Configuration conf;
     GLConfiguration glConf;
@@ -257,7 +277,6 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     /* DART: Load Skeletons/Robots */
     DartLoader loader;
     /* Add packages (needed for URDF loading) */
-    std::string resPath = Utility::Directory::join(DARTEXAMPLE_DIR, "urdf");
     loader.addPackageDirectory("iiwa14", Utility::Directory::join(resPath, "iiwa14"));
     loader.addPackageDirectory("robotiq", Utility::Directory::join(resPath, "robotiq"));
     std::string filename = Utility::Directory::join(resPath, "iiwa14_simple.urdf");
