@@ -93,8 +93,8 @@ dart::dynamics::SkeletonPtr createBox(const std::string& name = "box", const Eig
         ->createJointAndBodyNodePair<dart::dynamics::FreeJoint>(nullptr).second;
 
     /* Create a shape for the box */
-    std::shared_ptr<dart::dynamics::BoxShape> boxShape(
-        new dart::dynamics::BoxShape(Eigen::Vector3d{boxSize, boxSize, boxSize}));
+    auto boxShape = std::make_shared<dart::dynamics::BoxShape>(
+        Eigen::Vector3d{boxSize, boxSize, boxSize});
     auto shapeNode = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(boxShape);
     shapeNode->getVisualAspect()->setColor(color);
 
@@ -120,8 +120,8 @@ dart::dynamics::SkeletonPtr createFloor() {
     /* Give the floor a shape */
     constexpr double floorWidth = 10.0;
     constexpr double floorHeight = 0.1;
-    std::shared_ptr<dart::dynamics::BoxShape> box(
-        new dart::dynamics::BoxShape(Eigen::Vector3d{floorWidth, floorWidth, floorHeight}));
+    auto box = std::make_shared<dart::dynamics::BoxShape>(
+        Eigen::Vector3d{floorWidth, floorWidth, floorHeight});
     auto shapeNode = body->createShapeNodeWith<dart::dynamics::VisualAspect, dart::dynamics::CollisionAspect, dart::dynamics::DynamicsAspect>(box);
     shapeNode->getVisualAspect()->setColor(Eigen::Vector3d(0.3, 0.3, 0.4));
 
