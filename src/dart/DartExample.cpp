@@ -168,7 +168,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
             return *this;
         }
 
-        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>&& textures){
+        DrawableObject& setTextures(std::vector<GL::Texture2D*>&& textures) {
             _textures = std::move(textures);
             return *this;
         }
@@ -181,7 +181,7 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
         std::vector<std::reference_wrapper<GL::Mesh>> _meshes;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
-        std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>> _textures;
+        std::vector<GL::Texture2D*> _textures;
 };
 
 class DartExample: public Platform::Application {
@@ -386,17 +386,20 @@ void DartExample::drawEvent() {
         std::vector<MaterialData> materials;
         std::vector<std::reference_wrapper<GL::Mesh>> meshes;
         std::vector<bool> isSoftBody;
-        std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>> textures;
+        std::vector<GL::Texture2D*> textures;
 
         for(std::size_t i = 0; i < object.drawData().meshes.size(); ++i) {
             bool isColor = true;
-
+            GL::Texture2D* texture = nullptr;
             if(object.drawData().materials[i].flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
-                std::reference_wrapper<GL::Texture2D> texture = *object.drawData().textures[object.drawData().materials[i].diffuseTexture()];
-                textures.push_back(texture);
-                isColor = false;
-            } else
-                textures.push_back({});
+                Containers::Optional<GL::Texture2D>& entry = object.drawData().textures[object.drawData().materials[i].diffuseTexture()];
+                if(entry) {
+                    texture = &*entry;
+                    isColor = false;
+                }
+            }
+
+            textures.push_back(texture);
 
             MaterialData mat;
             mat.ambientColor = object.drawData().materials[i].ambientColor().rgb();
