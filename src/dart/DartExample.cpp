@@ -142,11 +142,11 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 struct MaterialData{
-    Vector3 _ambientColor,
-        _diffuseColor,
-        _specularColor;
-    Float _shininess;
-    Vector3 _scaling;
+    Vector3 ambientColor,
+        diffuseColor,
+        specularColor;
+    Float shininess;
+    Vector3 scaling;
 };
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
@@ -399,12 +399,12 @@ void DartExample::drawEvent() {
                 textures.push_back({});
 
             MaterialData mat;
-            mat._ambientColor = object.drawData().materials[i].ambientColor().rgb();
+            mat.ambientColor = object.drawData().materials[i].ambientColor().rgb();
             if(isColor)
-                mat._diffuseColor = object.drawData().materials[i].diffuseColor().rgb();
-            mat._specularColor = object.drawData().materials[i].specularColor().rgb();
-            mat._shininess = object.drawData().materials[i].shininess();
-            mat._scaling = object.drawData().scaling;
+                mat.diffuseColor = object.drawData().materials[i].diffuseColor().rgb();
+            mat.specularColor = object.drawData().materials[i].specularColor().rgb();
+            mat.shininess = object.drawData().materials[i].shininess();
+            mat.scaling = object.drawData().scaling;
 
             /* Get the modified mesh */
             GL::Mesh& mesh = object.drawData().meshes[i];
@@ -569,17 +569,17 @@ Object3D* parent, SceneGraph::DrawableGroup3D* group):
 void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     for(std::size_t i = 0; i < _meshes.size(); ++i) {
         GL::Mesh& mesh = _meshes[i];
-        Matrix4 scalingMatrix = Matrix4::scaling(_materials[i]._scaling);
+        Matrix4 scalingMatrix = Matrix4::scaling(_materials[i].scaling);
 
         if(_isSoftBody[i])
             GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
 
         if(!_textures[i]) {
             (*_color_shader)
-                .setAmbientColor(_materials[i]._ambientColor)
-                .setDiffuseColor(_materials[i]._diffuseColor)
-                .setSpecularColor(_materials[i]._specularColor)
-                .setShininess(_materials[i]._shininess)
+                .setAmbientColor(_materials[i].ambientColor)
+                .setDiffuseColor(_materials[i].diffuseColor)
+                .setSpecularColor(_materials[i].specularColor)
+                .setShininess(_materials[i].shininess)
                 .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
@@ -588,10 +588,10 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
             mesh.draw(*_color_shader);
         } else {
             (*_texture_shader)
-                .setAmbientColor(_materials[i]._ambientColor)
+                .setAmbientColor(_materials[i].ambientColor)
                 .bindDiffuseTexture(*_textures[i])
-                .setSpecularColor(_materials[i]._specularColor)
-                .setShininess(_materials[i]._shininess)
+                .setSpecularColor(_materials[i].specularColor)
+                .setShininess(_materials[i].shininess)
                 .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
