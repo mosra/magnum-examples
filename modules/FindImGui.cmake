@@ -58,6 +58,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Since 1.71, ImGui depends on the ApplicationServices framework for macOS
+# clipboard support
+if(CORRADE_TARGET_APPLE)
+    find_library(_IMGUI_ApplicationServices_LIBRARY ApplicationServices)
+    mark_as_advanced(_IMGUI_ApplicationServices_LIBRARY)
+    set(_IMGUI_EXTRA_LIBRARIES ${_IMGUI_ApplicationServices_LIBRARY})
+endif()
+
 # Vcpkg distributes imgui as a library with a config file, so try that first --
 # but only if IMGUI_DIR wasn't explicitly passed, in which case we'll look
 # there instead
@@ -65,8 +73,11 @@ find_package(imgui CONFIG QUIET)
 if(imgui_FOUND AND NOT IMGUI_DIR)
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
+        # TODO: remove ${_IMGUI_EXTRA_LIBRARIES} once the ApplicationServices
+        # framework is added directly to vcpkg's target:
+        # https://github.com/microsoft/vcpkg/blob/master/ports/imgui/CMakeLists.txt
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES imgui::imgui)
+            INTERFACE_LINK_LIBRARIES imgui::imgui ${_IMGUI_EXTRA_LIBRARIES})
 
         # Retrieve include directory for FindPackageHandleStandardArgs later
         get_target_property(ImGui_INCLUDE_DIR imgui::imgui
@@ -91,6 +102,10 @@ else()
         add_library(ImGui::ImGui INTERFACE IMPORTED)
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
             INTERFACE_INCLUDE_DIRECTORIES ${ImGui_INCLUDE_DIR})
+        if(_IMGUI_EXTRA_LIBRARIES)
+            set_property(TARGET ImGui::ImGui APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${_IMGUI_EXTRA_LIBRARIES})
+        endif()
 
         # Handle export and import of imgui symbols via IMGUI_API definition
         # in visibility.h of Magnum ImGuiIntegration.

@@ -32,6 +32,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/CubeMapTexture.h>

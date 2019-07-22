@@ -323,7 +323,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
-    UnsignedByte id = data.data<UnsignedByte>()[0];
+    UnsignedByte id = Containers::arrayCast<UnsignedByte>(data.data())[0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);
 
