@@ -207,6 +207,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example. Requires
     some JPEG importer plugin such as @ref Trade::JpegImporter "JpegImporter",
     not available in OpenGL ES.
+-   `WITH_DART_EXAMPLE` --- Build the @ref examples-dart example. Requires
+    the @ref DartIntegration library.
 -   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
 -   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
     Not available on OpenGL ES.

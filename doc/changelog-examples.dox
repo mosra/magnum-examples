@@ -32,6 +32,11 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2019.01
 
+@subsection changelog-examples-latest-new New features
+
+-   New @ref examples-dart example showing integration with DART using
+    @ref DartIntegration (see [mosra/magnum-examples#63](https://github.com/mosra/magnum-examples/pull/63))
+
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Switched all examples to use the new

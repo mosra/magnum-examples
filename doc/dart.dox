@@ -35,16 +35,19 @@ to create towers of small colored boxes, showcasing the
 @ref DartIntegration library together with @ref SceneGraph using
 @ref DartIntegration::World and @ref DartIntegration::Object.
 
-@image html dart.png
+@image html dart.png width=400px
 
 @section examples-dart-controls Key controls
 
 -   @m_class{m-label m-default} **Arrow keys** rotate the camera around
--   @m_class{m-label m-default} **R,G,B** make the manipulator to go above the
+-   @m_class{m-label m-default} **R**, @m_class{m-label m-default} **G**,
+    @m_class{m-label m-default} **B** make the manipulator to go above the
     red, green, blue box (and switch to control mode)
--   @m_class{m-label m-default} **C,O** closes/opens the gripper
--   @m_class{m-label m-default} **D,U,Z,X** make the manipulator to go down,
-    up, left, right
+-   @m_class{m-label m-default} **C**, @m_class{m-label m-default} **O**
+    closes/opens the gripper
+-   @m_class{m-label m-default} **D**, @m_class{m-label m-default} **U**,
+    @m_class{m-label m-default} **Z**, @m_class{m-label m-default} **X** make
+    the manipulator to go down, up, left or right
 -   @m_class{m-label m-default} **H** makes the manipulator to go to home
     position (and switches to idle mode)
 -   @m_class{m-label m-default} **Space** resets the world
