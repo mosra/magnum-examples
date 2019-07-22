@@ -153,10 +153,25 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
         explicit DrawableObject(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes, const std::vector<MaterialData>& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
-        DrawableObject& setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes);
-        DrawableObject& setMaterials(const std::vector<MaterialData>& materials);
-        DrawableObject& setSoftBodies(const std::vector<bool>& softBody);
-        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures);
+        DrawableObject& setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes){
+            _meshes = meshes;
+            return *this;
+        }
+
+        DrawableObject& setMaterials(const std::vector<MaterialData>& materials) {
+            _materials = materials;
+            return *this;
+        }
+
+        DrawableObject& setSoftBodies(const std::vector<bool>& softBody){
+            _isSoftBody = softBody;
+            return *this;
+        }
+
+        DrawableObject& setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures){
+            _textures = std::move(textures);
+            return *this;
+        }
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
@@ -579,23 +594,6 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
         if(_isSoftBody[i])
             GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     }
-}
-
-DrawableObject& DrawableObject::setMeshes(const std::vector<std::reference_wrapper<GL::Mesh>>& meshes) {
-    _meshes = meshes;
-    return *this;
-}
-DrawableObject& DrawableObject::setMaterials(const std::vector<MaterialData>& materials) {
-    _materials = materials;
-    return *this;
-}
-DrawableObject& DrawableObject::setSoftBodies(const std::vector<bool>& softBody) {
-    _isSoftBody = softBody;
-    return *this;
-}
-DrawableObject& DrawableObject::setTextures(std::vector<Containers::Optional<std::reference_wrapper<GL::Texture2D>>>& textures) {
-    _textures = std::move(textures);
-    return *this;
 }
 
 }}
