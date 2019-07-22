@@ -67,7 +67,6 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-dart DartExample.cpp)
 target_include_directories(magnum-dart PUBLIC ${DART_INCLUDE_DIRS} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-# target_compile_options(magnum-dart PUBLIC -march=native -faligned-new)
 target_link_libraries(magnum-dart PRIVATE
     Magnum::Application
     Magnum::MeshTools

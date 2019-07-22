@@ -40,20 +40,23 @@ to create towers of small colored boxes, showcasing the
 @section examples-dart-controls Key controls
 
 -   @m_class{m-label m-default} **Arrow keys** rotate the camera around
--   @m_class{m-label m-default} **R,G,B** make the manipulator to go above the red, green,
-blue box (and switch to control mode)
+-   @m_class{m-label m-default} **R,G,B** make the manipulator to go above the
+    red, green, blue box (and switch to control mode)
 -   @m_class{m-label m-default} **C,O** closes/opens the gripper
--   @m_class{m-label m-default} **D,U,Z,X** make the manipulator to go down, up, left, right
--   @m_class{m-label m-default} **H** makes the manipulator to go to home position (and switches to idle mode)
+-   @m_class{m-label m-default} **D,U,Z,X** make the manipulator to go down,
+    up, left, right
+-   @m_class{m-label m-default} **H** makes the manipulator to go to home
+    position (and switches to idle mode)
 -   @m_class{m-label m-default} **Space** resets the world
 
 @section examples-dart-credits Credits
 
 This example is contributed by [Konstantinos Chatzilygeroudis](http://costashatz.github.io/).
 The example makes use of the DART Physics library, see documentation of the
-@ref DartIntegration namespace for license information. The KUKA manipulator URDF is a modified
-version of the one in the [iiwa_ros](https://github.com/epfl-lasa/iiwa_ros) package. The Robotiq
-URDF is a modified version of the one in the [robotiq_arg85_description](https://github.com/a-price/robotiq_arg85_description)
+@ref DartIntegration namespace for license information. The KUKA manipulator
+URDF is a modified version of the one in the [iiwa_ros](https://github.com/epfl-lasa/iiwa_ros)
+package. The Robotiq URDF is a modified version of the one in the
+[robotiq_arg85_description](https://github.com/a-price/robotiq_arg85_description)
 package.
 
 @section examples-dart-source Source
