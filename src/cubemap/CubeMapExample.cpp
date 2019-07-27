@@ -27,6 +27,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
@@ -46,6 +48,8 @@
 #include "CubeMap.h"
 #include "Reflector.h"
 #include "Types.h"
+
+#include "configure.h"
 
 namespace Magnum { namespace Examples {
 
@@ -67,7 +71,29 @@ class CubeMapExample: public Platform::Application {
 
 using namespace Math::Literals;
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example")) {
+CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    /* Try to locate the bundled images, first in the source directory, then in
+       the installation directory and as a fallback next to the executable */
+    std::string defaultPath;
+    if(Utility::Directory::exists(CUBEMAP_EXAMPLE_DIR))
+        defaultPath = CUBEMAP_EXAMPLE_DIR;
+    else if(Utility::Directory::exists(CUBEMAP_EXAMPLE_INSTALL_DIR))
+        defaultPath = CUBEMAP_EXAMPLE_INSTALL_DIR;
+    else
+        defaultPath = Utility::Directory::path(Utility::Directory::executableLocation());
+
+    /* Finally, provide a way for the user to override the path */
+    Utility::Arguments args;
+    args.addFinalOptionalArgument("path", defaultPath)
+            .setHelp("path", "directory where the +x.jpg, +y.jpg, ... files are")
+        .addSkippedPrefix("magnum", "engine-specific options")
+        .setGlobalHelp("Cube map rendering example")
+        .parse(arguments.argc, arguments.argv);
+
+    /* Create the context after parsing arguments to avoid a flickering window
+       in case parse() exits */
+    create(Configuration{}.setTitle("Magnum Cube Map Example"));
+
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
@@ -88,7 +114,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         importer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &_scene, &_drawables))
+    (new CubeMap(args.value("path"), &_scene, &_drawables))
         ->scale(Vector3(20.0f));
 
     (new Reflector(&_scene, &_drawables))

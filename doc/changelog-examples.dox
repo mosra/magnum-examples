@@ -46,6 +46,9 @@ namespace Magnum {
 -   Switched the @ref examples-motionblur and @ref examples-picking examples
     to use @ref MeshTools::compile() for a clearer and easier-to-understand
     code (see also [mosra/magnum-examples#62](https://github.com/mosra/magnum-examples/pull/62))
+-   The @ref examples-cubemap now tries to find the bundles images first
+    instead of requiring the user to always pass a path (see also
+    [mosra/magnum-examples#44](https://github.com/mosra/magnum-examples/pull/44))
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 

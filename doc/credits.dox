@@ -61,7 +61,8 @@ namespace Magnum {
 -   **Natesh Narain** ([\@nnarain](https://github.com/nnarain)) --- original
     @ref examples-imgui example
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
-    package updates, a PPA repository for stable versions
+    package updates, a PPA repository for stable versions,
+    @ref examples-cubemap improvements
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example
