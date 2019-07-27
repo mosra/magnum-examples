@@ -27,6 +27,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
@@ -47,13 +49,7 @@
 #include "Reflector.h"
 #include "Types.h"
 
-#ifdef MAGNUM_BUILD_STATIC
-/* Import plugins in static build */
-static int importStaticPlugins() {
-    CORRADE_PLUGIN_IMPORT(StbImageImporter)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(importStaticPlugins)
-#endif
+#include "configure.h"
 
 namespace Magnum { namespace Examples {
 
@@ -77,12 +73,37 @@ class CubeMapExample: public Platform::Application {
         Vector2i _previousMousePosition;
 };
 
-CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Cube Map Example").setWindowFlags(Configuration::WindowFlag::Resizable
-    #ifdef CORRADE_TARGET_IOS
-    |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
-    #endif
-    ))
-{
+using namespace Math::Literals;
+
+CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    /* Try to locate the bundled images, first in the source directory, then in
+       the installation directory and as a fallback next to the executable */
+    std::string defaultPath;
+    if(Utility::Directory::exists(CUBEMAP_EXAMPLE_DIR))
+        defaultPath = CUBEMAP_EXAMPLE_DIR;
+    else if(Utility::Directory::exists(CUBEMAP_EXAMPLE_INSTALL_DIR))
+        defaultPath = CUBEMAP_EXAMPLE_INSTALL_DIR;
+    else
+        defaultPath = Utility::Directory::path(Utility::Directory::executableLocation());
+
+    /* Finally, provide a way for the user to override the path */
+    Utility::Arguments args;
+    args.addFinalOptionalArgument("path", defaultPath)
+            .setHelp("path", "directory where the +x.jpg, +y.jpg, ... files are")
+        .addSkippedPrefix("magnum", "engine-specific options")
+        .setGlobalHelp("Cube map rendering example")
+        .parse(arguments.argc, arguments.argv);
+
+    /* Create the context after parsing arguments to avoid a flickering window
+       in case parse() exits */
+    create(Configuration{}
+        .setTitle("Magnum Cube Map Example")
+        .setWindowFlags(Configuration::WindowFlag::Resizable
+            #ifdef CORRADE_TARGET_IOS
+            |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+            #endif
+        ));
+
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
@@ -91,7 +112,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         ->translate(Vector3::zAxis(3.0f));
     (_camera = new SceneGraph::Camera3D(*_cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(55.0f), 1.0f, 0.001f, 100.0f))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(55.0_degf, 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Load image importer plugin */
@@ -103,7 +124,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         importer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(arguments.argc == 2 ? arguments.argv[1] : "", &_scene, &_drawables))
+    (new CubeMap(args.value("path"), &_scene, &_drawables))
         ->scale(Vector3(20.0f));
 
     (new Reflector(&_scene, &_drawables))
@@ -112,7 +133,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     (new Reflector(&_scene, &_drawables))
         ->scale(Vector3(0.3f))
-        .rotate(Deg(37.0f), Vector3::xAxis())
+        .rotate(37.0_degf, Vector3::xAxis())
         .translate(Vector3::xAxis(0.3f));
 
     /* We don't need the importer anymore */
@@ -134,15 +155,15 @@ void CubeMapExample::drawEvent() {
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
     if(event.key() == KeyEvent::Key::Up)
-        _cameraObject->rotate(Deg(-10.0f), _cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(-10.0_degf, _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Down)
-        _cameraObject->rotate(Deg(10.0f), _cameraObject->transformation().right().normalized());
+        _cameraObject->rotate(10.0_degf, _cameraObject->transformation().right().normalized());
 
     else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
         Float translationY = _cameraObject->transformation().translation().y();
         _cameraObject->translate(Vector3::yAxis(-translationY))
-            .rotateY(event.key() == KeyEvent::Key::Left ? Deg(10.0f) : Deg(-10.0f))
+            .rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
             .translate(Vector3::yAxis(translationY));
 
     } else return;

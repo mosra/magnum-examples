@@ -59,7 +59,6 @@ class PrimitivesExample: public Platform::Application {
         void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
-        GL::Buffer _indexBuffer, _vertexBuffer;
         GL::Mesh _mesh;
         Shaders::Phong _shader;
 
@@ -74,28 +73,29 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments):
         #ifndef CORRADE_TARGET_ANDROID
         .setWindowFlags(Configuration::WindowFlag::Resizable)
         #endif
-        },
-    _indexBuffer{GL::Buffer::TargetHint::ElementArray}
+        }
 {
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
     const Trade::MeshData3D cube = Primitives::cubeSolid();
 
-    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)));
+    GL::Buffer vertices;
+    vertices.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)));
 
     Containers::Array<char> indexData;
     MeshIndexType indexType;
     UnsignedInt indexStart, indexEnd;
     std::tie(indexData, indexType, indexStart, indexEnd) =
         MeshTools::compressIndices(cube.indices());
-    _indexBuffer.setData(indexData);
+    GL::Buffer indices{GL::Buffer::TargetHint::ElementArray};
+    indices.setData(indexData);
 
     _mesh.setPrimitive(cube.primitive())
         .setCount(cube.indices().size())
-        .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{},
-                                           Shaders::Phong::Normal{})
-        .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
+        .addVertexBuffer(std::move(vertices), 0, Shaders::Phong::Position{},
+                                                 Shaders::Phong::Normal{})
+        .setIndexBuffer(std::move(indices), 0, indexType, indexStart, indexEnd);
 
     _transformation =
         Matrix4::rotationX(30.0_degf)*Matrix4::rotationY(40.0_degf);

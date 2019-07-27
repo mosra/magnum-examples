@@ -60,14 +60,12 @@ a custom shader and added @ref GL::Texture2D.
 
 @section examples-textured-triangle-shader Textured triangle shader
 
-Let's start with the shader. It's practically a simplified version of textured
-@ref Shaders::Flat2D, written for OpenGL 3.3 without bothering about backwards
-compatibility. The shader takes 2D vertex position and 2D texture coordinates.
-We declare both attributes as @ref Vector2; assign vertex position to location
-zero and texture coordinates to location one. The locations can be chosen
-pretty arbitrarily, but location zero should be always occupied. It's also good
-to make attribute declarations compatible between shaders so you can use a mesh
-configured for one shader with another shader.
+Let's start with the shader. The shader takes 2D vertex position and 2D texture
+coordinates. We declare both attributes as @ref Vector2; assign vertex position
+to location zero and texture coordinates to location one. The locations can be
+chosen pretty arbitrarily, but location zero should be always occupied. It's
+also good to make attribute declarations compatible between shaders so you can
+use a mesh configured for one shader with another shader.
 
 Next to these two attributes it also needs a uniform for the base color and a
 texture binding. We will provide convenience public API for setting these two
@@ -124,6 +122,16 @@ with color we specified in the uniform:
 @skip uniform
 @until }
 
+@m_class{m-block m-success}
+
+@par Builtin textured shader
+    While the main purpose of this example is to show how to create custom
+    shaders, please note that there's a builtin equivalent of the above shader
+    as well --- @ref Shaders::Flat2D. Pass @ref Shaders::Flat2D::Flag::Textured
+    to its constructor to get a textured version. It also contains setters for
+    passing transformation matrices, those were omitted from the code above to
+    keep the example short and simple.
+
 @section examples-textured-triangle-setup Setting up the mesh and texture
 
 As specified in the shader above, we use @ref Vector2 for both 2D vertex
@@ -137,7 +145,7 @@ positions and 2D texture coordinates:
 We then fill the buffer, configure mesh primitive and vertex count and specify
 attribute locations in the buffer for use with our shader:
 
-@skipline _buffer
+@skipline GL::Buffer
 @until addVertexBuffer
 @until }
 @until }

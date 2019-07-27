@@ -61,12 +61,14 @@ class MotionBlurExample: public Platform::Application {
         Object3D* spheres[3];
 };
 
+using namespace Math::Literals;
+
 MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Application(arguments, Configuration().setTitle("Magnum Motion Blur Example")) {
     (cameraObject = new Object3D(&scene))
         ->translate(Vector3::zAxis(3.0f));
     (camera = new MotionBlurCamera(*cameraObject))
         ->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(Deg(35.0f), 1.0f, 0.001f, 100))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100))
         .setViewport(GL::defaultFramebuffer.viewport().size());
     GL::Renderer::setClearColor({0.1f, 0.1f, 0.1f});
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -75,37 +77,37 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
     mesh = MeshTools::compile(Primitives::icosphereSolid(3));
 
     /* Add spheres to the scene */
-    new Icosphere(&mesh, &shader, {1.0f, 1.0f, 0.0f}, &scene, &drawables);
+    new Icosphere(&mesh, &shader, 0xffff00_rgbf, &scene, &drawables);
 
     spheres[0] = new Object3D(&scene);
-    (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+    (new Icosphere(&mesh, &shader, 0xff0000_rgbf, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f));
-    (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+    (new Icosphere(&mesh, &shader, 0xff0000_rgbf, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        .rotateZ(Deg(120.0f));
-    (new Icosphere(&mesh, &shader, {1.0f, 0.0f, 0.0f}, spheres[0], &drawables))
+        .rotateZ(120.0_degf);
+    (new Icosphere(&mesh, &shader, 0xff0000_rgbf, spheres[0], &drawables))
         ->translate(Vector3::yAxis(0.25f))
-        .rotateZ(Deg(240.0f));
+        .rotateZ(240.0_degf);
 
     spheres[1] = new Object3D(&scene);
-    (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+    (new Icosphere(&mesh, &shader, 0x00ff00_rgbf, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f));
-    (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+    (new Icosphere(&mesh, &shader, 0x00ff00_rgbf, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        .rotateZ(Deg(120.0f));
-    (new Icosphere(&mesh, &shader, {0.0f, 1.0f, 0.0f}, spheres[1], &drawables))
+        .rotateZ(120.0_degf);
+    (new Icosphere(&mesh, &shader, 0x00ff00_rgbf, spheres[1], &drawables))
         ->translate(Vector3::yAxis(0.50f))
-        .rotateZ(Deg(240.0f));
+        .rotateZ(240.0_degf);
 
     spheres[2] = new Object3D(&scene);
-    (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+    (new Icosphere(&mesh, &shader, 0x0000ff_rgbf, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f));
-    (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+    (new Icosphere(&mesh, &shader, 0x0000ff_rgbf, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        .rotateZ(Deg(120.0f));
-    (new Icosphere(&mesh, &shader, {0.0f, 0.0f, 1.0f}, spheres[2], &drawables))
+        .rotateZ(120.0_degf);
+    (new Icosphere(&mesh, &shader, 0x0000ff_rgbf, spheres[2], &drawables))
         ->translate(Vector3::yAxis(0.75f))
-        .rotateZ(Deg(240.0f));
+        .rotateZ(240.0_degf);
 
     setSwapInterval(16);
     setMinimalLoopPeriod(40);
@@ -121,10 +123,10 @@ void MotionBlurExample::drawEvent() {
     camera->draw(drawables);
     swapBuffers();
 
-    cameraObject->rotateX(Deg(0.5f));
-    spheres[0]->rotateZ(Deg(-1.0f));
-    spheres[1]->rotateZ(Deg(0.5f));
-    spheres[2]->rotateZ(Deg(-0.25f));
+    cameraObject->rotateX(0.5_degf);
+    spheres[0]->rotateZ(-1.0_degf);
+    spheres[1]->rotateZ(0.5_degf);
+    spheres[2]->rotateZ(-0.25_degf);
     redraw();
 }
 

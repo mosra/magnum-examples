@@ -58,6 +58,10 @@ if(WITH_CUBEMAP_EXAMPLE)
     add_subdirectory(cubemap)
 endif()
 
+if(WITH_DART_EXAMPLE)
+    add_subdirectory(dart)
+endif()
+
 if(WITH_IMGUI_EXAMPLE)
     add_subdirectory(imgui)
 endif()

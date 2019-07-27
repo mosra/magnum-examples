@@ -105,6 +105,7 @@ cmake .. \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DIMGUI_DIR=$HOME/imgui \
     -DWITH_BULLET=OFF \
+    -DWITH_DART=OFF \
     -DWITH_IMGUI=$TARGET_GLES3 \
     -DWITH_OVR=OFF \
     -G Ninja

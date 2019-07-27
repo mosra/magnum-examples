@@ -57,7 +57,6 @@ class TexturedTriangleExample: public Platform::Application {
         void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
 
-        GL::Buffer _buffer;
         GL::Mesh _mesh;
         Shaders::Flat2D _shader;
         GL::Texture2D _texture;
@@ -69,7 +68,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         #ifndef CORRADE_TARGET_ANDROID
         .setWindowFlags(Configuration::WindowFlag::Resizable)
         #endif
-        },
+    },
     _shader{Shaders::Flat2D::Flag::Textured}
 {
     struct TriangleVertex {
@@ -77,21 +76,23 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         Vector2 textureCoordinates;
     };
     const TriangleVertex data[]{
-        {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left vertex position and texture coordinate */
-        {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right vertex position and texture coordinate */
-        {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top vertex position and texture coordinate */
+        {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left position and texture coordinate */
+        {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right position and texture coordinate */
+        {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top position and texture coordinate */
     };
 
-    _buffer.setData(data, GL::BufferUsage::StaticDraw);
+    GL::Buffer buffer;
+    buffer.setData(data);
     _mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(_buffer, 0,
+        .addVertexBuffer(std::move(buffer), 0,
             Shaders::Flat2D::Position{},
             Shaders::Flat2D::TextureCoordinates{});
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TgaImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer =
+        manager.loadAndInstantiate("TgaImporter");
     if(!importer) std::exit(1);
 
     /* Load the texture */

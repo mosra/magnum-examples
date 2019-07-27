@@ -115,9 +115,9 @@ The following consist of documented source code only:
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html box2d.png
-@subpage examples-box2d @m_class{m-label m-warning} **physics** @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-box2d
+@image html leapmotion.png
+@subpage examples-leapmotion @m_class{m-label m-primary} **vr** \n
+@copybrief examples-leapmotion
 @m_enddiv
 
 @m_div{m-clearfix-l m-show-m} @m_enddiv
@@ -131,14 +131,15 @@ The following consist of documented source code only:
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html cubemap.jpg
-@subpage examples-cubemap \n @copybrief examples-cubemap
+@image html dart.png width=400px
+@subpage examples-dart @m_class{m-label m-warning} **physics**
+\n @copybrief examples-dart
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html leapmotion.png
-@subpage examples-leapmotion @m_class{m-label m-primary} **vr** \n
-@copybrief examples-leapmotion
+@image html box2d.png
+@subpage examples-box2d @m_class{m-label m-warning} **physics** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-box2d
 @m_enddiv
 
 @endparblock
@@ -169,11 +170,16 @@ The following consist of documented source code only:
 @m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html shadows2.png
-@subpage examples-shadows \n @copybrief examples-shadows
+@image html cubemap.jpg
+@subpage examples-cubemap \n @copybrief examples-cubemap
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html shadows2.png
+@subpage examples-shadows \n @copybrief examples-shadows
+@m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html text.png
@@ -181,10 +187,22 @@ The following consist of documented source code only:
 @copybrief examples-text
 @m_enddiv
 
-@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@endparblock
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
 @image html imgui.png
 @subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-imgui
+@m_enddiv
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@image html triangle-vulkan.png
+@subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
+\n @copybrief examples-triangle-vulkan
 @m_enddiv
 
 @endparblock
@@ -202,18 +220,6 @@ The following consist of documented source code only:
 @image html webvr.png
 @subpage examples-webvr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-webvr
-@m_enddiv
-
-@endparblock
-
-@m_class{m-row m-container-inflate}
-
-@parblock
-
-@m_div{m-col-m-4 m-push-m-4 m-col-s-6 m-push-s-3 m-text-center}
-@image html triangle-vulkan.png
-@subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
-\n @copybrief examples-triangle-vulkan
 @m_enddiv
 
 @endparblock

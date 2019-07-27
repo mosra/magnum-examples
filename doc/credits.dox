@@ -49,6 +49,8 @@ namespace Magnum {
     @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
     @ref examples-webvr, @ref examples-leapmotion and @ref examples-imgui
     examples, porting to @ref Platform::EmscriptenApplication
+-   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
+    --- the @ref examples-dart example
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
     bugreports, buildsystem fixes
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
@@ -59,7 +61,8 @@ namespace Magnum {
 -   **Natesh Narain** ([\@nnarain](https://github.com/nnarain)) --- original
     @ref examples-imgui example
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
-    package updates, a PPA repository for stable versions
+    package updates, a PPA repository for stable versions,
+    @ref examples-cubemap improvements
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example
