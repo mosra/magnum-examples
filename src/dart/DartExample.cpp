@@ -245,9 +245,10 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
 
     /* Finally, provide a way for the user to override the model directory */
     Utility::Arguments args;
-    args.addOption("urdf", resPath).setHelp("urdf", "directory where is iiwa14_simple.urdf")
+    args.addFinalOptionalArgument("urdf", resPath)
+            .setHelp("urdf", "directory where is iiwa14_simple.urdf")
         .addSkippedPrefix("magnum", "engine-specific options")
-        .setGlobalHelp("Controlls a robotic manipulator with DART")
+        .setGlobalHelp("Controls a robotic manipulator with DART")
         .parse(arguments.argc, arguments.argv);
     /* DART can't handle relative paths, so prepend CWD to them if needed */
     resPath = Utility::Directory::join(Utility::Directory::current(), args.value("urdf"));
