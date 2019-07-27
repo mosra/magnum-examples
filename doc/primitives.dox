@@ -44,7 +44,7 @@ it using mouse.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
-@section examples-primitives-setup Setting up and preparing the mesh
+@section examples-primitives-setup Setting up
 
 This example makes use of imported 3D mesh data, processes them and renders
 using a Phong shader.
@@ -65,7 +65,7 @@ and store transformation/projection @ref Math::Matrix4 "matrices" plus current
 @skip class PrimitivesExample
 @until };
 
-Because we are displaying 3D scene, we need to enable depth test to have the
+Because we are displaying a 3D scene, we need to enable depth test to have the
 cube rendered in proper Z-order. Enabling face culling is not needed for proper
 rendering, but it will speed things up as only front-facing faces will be
 rendered.
@@ -73,27 +73,29 @@ rendered.
 @skip PrimitivesExample::PrimitivesExample
 @until GL::Renderer::enable(GL::Renderer::Feature::FaceCulling
 
+@section examples-primitives-mesh Preparing the mesh
+
 We now use the pre-made @ref Primitives::cubeSolid() "cube primitive" and
 create a mesh from it. The mesh is indexed and contains position and normal
-data. As said earlier, interleaving the data gives us best memory access
+data. As said earlier, interleaving the data gives us the best memory access
 performance. We can do it by hand as in the previous example, but using
 @ref MeshTools::interleave() is much more convenient. We upload the interleaved
-data directly to vertex buffer.
+data directly to a vertex buffer.
 
 @skip Trade::MeshData3D
 @until vertices.setData(
 
-Why do we need indexed mesh and what it actually is? In most meshes the
+Why do we need an indexed mesh and what it actually is? In most meshes the
 same vertex data are shared among more than one vertex, even a simple square
 consists of two triangles sharing two adjacent vertices. To save precious GPU
-memory, the mesh can be indexed, i.e. containing buffer with unique vertex data
-and index buffer telling which data belong to which vertex. The indices are by
-default just 32-bit integers. But most meshes don't need full 32-bit range to
-index vertex data --- our mesh has only 36 unique vertices, thus even the
-smallest possible 8-bit range is large enough. @ref MeshTools::compressIndices()
-again does all the boring work for us --- it checks index range and creates
-an array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
-indices based on that.
+memory, the mesh can be indexed, i.e. containing a buffer with unique vertex
+data and an index buffer telling which data belong to which vertex. The indices
+are by default just 32-bit integers. But most meshes don't need the full 32-bit
+range to index vertex data --- our mesh has only 36 unique vertices, thus even
+the smallest possible 8-bit range is large enough.
+@ref MeshTools::compressIndices() again does all the boring work for us --- it
+checks index range and creates an array consisting of @ref UnsignedByte,
+@ref UnsignedShort or @ref UnsignedInt indices based on that.
 
 @skip Containers::Array<char>
 @until indices.
@@ -109,7 +111,7 @@ data are used.
 
 @m_class{m-block m-success}
 
-@par Using other primitives
+@par Handling generic meshes
     Please note that the above isn't a one-size-fits-all recipe. Other
     primitives may not be indexed, some (such as wireframe primitives) may not
     contain normals and may be suited for use with different shaders. Covering
@@ -117,10 +119,22 @@ data are used.
     particular primitives in the @ref Primitives namespace, the @ref MeshTools
     functions, the @ref Shaders namespace and the @ref GL::Mesh class for the
     full picture.
+@par
+    While the purpose of this example is to explain the low-level APIs for
+    building vertex and index buffers, all code from this section could be
+    simplified to a single line of code with @ref MeshTools::compile() --- it's
+    a generic utility that prepares the mesh for use with any of the builtin
+    shaders. It's very convenient and probably enough for many use cases, but
+    you give up access to the buffers and lose control over the data layout in
+    exchange.
+@par
+    @code{.cpp}
+    _mesh = MeshTools::compile(Primitives::cubeSolid());
+    @endcode
 
-We now specify the initial transformation, projection and color. See
-@ref matrix-vector and @ref transformations for more thorough introduction to
-transformations.
+As a final step in the constructor we specify the initial transformation,
+projection and color. See @ref matrix-vector and @ref transformations for a
+more thorough introduction to transformations.
 
 @skip _transformation =
 @until }
