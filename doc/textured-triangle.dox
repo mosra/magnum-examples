@@ -137,7 +137,7 @@ positions and 2D texture coordinates:
 We then fill the buffer, configure mesh primitive and vertex count and specify
 attribute locations in the buffer for use with our shader:
 
-@skipline _buffer
+@skipline GL::Buffer
 @until addVertexBuffer
 @until }
 @until }

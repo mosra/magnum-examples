@@ -58,9 +58,8 @@ using a Phong shader.
     annoying at first, but helps to keep your build times short. See
     @ref compilation-speedup for more information.
 
-In our class we now need two buffers instead of one. Additionaly for user
-interactivity we need to implement mouse event handlers and store
-transformation/projection @ref Math::Matrix4 "matrices" plus current
+This time, for user interactivity we need to implement mouse event handlers
+and store transformation/projection @ref Math::Matrix4 "matrices" plus current
 @ref Math::Color3 "color".
 
 @skip class PrimitivesExample
@@ -82,7 +81,7 @@ performance. We can do it by hand as in the previous example, but using
 data directly to vertex buffer.
 
 @skip Trade::MeshData3D
-@until _vertexBuffer.setData(
+@until vertices.setData(
 
 Why do we need indexed mesh and what it actually is? In most meshes the
 same vertex data are shared among more than one vertex, even a simple square
@@ -97,7 +96,7 @@ an array consisting of @ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt
 indices based on that.
 
 @skip Containers::Array<char>
-@until _indexBuffer.
+@until indices.
 
 Everything is now ready for configuring the mesh. We set the primitive type,
 index count, add our vertex buffer and specify the index buffer. The `indexStart`
