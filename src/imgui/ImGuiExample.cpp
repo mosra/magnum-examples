@@ -125,7 +125,7 @@ void ImGuiExample::drawEvent() {
 
     /* 2. Show another simple window, now using an explicit Begin/End pair */
     if(_showAnotherWindow) {
-        ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiCond_FirstUseEver);
         ImGui::Begin("Another Window", &_showAnotherWindow);
         ImGui::Text("Hello");
         ImGui::End();
@@ -134,7 +134,7 @@ void ImGuiExample::drawEvent() {
     /* 3. Show the ImGui test window. Most of the sample code is in
        ImGui::ShowTestWindow() */
     if(_showTestWindow) {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
         ImGui::ShowTestWindow();
     }
 
