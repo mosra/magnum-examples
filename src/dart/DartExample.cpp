@@ -412,7 +412,7 @@ void DartExample::drawEvent() {
     /* Update graphic meshes/materials and render */
     _dartWorld->refresh();
 
-    /* For each update object */
+    /* For each updated object */
     for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()) {
         /* Get material information */
         std::vector<MaterialData> materials;
