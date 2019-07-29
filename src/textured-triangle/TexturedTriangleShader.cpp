@@ -56,7 +56,7 @@ TexturedTriangleShader::TexturedTriangleShader() {
 
     _colorUniform = uniformLocation("color");
 
-    setUniform(uniformLocation("textureData"), TextureLayer);
+    setUniform(uniformLocation("textureData"), TextureUnit);
 }
 
 }}

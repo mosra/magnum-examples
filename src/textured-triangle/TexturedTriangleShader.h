@@ -48,12 +48,12 @@ class TexturedTriangleShader: public GL::AbstractShaderProgram {
         }
 
         TexturedTriangleShader& bindTexture(GL::Texture2D& texture) {
-            texture.bind(TextureLayer);
+            texture.bind(TextureUnit);
             return *this;
         }
 
     private:
-        enum: Int { TextureLayer = 0 };
+        enum: Int { TextureUnit = 0 };
 
         Int _colorUniform;
 };
