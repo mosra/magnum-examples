@@ -152,7 +152,7 @@ struct MaterialData{
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit DrawableObject(ViewerResourceManager& resourceManager, std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         DrawableObject& setMeshes(std::vector<Containers::Reference<GL::Mesh>>&& meshes){
             _meshes = std::move(meshes);
@@ -452,7 +452,7 @@ void DartExample::drawEvent() {
            anywhere else anymore, so move them in to avoid copies. */
         auto it = _drawableObjects.insert(std::make_pair(&object, nullptr));
         if(it.second) {
-            auto drawableObj = new DrawableObject{
+            auto drawableObj = new DrawableObject{_resourceManager,
                 std::move(meshes), std::move(materials),
                 static_cast<Object3D*>(&(object.object())), &_drawables};
             drawableObj->setSoftBodies(std::move(isSoftBody));
@@ -583,11 +583,11 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-DrawableObject::DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
+DrawableObject::DrawableObject(ViewerResourceManager& resourceManager, std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
 Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _colorShader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
-    _textureShader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")},
+    _colorShader{resourceManager.get<Shaders::Phong>("color")},
+    _textureShader{resourceManager.get<Shaders::Phong>("texture")},
     _meshes{std::move(meshes)},
     _materials{std::move(materials)}
 {
