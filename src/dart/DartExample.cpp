@@ -193,7 +193,7 @@ class DartExample: public Platform::Application {
         explicit DartExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
@@ -389,10 +389,10 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     redraw();
 }
 
-void DartExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void DartExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
-    _camera->setViewport(size);
+    _camera->setViewport(event.framebufferSize());
 }
 
 void DartExample::drawEvent() {
