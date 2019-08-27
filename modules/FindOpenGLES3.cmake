@@ -10,7 +10,10 @@
 # Additionally these variables are defined for internal usage:
 #
 #  OPENGLES3_LIBRARY        - OpenGL ES 3 library
-#  OPENGLES3_INCLUDE_DIR    - Include dir
+#
+# Please note this find module is tailored especially for the needs of Magnum.
+# In particular, it depends on its platform definitions and doesn't look for
+# OpenGL ES includes as Magnum has its own, generated using flextGL.
 #
 
 #
@@ -38,9 +41,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# In Emscripten OpenGL ES 3 is linked automatically, thus no need to find the
-# library.
-if(NOT CORRADE_TARGET_EMSCRIPTEN)
+# Under Emscripten, GL is linked implicitly. With MINIMAL_RUNTIME you need to
+# specify -lGL. Simply set the library name to that.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(OPENGLES3_LIBRARY GL CACHE STRING "Path to a library." FORCE)
+else()
     find_library(OPENGLES3_LIBRARY NAMES
         GLESv3
 
@@ -53,40 +58,25 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
 
         # iOS
         OpenGLES)
-    set(OPENGLES3_LIBRARY_NEEDED OPENGLES3_LIBRARY)
 endif()
-
-# Include dir
-find_path(OPENGLES3_INCLUDE_DIR NAMES
-    GLES3/gl3.h
-
-    # iOS
-    ES3/gl.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
-    ${OPENGLES3_LIBRARY_NEEDED}
-    OPENGLES3_INCLUDE_DIR)
+    OPENGLES3_LIBRARY)
 
 if(NOT TARGET OpenGLES3::OpenGLES3)
-    if(OPENGLES3_LIBRARY_NEEDED)
-        # Work around BUGGY framework support on macOS
-        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-        if(CORRADE_TARGET_APPLE AND ${OPENGLES3_LIBRARY} MATCHES "\\.framework$")
-            add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
-            set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${OPENGLES3_LIBRARY})
-        else()
-            add_library(OpenGLES3::OpenGLES3 UNKNOWN IMPORTED)
-            set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
-                IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
-        endif()
-    else()
+    # Work around BUGGY framework support on macOS. Do this also in case of
+    # Emscripten, since there we don't have a location either.
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if((CORRADE_TARGET_APPLE AND ${OPENGLES3_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
+        set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${OPENGLES3_LIBRARY})
+    else()
+        add_library(OpenGLES3::OpenGLES3 UNKNOWN IMPORTED)
+        set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
+            IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
     endif()
-
-    set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
-        INTERFACE_INCLUDE_DIRECTORIES ${OPENGLES3_INCLUDE_DIR})
 
     # Emscripten needs a special flag to use WebGL 2. CMake 3.13 allows to set
     # this via INTERFACE_LINK_OPTIONS, for older versions we modify the global
@@ -98,3 +88,5 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
             INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
     endif()
 endif()
+
+mark_as_advanced(OPENGLES3_LIBRARY)
