@@ -29,6 +29,7 @@
 
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
