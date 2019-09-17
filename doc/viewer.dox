@@ -144,9 +144,9 @@ texture properties.
 For scene import we are using the @ref Trade::AnySceneImporter "AnySceneImporter"
 plugin, which detects format based or file extension and then redirects the
 actual loading to a plugin dedicated for given format. So, for example, if you
-open `scene.ogex`, the opening is done through @ref Trade::OpenGexImporter "OpenGexImporter",
-file named `mesh.obj` is opened using @ref Trade::ObjImporter "ObjImporter"
-etc. Sometimes there is more than one possible choice (for example glTF files
+open `mesh.obj`, it'll be opened using @ref Trade::ObjImporter "ObjImporter",
+if you open `mesh.ply`, it'll go to @ref Trade::StanfordImporter "StanfordImporter",
+etc. Sometimes there is more than one possible choice (glTF files in particular
 can be opened using both @ref Trade::TinyGltfImporter "TinyGltfImporter" and
 @ref Trade::AssimpImporter "AssimpImporter") and so above we made it possible
 to override the used importer plugin using the @cpp "importer" @ce command-line

@@ -57,4 +57,4 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Trade)
 
 install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-install(FILES scene.ogex DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
+install(FILES scene.glb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
