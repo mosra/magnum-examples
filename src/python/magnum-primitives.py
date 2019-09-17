@@ -30,13 +30,14 @@
 #
 
 from magnum import *
-from magnum import gl, meshtools, platform, primitives, shaders
+from magnum import gl, meshtools, primitives, shaders
+from magnum.platform.sdl2 import Application
 
-class PrimitivesExample(platform.Application):
+class PrimitivesExample(Application):
     def __init__(self):
         configuration = self.Configuration()
         configuration.title = "Magnum Python Primitives Example"
-        platform.Application.__init__(self, configuration)
+        Application.__init__(self, configuration)
 
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)
@@ -69,15 +70,15 @@ class PrimitivesExample(platform.Application):
         self._mesh.draw(self._shader)
         self.swap_buffers()
 
-    def mouse_release_event(self, event: platform.Application.MouseEvent):
+    def mouse_release_event(self, event: Application.MouseEvent):
         self._color = Color3.from_hsv(self._color.hue() + Deg(50.0), 1.0, 1.0)
         self.redraw()
 
-    def mouse_move_event(self, event: platform.Application.MouseMoveEvent):
+    def mouse_move_event(self, event: Application.MouseMoveEvent):
         if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
             delta = 1.0*(
                 Vector2(event.position - self._previous_mouse_position)/
-                Vector2(self.window_size()))
+                Vector2(self.window_size))
             self._transformation = (
                 Matrix4.rotation_x(Rad(delta.y))@
                 self._transformation@

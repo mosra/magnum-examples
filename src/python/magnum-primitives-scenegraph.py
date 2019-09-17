@@ -30,7 +30,8 @@
 #
 
 from magnum import *
-from magnum import gl, meshtools, platform, primitives, scenegraph, shaders
+from magnum import gl, meshtools, primitives, scenegraph, shaders
+from magnum.platform.sdl2 import Application
 from magnum.scenegraph.matrix import Scene3D, Object3D
 
 class CubeDrawable(scenegraph.Drawable3D):
@@ -54,11 +55,11 @@ class CubeDrawable(scenegraph.Drawable3D):
         self._shader.projection_matrix = camera.projection_matrix
         self._mesh.draw(self._shader)
 
-class PrimitivesSceneGraphExample(platform.Application):
+class PrimitivesSceneGraphExample(Application):
     def __init__(self):
         configuration = self.Configuration()
         configuration.title = "Magnum Python Primitives + SceneGraph Example"
-        platform.Application.__init__(self, configuration)
+        Application.__init__(self, configuration)
 
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)
@@ -68,14 +69,14 @@ class PrimitivesSceneGraphExample(platform.Application):
         self._drawables = scenegraph.DrawableGroup3D()
 
         # Camera setup
-        camera_object = Object3D(self._scene)
+        camera_object = Object3D(parent=self._scene)
         camera_object.translate(Vector3.z_axis(10.0))
         self._camera = scenegraph.Camera3D(camera_object)
         self._camera.projection_matrix = Matrix4.perspective_projection(
             fov=Deg(35.0), aspect_ratio=1.33333, near=0.01, far=100.0)
 
         # Cube object and drawable
-        self._cube = Object3D(self._scene)
+        self._cube = Object3D(parent=self._scene)
         self._cube.rotate_y(Deg(40.0))
         self._cube.rotate_x(Deg(30.0))
         self._cube_drawable = CubeDrawable(self._cube, self._drawables,
@@ -91,16 +92,16 @@ class PrimitivesSceneGraphExample(platform.Application):
         self._camera.draw(self._drawables)
         self.swap_buffers()
 
-    def mouse_release_event(self, event: platform.Application.MouseEvent):
+    def mouse_release_event(self, event: Application.MouseEvent):
         self._cube_drawable.color = Color3.from_hsv(
             self._cube_drawable.color.hue() + Deg(50.0), 1.0, 1.0)
         self.redraw()
 
-    def mouse_move_event(self, event: platform.Application.MouseMoveEvent):
+    def mouse_move_event(self, event: Application.MouseMoveEvent):
         if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
             delta = 1.0*(
                 Vector2(event.position - self._previous_mouse_position)/
-                Vector2(self.window_size()))
+                Vector2(self.window_size))
             self._cube.rotate_y_local(Rad(delta.x))
             self._cube.rotate_x(Rad(delta.y))
             self.redraw()
