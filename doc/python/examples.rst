@@ -62,3 +62,17 @@ ownership, as the reference counting handles most of it.
 .. include:: ../../src/python/magnum-primitives-scenegraph.py
     :code: py
     :start-line: 31
+
+`Model viewer`_
+===============
+
+.. image:: ../viewer.png
+
+Scene graph, resource management and model importing. Goal is to be equivalent
+to :dox:`the C++ version <examples-viewer>` except that right now it imports
+the meshes directly by name as the full scene hierarchy import APIs from
+:dox:`Trade::AbstractImporter` are not exposed yet.
+
+.. include:: ../../src/python/magnum-viewer.py
+    :code: py
+    :start-line: 31
