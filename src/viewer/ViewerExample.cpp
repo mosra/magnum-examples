@@ -31,6 +31,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
@@ -154,14 +155,14 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load a scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("OpenGexImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TinyGltfImporter");
     if(!importer) std::exit(1);
 
-    Debug{} << "Opening file scene.ogex";
+    Debug{} << "Opening file scene.glb";
 
     /* Load file */
     Utility::Resource rs("viewer-data");
-    if(!importer->openData(rs.getRaw("scene.ogex")))
+    if(!importer->openData(rs.getRaw("scene.glb")))
         std::exit(4);
 
     /* Load all textures. Textures that fail to load will be NullOpt. */

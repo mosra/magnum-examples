@@ -124,14 +124,14 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         importer.release(), ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Add objects to scene */
-    (new CubeMap(args.value("path"), &_scene, &_drawables))
+    (new CubeMap(_resourceManager, args.value("path"), &_scene, &_drawables))
         ->scale(Vector3(20.0f));
 
-    (new Reflector(&_scene, &_drawables))
+    (new Reflector(_resourceManager, &_scene, &_drawables))
         ->scale(Vector3(0.5f))
         .translate(Vector3::xAxis(-0.5f));
 
-    (new Reflector(&_scene, &_drawables))
+    (new Reflector(_resourceManager, &_scene, &_drawables))
         ->scale(Vector3(0.3f))
         .rotate(37.0_degf, Vector3::xAxis())
         .translate(Vector3::xAxis(0.3f));

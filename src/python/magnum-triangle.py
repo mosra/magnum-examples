@@ -32,13 +32,14 @@
 import array
 
 from magnum import *
-from magnum import gl, platform, shaders
+from magnum import gl, shaders
+from magnum.platform.sdl2 import Application
 
-class TriangleExample(platform.Application):
+class TriangleExample(Application):
     def __init__(self):
         configuration = self.Configuration()
         configuration.title = "Magnum Python Triangle Example"
-        platform.Application.__init__(self, configuration)
+        Application.__init__(self, configuration)
 
         buffer = gl.Buffer()
         buffer.set_data(array.array('f', [

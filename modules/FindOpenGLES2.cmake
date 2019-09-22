@@ -10,7 +10,10 @@
 # Additionally these variables are defined for internal usage:
 #
 #  OPENGLES2_LIBRARY        - OpenGL ES 2 library
-#  OPENGLES2_INCLUDE_DIR    - Include dir
+#
+# Please note this find module is tailored especially for the needs of Magnum.
+# In particular, it depends on its platform definitions and doesn't look for
+# OpenGL ES includes as Magnum has its own, generated using flextGL.
 #
 
 #
@@ -38,9 +41,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# In Emscripten OpenGL ES 2 is linked automatically, thus no need to find the
-# library.
-if(NOT CORRADE_TARGET_EMSCRIPTEN)
+# Under Emscripten, GL is linked implicitly. With MINIMAL_RUNTIME you need to
+# specify -lGL. Simply set the library name to that.
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(OPENGLES2_LIBRARY GL CACHE STRING "Path to a library." FORCE)
+else()
     find_library(OPENGLES2_LIBRARY NAMES
         GLESv2
 
@@ -49,38 +54,25 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
 
         # iOS
         OpenGLES)
-    set(OPENGLES2_LIBRARY_NEEDED OPENGLES2_LIBRARY)
 endif()
-
-# Include dir
-find_path(OPENGLES2_INCLUDE_DIR NAMES
-    GLES2/gl2.h
-
-    # iOS
-    ES2/gl.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG
-    ${OPENGLES2_LIBRARY_NEEDED}
-    OPENGLES2_INCLUDE_DIR)
+    OPENGLES2_LIBRARY)
 
 if(NOT TARGET OpenGLES2::OpenGLES2)
-    if(OPENGLES2_LIBRARY_NEEDED)
-        # Work around BUGGY framework support on macOS
-        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-        if(CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$")
-            add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
-            set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
-        else()
-            add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
-            set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
-                IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
-        endif()
-    else()
+    # Work around BUGGY framework support on macOS. Do this also in case of
+    # Emscripten, since there we don't have a location either.
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if((CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
+        set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
+    else()
+        add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
+        set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
+            IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
     endif()
-
-    set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
-        INTERFACE_INCLUDE_DIRECTORIES ${OPENGLES2_INCLUDE_DIR})
 endif()
+
+mark_as_advanced(OPENGLES2_LIBRARY)

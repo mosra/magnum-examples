@@ -54,9 +54,7 @@
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
-    CubeMapResourceManager& resourceManager = CubeMapResourceManager::instance();
-
+CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
     /* Cube mesh */
     if(!(_cube = resourceManager.get<GL::Mesh>("cube"))) {
         Trade::MeshData3D cubeData = Primitives::cubeSolid();

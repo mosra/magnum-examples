@@ -40,7 +40,7 @@ class ReflectorShader;
 
 class Reflector: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit Reflector(Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit Reflector(CubeMapResourceManager& resourceManager, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 

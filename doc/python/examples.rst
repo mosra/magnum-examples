@@ -2,6 +2,9 @@ Examples
 ########
 
 :summary: Examples for the Python bindings.
+:ref-prefix:
+    corrade
+    magnum
 
 .. contents::
     :class: m-block m-default
@@ -20,6 +23,18 @@ Basic rendering with builtin shaders. Fully equivalent to
 :dox:`the C++ version <examples-triangle>`.
 
 .. include:: ../../src/python/magnum-triangle.py
+    :code: py
+    :start-line: 31
+
+`Textured Triangle`_
+======================
+
+.. image:: ../textured-triangle.png
+
+Importing image data, texturing and custom shaders. Fully equivalent to
+:dox:`the C++ version <examples-textured-triangle>`.
+
+.. include:: ../../src/python/magnum-textured-triangle.py
     :code: py
     :start-line: 31
 
@@ -45,5 +60,19 @@ graph. Compared to doing the same in C++ there's less worrying about data
 ownership, as the reference counting handles most of it.
 
 .. include:: ../../src/python/magnum-primitives-scenegraph.py
+    :code: py
+    :start-line: 31
+
+`Model viewer`_
+===============
+
+.. image:: ../viewer.png
+
+Scene graph, resource management and model importing. Goal is to be equivalent
+to :dox:`the C++ version <examples-viewer>` except that right now it imports
+the meshes directly by name as the full scene hierarchy import APIs from
+:dox:`Trade::AbstractImporter` are not exposed yet.
+
+.. include:: ../../src/python/magnum-viewer.py
     :code: py
     :start-line: 31

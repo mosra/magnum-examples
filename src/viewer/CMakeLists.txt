@@ -52,7 +52,7 @@ else()
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    find_package(MagnumPlugins REQUIRED OpenGexImporter)
+    find_package(MagnumPlugins REQUIRED TinyGltfImporter)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -78,7 +78,7 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::OpenGexImporter)
+    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::TinyGltfImporter)
 endif()
 
 # Installation for Emscripten
@@ -97,5 +97,5 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 # Installation for desktop
 else()
     install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    install(FILES scene.ogex DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
+    install(FILES scene.glb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
 endif()

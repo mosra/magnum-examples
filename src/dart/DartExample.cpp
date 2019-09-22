@@ -152,7 +152,7 @@ struct MaterialData{
 
 class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit DrawableObject(ViewerResourceManager& resourceManager, std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         DrawableObject& setMeshes(std::vector<Containers::Reference<GL::Mesh>>&& meshes){
             _meshes = std::move(meshes);
@@ -177,8 +177,8 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Resource<Shaders::Phong> _color_shader;
-        Resource<Shaders::Phong> _texture_shader;
+        Resource<Shaders::Phong> _colorShader;
+        Resource<Shaders::Phong> _textureShader;
         std::vector<Containers::Reference<GL::Mesh>> _meshes;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
@@ -193,7 +193,7 @@ class DartExample: public Platform::Application {
         explicit DartExample(const Arguments& arguments);
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
@@ -389,10 +389,10 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     redraw();
 }
 
-void DartExample::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void DartExample::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
-    _camera->setViewport(size);
+    _camera->setViewport(event.framebufferSize());
 }
 
 void DartExample::drawEvent() {
@@ -412,14 +412,13 @@ void DartExample::drawEvent() {
     /* Update graphic meshes/materials and render */
     _dartWorld->refresh();
 
-    /* For each update object */
+    /* For each updated object */
     for(DartIntegration::Object& object : _dartWorld->updatedShapeObjects()) {
         /* Get material information */
         std::vector<MaterialData> materials;
         std::vector<Containers::Reference<GL::Mesh>> meshes;
         std::vector<bool> isSoftBody;
         std::vector<GL::Texture2D*> textures;
-
         for(std::size_t i = 0; i < object.drawData().meshes.size(); ++i) {
             bool isColor = true;
             GL::Texture2D* texture = nullptr;
@@ -444,10 +443,8 @@ void DartExample::drawEvent() {
             /* Get the modified mesh */
             meshes.push_back(object.drawData().meshes[i]);
             materials.push_back(mat);
-            if(object.shapeNode()->getShape()->getType() == dart::dynamics::SoftMeshShape::getStaticType())
-                isSoftBody.push_back(true);
-            else
-                isSoftBody.push_back(false);
+            isSoftBody.push_back(object.shapeNode()->getShape()->getType() ==
+                dart::dynamics::SoftMeshShape::getStaticType());
         }
 
         /* Check if we already have it and then either add a new one or update
@@ -455,7 +452,7 @@ void DartExample::drawEvent() {
            anywhere else anymore, so move them in to avoid copies. */
         auto it = _drawableObjects.insert(std::make_pair(&object, nullptr));
         if(it.second) {
-            auto drawableObj = new DrawableObject{
+            auto drawableObj = new DrawableObject{_resourceManager,
                 std::move(meshes), std::move(materials),
                 static_cast<Object3D*>(&(object.object())), &_drawables};
             drawableObj->setSoftBodies(std::move(isSoftBody));
@@ -586,11 +583,11 @@ void DartExample::updateManipulator() {
     _manipulator->setCommands(commands);
 }
 
-DrawableObject::DrawableObject(std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
+DrawableObject::DrawableObject(ViewerResourceManager& resourceManager, std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
 Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _color_shader{ViewerResourceManager::instance().get<Shaders::Phong>("color")},
-    _texture_shader{ViewerResourceManager::instance().get<Shaders::Phong>("texture")},
+    _colorShader{resourceManager.get<Shaders::Phong>("color")},
+    _textureShader{resourceManager.get<Shaders::Phong>("texture")},
     _meshes{std::move(meshes)},
     _materials{std::move(materials)}
 {
@@ -608,7 +605,7 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
             GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
 
         if(!_textures[i]) {
-            (*_color_shader)
+            (*_colorShader)
                 .setAmbientColor(_materials[i].ambientColor)
                 .setDiffuseColor(_materials[i].diffuseColor)
                 .setSpecularColor(_materials[i].specularColor)
@@ -618,9 +615,9 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
                 .setProjectionMatrix(camera.projectionMatrix());
-            mesh.draw(*_color_shader);
+            mesh.draw(*_colorShader);
         } else {
-            (*_texture_shader)
+            (*_textureShader)
                 .setAmbientColor(_materials[i].ambientColor)
                 .bindDiffuseTexture(*_textures[i])
                 .setSpecularColor(_materials[i].specularColor)
@@ -630,7 +627,7 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
                 .setProjectionMatrix(camera.projectionMatrix());
-            mesh.draw(*_texture_shader);
+            mesh.draw(*_textureShader);
         }
 
         if(_isSoftBody[i])
