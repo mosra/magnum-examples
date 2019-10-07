@@ -33,6 +33,7 @@
 #include <vector>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Mesh.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/SceneGraph/SceneGraph.h>
 #include <Magnum/Shaders/VertexColor.h>
 
