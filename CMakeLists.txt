@@ -27,14 +27,9 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
-# macro called from FindX11)
-if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
-    set(LANG CXX)
-endif()
-project(MagnumExamples ${LANG})
+project(MagnumExamples CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED)

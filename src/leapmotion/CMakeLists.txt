@@ -28,9 +28,9 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumLeapMotionExample)
+project(MagnumLeapMotionExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)

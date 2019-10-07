@@ -27,7 +27,14 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
+
+project(MagnumPickingExample CXX)
+
+# Add module path in case this is project root
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
+endif()
 
 find_package(Magnum REQUIRED
     GL
@@ -36,13 +43,6 @@ find_package(Magnum REQUIRED
     SceneGraph
     Shaders
     Sdl2Application)
-
-project(MagnumPickingExample)
-
-# Add module path in case this is project root
-if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
-endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
