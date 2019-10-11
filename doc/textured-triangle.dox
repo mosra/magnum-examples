@@ -232,6 +232,7 @@ Full source code is also available in the
 -   @ref textured-triangle/TexturedTriangleShader.frag "TexturedTriangleShader.frag"
 -   @ref textured-triangle/TexturedTriangleShader.h "TexturedTriangleShader.h"
 -   @ref textured-triangle/TexturedTriangleShader.vert "TexturedTriangleShader.vert"
+-   [stone.tga](https://github.com/mosra/magnum-examples/raw/master/src/textured-triangle/stone.tga)
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/textured-triangle)
 contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
