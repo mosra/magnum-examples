@@ -70,3 +70,6 @@ target_link_libraries(magnum-motionblur PRIVATE
     Magnum::Shaders)
 
 install(TARGETS magnum-motionblur DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-motionblur)

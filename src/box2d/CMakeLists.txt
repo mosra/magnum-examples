@@ -64,3 +64,6 @@ target_link_libraries(magnum-box2d PRIVATE
     Box2D::Box2D)
 
 install(TARGETS magnum-box2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-box2d)

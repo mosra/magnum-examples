@@ -103,3 +103,6 @@ install(FILES
     urdf/iiwa14_simple.urdf
     urdf/robotiq.urdf
     DESTINATION ${DART_EXAMPLE_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-dart)

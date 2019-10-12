@@ -60,3 +60,6 @@ target_link_libraries(magnum-viewer PRIVATE
 
 install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES scene.glb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-viewer)

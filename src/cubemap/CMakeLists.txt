@@ -82,3 +82,6 @@ target_link_libraries(magnum-cubemap PRIVATE
 
 install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/cubemap)
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-cubemap)

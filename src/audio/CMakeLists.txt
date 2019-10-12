@@ -68,3 +68,6 @@ target_link_libraries(magnum-audio PRIVATE
     Magnum::Trade)
 
 install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-audio)
