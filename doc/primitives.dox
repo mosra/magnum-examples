@@ -183,7 +183,7 @@ we now need some additional libraries, like `MeshTools` and `Primitives`,
 everything else is the same as previously:
 
 @dontinclude primitives/CMakeLists.txt
-@skip find_package(Magnum REQUIRED
+@skip find_package(
 @until Magnum::Shaders)
 
 You can now try using another primitive from @ref Primitives namespace or

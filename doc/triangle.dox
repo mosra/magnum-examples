@@ -129,14 +129,10 @@ background:
 MAGNUM_APPLICATION_MAIN(TriangleExample)
 @endcode
 
-That's all, now we can compile the whole example using CMake. Apart from the
-standard CMake setup related to version requirements and paths to
-`FindMagnum.cmake`, `FindSDL2.cmake` and `FindCorrade.cmake`, as described in
-the @ref getting-started "Getting Started Guide", the setup is as follows.
-First we require the `Magnum` package with `GL`, `Shaders` and
-`Sdl2Application` components. It's recommended to also use Corrade's set of
-compiler flags to enable additional warnings. Then we create our executable and
-link to all Magnum libraries we requested. See @ref cmake for more information.
+That's all, now we can compile the whole example using CMake. Continuing from
+the @ref getting-started-review "Getting Started Guide", the only addition
+is finding & linking the @ref Magnum::Shaders library that's now being used as
+well:
 
 @dontinclude triangle/CMakeLists.txt
 @skip find_package
@@ -156,12 +152,14 @@ contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
 support that aren't present in `master` in order to keep the example code as
 simple as possible.
 
-@m_div{m-note m-success} There's also an alternative version of this example
-that sidesteps the @ref Platform::Sdl2Application "Platform::Application"
-wrapper classes to show that it's possible to hook into OpenGL context and
-window surface provided by a third party library. See @ref examples-triangle-plain-glfw
-for details.
-@m_enddiv
+@m_class{m-note m-success}
+
+@par
+    There's also an alternative version of this example that sidesteps the
+    @ref Platform::Sdl2Application "Platform::Application" wrapper classes to
+    show that it's possible to hook into OpenGL context and window surface
+    provided by a third party library. See @ref examples-triangle-plain-glfw
+    for details.
 
 @example triangle/CMakeLists.txt @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation
 @example triangle/TriangleExample.cpp @m_examplenavigation{examples-triangle,triangle/} @m_footernavigation

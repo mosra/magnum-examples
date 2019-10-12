@@ -318,8 +318,49 @@ to talk about.
 Compilation is again nothing special:
 
 @dontinclude viewer/CMakeLists.txt
-@skip find_package(Magnum REQUIRED
+@skip find_package(
 @until Magnum::Trade)
+
+@m_class{m-block m-success}
+
+@par Enabling model-loading plugins in your project
+    The core Magnum repository contains a very rudimentary OBJ file loader in
+    @ref Trade::ObjImporter "ObjImporter", and you can try it with the
+    `scene.obj` file linked below. For more advanced models,
+    @ref building-plugins "Magnum Plugins" provide
+    @ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
+    `scene.gltf`, and there are more plugins for various other formats.
+@par
+    If you're using the CMake subproject setup, you'll need to modify the
+    top-level `CMakeLists.txt` to enable these --- expanding on what
+    @ref examples-textured-triangle-importers "was shown in the previous tutorial":
+@par
+    @code{.cmake}
+    ...
+
+    # If you want to load just basic OBJs
+    set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
+    set(WITH_OBJIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+    # If you want to load (textured) glTF as well
+    set(WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
+
+    add_custom_target(plugins ALL DEPENDS
+        Magnum::AnyImageImporter
+        Magnum::AnySceneImporter
+        Magnum::ObjImporter
+        MagnumPlugins::StbImageImporter
+        MagnumPlugins::TinyGltfImporter)
+    @endcode
+@par
+    If you're using packaged Magnum, all the above-mentioned plugins are
+    included by default (and you don't need to do anything in CMake in order to
+    use them); if you build it yourself, make sure you have the desired
+    `WITH_*` options enabled.
 
 You can experiment by loading scenes of varying complexity and formats, adding
 light and camera property import or supporting more than just diffuse Phong
@@ -328,6 +369,8 @@ available in the [magnum-examples GitHub repository](https://github.com/mosra/ma
 
 -   @ref viewer/CMakeLists.txt "CMakeLists.txt"
 -   @ref viewer/ViewerExample.cpp "ViewerExample.cpp"
+-   [scene.obj](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.obj)
+-   [scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf)
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
