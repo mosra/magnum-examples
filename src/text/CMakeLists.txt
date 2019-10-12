@@ -36,6 +36,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
     Shaders
@@ -46,10 +47,11 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(TextExample_RESOURCES resources.conf)
 
-add_executable(magnum-text
+add_executable(magnum-text WIN32
     TextExample.cpp
     ${TextExample_RESOURCES})
 target_link_libraries(magnum-text PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::GL
     Magnum::Magnum

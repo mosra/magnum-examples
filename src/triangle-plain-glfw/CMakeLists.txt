@@ -38,6 +38,7 @@ endif()
 
 find_package(GLFW REQUIRED)
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED GL Shaders)
 if(CORRADE_TARGET_APPLE)
     find_package(Magnum REQUIRED CglContext)
@@ -51,9 +52,10 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-triangle-plain-glfw main.cpp)
+add_executable(magnum-triangle-plain-glfw WIN32 main.cpp)
 target_link_libraries(magnum-triangle-plain-glfw PRIVATE
     GLFW::GLFW
+    Corrade::Main
     Magnum::GL
     Magnum::GLContext
     Magnum::Magnum

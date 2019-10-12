@@ -36,6 +36,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED Sdl2Application)
 find_package(GLEW REQUIRED)
 
@@ -49,11 +50,12 @@ set_target_properties(SokolObjects PROPERTIES
 target_include_directories(SokolObjects PRIVATE
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
 
-add_executable(magnum-triangle-sokol
+add_executable(magnum-triangle-sokol WIN32
     TriangleSokolExample.cpp
     $<TARGET_OBJECTS:SokolObjects>)
 target_include_directories(magnum-triangle-sokol PRIVATE ${GLEW_INCLUDE_DIRS})
 target_link_libraries(magnum-triangle-sokol PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::Magnum
     ${GLEW_LIBRARIES})

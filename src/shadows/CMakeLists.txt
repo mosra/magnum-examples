@@ -37,6 +37,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
     MeshTools
@@ -49,7 +50,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(Shadows_RESOURCES resources.conf)
 
-add_executable(magnum-shadows
+add_executable(magnum-shadows WIN32
     ShadowsExample.cpp
     ShadowCasterDrawable.h
     ShadowCasterDrawable.cpp
@@ -66,6 +67,7 @@ add_executable(magnum-shadows
     Types.h
     ${Shadows_RESOURCES})
 target_link_libraries(magnum-shadows PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::GL
     Magnum::Magnum

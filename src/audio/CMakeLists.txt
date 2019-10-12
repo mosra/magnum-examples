@@ -37,6 +37,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     Audio
     GL
@@ -51,10 +52,11 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(AudioExample_RESOURCES resources.conf)
 
-add_executable(magnum-audio
+add_executable(magnum-audio WIN32
     AudioExample.cpp
     ${AudioExample_RESOURCES})
 target_link_libraries(magnum-audio PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::Audio
     Magnum::GL

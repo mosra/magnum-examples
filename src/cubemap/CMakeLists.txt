@@ -36,6 +36,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
     MeshTools
@@ -53,7 +54,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_resource(CubeMap_RESOURCES resources.conf)
 
-add_executable(magnum-cubemap
+add_executable(magnum-cubemap WIN32
     CubeMap.cpp
     CubeMapExample.cpp
     CubeMapShader.cpp
@@ -70,6 +71,7 @@ add_executable(magnum-cubemap
     ${CubeMap_RESOURCES})
 target_include_directories(magnum-cubemap PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-cubemap PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::GL
     Magnum::Magnum

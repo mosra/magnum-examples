@@ -50,6 +50,7 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
     MeshTools
@@ -62,9 +63,10 @@ find_package(MagnumIntegration REQUIRED Dart)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-dart DartExample.cpp)
+add_executable(magnum-dart WIN32 DartExample.cpp)
 target_include_directories(magnum-dart PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-dart PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::MeshTools
     Magnum::Magnum
