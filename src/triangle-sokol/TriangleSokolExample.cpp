@@ -103,7 +103,7 @@ TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     /* A shader */
     {
         sg_shader_desc desc{};
-        desc.vs.source = R"GLSL(
+        desc.vs.source = CORRADE_LINE_STRING "\n" R"GLSL(
 #version 330
 in vec4 position;
 in vec4 color;
@@ -114,7 +114,7 @@ void main() {
     interpolatedColor = color;
 }
 )GLSL";
-        desc.fs.source = R"GLSL(
+        desc.fs.source = CORRADE_LINE_STRING "\n" R"GLSL(
 #version 330
 in vec4 interpolatedColor;
 out vec4 fragmentColor;
