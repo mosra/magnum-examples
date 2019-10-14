@@ -77,11 +77,9 @@ class ImGuiExample: public Platform::Application {
 
 ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{arguments,
     Configuration{}.setTitle("Magnum ImGui Example")
-                   .setWindowFlags(Configuration::WindowFlag::Resizable)}
+                   .setWindowFlags(Configuration::WindowFlag::Resizable)},
+                   _imgui(Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize())
 {
-    _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
-        windowSize(), framebufferSize());
-
     /* Set up proper blending to be used by ImGui. There's a great chance
        you'll need this exact behavior for the rest of your scene. If not, set
        this only for the drawFrame() call. */
