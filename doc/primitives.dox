@@ -39,8 +39,8 @@ basic user interaction, introducing these new features:
 -   Basic 3D transformations and perspective projection.
 -   Mouse event handling.
 
-This example displays colored cube with ability to change its color and rotate
-it using mouse.
+This example displays a colored cube with ability to change its color and
+rotate it using a mouse.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
@@ -58,9 +58,9 @@ using a Phong shader.
     annoying at first, but helps to keep your build times short. See
     @ref compilation-speedup for more information.
 
-This time, for user interactivity we need to implement mouse event handlers
-and store transformation/projection @ref Math::Matrix4 "matrices" plus current
-@ref Math::Color3 "color".
+This time, for user interactivity we'll need to implement mouse event handlers
+and store transformation & projection @ref Math::Matrix4 "matrices" plus
+current @ref Math::Color3 "color".
 
 @skip class PrimitivesExample
 @until };
@@ -77,10 +77,10 @@ rendered.
 
 We now use the pre-made @ref Primitives::cubeSolid() "cube primitive" and
 create a mesh from it. The mesh is indexed and contains position and normal
-data. As said earlier, interleaving the data gives us the best memory access
-performance. We can do it by hand as in the previous example, but using
-@ref MeshTools::interleave() is much more convenient. We upload the interleaved
-data directly to a vertex buffer.
+data. As said in the @ref examples-triangle "Triangle example", interleaving
+the data gives us the best memory access performance. We can do it by hand as
+in the previous example, but using @ref MeshTools::interleave() is much more
+convenient. We upload the interleaved data directly to a vertex buffer.
 
 @skip Trade::MeshData3D
 @until vertices.setData(
@@ -143,9 +143,9 @@ more thorough introduction to transformations.
 
 @section examples-primitives-rendering Rendering
 
-In the draw event we clear the framebuffer (don't forget to clear also depth
-buffer), set transformation, normal and projection matrices and all material
-parameters and draw the mesh.
+In the draw event we clear the framebuffer (don't forget to clear also the
+depth buffer), set transformation, normal and projection matrices and all
+material parameters and draw the mesh.
 
 @skip void PrimitivesExample::drawEvent
 @until }

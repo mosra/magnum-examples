@@ -58,7 +58,6 @@ class PrimitivesExample: public Platform::Application {
         Shaders::Phong _shader;
 
         Matrix4 _transformation, _projection;
-        Vector2i _previousMousePosition;
         Color3 _color;
 };
 
@@ -116,7 +115,6 @@ void PrimitivesExample::drawEvent() {
 void PrimitivesExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
 
-    _previousMousePosition = event.position();
     event.setAccepted();
 }
 
@@ -130,16 +128,13 @@ void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
 void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
-    const Vector2 delta = 3.0f*
-        Vector2{event.position() - _previousMousePosition}/
-        Vector2{GL::defaultFramebuffer.viewport().size()};
+    Vector2 delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
 
     _transformation =
         Matrix4::rotationX(Rad{delta.y()})*
         _transformation*
         Matrix4::rotationY(Rad{delta.x()});
 
-    _previousMousePosition = event.position();
     event.setAccepted();
     redraw();
 }

@@ -313,7 +313,7 @@ to talk about.
 @until }
 @until }
 
-@section examples-viewer-compilation Compilation
+@section examples-viewer-compilation Compilation & running
 
 Compilation is again nothing special:
 
@@ -321,16 +321,18 @@ Compilation is again nothing special:
 @skip find_package(
 @until Magnum::Trade)
 
+Now, where to get the models and plugins to load them with? The core Magnum
+repository contains a very rudimentary OBJ file loader in @ref Trade::ObjImporter "ObjImporter",
+and you can try it with the [scene.obj](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.obj)
+file bundled in the example repository. For more advanced models with custom
+textures and materials, @ref building-plugins "Magnum Plugins" provide
+@ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
+[scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf),
+and there are more plugins for various other formats.
+
 @m_class{m-block m-success}
 
 @par Enabling model-loading plugins in your project
-    The core Magnum repository contains a very rudimentary OBJ file loader in
-    @ref Trade::ObjImporter "ObjImporter", and you can try it with the
-    `scene.obj` file linked below. For more advanced models,
-    @ref building-plugins "Magnum Plugins" provide
-    @ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
-    `scene.gltf`, and there are more plugins for various other formats.
-@par
     If you're using the CMake subproject setup, you'll need to modify the
     top-level `CMakeLists.txt` to enable these --- expanding on what
     @ref examples-textured-triangle-importers "was shown in the previous tutorial":
