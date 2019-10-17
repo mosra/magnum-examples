@@ -27,9 +27,9 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumTrianglePlainGlfwExample)
+project(MagnumTrianglePlainGlfwExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -38,6 +38,7 @@ endif()
 
 find_package(GLFW REQUIRED)
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED GL Shaders)
 if(CORRADE_TARGET_APPLE)
     find_package(Magnum REQUIRED CglContext)
@@ -51,12 +52,16 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-triangle-plain-glfw main.cpp)
+add_executable(magnum-triangle-plain-glfw WIN32 main.cpp)
 target_link_libraries(magnum-triangle-plain-glfw PRIVATE
     GLFW::GLFW
+    Corrade::Main
     Magnum::GL
     Magnum::GLContext
     Magnum::Magnum
     Magnum::Shaders)
 
 install(TARGETS magnum-triangle-plain-glfw DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-triangle-plain-glfw)

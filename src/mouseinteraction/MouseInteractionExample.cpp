@@ -34,6 +34,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/Math/FunctionsBatch.h>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN

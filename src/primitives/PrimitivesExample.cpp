@@ -31,6 +31,8 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #ifdef CORRADE_TARGET_ANDROID
@@ -63,7 +65,6 @@ class PrimitivesExample: public Platform::Application {
         Shaders::Phong _shader;
 
         Matrix4 _transformation, _projection;
-        Vector2i _previousMousePosition;
         Color3 _color;
 };
 
@@ -134,7 +135,6 @@ void PrimitivesExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left) return;
     #endif
 
-    _previousMousePosition = event.position();
     event.setAccepted();
 }
 
@@ -150,16 +150,13 @@ void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
     #endif
 
-    const Vector2 delta = 3.0f*
-        Vector2{event.position() - _previousMousePosition}/
-        Vector2{GL::defaultFramebuffer.viewport().size()};
+    Vector2 delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
 
     _transformation =
         Matrix4::rotationX(Rad{delta.y()})*
         _transformation*
         Matrix4::rotationY(Rad{delta.x()});
 
-    _previousMousePosition = event.position();
     event.setAccepted();
     redraw();
 }

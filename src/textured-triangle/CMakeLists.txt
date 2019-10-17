@@ -27,15 +27,16 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumTexturedTriangleExample)
+project(MagnumTexturedTriangleExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED GL Shaders Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
@@ -55,7 +56,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 corrade_add_resource(TexturedTriangle_RESOURCES resources.conf)
 
 if(NOT CORRADE_TARGET_ANDROID)
-    add_executable(magnum-textured-triangle
+    add_executable(magnum-textured-triangle WIN32
         TexturedTriangleExample.cpp
         ${TexturedTriangle_RESOURCES})
 else()
@@ -64,6 +65,7 @@ else()
         ${TexturedTriangle_RESOURCES})
 endif()
 target_link_libraries(magnum-textured-triangle PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::GL
     Magnum::Magnum
@@ -99,3 +101,6 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 elseif(NOT CORRADE_TARGET_IOS)
     install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-textured-triangle)

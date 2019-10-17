@@ -28,9 +28,9 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumDartExample)
+project(MagnumDartExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -50,6 +50,7 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
     MeshTools
@@ -62,9 +63,10 @@ find_package(MagnumIntegration REQUIRED Dart)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-dart DartExample.cpp)
+add_executable(magnum-dart WIN32 DartExample.cpp)
 target_include_directories(magnum-dart PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(magnum-dart PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::MeshTools
     Magnum::Magnum
@@ -101,3 +103,6 @@ install(FILES
     urdf/iiwa14_simple.urdf
     urdf/robotiq.urdf
     DESTINATION ${DART_EXAMPLE_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-dart)

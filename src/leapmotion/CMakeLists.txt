@@ -28,15 +28,16 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumLeapMotionExample)
+project(MagnumLeapMotionExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     MeshTools
     Primitives
@@ -46,8 +47,9 @@ find_package(Leap REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-leapmotion LeapMotionExample.cpp)
+add_executable(magnum-leapmotion WIN32 LeapMotionExample.cpp)
 target_link_libraries(magnum-leapmotion PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::Magnum
     Magnum::MeshTools
@@ -56,3 +58,6 @@ target_link_libraries(magnum-leapmotion PRIVATE
     Leap::Leap)
 
 install(TARGETS magnum-leapmotion DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-leapmotion)

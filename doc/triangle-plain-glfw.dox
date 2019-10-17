@@ -36,12 +36,15 @@ example, but demonstrates that it's possible to sidestep the
 @ref Platform::Sdl2Application "Platform::Application" wrappers and hook into
 existing OpenGL context and window surface provided by a third-party library.
 
-@m_div{m-note m-success} In this case we're using [GLFW](http://www.glfw.org/).
-It also has a Magnum wrapper in @ref Platform::GlfwApplication, but here the
-point is to show how to use Magnum with third-party window and event handling,
-so we won't use it. Note that it's possible to use any windowing toolkit that
-provides an OpenGL context, GLFW was chosen because it has a very clear and
-simple API. @m_enddiv
+@m_class{m-note m-success}
+
+@par
+    In this case we're using [GLFW](http://www.glfw.org/). It also has a Magnum
+    wrapper in @ref Platform::GlfwApplication, but here the point is to show
+    how to use Magnum with third-party window and event handling, so we won't
+    use it. Note that it's possible to use any windowing toolkit that provides
+    an OpenGL context, GLFW was chosen because it has a very clear and simple
+    API.
 
 We need to have @ref GL::Buffer, @ref GL::Mesh and @ref Shaders::VertexColor
 included to populate, set up and render our triangle and
@@ -116,8 +119,8 @@ for further information.
     build Magnum itself, but then you can just take the resulting binaries and
     headers and use whatever buildsystem you want. Keep in mind, however, that
     then you are expected to handle library order and 3rd party dependencies
-    yourself. See @ref building-features and similar sections in other projects
-    for details about inter-project dependencies.
+    yourself. See @ref custom-buildsystems for details about inter-project
+    dependencies.
 
 That's it! The full file content is linked below. Full source code is also
 available in the

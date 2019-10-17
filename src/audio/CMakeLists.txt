@@ -28,15 +28,16 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 
-project(MagnumAudioExample)
+project(MagnumAudioExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
+find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     Audio
     GL
@@ -57,10 +58,11 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 corrade_add_resource(AudioExample_RESOURCES resources.conf)
 
-add_executable(magnum-audio
+add_executable(magnum-audio WIN32
     AudioExample.cpp
     ${AudioExample_RESOURCES})
 target_link_libraries(magnum-audio PRIVATE
+    Corrade::Main
     Magnum::Application
     Magnum::Audio
     Magnum::GL
@@ -93,3 +95,6 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 else()
     install(TARGETS magnum-audio DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
+
+# Make the executable a default target to build & run in Visual Studio
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-audio)

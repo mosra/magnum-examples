@@ -195,9 +195,10 @@ Compilation is slightly more complicated compared to previous examples, because
 we need to compile our resources into the executable.
 
 The `resources.conf` file lists all resources which need to be compiled into
-the executable --- that is our GLSL shader sources and the texture image. All
-resource groups need to have unique identifier by which they are accessed, we
-will use `textured-triangle-data` as above. As said above, the resource
+the executable --- that is our GLSL shader sources and the texture image (the
+one used in the above screenshot is [stone.tga](https://github.com/mosra/magnum-examples/raw/master/src/textured-triangle/stone.tga)).
+All resource groups need to have unique identifier by which they are accessed,
+we will use `textured-triangle-data` as above. As said above, the resource
 compilation process is explained thoroughly in Corrade's
 @ref resource-management "resource management tutorial".
 
@@ -214,15 +215,45 @@ After that we compile the resources using the
 @ref corrade-cmake-add-resource "corrade_add_resource()" macro and create an
 executable from the result and other source files. Last step is linking to all
 needed libraries. The plugin is loaded dynamically, so it's not handled by
-CMake at all.
+CMake in any way.
 
 @dontinclude textured-triangle/CMakeLists.txt
 @skip corrade_add_resource
 @until Magnum::Trade)
 
-You can now try playing around with the shader source, modifying texture
-coordinates or adding other effects. The full file content is linked below.
-Full source code is also available in the
+@m_class{m-block m-success}
+
+@par Enabling additional Magnum components in your project
+    If you're using the CMake subproject setup described in the
+    @ref getting-started "Getting Started Guide", you'll need to modify the
+    top-level `CMakeLists.txt` to enable the @ref Trade::TgaImporter "TgaImporter"
+    plugin as well. Because the plugins are loaded at runtime, CMake doesn't
+    know we need them to be built --- one option is to list them explicitly
+    like shown below, another (but uglier) is to not use `EXCLUDE_FROM_ALL` on
+    the magnum subdirectory, so everything is always built implicitly. The
+    plugin modules are placed into `Debug/lib/magnum-d/importers` (or
+    `Debug/bin/magnum-d/importers` on Windows) in the build directory and the
+    @ref Trade library will find them there on its own.
+@par
+    @code{.cmake}
+    ...
+
+    set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+    set(WITH_TGAIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+    # So the TgaImporter gets built implicitly
+    add_custom_target(plugins ALL DEPENDS Magnum::TgaImporter)
+    @endcode
+@par
+    If you're using a Magnum package, @ref Trade::TgaImporter "TgaImporter" is
+    included by default (and you don't need to do anything in CMake in order to
+    use it); if you build it yourself, make sure you have `WITH_TGAIMPORTER`
+    enabled.
+
+Once the application builds and starts, you can now try playing around with the
+shader source, modifying texture coordinates or adding other effects. The full
+file content is linked below. Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/textured-triangle).
 
 -   @ref textured-triangle/CMakeLists.txt "CMakeLists.txt"
@@ -232,12 +263,70 @@ Full source code is also available in the
 -   @ref textured-triangle/TexturedTriangleShader.frag "TexturedTriangleShader.frag"
 -   @ref textured-triangle/TexturedTriangleShader.h "TexturedTriangleShader.h"
 -   @ref textured-triangle/TexturedTriangleShader.vert "TexturedTriangleShader.vert"
+-   [stone.tga](https://github.com/mosra/magnum-examples/raw/master/src/textured-triangle/stone.tga)
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/textured-triangle)
 contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
 @ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
 support that aren't present in `master` in order to keep the example code as
 simple as possible.
+
+@section examples-textured-triangle-importers PNG, JPEG and other file formats
+
+In an effort to keep the core Magnum repository small, it has support just for
+the TGA format. But it doesn't stop there, the
+@ref building-plugins "Magnum Plugins" repository provides support for many
+more file formats. Let's try loading arbitrary files instead --- the
+@ref Trade::AnyImageImporter "AnyImageImporter" plugin autodetects a file
+format and then delegates to a plugin that knows how to load PNGs. All you
+need to do is load it instead of @cpp "TgaImporter" @ce and then bundle a
+different file type --- or rewrite the example to take files from the
+filesystem instead:
+
+@code{.cpp}
+Containers::Pointer<Trade::AbstractImporter> importer =
+    manager.loadAndInstantiate("AnyImageImporter");
+if(!importer) std::exit(1);
+
+if(!importer->openFile("/path/to/myfile.jpg"))
+    std::exit(2);
+@endcode
+
+See @ref plugins for more information about how plugin loading and selection
+works. The next tutorial, @ref examples-viewer, expands further on this topic
+and also shows how to open files passed via command-line arguments.
+
+@m_class{m-block m-success}
+
+@par Enabling Magnum Plugins in your project
+    If you're using the CMake subproject setup described in the
+    @ref getting-started "Getting Started Guide", you'll need to modify the
+    top-level `CMakeLists.txt` to add Magnum Plugins as a subdirectory and
+    enable the new plugins. The @ref Trade::StbImageImporter "StbImageImporter"
+    is an universal dependency-less plugin that can handle PNGs, JPEGs and
+    other common files:
+@par
+    @code{.cmake}
+    ...
+
+    set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+    set(WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    # git clone https://github.com/mosra/magnum-plugins.git
+    add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
+
+    add_custom_target(plugins ALL DEPENDS
+        Magnum::AnyImageImporter
+        MagnumPlugins::StbImageImporter)
+    @endcode
+@par
+    If you're using packaged Magnum, install
+    @ref building-plugins-packages "Magnum Plugins" the same way as you did with
+    Magnum, all the above-mentioned plugins are included by default (and you
+    don't need to do anything in CMake in order to use them). If you build it
+    yourself, make sure you have `WITH_ANYIMAGEIMPORTER` enabled for Magnum and
+    `WITH_STBIMAGEIMPORTER` enabled for Magnum Plugins.
 
 @example textured-triangle/CMakeLists.txt @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
 @example textured-triangle/resources.conf @m_examplenavigation{examples-textured-triangle,textured-triangle/} @m_footernavigation
