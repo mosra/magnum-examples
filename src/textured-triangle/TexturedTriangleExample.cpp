@@ -37,6 +37,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/Math/Color.h>
 #ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -124,8 +125,7 @@ void TexturedTriangleExample::drawEvent() {
 
     using namespace Math::Literals;
 
-    _shader.setTransformationProjectionMatrix({})
-        .setColor(0xffb2b2_rgbf)
+    _shader.setColor(0xffb2b2_rgbf)
         .bindTexture(_texture);
     _mesh.draw(_shader);
 
