@@ -58,6 +58,9 @@ namespace Magnum {
 -   The @ref examples-cubemap now tries to find the bundles images first
     instead of requiring the user to always pass a path (see also
     [mosra/magnum-examples#44](https://github.com/mosra/magnum-examples/pull/44))
+-   Documented how to enable and use importer plugins in
+    @ref examples-textured-triangle and @ref examples-viewer (see
+    [mosra/magnum#375](https://github.com/mosra/magnum/issues/375))
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
