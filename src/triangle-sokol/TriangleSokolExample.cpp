@@ -27,9 +27,10 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <GL/glew.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
+
+#include "flextGL.h"
 
 /* Integrate with Magnum a bit */
 #define SOKOL_ASSERT(c) CORRADE_INTERNAL_ASSERT(c)
@@ -75,7 +76,8 @@ TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     _context = SDL_GL_CreateContext(window());
     if(!_context) Fatal{} << "Can not create context:" << SDL_GetError();
     SDL_GL_MakeCurrent(window(), _context);
-    glewInit();
+
+    flextInit();
 
     /* Setup sokol_gfx */
     {

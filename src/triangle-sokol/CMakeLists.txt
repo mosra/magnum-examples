@@ -38,27 +38,27 @@ endif()
 
 find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED Sdl2Application)
-find_package(GLEW REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-# Compile the sokol sources separately with C++11 warnings disabled
-add_library(SokolObjects OBJECT sokol.cpp)
-set_target_properties(SokolObjects PROPERTIES
+# Compile the sokol and flextGL sources separately with C++11 warnings disabled
+add_library(TriangleSokolObjects OBJECT
+    sokol.cpp
+    flextGL.cpp)
+set_target_properties(TriangleSokolObjects PROPERTIES
     CORRADE_CXX_STANDARD 11
     CORRADE_USE_PEDANTIC_FLAGS OFF)
-target_include_directories(SokolObjects PRIVATE
-    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(TriangleSokolObjects PRIVATE
+    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:SDL2::SDL2,INTERFACE_INCLUDE_DIRECTORIES>)
 
 add_executable(magnum-triangle-sokol WIN32
     TriangleSokolExample.cpp
-    $<TARGET_OBJECTS:SokolObjects>)
-target_include_directories(magnum-triangle-sokol PRIVATE ${GLEW_INCLUDE_DIRS})
+    $<TARGET_OBJECTS:TriangleSokolObjects>)
 target_link_libraries(magnum-triangle-sokol PRIVATE
     Corrade::Main
     Magnum::Application
-    Magnum::Magnum
-    ${GLEW_LIBRARIES})
+    Magnum::Magnum)
 
 install(TARGETS magnum-triangle-sokol DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
