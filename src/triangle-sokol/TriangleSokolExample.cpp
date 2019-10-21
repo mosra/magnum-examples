@@ -57,13 +57,10 @@ class TriangleSokolExample: public Platform::Application {
         sg_pipeline _pipeline;
 };
 
-constexpr Vector2i Size{800, 600};
-
 TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("Magnum Triangle using sokol_gfx")
-        .setSize(Size)
-        .setWindowFlags(Configuration::WindowFlag::Contextless)}
+        .setWindowFlags(Configuration::WindowFlag::Contextless|Configuration::WindowFlag::OpenGL)}
 {
     /* Initialize context using toolkit-specific functionality. When the
        Magnum::GL library is not used, this is left completely to the user ---
@@ -76,6 +73,8 @@ TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     _context = SDL_GL_CreateContext(window());
+    if(!_context) Fatal{} << "Can not create context:" << SDL_GetError();
+    SDL_GL_MakeCurrent(window(), _context);
     glewInit();
 
     /* Setup sokol_gfx */
@@ -103,8 +102,7 @@ TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     /* A shader */
     {
         sg_shader_desc desc{};
-        desc.vs.source = CORRADE_LINE_STRING "\n" R"GLSL(
-#version 330
+        desc.vs.source = "#version 330\n#line " CORRADE_LINE_STRING "\n" R"GLSL(
 in vec4 position;
 in vec4 color;
 out vec4 interpolatedColor;
@@ -114,8 +112,7 @@ void main() {
     interpolatedColor = color;
 }
 )GLSL";
-        desc.fs.source = CORRADE_LINE_STRING "\n" R"GLSL(
-#version 330
+        desc.fs.source = "#version 330\n#line " CORRADE_LINE_STRING "\n" R"GLSL(
 in vec4 interpolatedColor;
 out vec4 fragmentColor;
 
@@ -150,7 +147,7 @@ void TriangleSokolExample::drawEvent() {
         sg_pass_action action{};
         action.colors[0].action = SG_ACTION_CLEAR;
         Color4::from(action.colors[0].val) = 0x1f1f1f_rgbf;
-        sg_begin_default_pass(&action, Size.x(), Size.y());
+        sg_begin_default_pass(&action, framebufferSize().x(), framebufferSize().y());
     }
 
     /* Draw the triangle */
