@@ -61,6 +61,12 @@ target_link_libraries(magnum-triangle PRIVATE
     Magnum::Magnum
     Magnum::Shaders)
 
+# Gradle-free Android build
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+    include(${PROJECT_SOURCE_DIR}/../../toolchains/modules/UseAndroid.cmake)
+    android_create_apk(magnum-triangle src/main/AndroidManifest.xml)
+endif()
+
 # iOS-specifics
 if(CORRADE_TARGET_IOS)
     set_target_properties(magnum-triangle PROPERTIES

@@ -83,6 +83,12 @@ if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::TinyGltfImporter)
 endif()
 
+# Gradle-free Android build
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+    include(${PROJECT_SOURCE_DIR}/../../toolchains/modules/UseAndroid.cmake)
+    android_create_apk(magnum-viewer src/main/AndroidManifest.xml)
+endif()
+
 # Installation for Emscripten
 if(CORRADE_TARGET_EMSCRIPTEN)
     install(FILES viewer.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer RENAME index.html)

@@ -67,6 +67,12 @@ target_link_libraries(magnum-primitives PRIVATE
     Magnum::Primitives
     Magnum::Shaders)
 
+# Gradle-free Android build
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+    include(${PROJECT_SOURCE_DIR}/../../toolchains/modules/UseAndroid.cmake)
+    android_create_apk(magnum-primitives src/main/AndroidManifest.xml)
+endif()
+
 # iOS-specific
 if(CORRADE_TARGET_IOS)
     set_target_properties(magnum-primitives PROPERTIES
