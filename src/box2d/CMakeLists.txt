@@ -69,8 +69,18 @@ target_link_libraries(magnum-box2d PRIVATE
     Magnum::Trade
     Box2D::Box2D)
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-box2d POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-box2d>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/box2d.html
+            $<TARGET_FILE_DIR:magnum-box2d>/magnum-box2d.html)
+
     install(FILES box2d.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d RENAME index.html)
     install(TARGETS magnum-box2d DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d)
     install(FILES

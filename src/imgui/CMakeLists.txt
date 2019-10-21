@@ -65,8 +65,18 @@ target_link_libraries(magnum-imgui PRIVATE
     Magnum::Magnum
     MagnumIntegration::ImGui)
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-imgui POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-imgui>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/imgui.html
+            $<TARGET_FILE_DIR:magnum-imgui>/magnum-imgui.html)
+
     install(FILES imgui.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui RENAME index.html)
     install(TARGETS magnum-imgui DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui)
     install(FILES

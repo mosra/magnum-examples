@@ -73,8 +73,18 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         MagnumPlugins::StbTrueTypeFont)
 endif()
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-arealights POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-arealights>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/arealights.html
+            $<TARGET_FILE_DIR:magnum-arealights>/magnum-arealights.html)
+
     install(FILES arealights.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights RENAME index.html)
     install(TARGETS magnum-arealights DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
     install(FILES

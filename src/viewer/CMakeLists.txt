@@ -89,8 +89,18 @@ if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
     android_create_apk(magnum-viewer src/main/AndroidManifest.xml)
 endif()
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-viewer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-viewer>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/viewer.html
+            $<TARGET_FILE_DIR:magnum-viewer>/magnum-viewer.html)
+
     install(FILES viewer.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer RENAME index.html)
     install(TARGETS magnum-viewer DESTINATION ${MAGNUM_DEPLOY_PREFIX}/viewer)
     install(FILES

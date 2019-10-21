@@ -81,8 +81,18 @@ if(CORRADE_TARGET_IOS)
         XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-primitives POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-primitives>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/primitives.html
+            $<TARGET_FILE_DIR:magnum-primitives>/magnum-primitives.html)
+
     install(FILES primitives.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives RENAME index.html)
     install(TARGETS magnum-primitives DESTINATION ${MAGNUM_DEPLOY_PREFIX}/primitives)
     install(FILES

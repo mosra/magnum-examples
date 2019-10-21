@@ -90,8 +90,18 @@ if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     target_link_libraries(magnum-textured-triangle PRIVATE Magnum::TgaImporter)
 endif()
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-textured-triangle POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-textured-triangle>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/textured-triangle.html
+            $<TARGET_FILE_DIR:magnum-textured-triangle>/magnum-textured-triangle.html)
+
     install(FILES textured-triangle.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle RENAME index.html)
     install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
     install(FILES

@@ -72,8 +72,18 @@ target_link_libraries(magnum-mouseinteraction PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders)
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-mouseinteraction POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-mouseinteraction>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/mouseinteraction.html
+            $<TARGET_FILE_DIR:magnum-mouseinteraction>/magnum-mouseinteraction.html)
+
     install(FILES mouseinteraction.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction RENAME index.html)
     install(TARGETS magnum-mouseinteraction DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction)
     install(FILES

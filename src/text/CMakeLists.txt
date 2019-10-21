@@ -74,8 +74,18 @@ if(MAGNUM_BUILD_STATIC)
         Magnum::MagnumFont)
 endif()
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-text POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-text>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/text.html
+            $<TARGET_FILE_DIR:magnum-text>/magnum-text.html)
+
     install(FILES text.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text RENAME index.html)
     install(TARGETS magnum-text DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
     install(FILES

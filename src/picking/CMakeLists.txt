@@ -68,8 +68,18 @@ target_link_libraries(magnum-picking PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders)
 
-# Installation for Emscripten
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-picking POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-picking>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/picking.html
+            $<TARGET_FILE_DIR:magnum-picking>/magnum-picking.html)
+
     install(FILES picking.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking RENAME index.html)
     install(TARGETS magnum-picking DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking)
     install(FILES
