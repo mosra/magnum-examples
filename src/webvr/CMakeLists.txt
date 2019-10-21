@@ -66,6 +66,17 @@ target_link_libraries(magnum-webvr PRIVATE
     Magnum::Primitives
     Magnum::Shaders)
 
+# Copy the boilerplate next to the executable so it can be run directly from
+# the build dir; provide an install target as well
+add_custom_command(TARGET magnum-webvr POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        $<TARGET_FILE_DIR:magnum-webvr>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/webvr.html
+        $<TARGET_FILE_DIR:magnum-webvr>/magnum-webvr.html)
+
 install(FILES webvr.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr RENAME index.html)
 install(TARGETS magnum-webvr DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
 install(FILES
