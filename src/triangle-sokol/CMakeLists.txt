@@ -50,7 +50,8 @@ set_target_properties(TriangleSokolObjects PROPERTIES
     CORRADE_USE_PEDANTIC_FLAGS OFF)
 target_include_directories(TriangleSokolObjects PRIVATE
     $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:SDL2::SDL2,INTERFACE_INCLUDE_DIRECTORIES>)
+    $<TARGET_PROPERTY:SDL2::SDL2,INTERFACE_INCLUDE_DIRECTORIES>
+    ${CMAKE_CURRENT_SOURCE_DIR}) # for <KHR/khrplatform.h> ("" would work w/o)
 
 add_executable(magnum-triangle-sokol WIN32
     TriangleSokolExample.cpp
@@ -59,6 +60,8 @@ target_link_libraries(magnum-triangle-sokol PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::Magnum)
+target_include_directories(magnum-triangle-sokol PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}) # for <KHR/khrplatform.h> ("" would work w/o)
 
 install(TARGETS magnum-triangle-sokol DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
