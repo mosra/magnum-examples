@@ -45,7 +45,7 @@ void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& 
         .setShininess(20)
         .setLightPosition({3.0f, -3.0f, 3.0f})
         .setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotationScaling())
+        .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix());
 
     mesh->draw(*shader);

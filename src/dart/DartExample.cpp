@@ -613,7 +613,7 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
-                .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
+                .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix());
             mesh.draw(*_colorShader);
         } else {
@@ -625,7 +625,7 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
-                .setNormalMatrix((transformationMatrix*scalingMatrix).rotation())
+                .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix());
             mesh.draw(*_textureShader);
         }

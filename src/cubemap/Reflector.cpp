@@ -107,7 +107,7 @@ Reflector::Reflector(CubeMapResourceManager& resourceManager, Object3D* parent, 
 
 void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader->setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.rotationScaling())
+        .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
         .setReflectivity(2.0f)
         .setDiffuseColor(Color3(0.3f))

@@ -161,7 +161,7 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(boneCenter)*Matrix4::from(bone.basis().toArray4x4())*rotX*Matrix4::scaling({0.06f, boneLength, 0.06f});
         _shader.setDiffuseColor(Color3{1.0f, 1.0f, 1.0f})
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.rotationScaling());
+               .setNormalMatrix(transformation.normalMatrix());
         _cylinder.draw(_shader);
     }
 
@@ -171,7 +171,7 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(prevJoint)*rotX*Matrix4::scaling(Vector3{0.08f});
         _shader.setDiffuseColor(color)
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.rotationScaling());
+               .setNormalMatrix(transformation.normalMatrix());
         _sphere.draw(_shader);
     }
 
@@ -181,7 +181,7 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(nextJoint)*rotX*Matrix4::scaling(Vector3{0.08f});
         _shader.setDiffuseColor(color)
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.rotationScaling());
+               .setNormalMatrix(transformation.normalMatrix());
         _sphere.draw(_shader);
     }
 }

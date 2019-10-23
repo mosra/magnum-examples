@@ -455,7 +455,7 @@ void AreaLightsExample::drawEvent() {
             .setTransformationMatrix(_transformation)
             .setProjectionMatrix(_projection)
             .setViewMatrix(_view)
-            .setNormalMatrix(_transformation.rotationScaling())
+            .setNormalMatrix(_transformation.normalMatrix())
             .setViewPosition(_view.invertedRigid().translation())
             .setLightQuad(quadPoints)
             .setBaseColor(_lightColor[i])
