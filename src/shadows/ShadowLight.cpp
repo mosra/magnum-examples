@@ -52,7 +52,7 @@ void ShadowLight::setupShadowmaps(Int numShadowLevels, const Vector2i& size) {
     _layers.clear();
 
     (_shadowTexture = GL::Texture2DArray{})
-        .setImage(0, GL::TextureFormat::DepthComponent, ImageView3D{GL::PixelFormat::DepthComponent, GL::PixelType::Float, {size, numShadowLevels}, nullptr})
+        .setImage(0, GL::TextureFormat::DepthComponent, ImageView3D{GL::PixelFormat::DepthComponent, GL::PixelType::Float, {size, numShadowLevels}})
         .setMaxLevel(0)
         .setCompareFunction(GL::SamplerCompareFunction::LessOrEqual)
         .setCompareMode(GL::SamplerCompareMode::CompareRefToTexture)
