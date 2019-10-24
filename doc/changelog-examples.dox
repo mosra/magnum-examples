@@ -30,9 +30,14 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2019.01
+@anchor changelog-examples-latest
 
-@subsection changelog-examples-latest-dependencies Dependency changes
+@section changelog-examples-2019-10 2019.10
+
+Released 2019-10-24, tagged as
+[v2019.10](https://github.com/mosra/magnum-examples/releases/tag/v2019.10).
+
+@subsection changelog-examples-2019-10-dependencies Dependency changes
 
 -   Minimal supported CMake version is now 3.4. Older versions are not
     supported anymore and all workarounds for them were removed. Download a
@@ -41,12 +46,12 @@ namespace Magnum {
     that shouldn't affect any additional distribution compared to the CMake 3.1
     requirement in 2019.01.
 
-@subsection changelog-examples-latest-new New features
+@subsection changelog-examples-2019-10-new New features
 
 -   New @ref examples-dart example showing integration with DART using
     @ref DartIntegration (see [mosra/magnum-examples#63](https://github.com/mosra/magnum-examples/pull/63))
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2019-10-changes Changes and improvements
 
 -   Switched all examples to use the new
     @ref Platform::EmscriptenApplication on Emscripten (see
@@ -62,10 +67,13 @@ namespace Magnum {
     @ref examples-textured-triangle and @ref examples-viewer (see
     [mosra/magnum#375](https://github.com/mosra/magnum/issues/375))
 
-@subsection changelog-examples-latest-bugfixes Bug fixes
+@subsection changelog-examples-2019-10-bugfixes Bug fixes
 
 -   The @ref examples-arealights example wasn't using the depth buffer
     (see [mosra/magnum-examples#57](https://github.com/mosra/magnum-examples/issues/57))
+-   Adaptations to header cleanup in Magnum for faster compile times, various
+    other cleanup (see [mosra/magnum-examples#54](https://github.com/mosra/magnum-examples/issues/54),
+    [mosra/magnum-examples#66](https://github.com/mosra/magnum-examples/issues/66))
 
 @section changelog-examples-2019-01 2019.01
 
