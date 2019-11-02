@@ -125,3 +125,7 @@ endif()
 if(WITH_WEBVR_EXAMPLE)
     add_subdirectory(webvr)
 endif()
+
+if(WITH_FLUIDSIMULATION_EXAMPLE)
+    add_subdirectory(fluid-simulation)
+endif()
