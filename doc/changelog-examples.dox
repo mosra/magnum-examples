@@ -30,7 +30,12 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@anchor changelog-examples-latest
+@section changelog-examples-latest Changes since 2019.10
+
+@subsection changelog-examples-latest-changes Changes and improvements
+
+-   The @ref examples-imgui "ImGui example" now lets ImGui update the
+    application cursor (see [mosra/magnum-integration#56](https://github.com/mosra/magnum-integration/pull/56))
 
 @section changelog-examples-2019-10 2019.10
 
