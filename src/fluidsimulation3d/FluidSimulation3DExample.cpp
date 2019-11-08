@@ -315,11 +315,6 @@ void FluidSimulation3DExample::mousePressEvent(MouseEvent& event) {
         return;
     }
 
-    if((event.button() != MouseEvent::Button::Left)
-       && (event.button() != MouseEvent::Button::Right)) {
-        return;
-    }
-
     /* Update camera */
     {
         _prevMousePosition = event.position();
@@ -352,24 +347,24 @@ void FluidSimulation3DExample::mouseMoveEvent(MouseMoveEvent& event) {
         return;
     }
 
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)
-       && !(event.buttons() & MouseMoveEvent::Button::Right)) {
-        return;
-    }
-
     const Vector2 delta = 3.0f*Vector2{event.position() - _prevMousePosition}/Vector2{framebufferSize()};
     _prevMousePosition = event.position();
 
-    if(event.buttons() & MouseMoveEvent::Button::Left) {
+    if(!event.buttons()) return;
+
+    /* Translate */
+    if(event.modifiers() & MouseMoveEvent::Modifier::Shift) {
+        const Vector3 p = unproject(event.position(), _lastDepth);
+        _objCamera->translateLocal(_translationPoint - p); /* is Z always 0? */
+        _translationPoint = p;
+
+    /* Rotate around rotation point */
+    } else {
         _objCamera->transformLocal(
             Matrix4::translation(_rotationPoint)*
             Matrix4::rotationX(-0.51_radf*delta.y())*
             Matrix4::rotationY(-0.51_radf*delta.x())*
             Matrix4::translation(-_rotationPoint));
-    } else {
-        const Vector3 p = unproject(event.position(), _lastDepth);
-        _objCamera->translateLocal(_translationPoint - p); /* is Z always 0? */
-        _translationPoint = p;
     }
 
     event.setAccepted();
