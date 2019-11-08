@@ -110,7 +110,7 @@ class ColoredDrawable: public SceneGraph::Drawable3D {
             _shader.setDiffuseColor(_color)
                 .setTransformationMatrix(transformation*_primitiveTransformation)
                 .setProjectionMatrix(camera.projectionMatrix())
-                .setNormalMatrix(transformation.rotationScaling());
+                .setNormalMatrix(transformation.normalMatrix());
             _mesh.draw(_shader);
         }
 

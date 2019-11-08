@@ -270,7 +270,7 @@ void WebVrExample::displayRender() {
         for (int i = 0; i < 4; ++i) {
             const Matrix4& transformationMatrix = _cubeModelMatrices[i];
             _shader.setTransformationMatrix(viewMatrix[eye]*transformationMatrix)
-                .setNormalMatrix((viewMatrix[eye]*transformationMatrix).rotationScaling())
+                .setNormalMatrix((viewMatrix[eye]*transformationMatrix).normalMatrix())
                 .setDiffuseColor(_cubeColors[i]);
             _mesh.draw(_shader);
         }

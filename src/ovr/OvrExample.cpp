@@ -215,7 +215,7 @@ void OvrExample::drawEvent() {
         for(Int cubeIndex = 0; cubeIndex < CubeCount; ++cubeIndex) {
             _shader.setDiffuseColor(_cubeColors[cubeIndex])
                 .setTransformationMatrix(_cubeTransforms[cubeIndex])
-                .setNormalMatrix(_cubeTransforms[cubeIndex].rotationScaling())
+                .setNormalMatrix(_cubeTransforms[cubeIndex].normalMatrix())
                 .setProjectionMatrix(viewProjMatrix);
             _mesh.draw(_shader);
         }

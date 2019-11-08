@@ -31,7 +31,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <imgui.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -156,20 +155,23 @@ void ImGuiExample::drawEvent() {
         ImGui::ShowTestWindow();
     }
 
-    /* Set appropriate states. If you only draw imgui UI, it is sufficient to
-       do this once in the constructor. */
+    /* Update application cursor */
+    _imgui.updateApplicationCursor(*this);
+
+    /* Set appropriate states. If you only draw ImGui, it is sufficient to
+       just enable blending and scissor test in the constructor. */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
-    GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
 
     _imgui.drawFrame();
 
     /* Reset state. Only needed if you want to draw something else with
-       different state next frame. */
-    GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
+       different state after. */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     swapBuffers();

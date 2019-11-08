@@ -63,6 +63,8 @@ namespace Magnum {
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
     package updates, a PPA repository for stable versions,
     @ref examples-cubemap improvements
+-   **Nghia Truong** ([\@ttnghia](https://github.com/ttnghia) --- the
+    @ref examples-fluidsimulation3d example
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example

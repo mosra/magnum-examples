@@ -193,13 +193,21 @@ The following consist of documented source code only:
 
 @parblock
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html fluidsimulation3d.png
+@subpage examples-fluidsimulation3d @m_class{m-label m-primary} **ui** @m_class{m-label m-warning} **physics**
+\n @copybrief examples-fluidsimulation3d
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html imgui.png
 @subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-imgui
 @m_enddiv
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-0 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan

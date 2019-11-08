@@ -161,7 +161,7 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
     private:
         virtual void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
             _shader.setTransformationMatrix(transformationMatrix)
-                .setNormalMatrix(transformationMatrix.rotationScaling())
+                .setNormalMatrix(transformationMatrix.normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix())
                 .setAmbientColor(_selected ? _color*0.3f : Color3{})
                 .setColor(_color*(_selected ? 2.0f : 1.0f))

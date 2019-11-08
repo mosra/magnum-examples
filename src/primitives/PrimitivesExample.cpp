@@ -116,7 +116,7 @@ void PrimitivesExample::drawEvent() {
         .setDiffuseColor(_color)
         .setAmbientColor(Color3::fromHsv({_color.hue(), 1.0f, 0.3f}))
         .setTransformationMatrix(_transformation)
-        .setNormalMatrix(_transformation.rotationScaling())
+        .setNormalMatrix(_transformation.normalMatrix())
         .setProjectionMatrix(_projection);
     _mesh.draw(_shader);
 

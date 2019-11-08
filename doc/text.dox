@@ -44,7 +44,13 @@ supports UTF-8. For mutable text buffer mapping is used.
 
 @section examples-text-credits Credits
 
-This example uses `DejaVuSans.ttf` font from the [DejaVu Project](dejavu-fonts.org).
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [Adobe Source Sans Pro](https://github.com/adobe-fonts/source-sans-pro)
+    font, licensed under @m_class{m-label m-success} **OFL 1.1**
+    ([license text](https://github.com/adobe-fonts/source-sans-pro/blob/release/LICENSE.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/ofl-1.1/)).
+    Attribution is required for public use.
 
 @section examples-text-source Source
 

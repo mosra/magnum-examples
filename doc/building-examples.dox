@@ -209,6 +209,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     not available in OpenGL ES.
 -   `WITH_DART_EXAMPLE` --- Build the @ref examples-dart example. Requires
     the @ref DartIntegration library.
+-   `WITH_FLUIDSIMULATION3D_EXAMPLE` -- Build the @ref examples-fluidsimulation3d
+    example.
 -   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
 -   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
     Not available on OpenGL ES.
@@ -238,6 +240,15 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 -   `WITH_WEBVR_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+
+Some examples accept additional options:
+
+-   `FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING` --- Controls multithreading
+    for the @ref examples-fluidsimulation3d example. `ON` by default.
+-   `FLUIDSIMULATION3D_EXAMPLE_USE_TBB` --- If enabled together with
+    `FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING`, uses
+    [Intel TBB](https://github.com/intel/tbb) for parallel processing in the
+    @ref examples-fluidsimulation3d example. `OFF` by default.
 
 Besides building the whole project and enabling a particular subset of
 examples, it's also possible to build each example as if the example itself
