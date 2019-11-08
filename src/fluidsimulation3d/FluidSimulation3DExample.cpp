@@ -251,6 +251,9 @@ void FluidSimulation3DExample::drawEvent() {
     /* Menu for parameters */
     if(_showMenu) showMenu();
 
+    /* Update application cursor */
+    _imGuiContext.updateApplicationCursor(*this);
+
     /* Render ImGui window */
     {
         GL::Renderer::enable(GL::Renderer::Feature::Blending);
