@@ -482,7 +482,13 @@ void FluidSimulation3DExample::showMenu() {
 
     /* Reset */
     ImGui::Spacing();
-    if(ImGui::Button("Reset Simulation")) initializeScene();
+    if(ImGui::Button(_pausedSimulation ? "Play Sim" : "Pause Sim"))
+        _pausedSimulation ^= true;
+    ImGui::SameLine();
+    if(ImGui::Button("Reset Sim")) {
+        _pausedSimulation = false;
+        initializeScene();
+    }
     ImGui::SameLine();
     if(ImGui::Button("Reset Camera")) {
         _objCamera->setTransformation(Matrix4::lookAt(_defaultCamPosition, _defaultCamTarget, Vector3(0, 1, 0)));
