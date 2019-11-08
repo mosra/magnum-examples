@@ -37,6 +37,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/FunctionsBatch.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
