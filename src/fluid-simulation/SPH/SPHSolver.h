@@ -30,71 +30,73 @@
 
 #pragma once
 
-#include "SPHKernels.h"
-#include "DomainBox.h"
-
-#include <Magnum/Magnum.h>
 #include <vector>
+#include <Magnum/Magnum.h>
+
+#include "SPH/SPHKernels.h"
+#include "SPH/DomainBox.h"
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
+
 struct SPHParams {
-    float stiffness { 20000.0f };
-    float viscosity { 0.05f };
-    float boundaryRestitution { 0.5f };
+    Float stiffness = 20000.0f;
+    Float viscosity = 0.05f;
+    Float boundaryRestitution = 0.5f;
 };
 
-/****************************************************************************************************/
-/* This is a very basic implementation of SPH (Smoothed Particle Hydrodynamics) solver
- * For the purpose of fast running (as this is a real-time application example),
- * accuracy has been heavily sacrificed for performance
- */
-class SPHSolver final {
-public:
-    explicit SPHSolver(float particleRadius);
+/* This is a very basic implementation of SPH (Smoothed Particle Hydrodynamics)
+   solver. For the purpose of fast running (as this is a real-time application
+   example), accuracy has been heavily sacrificed for performance. */
+class SPHSolver {
+    public:
+        explicit SPHSolver(Float particleRadius);
 
-    void setPositions(const std::vector<Vector3>& particlePositions);
-    void reset();
-    void advance();
+        void setPositions(const std::vector<Vector3>& particlePositions);
+        void reset();
+        void advance();
 
-    DomainBox& domainBox() { return _domainBox; }
-    SPHParams& simulationParameters() { return _params; }
+        DomainBox& domainBox() { return _domainBox; }
+        SPHParams& simulationParameters() { return _params; }
 
-    size_t numParticles() const { return _positions.size(); }
-    const auto& particlePositions() { return _positions; }
+        std::size_t numParticles() const { return _positions.size(); }
+        const std::vector<Vector3>& particlePositions() { return _positions; }
 
-private:
-    void computeDensities();
-    void velocityIntegration(float timestep);
-    void computeViscosity();
-    void updatePositions(float timestep);
+    private:
+        void computeDensities();
+        void velocityIntegration(Float timestep);
+        void computeViscosity();
+        void updatePositions(Float timestep);
 
-    static constexpr float s_restDensity { 1000.0f }; /* Rest density of fluid */
-    const float            _particleRadius;           /* Particle radius = half distance between consecutive particles */
-    const float            _particleMass;             /* particle_mass = pow(particle_spacing, 3) * rest_density */
+        /* Rest density of fluid */
+        constexpr static Float RestDensity = 1000.0f;
 
-    std::vector<Vector3> _positions;
-    std::vector<Vector3> _positions_t0; /* Initial positions */
+        /* Particle radius = half distance between consecutive particles */
+        const Float _particleRadius;
+        /* particle_mass = pow(particle_spacing, 3) * rest_density */
+        const Float _particleMass;
 
-    /* For saving memory thus gaining performance,
-     * particle densities (float32) are clamped to [0, 10000] then static_cast into uint16_t */
-    std::vector<uint16_t> _densities;
+        std::vector<Vector3> _positions;
+        std::vector<Vector3> _positionsT0; /* Initial positions */
 
-    /* Other particle states */
-    std::vector<std::vector<uint32_t>> _neighbors;
-    std::vector<std::vector<Vector3>>  _relPositions;
-    std::vector<Vector3>               _velocities;
-    std::vector<Vector3>               _velocityDiffusions;
+        /* For saving memory thus gaining performance,
+           particle densities (float32) are clamped to [0, 10000] then cast
+           into uint16_t */
+        std::vector<uint16_t> _densities;
 
-    /* SPH kernels */
-    SPHKernels _kernels;
+        /* Other particle states */
+        std::vector<std::vector<uint32_t>> _neighbors;
+        std::vector<std::vector<Vector3>>  _relPositions;
+        std::vector<Vector3> _velocities;
+        std::vector<Vector3> _velocityDiffusions;
 
-    /* Boundary */
-    DomainBox _domainBox;
+        /* SPH kernels */
+        SPHKernels _kernels;
 
-    /* Parameters */
-    SPHParams _params;
+        /* Boundary */
+        DomainBox _domainBox;
+
+        /* Parameters */
+        SPHParams _params;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

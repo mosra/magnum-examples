@@ -32,45 +32,44 @@
 #include <Magnum/GL/AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-class ParticleSphereShader : public GL::AbstractShaderProgram {
-public:
-    enum ColorMode {
-        UNIFORM_DIFFUSE_COLOR = 0,
-        RAMP_COLOR_BY_ID,
-        CONSISTENT_RANDOM
-    };
 
-    ParticleSphereShader();
+class ParticleSphereShader: public GL::AbstractShaderProgram {
+    public:
+        enum ColorMode {
+            UniformDiffuseColor = 0,
+            RampColorById,
+            ConsistentRandom
+        };
 
-    ParticleSphereShader& setNumParticles(int numParticles);
-    ParticleSphereShader& setParticleRadius(float radius);
+        explicit ParticleSphereShader();
 
-    ParticleSphereShader& setPointSizeScale(float scale);
-    ParticleSphereShader& setColorMode(int colorMode);
-    ParticleSphereShader& setAmbientColor(const Color3& color);
-    ParticleSphereShader& setDiffuseColor(const Color3& color);
-    ParticleSphereShader& setSpecularColor(const Color3& color);
-    ParticleSphereShader& setShininess(float shininess);
+        ParticleSphereShader& setNumParticles(Int numParticles);
+        ParticleSphereShader& setParticleRadius(Float radius);
 
-    ParticleSphereShader& setViewport(const Vector2i& viewport);
-    ParticleSphereShader& setViewMatrix(const Matrix4& matrix);
-    ParticleSphereShader& setProjectionMatrix(const Matrix4& matrix);
-    ParticleSphereShader& setLightDirection(const Vector3& lightDir);
+        ParticleSphereShader& setPointSizeScale(Float scale);
+        ParticleSphereShader& setColorMode(Int colorMode);
+        ParticleSphereShader& setAmbientColor(const Color3& color);
+        ParticleSphereShader& setDiffuseColor(const Color3& color);
+        ParticleSphereShader& setSpecularColor(const Color3& color);
+        ParticleSphereShader& setShininess(Float shininess);
 
-private:
-    Int _uNumParticles,
-        _uParticleRadius,
-        _uPointSizeScale,
-        _uColorMode,
-        _uAmbientColor,
-        _uDiffuseColor,
-        _uSpecularColor,
-        _uShininess,
-        _uViewMatrix,
-        _uProjectionMatrix,
-        _uLightDir;
+        ParticleSphereShader& setViewport(const Vector2i& viewport);
+        ParticleSphereShader& setViewMatrix(const Matrix4& matrix);
+        ParticleSphereShader& setProjectionMatrix(const Matrix4& matrix);
+        ParticleSphereShader& setLightDirection(const Vector3& lightDir);
+
+    private:
+        Int _uNumParticles,
+            _uParticleRadius,
+            _uPointSizeScale,
+            _uColorMode,
+            _uAmbientColor,
+            _uDiffuseColor,
+            _uSpecularColor,
+            _uShininess,
+            _uViewMatrix,
+            _uProjectionMatrix,
+            _uLightDir;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

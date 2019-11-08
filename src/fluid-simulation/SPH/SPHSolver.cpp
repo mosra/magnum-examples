@@ -29,45 +29,44 @@
  */
 
 #include "SPHSolver.h"
+
 #include "TaskScheduler.h"
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-SPHSolver::SPHSolver(float particleRadius) :
-    _particleRadius(particleRadius),
-    _particleMass(std::pow(2.0f * particleRadius, 3.0f) * s_restDensity * 0.9f),
-    _kernels(particleRadius * 4.0f),
-    _domainBox(particleRadius, Vector3(particleRadius),  Vector3(3, 3, 1) - Vector3(particleRadius)) {}
 
-/****************************************************************************************************/
+SPHSolver::SPHSolver(Float particleRadius):
+    _particleRadius{particleRadius},
+    _particleMass{Math::pow(2.0f*particleRadius, 3.0f)*RestDensity*0.9f},
+    _kernels{particleRadius*4.0f},
+    _domainBox{particleRadius, Vector3{particleRadius}, Vector3{3.0f, 3.0f, 1.0f} - Vector3{particleRadius}} {}
+
 void SPHSolver::setPositions(const std::vector<Vector3>& positions) {
-    _positions    = positions;
-    _positions_t0 = positions;
+    _positions = positions;
+    _positionsT0 = positions;
 
     /* Resize other variables */
     const auto nParticles = positions.size();
     _densities.resize(nParticles);
     _neighbors.resize(nParticles);
     _relPositions.resize(nParticles);
-    _velocities.assign(nParticles, Vector3(0)); /* Must initialize zero for all velocities */
+    /* Must initialize zero for all velocities */
+    _velocities.assign(nParticles, Vector3{0.0f});
     _velocityDiffusions.resize(nParticles);
 }
 
-/****************************************************************************************************/
 void SPHSolver::reset() {
-    _positions = _positions_t0;
-    _velocities.assign(numParticles(), Vector3(0)); /* Must initialize zero for all velocities */
+    _positions = _positionsT0;
+    /* Must initialize zero for all velocities */
+    _velocities.assign(numParticles(), Vector3{0.0f});
 }
 
-/****************************************************************************************************/
 void SPHSolver::advance() {
     /* Find neighbors and compute relative positions with them */
     _domainBox.findNeighbors(_positions, _neighbors, _relPositions);
 
-    /* This is a fixed time step approach!
-     * In practice, adaptive time step should be used
-     */
-    const auto timestep = 0.05f * _particleRadius;
+    /* This is a fixed time step approach! In practice, adaptive time step
+       should be used. */
+    const Float timestep = 0.05f*_particleRadius;
 
     computeDensities();
     velocityIntegration(timestep);
@@ -75,133 +74,112 @@ void SPHSolver::advance() {
     updatePositions(timestep);
 }
 
-/****************************************************************************************************/
 void SPHSolver::computeDensities() {
-    TaskScheduler::for_each(
-        _positions.size(),
-        [&](const size_t p) {
-            const auto& relPositions = _relPositions[p];
-            if(relPositions.size() == 0) {
-                return;
-            }
+    TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
+        const std::vector<Vector3>& relPositions = _relPositions[p];
+        if(relPositions.size() == 0) return;
 
-            auto pdensity = _kernels.W0();
-            for(const auto& xpq : relPositions) {
-                pdensity += _kernels.W(xpq);
-            }
-            pdensity *= _particleMass;
+        auto pdensity = _kernels.W0();
+        for(const Vector3& xpq: relPositions)
+            pdensity += _kernels.W(xpq);
+        pdensity *= _particleMass;
 
-            /* Clamp and cast to uint16_t */
-            if(pdensity > 10000.0f) {
-                pdensity = 10000.0f;
-            }
-            _densities[p] = static_cast<uint16_t>(std::round(pdensity));
-        });
+        /* Clamp and cast to uint16_t */
+        _densities[p] = UnsignedShort(Math::round(Math::min(pdensity, 10000.0f)));
+    });
 }
 
-/****************************************************************************************************/
 void SPHSolver::velocityIntegration(float timestep) {
-    auto pressure = [&](const float rho) {
-                        const auto ratio = rho / s_restDensity;
-                        if(ratio < 1.0f) {
-                            return 0.0f;
-                        }
-                        const auto ratioExp2 = ratio * ratio;
-                        const auto ratioExp4 = ratioExp2 * ratioExp2;
-                        const auto ratioExp7 = ratioExp4 * ratioExp2 * ratio;
-                        return ratioExp7 - 1.0f;
-                    };
+    auto pressure = [](const Float rho) {
+        const Float ratio = rho/RestDensity;
+        if(ratio < 1.0f) return 0.0f;
 
-    TaskScheduler::for_each(
-        _positions.size(),
-        [&](const size_t p) {
-            const auto& neighbors = _neighbors[p];
-            if(neighbors.size() == 0) {
-                /* A lonely particle only interacts with gravity */
-                _velocities[p].y() -= timestep * 9.81f;
-                return;
-            }
+        const Float ratioExp2 = ratio*ratio;
+        const Float ratioExp4 = ratioExp2*ratioExp2;
+        const Float ratioExp7 = ratioExp4*ratioExp2*ratio;
+        return ratioExp7 - 1.0f;
+    };
 
-            const auto& relPositions = _relPositions[p];
-            const auto pdensity      = static_cast<float>(_densities[p]);
-            const auto ppressure     = pressure(pdensity);
-            const auto Kp = ppressure / (pdensity * pdensity);
-            Vector3 accel(0);
+    TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
+        const auto& neighbors = _neighbors[p];
+        if(neighbors.size() == 0) {
+            /* A lonely particle only interacts with gravity */
+            _velocities[p].y() -= timestep*9.81f;
+            return;
+        }
 
-            /* Compute the pressure acceleration caused by normal fluid particles */
-            for(size_t idx = 0; idx < neighbors.size(); ++idx) {
-                const auto q         = neighbors[idx];
-                const auto qdensity  = static_cast<float>(_densities[q]);
-                const auto qpressure = pressure(qdensity);
-                const auto Kq        = qpressure / (qdensity * qdensity);
-                const auto r         = relPositions[idx];
+        const std::vector<Vector3>& relPositions = _relPositions[p];
+        const Float pdensity = Float(_densities[p]);
+        const Float ppressure = pressure(pdensity);
+        const Float Kp = ppressure/(pdensity*pdensity);
 
-                /* Pressure acceleration */
-                accel -= (Kp + Kq) * _kernels.gradW(r);
-            }
+        /* Compute the pressure acceleration caused by normal fluid particles */
+        Vector3 accel{0.0f};
+        for(std::size_t idx = 0; idx < neighbors.size(); ++idx) {
+            const UnsignedInt q = neighbors[idx];
+            const Float qdensity = Float(_densities[q]);
+            const Float qpressure = pressure(qdensity);
+            const Float Kq = qpressure/(qdensity*qdensity);
+            const Vector3 r = relPositions[idx];
 
-            /* Compute the pressure acceleration caused by ghost boundary particles */
-            for(size_t idx = neighbors.size(); idx < relPositions.size(); ++idx) {
-                const auto r = relPositions[idx];
-                accel       -= Kp * _kernels.gradW(r);
-            }
+            /* Pressure acceleration */
+            accel -= (Kp + Kq)*_kernels.gradW(r);
+        }
 
-            accel     *= _params.stiffness * _particleMass;
-            accel.y() -= 9.81f; /* add gravity */
+        /* Compute the pressure acceleration caused by ghost boundary particles */
+        for(std::size_t idx = neighbors.size(); idx < relPositions.size(); ++idx) {
+            const Vector3 r = relPositions[idx];
+            accel -= Kp*_kernels.gradW(r);
+        }
 
-            /* Update velocity from acceleration and gravity */
-            _velocities[p] += accel * timestep;
-        });
+        accel *= _params.stiffness*_particleMass;
+        accel.y() -= 9.81f; /* add gravity */
+
+        /* Update velocity from acceleration and gravity */
+        _velocities[p] += accel*timestep;
+    });
 }
 
-/****************************************************************************************************/
 void SPHSolver::computeViscosity() {
-    TaskScheduler::for_each(
-        _positions.size(),
-        [&](const size_t p) {
-            const auto& neighbors = _neighbors[p];
-            if(neighbors.size() == 0) {
-                _velocityDiffusions[p] = Vector3(0);
-                return;
-            }
+    TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
+        const std::vector<UnsignedInt>& neighbors = _neighbors[p];
+        if(neighbors.empty()) {
+            _velocityDiffusions[p] = Vector3(0);
+            return;
+        }
 
-            const auto& relPositions = _relPositions[p];
-            const auto pvel          = _velocities[p];
+        const std::vector<Vector3>& relPositions = _relPositions[p];
+        const Vector3 pvel = _velocities[p];
 
-            Vector3 diffuseVel(0);
-            for(size_t idx = 0; idx < neighbors.size(); ++idx) {
-                const auto q        = neighbors[idx];
-                const auto qvel     = _velocities[q];
-                const auto qdensity = static_cast<float>(_densities[q]);
-                const auto r        = relPositions[idx];
+        Vector3 diffuseVel{0.0f};
+        for(std::size_t idx = 0; idx != neighbors.size(); ++idx) {
+            const UnsignedInt q = neighbors[idx];
+            const Vector3 qvel = _velocities[q];
+            const Float qdensity = Float(_densities[q]);
+            const Vector3 r = relPositions[idx];
 
-                diffuseVel += (1.0f / qdensity) * _kernels.W(r) * (qvel - pvel);
-            }
-            diffuseVel *= _params.viscosity * _particleMass;
-            _velocityDiffusions[p] = diffuseVel;
-        });
+            diffuseVel += (1.0f/qdensity)*_kernels.W(r)*(qvel - pvel);
+        }
+
+        diffuseVel *= _params.viscosity*_particleMass;
+        _velocityDiffusions[p] = diffuseVel;
+    });
 
     /* Add diffused velocity back to velocity, causing viscosity */
-    TaskScheduler::for_each(
-        _positions.size(),
-        [&](const size_t p) {
-            _velocities[p] += _velocityDiffusions[p];
-        });
+    TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
+        _velocities[p] += _velocityDiffusions[p];
+    });
 }
 
-/****************************************************************************************************/
-void SPHSolver::updatePositions(float timestep) {
-    TaskScheduler::for_each(
-        _positions.size(),
-        [&](const size_t p) {
-            auto pvel = _velocities[p];
-            auto ppos = _positions[p] + pvel * timestep;
-            if(_domainBox.enforceBoundary(ppos, pvel, _params.boundaryRestitution)) {
-                _velocities[p] = pvel;
-            }
-            _positions[p] = ppos;
-        });
+void SPHSolver::updatePositions(Float timestep) {
+    TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
+        Vector3 pvel = _velocities[p];
+        auto ppos = _positions[p] + pvel * timestep;
+        if(_domainBox.enforceBoundary(ppos, pvel, _params.boundaryRestitution)) {
+            _velocities[p] = pvel;
+        }
+        _positions[p] = ppos;
+    });
 }
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

@@ -39,7 +39,7 @@
 #include <Magnum/Timeline.h>
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
+
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 using Scene3D  = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
 
@@ -48,68 +48,67 @@ class WireframeGrid;
 class WireframeBox;
 class ParticleGroup;
 
-/****************************************************************************************************/
-class FluidSimApp final : public Platform::Application {
-public:
-    explicit FluidSimApp(const Arguments& arguments);
+class FluidSimApp: public Platform::Application {
+    public:
+        explicit FluidSimApp(const Arguments& arguments);
 
-protected:
-    void viewportEvent(ViewportEvent& event) override;
-    void keyPressEvent(KeyEvent& event) override;
-    void keyReleaseEvent(KeyEvent& event) override;
-    void mousePressEvent(MouseEvent& event) override;
-    void mouseReleaseEvent(MouseEvent& event) override;
-    void mouseMoveEvent(MouseMoveEvent& event) override;
-    void mouseScrollEvent(MouseScrollEvent& event) override;
-    void textInputEvent(TextInputEvent& event) override;
-    void drawEvent() override;
+    protected:
+        void viewportEvent(ViewportEvent& event) override;
+        void keyPressEvent(KeyEvent& event) override;
+        void keyReleaseEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void textInputEvent(TextInputEvent& event) override;
+        void drawEvent() override;
 
-    /* Helper functions for camera movement */
-    float   depthAt(const Vector2i& windowPosition);
-    Vector3 unproject(const Vector2i& windowPosition, float depth) const;
+        /* Helper functions for camera movement */
+        Float depthAt(const Vector2i& windowPosition);
+        Vector3 unproject(const Vector2i& windowPosition, Float depth) const;
 
-    /* Fluid simulation helper functions */
-    void showMenu();
-    void initializeScene();
-    void simulationStep();
+        /* Fluid simulation helper functions */
+        void showMenu();
+        void initializeScene();
+        void simulationStep();
 
-    /* Window control */
-    bool _bShowMenu { true };
-    ImGuiIntegration::Context m_ImGuiContext{ NoCreate };
+        /* Window control */
+        bool _showMenu = true;
+        ImGuiIntegration::Context _imGuiContext{NoCreate};
 
-    /* Scene and drawable group must be constructed before camera and other scene objects */
-    Containers::Pointer<Scene3D>                     _scene;
-    Containers::Pointer<SceneGraph::DrawableGroup3D> _drawableGroup;
+        /* Scene and drawable group must be constructed before camera and other
+        scene objects */
+        Containers::Pointer<Scene3D> _scene;
+        Containers::Pointer<SceneGraph::DrawableGroup3D> _drawableGroup;
 
-    /* Camera helpers */
-    Vector3  _defaultCamPosition { 0.0f, 1.5f, 8.0f };
-    Vector3  _defaultCamTarget { 0.0f, 1.0f, 0.0f };
-    Vector2i _prevMousePosition;
-    Vector3  _rotationPoint, _translationPoint;
-    float    _lastDepth;
-    Containers::Pointer<Object3D>             _objCamera;
-    Containers::Pointer<SceneGraph::Camera3D> _camera;
+        /* Camera helpers */
+        Vector3 _defaultCamPosition{0.0f, 1.5f, 8.0f};
+        Vector3 _defaultCamTarget{0.0f, 1.0f, 0.0f};
+        Vector2i _prevMousePosition;
+        Vector3  _rotationPoint, _translationPoint;
+        Float _lastDepth;
+        Containers::Pointer<Object3D> _objCamera;
+        Containers::Pointer<SceneGraph::Camera3D> _camera;
 
-    /* Fluid simulation system */
-    Containers::Pointer<SPHSolver>    _fluidSolver { nullptr };
-    Containers::Pointer<WireframeBox> _drawableBox;
-    int   _substeps { 1 };
-    bool  _bPausedSimulation { false };
-    bool  _bMousePressed { false };
-    bool  _bDynamicBoundary { true };
-    float _boundaryOffset { 0.0f }; /* For boundary animation */
+        /* Fluid simulation system */
+        Containers::Pointer<SPHSolver> _fluidSolver;
+        Containers::Pointer<WireframeBox> _drawableBox;
+        Int _substeps = 1;
+        bool _pausedSimulation = false;
+        bool _mousePressed = false;
+        bool _dynamicBoundary = true;
+        Float _boundaryOffset = 0.0f; /* For boundary animation */
 
-    /* Drawable particles */
-    Containers::Pointer<ParticleGroup> _drawableParticles { nullptr };
+        /* Drawable particles */
+        Containers::Pointer<ParticleGroup> _drawableParticles;
 
-    /* Ground grid */
-    Containers::Pointer<WireframeGrid> _grid;
+        /* Ground grid */
+        Containers::Pointer<WireframeGrid> _grid;
 
-    /* Timeline to adjust number of simulation steps per frame */
-    Timeline _timeline;
+        /* Timeline to adjust number of simulation steps per frame */
+        Timeline _timeline;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::FluidSimApp)

@@ -30,120 +30,113 @@
 
 #pragma once
 
-#include <Magnum/Math/Functions.h>
-
 #include <vector>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <functional>
 #include <atomic>
+#include <Magnum/Math/Functions.h>
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-/*
- * This is a very simple threadpool implementation, for demonstration purpose only
- * Using tbb::parallel_for from Intel TBB should yield higher performance
- */
+
+/* This is a very simple threadpool implementation, for demonstration purpose
+   only. Using tbb::parallel_for from Intel TBB yields higher performance --
+   see TaskScheduler.h. */
 class ThreadPool {
-public:
-    ThreadPool() {
-        const auto maxNumThreads = std::thread::hardware_concurrency();
-        size_t     nWorkers      = maxNumThreads > 1 ? maxNumThreads - 1 : 0;
+    public:
+        ThreadPool() {
+            const Int maxNumThreads = std::thread::hardware_concurrency();
+            std::size_t nWorkers = maxNumThreads > 1 ? maxNumThreads - 1 : 0;
 
-        _threadTaskReady.resize(nWorkers, 0);
-        _tasks.resize(nWorkers + 1);
+            _threadTaskReady.resize(nWorkers, 0);
+            _tasks.resize(nWorkers + 1);
 
-        for(size_t threadIdx = 0; threadIdx < nWorkers; ++threadIdx) {
-            _workerThreads.emplace_back(
-                [threadIdx, this] {
+            for(std::size_t threadIdx = 0; threadIdx < nWorkers; ++threadIdx) {
+                _workerThreads.emplace_back([threadIdx, this] {
                     for(;;) {
                         {
                             std::unique_lock<std::mutex> lock(_taskMutex);
-                            _condition.wait(lock, [threadIdx, this] { return _bStop || _threadTaskReady[threadIdx] == 1; });
-                            if(_bStop && !_threadTaskReady[threadIdx]) {
-                                return;
-                            }
+                            _condition.wait(lock, [threadIdx, this] {
+                                return _bStop || _threadTaskReady[threadIdx] == 1;
+                            });
+                            if(_bStop && !_threadTaskReady[threadIdx]) return;
                         }
 
                         _tasks[threadIdx](); /* run task */
 
-                        /* Set task ready to 0, thus this thread will not do its computation more than once */
+                        /* Set task ready to 0, thus this thread will not do
+                           its computation more than once */
                         _threadTaskReady[threadIdx] = 0;
 
                         /* Decrease the busy thread counter */
                         _numBusyThreads.fetch_add(-1);
                     }
-                }
-                );
-        }
-    }
-
-    ~ThreadPool() {
-        {
-            std::unique_lock<std::mutex> lock(_taskMutex);
-            _bStop = true;
-        }
-        _condition.notify_all();
-        for(auto& worker: _workerThreads) {
-            worker.join();
-        }
-    }
-
-    void parallel_for(uint64_t size, std::function<void(uint64_t)>&& func) {
-        const auto nWorkers = _workerThreads.size();
-        if(nWorkers > 0) {
-            _numBusyThreads = static_cast<int>(nWorkers);
-
-            const auto chunkSize = static_cast<size_t>(std::ceil(static_cast<float>(size) / static_cast<float>(nWorkers + 1)));
-            for(size_t threadIdx = 0; threadIdx < nWorkers + 1; ++threadIdx) {
-                const auto chunkStart = threadIdx * chunkSize;
-                const auto chunkEnd   = Math::min(chunkStart + chunkSize, size);
-
-                /* Must copy func into local lambda's variable */
-                _tasks[threadIdx] = [chunkStart, chunkEnd, task = func] {
-                                        for(uint64_t idx = chunkStart; idx < chunkEnd; ++idx) {
-                                            task(idx);
-                                        }
-                                    };
+                });
             }
+        }
 
-            /* Wake up worker threads */
+        ~ThreadPool() {
             {
                 std::unique_lock<std::mutex> lock(_taskMutex);
-                for(size_t threadIdx = 0; threadIdx < _threadTaskReady.size(); ++threadIdx) {
-                    _threadTaskReady[threadIdx] = 1;
-                }
+                _bStop = true;
             }
+
             _condition.notify_all();
-
-            /* Handle last chunk in this thread */
-            _tasks.back()();
-
-            /* Wait until all worker threads finish */
-            while(_numBusyThreads.load() > 0) {}
-        } else {
-            for(size_t idx = 0; idx < size; ++idx) {
-                func(idx);
-            }
+            for(std::thread& worker: _workerThreads) worker.join();
         }
-    }
 
-    static inline ThreadPool& getUniqueInstance() {
-        static ThreadPool threadPool;
-        return threadPool;
-    }
+        void parallel_for(std::size_t size, std::function<void(std::size_t)>&& func) {
+            const auto nWorkers = _workerThreads.size();
+            if(nWorkers > 0) {
+                _numBusyThreads = Int(nWorkers);
 
-private:
-    std::atomic<int>         _numBusyThreads { 0 };
-    std::vector<int>         _threadTaskReady; /* Do not use std::vector<bool>: it's not threadsafe */
-    std::vector<std::thread> _workerThreads;
+                const std::size_t chunkSize = std::size_t(Math::ceil(Float(size)/ Float(nWorkers + 1)));
+                for(std::size_t threadIdx = 0; threadIdx < nWorkers + 1; ++threadIdx) {
+                    const std::size_t chunkStart = threadIdx * chunkSize;
+                    const std::size_t chunkEnd = Math::min(chunkStart + chunkSize, size);
 
-    std::vector<std::function<void()>> _tasks;
-    std::mutex              _taskMutex;
-    std::condition_variable _condition;
-    bool                    _bStop { false };
+                    /* Must copy func into local lambda's variable */
+                    _tasks[threadIdx] = [chunkStart, chunkEnd, task = func] {
+                        for(uint64_t idx = chunkStart; idx < chunkEnd; ++idx) {
+                            task(idx);
+                        }
+                    };
+                }
+
+                /* Wake up worker threads */
+                {
+                    std::unique_lock<std::mutex> lock(_taskMutex);
+                    for(std::size_t threadIdx = 0; threadIdx < _threadTaskReady.size(); ++threadIdx)
+                        _threadTaskReady[threadIdx] = 1;
+                }
+                _condition.notify_all();
+
+                /* Handle last chunk in this thread */
+                _tasks.back()();
+
+                /* Wait until all worker threads finish */
+                while(_numBusyThreads.load() > 0) {}
+
+            } else for(std::size_t idx = 0; idx < size; ++idx)
+                func(idx);
+        }
+
+        static ThreadPool& getUniqueInstance() {
+            static ThreadPool threadPool;
+            return threadPool;
+        }
+
+    private:
+        std::atomic<int> _numBusyThreads{0};
+        /* Do not use std::vector<bool>: it's not threadsafe */
+        std::vector<int> _threadTaskReady;
+        std::vector<std::thread> _workerThreads;
+
+        std::vector<std::function<void()>> _tasks;
+        std::mutex _taskMutex;
+        std::condition_variable _condition;
+        bool _bStop = false;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

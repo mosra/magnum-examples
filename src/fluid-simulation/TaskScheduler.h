@@ -30,33 +30,33 @@
 
 #pragma once
 
-#if defined(MULTITHREADING)
-#  ifdef USE_TBB
-#    include <tbb/tbb.h>
-#  else
-#    include "ThreadPool.h"
-#  endif
+#ifdef MULTITHREADING
+    #ifdef USE_TBB
+    #include <tbb/tbb.h>
+    #else
+    #include "ThreadPool.h"
+    #endif
 #endif
 
 namespace Magnum { namespace Examples { namespace TaskScheduler {
-template<class IndexType, class Function>
-void for_each(IndexType endIdx, Function&& func) {
-#ifdef MULTITHREADING
-#  ifdef USE_TBB
+
+template<class IndexType, class Function> void forEach(IndexType endIdx, Function&& func) {
+    #ifdef MULTITHREADING
+    #ifdef USE_TBB
     tbb::parallel_for(tbb::blocked_range<IndexType>(IndexType(0), endIdx),
-                      [&](const tbb::blocked_range<IndexType>& r) {
-                          for(IndexType i = r.begin(), iEnd = r.end(); i < iEnd; ++i) {
-                              func(i);
-                          }
-                      });
-#  else
+        [&](const tbb::blocked_range<IndexType>& r) {
+            for(IndexType i = r.begin(), iEnd = r.end(); i < iEnd; ++i) {
+                func(i);
+            }
+        });
+    #else
     ThreadPool::getUniqueInstance().parallel_for(endIdx, std::forward<Function>(func));
-#  endif
-#else
+    #endif
+    #else
     for(IndexType idx = 0; idx < endIdx; ++idx) {
         func(idx);
     }
-#endif
+    #endif
 }
-}   /* namespace TaskScheduler */
-} } /* namespace Magnum::Examples  */
+
+}}}

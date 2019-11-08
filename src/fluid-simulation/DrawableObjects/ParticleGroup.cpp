@@ -28,7 +28,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "DrawableObjects/ParticleGroup.h"
+#include "ParticleGroup.h"
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Containers/ArrayView.h>
@@ -39,8 +39,10 @@
 #include <Magnum/Trade/MeshData3D.h>
 
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleRadius) :
+
+using namespace Math::Literals;
+
+ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleRadius):
     _points(points),
     _particleRadius(particleRadius),
     _meshParticles(GL::MeshPrimitive::Points) {
@@ -48,31 +50,29 @@ ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleR
     _particleShader.reset(new ParticleSphereShader);
 }
 
-/****************************************************************************************************/
 ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& camera, const Vector2i& viewportSize) {
-    if(_points.empty()) { return *this; }
+    if(_points.empty()) return *this;
 
-    if(_bDirty) {
+    if(_dirty) {
         Containers::ArrayView<const float> data(reinterpret_cast<const float*>(&_points[0]), _points.size() * 3);
         _bufferParticles.setData(data);
         _meshParticles.setCount(static_cast<int>(_points.size()));
-        _bDirty = false;
+        _dirty = false;
     }
 
-    using namespace Math::Literals;
     (*_particleShader)
-    /* particle data */
+        /* particle data */
         .setNumParticles(static_cast<int>(_points.size()))
         .setParticleRadius(_particleRadius)
-    /* sphere render data */
-        .setPointSizeScale(static_cast<float>(viewportSize.x()) /
-                           Math::tan(22.5_degf)) /* tan(half field-of-view angle (45_deg)*/
+        /* sphere render data */
+        .setPointSizeScale(static_cast<float>(viewportSize.x())/
+            Math::tan(22.5_degf)) /* tan(half field-of-view angle (45_deg)*/
         .setColorMode(_colorMode)
         .setAmbientColor(_ambientColor)
         .setDiffuseColor(_diffuseColor)
         .setSpecularColor(_specularColor)
         .setShininess(_shininess)
-    /* view/prj matrices and light */
+        /* view/prj matrices and light */
         .setViewMatrix(camera->cameraMatrix())
         .setProjectionMatrix(camera->projectionMatrix())
         .setLightDirection(_lightDir);
@@ -83,5 +83,4 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
     return *this;
 }
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

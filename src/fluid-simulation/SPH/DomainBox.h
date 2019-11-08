@@ -30,73 +30,71 @@
 
 #pragma once
 
+#include <cassert>
+#include <vector>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Functions.h>
 #include <Magnum/Math/Vector3.h>
 
-#include <cassert>
-#include <vector>
-
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-/*
- * A grid data structure to search for indices of particle neighbors within a given distance
- * Upon searching for neighbors, the relative positions with neighbors are also computed
- */
+
+/* A grid data structure to search for indices of particle neighbors within a
+   given distance. Upon searching for neighbors, the relative positions with
+   neighbors are also computed. */
 class DomainBox {
-public:
-    explicit DomainBox(float particleRadius, const Vector3& lowerDomainBound, const Vector3& upperDomainBound);
+    public:
+        explicit DomainBox(Float particleRadius, const Vector3& lowerDomainBound, const Vector3& upperDomainBound);
 
-    Vector3& lowerDomainBound() { return _lowerDomainBound; }
-    Vector3& upperDomainBound() { return _upperDomainBound; }
+        Vector3& lowerDomainBound() { return _lowerDomainBound; }
+        Vector3& upperDomainBound() { return _upperDomainBound; }
 
-    void findNeighbors(const std::vector<Vector3>&         positions,
-                       std::vector<std::vector<uint32_t>>& neighbors,
-                       std::vector<std::vector<Vector3>>&  relativePositions);
+        void findNeighbors(const std::vector<Vector3>& positions,
+            std::vector<std::vector<uint32_t>>& neighbors,
+            std::vector<std::vector<Vector3>>& relativePositions);
 
-    bool enforceBoundary(Vector3& ppos, Vector3& pvel, float restitution);
+        bool enforceBoundary(Vector3& ppos, Vector3& pvel, Float restitution);
 
-private:
-    void generateBoundaryParticles();
-    void collectIndices(const std::vector<Vector3>& positions);
-    void tightenGrid(const std::vector<Vector3>& positions);
+    private:
+        void generateBoundaryParticles();
+        void collectIndices(const std::vector<Vector3>& positions);
+        void tightenGrid(const std::vector<Vector3>& positions);
 
-    template<int d>
-    inline bool isValidIndex(int idx) {
-        return idx >= 0 && static_cast<uint32_t>(idx) < _gridSize[d];
-    }
-
-    inline Vector3i getCellIndex(const Vector3& ppos) {
-        Vector3i cellIdx{ Math::NoInit };
-        for(size_t i = 0; i < 3; ++i) {
-            cellIdx[i] = static_cast<int>((ppos[i] - _lowerGridBound[i]) * _invCellLength);
+        template<Int d> bool isValidIndex(int idx) {
+            return idx >= 0 && static_cast<uint32_t>(idx) < _gridSize[d];
         }
-        assert(isValidIndex<0>(cellIdx[0] &&)
-               isValidIndex<1>(cellIdx[1] &&)
-               isValidIndex<2>(cellIdx[2]));
-        return cellIdx;
-    }
 
-    inline uint32_t getFlatIndex(int i, int j, int k) {
-        const auto flatIndex = (static_cast<uint32_t>(k) * _gridSize[1] +
-                                static_cast<uint32_t>(j)) * _gridSize[0] + static_cast<uint32_t>(i);
-        assert(flatIndex < _cells.size());
-        return flatIndex;
-    }
+        Vector3i getCellIndex(const Vector3& ppos) {
+            Vector3i cellIdx{Math::NoInit};
+            for(std::size_t i = 0; i != 3; ++i) {
+                cellIdx[i] = Int((ppos[i] - _lowerGridBound[i]) * _invCellLength);
+            }
+            assert(isValidIndex<0>(cellIdx[0] &&)
+                   isValidIndex<1>(cellIdx[1] &&)
+                   isValidIndex<2>(cellIdx[2]));
+            return cellIdx;
+        }
 
-    std::vector<std::vector<uint32_t>> _cells;
-    std::vector<Vector3>               _boundaryParticles;
+        UnsignedInt getFlatIndex(Int i, Int j, Int k) {
+            const UnsignedInt flatIndex =
+                UnsignedInt(i) +
+                UnsignedInt(j)*_gridSize[0] +
+                UnsignedInt(k)*_gridSize[0]*_gridSize[1];
+            assert(flatIndex < _cells.size());
+            return flatIndex;
+        }
 
-    Vector3  _lowerDomainBound, _upperDomainBound;
-    Vector3  _lowerGridBound;
-    Vector3  _upperGridBound;
-    uint32_t _gridSize[3] { 1u, 1u, 1u };
-    float    _cellLength{ 1.0f };
-    float    _maxDistSqr { 1.0f };
-    float    _invCellLength{ 1.0f };
-    float    _particleRadius { 1.0f };
-    float    _overlappedDistSqr { 1.0e-4f };
+        std::vector<std::vector<UnsignedInt>> _cells;
+        std::vector<Vector3> _boundaryParticles;
+
+        Vector3 _lowerDomainBound, _upperDomainBound;
+        Vector3 _lowerGridBound;
+        Vector3 _upperGridBound;
+        UnsignedInt _gridSize[3] {1u, 1u, 1u};
+        Float _cellLength = 1.0f;
+        Float _maxDistSqr = 1.0f;
+        Float _invCellLength = 1.0f;
+        Float _particleRadius = 1.0f;
+        Float _overlappedDistSqr = 1.0e-4f;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

@@ -38,29 +38,25 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 
 namespace Magnum { namespace Examples {
+
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 
-/****************************************************************************************************/
-class FlatShadeObject : public SceneGraph::Drawable3D {
-public:
-    explicit FlatShadeObject(Object3D& object, Shaders::Flat3D& shader,
-                             const Color3& color, GL::Mesh& mesh,
-                             SceneGraph::DrawableGroup3D* const drawables) :
-        SceneGraph::Drawable3D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
+class FlatShadeObject: public SceneGraph::Drawable3D {
+    public:
+        explicit FlatShadeObject(Object3D& object, Shaders::Flat3D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup3D* const drawables): SceneGraph::Drawable3D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
 
-    virtual void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
-        _shader.setColor(_color)
-            .setTransformationProjectionMatrix(camera.projectionMatrix() * transformation);
-        _mesh.draw(_shader);
-    }
+        void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
+            _shader.setColor(_color)
+                .setTransformationProjectionMatrix(camera.projectionMatrix() * transformation);
+            _mesh.draw(_shader);
+        }
 
-    FlatShadeObject& setColor(const Color3& color) { _color = color; return *this; }
+        FlatShadeObject& setColor(const Color3& color) { _color = color; return *this; }
 
-private:
-    Shaders::Flat3D& _shader;
-    Color3           _color;
-    GL::Mesh&        _mesh;
+    private:
+        Shaders::Flat3D& _shader;
+        Color3 _color;
+        GL::Mesh& _mesh;
 };
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

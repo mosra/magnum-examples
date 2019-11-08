@@ -29,158 +29,156 @@
  */
 
 #include "DomainBox.h"
-#include "TaskScheduler.h"
 
 #include <random>
 
+#include "TaskScheduler.h"
+
 namespace Magnum { namespace Examples {
-/****************************************************************************************************/
-DomainBox::DomainBox(float particleRadius, const Vector3& lowerCorner, const Vector3& upperCorner) :
-    _lowerDomainBound(lowerCorner), _upperDomainBound(upperCorner),
-    _cellLength(particleRadius * 4.0f),
-    _maxDistSqr(particleRadius * particleRadius * 16.0f),
-    _invCellLength(1.0f / _cellLength),
-    _particleRadius(particleRadius),
-    _overlappedDistSqr(particleRadius * particleRadius * 1.0e-8f) {
+
+DomainBox::DomainBox(Float particleRadius, const Vector3& lowerCorner, const Vector3& upperCorner):
+    _lowerDomainBound{lowerCorner}, _upperDomainBound{upperCorner},
+    _cellLength{particleRadius*4.0f},
+    _maxDistSqr{particleRadius*particleRadius*16.0f},
+    _invCellLength{1.0f/_cellLength},
+    _particleRadius{particleRadius},
+    _overlappedDistSqr{particleRadius*particleRadius*1.0e-8f}
+{
     generateBoundaryParticles();
 }
 
-/****************************************************************************************************/
-void DomainBox::findNeighbors(const std::vector<Vector3>&         positions,
-                              std::vector<std::vector<uint32_t>>& neighbors,
-                              std::vector<std::vector<Vector3>>&  relativePositions) {
+void DomainBox::findNeighbors(const std::vector<Vector3>& positions,
+    std::vector<std::vector<uint32_t>>& neighbors,
+    std::vector<std::vector<Vector3>>& relativePositions)
+{
     /* Collect particle indices into cells */
     collectIndices(positions);
 
-    /*
-     * Only consider ghost boundary particles if the fluid particle is within boundaryDist to the boundary
-     * boundaryDist = 2*particleRadius because ghost boundary particles are at 2*particleRadius outside the boundary
-     */
-    const auto boundaryDist = 2.0f * _particleRadius;
-    const auto lower_x      = _lowerDomainBound[0] + boundaryDist;
-    const auto upper_x      = _upperDomainBound[0] - boundaryDist;
-    const auto lower_y      = _lowerDomainBound[1] + boundaryDist;
-    const auto lower_z      = _lowerDomainBound[2] + boundaryDist;
-    const auto upper_z      = _upperDomainBound[2] - boundaryDist;
+    /* Only consider ghost boundary particles if the fluid particle is within
+       boundaryDist to the boundary
+        boundaryDist = 2*particleRadius
+       because ghost boundary particles are at
+        2*particleRadius outside the boundary */
+    const Float boundaryDist = 2.0f*_particleRadius;
+    const Float lowerX = _lowerDomainBound[0] + boundaryDist;
+    const Float upperX = _upperDomainBound[0] - boundaryDist;
+    const Float lowerY = _lowerDomainBound[1] + boundaryDist;
+    const Float lowerZ = _lowerDomainBound[2] + boundaryDist;
+    const Float upperZ = _upperDomainBound[2] - boundaryDist;
 
-    TaskScheduler::for_each(
-        positions.size(), [&](uint64_t p) {
-            auto ppos           = positions[p];
-            auto& pNeighbors    = neighbors[p];
-            auto& pRelPositions = relativePositions[p];
+    TaskScheduler::forEach(positions.size(), [&](UnsignedLong p) {
+        Vector3 ppos = positions[p];
+        std::vector<UnsignedInt>& pNeighbors = neighbors[p];
+        std::vector<Vector3>& pRelPositions = relativePositions[p];
 
-            /* Clear old lists */
-            pNeighbors.resize(0);
-            pRelPositions.resize(0);
+        /* Clear old lists */
+        pNeighbors.resize(0);
+        pRelPositions.resize(0);
 
-            const auto cellIdx = getCellIndex(ppos);
-            for(int k = -1; k <= 1; ++k) {
-                int zIdx = cellIdx[2] + k;
-                if(!isValidIndex<2>(zIdx)) {
-                    continue;
-                }
-                for(int j = -1; j <= 1; ++j) {
-                    int yIdx = cellIdx[1] + j;
-                    if(!isValidIndex<1>(yIdx)) {
-                        continue;
-                    }
-                    for(int i = -1; i <= 1; ++i) {
-                        int xIdx = cellIdx[0] + i;
-                        if(!isValidIndex<0>(xIdx)) {
-                            continue;
-                        }
+        const Vector3i cellIdx = getCellIndex(ppos);
+        for(Int k = -1; k <= 1; ++k) {
+            Int zIdx = cellIdx[2] + k;
+            if(!isValidIndex<2>(zIdx)) continue;
 
-                        const auto& cell = _cells[getFlatIndex(xIdx, yIdx, zIdx)];
-                        for(auto q : cell) {
-                            if(static_cast<uint32_t>(p) == q) { /* Exclude particle p from its neighbor list */
-                                continue;
-                            }
-                            const auto qpos = positions[q];
-                            const auto r    = ppos - qpos;
-                            const auto l2   = r.dot();
-                            if(l2 < _maxDistSqr && l2 > _overlappedDistSqr) {
-                                pNeighbors.push_back(q);
-                                pRelPositions.push_back(r);
-                            }
+            for(Int j = -1; j <= 1; ++j) {
+                Int yIdx = cellIdx[1] + j;
+                if(!isValidIndex<1>(yIdx)) continue;
+
+                for(Int i = -1; i <= 1; ++i) {
+                    Int xIdx = cellIdx[0] + i;
+                    if(!isValidIndex<0>(xIdx)) continue;
+
+                    const std::vector<UnsignedInt>& cell = _cells[getFlatIndex(xIdx, yIdx, zIdx)];
+                    for(UnsignedInt q: cell) {
+                        /* Exclude particle p from its neighbor list */
+                        if(UnsignedInt(p) == q) continue;
+
+                        const Vector3 qpos = positions[q];
+                        const Vector3 r = ppos - qpos;
+                        const Float l2   = r.dot();
+                        if(l2 < _maxDistSqr && l2 > _overlappedDistSqr) {
+                            pNeighbors.push_back(q);
+                            pRelPositions.push_back(r);
                         }
                     }
                 }
             }
+        }
 
-            /* Check with ghost boundary particles to fix the inherent SPH's problem of density deficiency at boundary
-             * If a particle is closed to the boundary, compute the relative position with the boundary particles
-             * There is no need to collect boundary particle indices.
-             */
+        /* Check with ghost boundary particles to fix the inherent SPH's
+           problem of density deficiency at boundary. If a particle is closed
+           to the boundary, compute the relative position with the boundary
+           particles. There is no need to collect boundary particle indices. */
 
-            if(ppos[1] < lower_y) { /* Don't need to consider the top face of the domain box */
-                const auto transPos = ppos - Vector3(_cellLength * std::floor(ppos[0] * _invCellLength),
-                                                     0,
-                                                     _cellLength * std::floor(ppos[2] * _invCellLength));
-                const auto y = _lowerDomainBound[1] - 2.0f * _particleRadius;
-                for(const auto& bdpos : _boundaryParticles) {
-                    const auto r  = transPos - Vector3(bdpos[0], y + bdpos[2], bdpos[1]);
-                    const auto l2 = r.dot();
-                    if(l2 < _maxDistSqr && l2 > _overlappedDistSqr) {
-                        pRelPositions.push_back(r);
-                    }
-                }
+        if(ppos[1] < lowerY) { /* Don't need to consider the top face of the domain box */
+            const Vector3 transPos = ppos - Vector3{
+                _cellLength*Math::floor(ppos[0]*_invCellLength),
+                0.0f,
+                _cellLength*Math::floor(ppos[2]*_invCellLength)};
+            const Float y = _lowerDomainBound[1] - 2.0f*_particleRadius;
+            for(const Vector3& bdpos: _boundaryParticles) {
+                const Vector3 r = transPos - Vector3{bdpos[0], y + bdpos[2], bdpos[1]};
+                const Float l2 = r.dot();
+                if(l2 < _maxDistSqr && l2 > _overlappedDistSqr)
+                    pRelPositions.push_back(r);
             }
+        }
 
-            if(ppos[0] < lower_x || ppos[0] > upper_x) {
-                const auto transPos = ppos - Vector3(0,
-                                                     _cellLength * std::floor(ppos[1] * _invCellLength),
-                                                     _cellLength * std::floor(ppos[2] * _invCellLength));
-                const auto x = ppos[0] < lower_x ? _lowerDomainBound[0] - 2.0f * _particleRadius :
-                               _upperDomainBound[0] + 2.0f * _particleRadius;
-                for(const auto& bdpos : _boundaryParticles) {
-                    const auto r  = transPos - Vector3(x + bdpos[2], bdpos[0], bdpos[1]);
-                    const auto l2 = r.dot();
-                    if(l2 < _maxDistSqr && l2 > _overlappedDistSqr) {
-                        pRelPositions.push_back(r);
-                    }
-                }
+        if(ppos[0] < lowerX || ppos[0] > upperX) {
+            const Vector3 transPos = ppos - Vector3{
+                0.0f,
+                _cellLength*Math::floor(ppos[1]*_invCellLength),
+                _cellLength*Math::floor(ppos[2]*_invCellLength)};
+            const Float x = ppos[0] < lowerX ?
+                _lowerDomainBound[0] - 2.0f*_particleRadius :
+                _upperDomainBound[0] + 2.0f*_particleRadius;
+            for(const Vector3& bdpos: _boundaryParticles) {
+                const Vector3 r = transPos - Vector3{x + bdpos[2], bdpos[0], bdpos[1]};
+                const Float l2 = r.dot();
+                if(l2 < _maxDistSqr && l2 > _overlappedDistSqr)
+                    pRelPositions.push_back(r);
             }
+        }
 
-            if(ppos[2] < lower_z || ppos[2] > upper_z) {
-                const auto transPos = ppos - Vector3(_cellLength * std::floor(ppos[0] * _invCellLength),
-                                                     _cellLength * std::floor(ppos[1] * _invCellLength),
-                                                     0);
-                const auto z = ppos[2] < lower_z ? _lowerDomainBound[2] - 2.0f * _particleRadius :
-                               _upperDomainBound[2] + 2.0f * _particleRadius;
-                for(const auto& bdpos : _boundaryParticles) {
-                    const auto r  = transPos - Vector3(bdpos[0], bdpos[1], z + bdpos[2]);
-                    const auto l2 = r.dot();
-                    if(l2 < _maxDistSqr && l2 > _overlappedDistSqr) {
-                        pRelPositions.push_back(r);
-                    }
-                }
+        if(ppos[2] < lowerZ || ppos[2] > upperZ) {
+            const Vector3 transPos = ppos - Vector3{
+                _cellLength*Math::floor(ppos[0] * _invCellLength),
+                _cellLength*Math::floor(ppos[1] * _invCellLength),
+                0.0f};
+            const Float z = ppos[2] < lowerZ ?
+                _lowerDomainBound[2] - 2.0f * _particleRadius :
+                _upperDomainBound[2] + 2.0f * _particleRadius;
+            for(const Vector3& bdpos: _boundaryParticles) {
+                const Vector3 r = transPos - Vector3{bdpos[0], bdpos[1], z + bdpos[2]};
+                const Float l2 = r.dot();
+                if(l2 < _maxDistSqr && l2 > _overlappedDistSqr)
+                    pRelPositions.push_back(r);
             }
-        });
+        }
+    });
 }
 
-/****************************************************************************************************/
 void DomainBox::generateBoundaryParticles() {
     /* Generate 1 layer of ghots boundary particles for 3x3 cells */
-    static constexpr int N       = 8;
-    const auto           spacing = 3.0f * _cellLength / static_cast<float>(N);
-    const auto           corner  = Vector2(-_cellLength + spacing * 0.5f);
+    constexpr Int N = 8;
+    const Float spacing = 3.0f*_cellLength/Float(N);
+    const Vector2 corner = Vector2{-_cellLength + spacing*0.5f};
 
-    std::random_device                    rd;
-    std::mt19937                          gen(rd());
+    std::random_device rd;
+    std::mt19937 gen(rd());
     std::uniform_real_distribution<float> distr(-_particleRadius, _particleRadius);
 
-    for(int l1 = 0; l1 < N; ++l1) {
-        for(int l2 = 0; l2 < N; ++l2) {
-            const auto pos2D = corner + Vector2(l1, l2) * spacing;
+    for(Int l1 = 0; l1 < N; ++l1) {
+        for(Int l2 = 0; l2 < N; ++l2) {
+            const Vector2 pos2D = corner + Vector2(l1, l2)*spacing;
             _boundaryParticles.emplace_back(
-                Vector3(pos2D[0] + distr(gen) * 0.2f, /* Store jittered position in 2D    */
-                        pos2D[1] + distr(gen) * 0.2f, /* Store jittered position in 2D    */
-                        distr(gen) * 0.1f));          /* Store just some jittering amount */
+                pos2D[0] + distr(gen)*0.2f, /* Store jittered position in 2D */
+                pos2D[1] + distr(gen)*0.2f, /* Store jittered position in 2D */
+                distr(gen) * 0.1f); /* Store just some jittering amount */
         }
     }
 }
 
-/****************************************************************************************************/
 void DomainBox::collectIndices(const std::vector<Vector3>& positions) {
     if(positions.size() == 0) {
         return;
@@ -190,22 +188,20 @@ void DomainBox::collectIndices(const std::vector<Vector3>& positions) {
     tightenGrid(positions);
 
     /* Clear cells */
-    TaskScheduler::for_each(_cells.size(), [&](size_t idx) { _cells[idx].resize(0); });
+    TaskScheduler::forEach(_cells.size(), [&](size_t idx) {
+        _cells[idx].resize(0);
+    });
 
     /* Collect particle indices into cells */
-    uint32_t nParticles = static_cast<uint32_t>(positions.size());
-    for(uint32_t p = 0; p < nParticles; ++p) {
-        const auto cellIdx     = getCellIndex(positions[p]);
+    for(std::size_t p = 0, nParticles = positions.size(); p < nParticles; ++p) {
+        const auto cellIdx = getCellIndex(positions[p]);
         const auto cellFlatIdx = getFlatIndex(cellIdx[0], cellIdx[1], cellIdx[2]);
-        _cells[cellFlatIdx].push_back(p);
+        _cells[cellFlatIdx].push_back(UnsignedInt(p));
     }
 }
 
-/****************************************************************************************************/
 void DomainBox::tightenGrid(const std::vector<Vector3>& positions) {
-    if(positions.size() == 0) {
-        return;
-    }
+    if(positions.size() == 0) return;
 
     /* Compute the particles axis-aligned bounding box */
     auto lowerBound = positions[0];
@@ -218,9 +214,9 @@ void DomainBox::tightenGrid(const std::vector<Vector3>& positions) {
         }
     }
 
-    /* Important: we must slightly expand the upper bound to ensure that the grid cells cover all particles
-     * Otherwise, the particles at upper bounds may be outside of the grid
-     */
+    /* Important: we must slightly expand the upper bound to ensure that the
+       grid cells cover all particles. Otherwise, the particles at upper bounds
+       may be outside of the grid */
     upperBound += Vector3(_cellLength * 0.1f);
 
     /* Store the bounds */
@@ -228,9 +224,9 @@ void DomainBox::tightenGrid(const std::vector<Vector3>& positions) {
     _upperGridBound = upperBound;
 
     /* Compute grid 3D sizes then resize the cells array */
-    uint32_t numCells = 1;
-    for(size_t i = 0; i < 3; ++i) {
-        _gridSize[i] = static_cast<uint32_t>(Math::ceil((upperBound[i] - lowerBound[i]) * _invCellLength));
+    UnsignedInt numCells = 1;
+    for(std::size_t i = 0; i != 3; ++i) {
+        _gridSize[i] = UnsignedInt(Math::ceil((upperBound[i] - lowerBound[i])*_invCellLength));
         if(_gridSize[i] == 0) {
             _gridSize[i] = 1;
         }
@@ -240,23 +236,22 @@ void DomainBox::tightenGrid(const std::vector<Vector3>& positions) {
     _cells.resize(numCells);
 }
 
-/****************************************************************************************************/
-bool DomainBox::enforceBoundary(Vector3& ppos, Vector3& pvel, float restitution) {
+bool DomainBox::enforceBoundary(Vector3& ppos, Vector3& pvel, Float restitution) {
     /* Enforce particle position to be within the given boundary */
-    bool bVelChanged { false };
-    for(size_t i = 0; i < 3; ++i) {
+    bool bVelChanged = false;
+    for(std::size_t i = 0; i != 3; ++i) {
         if(ppos[i] < _lowerDomainBound[i]) {
-            ppos[i]    += (_lowerDomainBound[i] - ppos[i]) * (restitution + 1.0f);
-            pvel[i]    *= -restitution;
+            ppos[i] += (_lowerDomainBound[i] - ppos[i])*(restitution + 1.0f);
+            pvel[i] *= -restitution;
             bVelChanged = true;
         } else if(ppos[i] > _upperDomainBound[i]) {
-            ppos[i]    -= (ppos[i] - _upperDomainBound[i]) * (restitution + 1.0f);
-            pvel[i]    *= -restitution;
+            ppos[i] -= (ppos[i] - _upperDomainBound[i])*(restitution + 1.0f);
+            pvel[i] *= -restitution;
             bVelChanged = true;
         }
     }
+
     return bVelChanged;
 }
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

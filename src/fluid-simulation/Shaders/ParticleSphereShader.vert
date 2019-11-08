@@ -38,14 +38,13 @@ uniform float pointSizeScale;
 
 uniform vec3 diffuseColor;
 
-/**********************************************************************************/
 layout(location = 0) in highp vec3 position;
 
 flat out vec3 viewCenter;
 flat out vec3 color;
 
-/**********************************************************************************/
-const vec3 colorRamp[] = vec3[] (vec3(1.0, 0.0, 0.0),
+const vec3 colorRamp[] = vec3[] (
+    vec3(1.0, 0.0, 0.0),
     vec3(1.0, 0.5, 0.0),
     vec3(1.0, 1.0, 0.0),
     vec3(1.0, 0.0, 1.0),
@@ -69,27 +68,25 @@ vec3 generateVertexColor() {
                     rand(vec2(gl_VertexID + 1, gl_VertexID)),
                     rand(vec2(gl_VertexID, gl_VertexID + 1)));
     } else if(colorMode == 1 ) { /* ramp color by particle id */
-        float segmentSize = float(numParticles) / 6.0f;
-        float segment     = floor(float(gl_VertexID) / segmentSize);
-        float t           = (float(gl_VertexID) - segmentSize * segment) / segmentSize;
-        vec3  startVal    = colorRamp[int(segment)];
-        vec3  endVal      = colorRamp[int(segment) + 1];
+        float segmentSize = float(numParticles)/6.0f;
+        float segment = floor(float(gl_VertexID)/segmentSize);
+        float t = (float(gl_VertexID) - segmentSize*segment)/segmentSize;
+        vec3 startVal = colorRamp[int(segment)];
+        vec3 endVal = colorRamp[int(segment) + 1];
         return mix(startVal, endVal, t);
     } else { /* uniform diffuse color */
         return diffuseColor;
     }
 }
 
-/**********************************************************************************/
-void main()
-{
-    vec4 eyeCoord = viewMatrix * vec4(position, 1.0);
-    vec3 posEye   = vec3(eyeCoord);
+void main() {
+    vec4 eyeCoord = viewMatrix*vec4(position, 1.0);
+    vec3 posEye = vec3(eyeCoord);
 
     /* output */
-    viewCenter    = posEye;
-    color         = generateVertexColor();
+    viewCenter = posEye;
+    color = generateVertexColor();
 
-    gl_PointSize       = particleRadius * pointSizeScale / length(posEye);
-    gl_Position        = projectionMatrix * eyeCoord;
+    gl_PointSize = particleRadius*pointSizeScale/length(posEye);
+    gl_Position = projectionMatrix*eyeCoord;
 }

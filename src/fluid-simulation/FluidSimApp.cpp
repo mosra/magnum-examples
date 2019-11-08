@@ -28,12 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "DrawableObjects/ParticleGroup.h"
-#include "DrawableObjects/WireframeObjects.h"
-
-#include "SPH/SPHSolver.h"
-#include "FluidSimApp.h"
-
 #include <Corrade/Utility/StlMath.h>
 #include <Magnum/Animation/Easing.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -47,14 +41,21 @@
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 
-static constexpr float s_ParticleRadius = 0.02f;
+#include "DrawableObjects/ParticleGroup.h"
+#include "DrawableObjects/WireframeObjects.h"
+
+#include "SPH/SPHSolver.h"
+#include "FluidSimApp.h"
 
 namespace Magnum { namespace Examples {
+
 using namespace Math::Literals;
 
-/****************************************************************************************************/
-FluidSimApp::FluidSimApp(const Arguments& arguments) :
-    Platform::Application{arguments, NoCreate} {
+namespace {
+    constexpr Float ParticleRadius = 0.02f;
+}
+
+FluidSimApp::FluidSimApp(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Setup window */
     {
         const Vector2 dpiScaling = this->dpiScaling({});
@@ -69,7 +70,7 @@ FluidSimApp::FluidSimApp(const Arguments& arguments) :
         }
 
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-        GL::Renderer::setClearColor(Color3 { 0.35f });
+        GL::Renderer::setClearColor(Color3{0.35f});
 
         /* Loop at 60 Hz max */
         setSwapInterval(1);
@@ -78,24 +79,15 @@ FluidSimApp::FluidSimApp(const Arguments& arguments) :
 
     /* Setup ImGui */
     {
-#if 0
-        ImGui::CreateContext();
-        ImGui::GetIO().Fonts->AddFontFromFileTTF(
-            "D:/Programming/Simulations/SPH/SimpleSPH/SourceSansPro-Regular.ttf", 18.0f);
-        m_ImGuiContext = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
-                                                   Vector2{ windowSize() } /*/ dpiScaling()*/, windowSize(), framebufferSize());
-#else
-        m_ImGuiContext = ImGuiIntegration::Context(Vector2{ windowSize() } / dpiScaling(), windowSize(), framebufferSize());
-#endif
+        _imGuiContext = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(), windowSize(), framebufferSize());
         ImGui::StyleColorsDark();
 
-        /* Setup proper blending to be used by ImGui. There's a great chance
-           you'll need this exact behavior for the rest of your scene. If not, set
-           this only for the drawFrame() call. */
-        GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
-                                       GL::Renderer::BlendEquation::Add);
-        GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
-                                       GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+        /* Setup proper blending to be used by ImGui */
+        GL::Renderer::setBlendEquation(
+            GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
+        GL::Renderer::setBlendFunction(
+            GL::Renderer::BlendFunction::SourceAlpha,
+            GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     }
 
     /* Setup scene objects and camera */
@@ -130,7 +122,7 @@ FluidSimApp::FluidSimApp(const Arguments& arguments) :
 
     /* Setup fluid solver */
     {
-        _fluidSolver.reset(new SPHSolver(s_ParticleRadius));
+        _fluidSolver.reset(new SPHSolver{ParticleRadius});
 
         /* Simulation domain box */
         /* Transform the box to cover the region [0, 0, 0] to [3, 3, 1] */
@@ -139,7 +131,7 @@ FluidSimApp::FluidSimApp(const Arguments& arguments) :
         _drawableBox->setColor(Color3(1, 1, 0));
 
         /* Drawable particles */
-        _drawableParticles.reset(new ParticleGroup(_fluidSolver->particlePositions(), s_ParticleRadius));
+        _drawableParticles.reset(new ParticleGroup{_fluidSolver->particlePositions(), ParticleRadius});
 
         /* Initialize scene particles */
         initializeScene();
@@ -149,10 +141,9 @@ FluidSimApp::FluidSimApp(const Arguments& arguments) :
     _timeline.start();
 }
 
-/****************************************************************************************************/
 void FluidSimApp::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
-    m_ImGuiContext.newFrame();
+    _imGuiContext.newFrame();
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive()) {
@@ -161,49 +152,40 @@ void FluidSimApp::drawEvent() {
         stopTextInput();
     }
 
-    /*
-     * Pause simulation if the mouse was pressed (camera is moving around)
-       This avoid freezing GUI while running the simulation
-     */
-    if(!_bPausedSimulation && !_bMousePressed) {
+    /* Pause simulation if the mouse was pressed (camera is moving around).
+       This avoid freezing GUI while running the simulation */
+    if(!_pausedSimulation && !_mousePressed) {
         /* Adjust the substep number to maximize CPU usage each frame */
-        const auto lastAvgStepTime = _timeline.previousFrameDuration() / static_cast<float>(_substeps);
-        const auto newSubsteps     = lastAvgStepTime > 0 ? static_cast<int>(1.0f / 60.0f / lastAvgStepTime) + 1 : 1;
-        if(Math::abs(newSubsteps - _substeps) > 1) {
-            _substeps = newSubsteps;
-        }
+        const Float lastAvgStepTime = _timeline.previousFrameDuration()/Float(_substeps);
+        const Int newSubsteps = lastAvgStepTime > 0 ? Int(1.0f/60.0f/lastAvgStepTime) + 1 : 1;
+        if(Math::abs(newSubsteps - _substeps) > 1) _substeps = newSubsteps;
 
-        for(int i = 0; i < _substeps; ++i) {
-            simulationStep();
-        }
+        for(Int i = 0; i < _substeps; ++i) simulationStep();
     }
 
     /* Draw objects */
     {
+        /* Trigger drawable object to update the particles to the GPU */
+        _drawableParticles->setDirty();
         /* Draw particles */
-        _drawableParticles->setDirty(); /* Trigger drawable object to update the particles to the GPU */
-        _drawableParticles->draw(_camera, GL::defaultFramebuffer.viewport().size());
+        _drawableParticles->draw(_camera, framebufferSize());
 
         /* Draw other objects (ground grid) */
         _camera->draw(*_drawableGroup);
     }
 
     /* Menu for parameters */
-    if(_bShowMenu) {
-        showMenu();
-    }
+    if(_showMenu) showMenu();
 
     /* Render ImGui window */
     {
-        /* Set appropriate states. If you only draw imgui UI, it is sufficient to do this once in the constructor. */
         GL::Renderer::enable(GL::Renderer::Feature::Blending);
         GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
         GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
         GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
 
-        m_ImGuiContext.drawFrame();
+        _imGuiContext.drawFrame();
 
-        /* Reset state. Only needed if you want to draw something else with different state next frame. */
         GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
         GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
@@ -217,55 +199,47 @@ void FluidSimApp::drawEvent() {
     redraw();
 }
 
-/****************************************************************************************************/
 void FluidSimApp::viewportEvent(ViewportEvent& event) {
-    const auto newBufferSize = event.framebufferSize();
-
     /* Resize the main framebuffer */
-    GL::defaultFramebuffer.setViewport({ {}, newBufferSize });
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     /* Relayout ImGui */
-    m_ImGuiContext.relayout(Vector2{ event.windowSize() } / event.dpiScaling(), event.windowSize(), newBufferSize);
+    _imGuiContext.relayout(Vector2{event.windowSize()}/event.dpiScaling(), event.windowSize(), event.framebufferSize());
 
     /* Recompute the camera's projection matrix */
-    _camera->setViewport(newBufferSize);
+    _camera->setViewport(event.framebufferSize());
 }
 
-/****************************************************************************************************/
 void FluidSimApp::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
     switch(event.key()) {
-        case KeyEvent::Key::H: {
-            _bShowMenu ^= true;
+        case KeyEvent::Key::H:
+            _showMenu ^= true;
             event.setAccepted(true);
-        }
-        break;
-        case KeyEvent::Key::R: {
+            break;
+        case KeyEvent::Key::R:
             initializeScene();
             event.setAccepted(true);
-        }
-        break;
-        case KeyEvent::Key::Space: {
-            _bPausedSimulation ^= true;
+            break;
+        case KeyEvent::Key::Space:
+            _pausedSimulation ^= true;
             event.setAccepted(true);
-        }
-        break;
+            break;
         default:
-            if(m_ImGuiContext.handleKeyPressEvent(event)) {
+            if(_imGuiContext.handleKeyPressEvent(event)) {
                 event.setAccepted(true);
             }
     }
 }
 
 void FluidSimApp::keyReleaseEvent(KeyEvent& event) {
-    if(m_ImGuiContext.handleKeyReleaseEvent(event)) {
+    if(_imGuiContext.handleKeyReleaseEvent(event)) {
         event.setAccepted(true);
         return;
     }
 }
 
-/****************************************************************************************************/
 void FluidSimApp::mousePressEvent(MouseEvent& event) {
-    if(m_ImGuiContext.handleMousePressEvent(event)) {
+    if(_imGuiContext.handleMousePressEvent(event)) {
         event.setAccepted(true);
         return;
     }
@@ -278,30 +252,31 @@ void FluidSimApp::mousePressEvent(MouseEvent& event) {
     /* Update camera */
     {
         _prevMousePosition = event.position();
-        const auto currentDepth = depthAt(event.position());
-        const auto depth        = currentDepth == 1.0f ? _lastDepth : currentDepth;
+        const Float currentDepth = depthAt(event.position());
+        const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
         _translationPoint = unproject(event.position(), depth);
 
         /* Update the rotation point only if we're not zooming against infinite
            depth or if the original rotation point is not yet initialized */
         if(currentDepth != 1.0f || _rotationPoint.isZero()) {
             _rotationPoint = _translationPoint;
-            _lastDepth     = depth;
+            _lastDepth = depth;
         }
     }
-    _bMousePressed = true;
+
+    _mousePressed = true;
 }
 
 void FluidSimApp::mouseReleaseEvent(MouseEvent& event) {
-    _bMousePressed = false;
-    if(m_ImGuiContext.handleMouseReleaseEvent(event)) {
+    _mousePressed = false;
+
+    if(_imGuiContext.handleMouseReleaseEvent(event)) {
         event.setAccepted(true);
     }
 }
 
-/****************************************************************************************************/
 void FluidSimApp::mouseMoveEvent(MouseMoveEvent& event) {
-    if(m_ImGuiContext.handleMouseMoveEvent(event)) {
+    if(_imGuiContext.handleMouseMoveEvent(event)) {
         event.setAccepted(true);
         return;
     }
@@ -311,90 +286,81 @@ void FluidSimApp::mouseMoveEvent(MouseMoveEvent& event) {
         return;
     }
 
-    const auto delta = 3.0f * Vector2{ event.position() - _prevMousePosition } /
-    Vector2{ GL::defaultFramebuffer.viewport().size() };
+    const Vector2 delta = 3.0f*Vector2{event.position() - _prevMousePosition}/Vector2{framebufferSize()};
     _prevMousePosition = event.position();
 
     if(event.buttons() & MouseMoveEvent::Button::Left) {
         _objCamera->transformLocal(
-            Matrix4::translation(_rotationPoint) *
-            Matrix4::rotationX(-0.51_radf * delta.y()) *
-            Matrix4::rotationY(-0.51_radf * delta.x()) *
+            Matrix4::translation(_rotationPoint)*
+            Matrix4::rotationX(-0.51_radf*delta.y())*
+            Matrix4::rotationY(-0.51_radf*delta.x())*
             Matrix4::translation(-_rotationPoint));
     } else {
-        const auto p = unproject(event.position(), _lastDepth);
+        const Vector3 p = unproject(event.position(), _lastDepth);
         _objCamera->translateLocal(_translationPoint - p); /* is Z always 0? */
         _translationPoint = p;
     }
+
     event.setAccepted();
 }
 
-/****************************************************************************************************/
 void FluidSimApp::mouseScrollEvent(MouseScrollEvent& event) {
-    const auto delta = event.offset().y();
-    if(std::abs(delta) < 1.0e-2f) {
+    const Float delta = event.offset().y();
+    if(Math::abs(delta) < 1.0e-2f) {
         return;
     }
 
-    if(m_ImGuiContext.handleMouseScrollEvent(event)) {
+    if(_imGuiContext.handleMouseScrollEvent(event)) {
         /* Prevent scrolling the page */
         event.setAccepted();
         return;
     }
 
-    const auto    currentDepth = depthAt(event.position());
-    const auto    depth        = currentDepth == 1.0f ? _lastDepth : currentDepth;
+    const Float currentDepth = depthAt(event.position());
+    const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     const Vector3 p = unproject(event.position(), depth);
     /* Update the rotation point only if we're not zooming against infinite
        depth or if the original rotation point is not yet initialized */
     if(currentDepth != 1.0f || _rotationPoint.isZero()) {
         _rotationPoint = p;
-        _lastDepth     = depth;
+        _lastDepth = depth;
     }
 
     /* Move towards/backwards the rotation point in cam coords */
     _objCamera->translateLocal(_rotationPoint * delta * 0.1f);
 }
 
-/****************************************************************************************************/
 void FluidSimApp::textInputEvent(TextInputEvent& event) {
-    if(m_ImGuiContext.handleTextInputEvent(event)) {
+    if(_imGuiContext.handleTextInputEvent(event)) {
         event.setAccepted(true);
     }
 }
 
-/****************************************************************************************************/
-float FluidSimApp::depthAt(const Vector2i& windowPosition) {
+Float FluidSimApp::depthAt(const Vector2i& windowPosition) {
     /* First scale the position from being relative to window size to being
        relative to framebuffer size as those two can be different on HiDPI
        systems */
-    const auto position   = windowPosition * Vector2{ framebufferSize() } / Vector2{ windowSize() };
-    const auto fbPosition = Vector2i{ position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1 };
+    const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
     GL::defaultFramebuffer.mapForRead(GL::DefaultFramebuffer::ReadAttachment::Front);
     Image2D data = GL::defaultFramebuffer.read(
-        Range2Di::fromSize(fbPosition, Vector2i{ 1 }).padded(Vector2i{ 2 }),
-        { GL::PixelFormat::DepthComponent, GL::PixelType::Float });
+        Range2Di::fromSize(fbPosition, Vector2i{1}).padded(Vector2i{2}),
+        {GL::PixelFormat::DepthComponent, GL::PixelType::Float});
 
-    return Math::min<float>(Containers::arrayCast<const float>(data.data()));
+    return Math::min<Float>(Containers::arrayCast<const Float>(data.data()));
 }
 
-/****************************************************************************************************/
 Vector3 FluidSimApp::unproject(const Vector2i& windowPosition, float depth) const {
     /* We have to take window size, not framebuffer size, since the position is
        in window coordinates and the two can be different on HiDPI systems */
-    const auto viewSize     = windowSize();
-    const auto viewPosition = Vector2i{ windowPosition.x(), viewSize.y() - windowPosition.y() - 1 };
-    const auto in           = Vector3{ 2 * Vector2{ viewPosition } / Vector2{ viewSize } - Vector2{ 1.0f }, depth*2.0f - 1.0f };
+    const Vector2i viewSize = windowSize();
+    const Vector2i viewPosition = Vector2i{windowPosition.x(), viewSize.y() - windowPosition.y() - 1};
+    const Vector3 in{2.0f*Vector2{viewPosition}/Vector2{viewSize} - Vector2{1.0f}, depth*2.0f - 1.0f};
 
-    /*
-        Use the following to get global coordinates instead of camera-relative:
-        (_cameraObject->absoluteTransformationMatrix()*_camera->projectionMatrix().inverted()).transformPoint(in)
-     */
     return _camera->projectionMatrix().inverted().transformPoint(in);
 }
 
-/****************************************************************************************************/
 void FluidSimApp::showMenu() {
     ImGui::SetNextWindowBgAlpha(0.5f);
     ImGui::Begin("Options", nullptr);
@@ -402,21 +368,21 @@ void FluidSimApp::showMenu() {
 
     /* General information */
     ImGui::Text("Hide/show menu: H");
-    ImGui::Text("Num. particles: %d",         static_cast<int>(_fluidSolver->numParticles()));
+    ImGui::Text("Num. particles: %d", Int(_fluidSolver->numParticles()));
     ImGui::Text("Simulation steps/frame: %d", _substeps);
-    ImGui::Text("Rendering: %3.2f FPS",       static_cast<double>(ImGui::GetIO().Framerate));
+    ImGui::Text("Rendering: %3.2f FPS", Double(ImGui::GetIO().Framerate));
     ImGui::Spacing();
 
     /* Rendering parameters */
     if(ImGui::CollapsingHeader("Particle Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Particle Rendering");
         {
-            const char* items[]   = { "Uniform", "Ramp by ID", "Random" };
-            static int  colorMode = 1;
-            if(ImGui::Combo("Color Mode", &colorMode, items, 3)) { _drawableParticles->setColorMode(colorMode); }
-            if(colorMode == 0) { /* Uniform color */
+            constexpr const char* items[] = {"Uniform", "Ramp by ID", "Random"};
+            static Int colorMode = 1;
+            if(ImGui::Combo("Color Mode", &colorMode, items, 3))
+                _drawableParticles->setColorMode(ParticleSphereShader::ColorMode(colorMode));
+            if(colorMode == 0) /* Uniform color */
                 ImGui::ColorEdit3("Diffuse Color", _drawableParticles->diffuseColor().data());
-            }
         }
         ImGui::InputFloat3("Light Direction", _drawableParticles->lightDirection().data());
         ImGui::PopID();
@@ -431,7 +397,7 @@ void FluidSimApp::showMenu() {
         ImGui::InputFloat("Stiffness", &_fluidSolver->simulationParameters().stiffness);
         ImGui::SliderFloat("Viscosity",   &_fluidSolver->simulationParameters().viscosity,           0.0f, 1.0f);
         ImGui::SliderFloat("Restitution", &_fluidSolver->simulationParameters().boundaryRestitution, 0.0f, 1.0f);
-        ImGui::Checkbox("Dynamic Boundary", &_bDynamicBoundary);
+        ImGui::Checkbox("Dynamic Boundary", &_dynamicBoundary);
         ImGui::PopID();
     }
     ImGui::Spacing();
@@ -439,7 +405,8 @@ void FluidSimApp::showMenu() {
 
     /* Reset */
     ImGui::Spacing();
-    if(ImGui::Button("Reset Simulation")) { initializeScene(); } ImGui::SameLine();
+    if(ImGui::Button("Reset Simulation")) initializeScene();
+    ImGui::SameLine();
     if(ImGui::Button("Reset Camera")) {
         _objCamera->setTransformation(Matrix4::lookAt(_defaultCamPosition, _defaultCamTarget, Vector3(0, 1, 0)));
     }
@@ -447,56 +414,57 @@ void FluidSimApp::showMenu() {
     ImGui::End();
 }
 
-/****************************************************************************************************/
 void FluidSimApp::initializeScene() {
     if(_fluidSolver->numParticles() > 0) {
         _fluidSolver->reset();
     } else {
-        const auto lowerCorner = Vector3(s_ParticleRadius * 2.0f);
-        const auto upperCorner = Vector3(0.5, 2, 1) - Vector3(s_ParticleRadius * 2.0f);
-        const auto spacing     = s_ParticleRadius * 2.0f;
-        const auto resolution { (upperCorner - lowerCorner) / spacing };
+        const Vector3 lowerCorner = Vector3{ParticleRadius*2.0f};
+        const Vector3 upperCorner = Vector3{0.5f, 2.0f, 1.0f} - Vector3{ParticleRadius*2.0f};
+        const Float spacing = ParticleRadius * 2.0f;
+        const Vector3 resolution = (upperCorner - lowerCorner)/spacing;
 
         std::vector<Vector3> tmp;
-        tmp.reserve(static_cast<size_t>(resolution.x() * resolution.y() * resolution.z()));
-        for(int i = 0; i < resolution[0]; ++i) {
-            for(int j = 0; j < resolution[1]; ++j) {
-                for(int k = 0; k < resolution[2]; ++k) {
-                    tmp.push_back(Vector3(i, j, k) * spacing + lowerCorner);
+        tmp.reserve(std::size_t(resolution.product()));
+        for(Int i = 0; i < resolution[0]; ++i) {
+            for(Int j = 0; j < resolution[1]; ++j) {
+                for(Int k = 0; k < resolution[2]; ++k) {
+                    tmp.push_back(Vector3{Vector3i{i, j, k}}*spacing + lowerCorner);
                 }
             }
         }
+
         _fluidSolver->setPositions(tmp);
     }
 
     /* Reset domain */
-    if(_bDynamicBoundary) { _boundaryOffset = 0.0f; }
-    _drawableBox->setTransformation(Matrix4::scaling(Vector3{ 1.5f, 1.5f, 0.5f }) * Matrix4::translation(Vector3(1)));
-    _fluidSolver->domainBox().upperDomainBound().x() = 3.0f - s_ParticleRadius;
+    if(_dynamicBoundary) _boundaryOffset = 0.0f;
+    _drawableBox->setTransformation(
+        Matrix4::scaling(Vector3{1.5f, 1.5f, 0.5f})*
+        Matrix4::translation(Vector3(1)));
+    _fluidSolver->domainBox().upperDomainBound().x() = 3.0f - ParticleRadius;
 
     /* Trigger drawable object to upload particles to the GPU */
     _drawableParticles->setDirty();
 }
 
-/****************************************************************************************************/
 void FluidSimApp::simulationStep() {
-    static float offset { 0.0f };
-    if(_bDynamicBoundary) {
+    static Float offset = 0.0f;
+    if(_dynamicBoundary) {
         /* Change fluid boundary */
-        static float step = 2.0e-3f;
+        static Float step = 2.0e-3f;
         if(_boundaryOffset > 1.0f || _boundaryOffset < 0.0f) {
             step *= -1.0f;
         }
         _boundaryOffset += step;
-        offset           = Math::lerp(0.0f, 0.5f, Animation::Easing::quadraticInOut(_boundaryOffset));
+        offset = Math::lerp(0.0f, 0.5f, Animation::Easing::quadraticInOut(_boundaryOffset));
     }
 
-    _drawableBox->setTransformation(Matrix4::scaling(Vector3{ 1.5f - offset, 1.5f, 0.5f }) * Matrix4::translation(Vector3(1)));
-    _fluidSolver->domainBox().upperDomainBound().x() = 2.0f * (1.5f - offset) - s_ParticleRadius;
+    _drawableBox->setTransformation(
+        Matrix4::scaling(Vector3{1.5f - offset, 1.5f, 0.5f})* Matrix4::translation(Vector3{1.0f}));
+    _fluidSolver->domainBox().upperDomainBound().x() = 2.0f*(1.5f - offset) - ParticleRadius;
 
     /* Run simulation one time step */
     _fluidSolver->advance();
 }
 
-/****************************************************************************************************/
-} } /* namespace Magnum::Examples  */
+}}

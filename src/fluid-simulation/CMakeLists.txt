@@ -36,7 +36,6 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
 
-############################################################
 find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
     GL
@@ -47,14 +46,12 @@ find_package(Magnum REQUIRED
     Sdl2Application)
 find_package(MagnumIntegration REQUIRED ImGui)
 
-############################################################
 option(FLUID_SIMULATION_EXAMPLE_MULTITHREADING
     "Build FluidSimulation example with parallel computation"
     ON)
 option(FLUID_SIMULATION_EXAMPLE_USE_TBB
     "Using Intel TBB if FluidSimulation is built with parallel computation enabled"
     OFF)
-
 
 if(FLUID_SIMULATION_EXAMPLE_MULTITHREADING)
     add_definitions(-DMULTITHREADING)
@@ -68,11 +65,9 @@ if(FLUID_SIMULATION_EXAMPLE_USE_TBB)
     include_directories(${TBB_INCLUDE_DIRS})
 endif()
 
-############################################################
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
-corrade_add_resource(FluidSimulation_RESOURCES Resources.conf)
+corrade_add_resource(FluidSimulation_RESOURCES resources.conf)
 
-############################################################
 include_directories(.)
 file(GLOB_RECURSE CPP_FILES *.cpp)
 
