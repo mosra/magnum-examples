@@ -34,7 +34,7 @@
 
 #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
     #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
-    #include <tbb/tbb.h>
+    #include <tbb/parallel_for.h>
     #else
     #include "ThreadPool.h"
     #endif
