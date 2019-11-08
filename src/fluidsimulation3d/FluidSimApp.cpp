@@ -60,7 +60,7 @@ FluidSimApp::FluidSimApp(const Arguments& arguments): Platform::Application{argu
     {
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
-        conf.setTitle("Magnum Fluid Simulation Example")
+        conf.setTitle("Magnum 3D Fluid Simulation Example")
             .setSize(conf.size(), dpiScaling)
             .setWindowFlags(Configuration::WindowFlag::Resizable);
         GLConfiguration glConf;

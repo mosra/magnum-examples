@@ -62,6 +62,10 @@ if(WITH_DART_EXAMPLE)
     add_subdirectory(dart)
 endif()
 
+if(WITH_FLUIDSIMULATION3D_EXAMPLE)
+    add_subdirectory(fluidsimulation3d)
+endif()
+
 if(WITH_IMGUI_EXAMPLE)
     add_subdirectory(imgui)
 endif()
@@ -124,8 +128,4 @@ endif()
 
 if(WITH_WEBVR_EXAMPLE)
     add_subdirectory(webvr)
-endif()
-
-if(WITH_FLUIDSIMULATION_EXAMPLE)
-    add_subdirectory(fluid-simulation)
 endif()
