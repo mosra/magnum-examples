@@ -77,13 +77,13 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
 
     /* Open the font and fill glyph cache */
     Utility::Resource rs("fonts");
-    if(!_font->openData(rs.getRaw("SourceSansPro-Regular.ttf"), 110.0f)) {
+    if(!_font->openData(rs.getRaw("SourceSansPro-Regular.ttf"), 180.0f)) {
         Error() << "Cannot open font file";
         std::exit(1);
     }
 
     _font->fillGlyphCache(_cache, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-+,.!°ěäЗдравстуймиΓειασουκόμ ");
-    std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.1295f,
+    std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.2f,
         "Hello, world!\n"
         "Ahoj, světe!\n"
         "Здравствуй, мир!\n"
@@ -91,7 +91,7 @@ TextExample::TextExample(const Arguments& arguments): Platform::Application{argu
         "Hej Världen!",
         _vertices, _indices, GL::BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
 
-    _text2.reset(new Text::Renderer2D(*_font, _cache, 0.035f, Text::Alignment::TopRight));
+    _text2.reset(new Text::Renderer2D(*_font, _cache, 0.05f, Text::Alignment::TopRight));
     _text2->reserve(40, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
 
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
