@@ -430,6 +430,7 @@ Vector3 FluidSimulation3DExample::unproject(const Vector2i& windowPosition, floa
 }
 
 void FluidSimulation3DExample::showMenu() {
+    ImGui::SetNextWindowPos({500.0f, 50.0f}, ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(0.5f);
     ImGui::Begin("Options", nullptr);
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
