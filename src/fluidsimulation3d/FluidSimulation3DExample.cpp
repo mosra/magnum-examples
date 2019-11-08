@@ -51,6 +51,12 @@
 #include "DrawableObjects/WireframeObjects.h"
 #include "SPH/SPHSolver.h"
 
+#include "configure.h"
+
+#ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+#include <thread>
+#endif
+
 namespace Magnum { namespace Examples {
 
 class FluidSimulation3DExample: public Platform::Application {
@@ -435,7 +441,15 @@ void FluidSimulation3DExample::showMenu() {
     ImGui::Text("Hide/show menu: H");
     ImGui::Text("Num. particles: %d", Int(_fluidSolver->numParticles()));
     ImGui::Text("Simulation steps/frame: %d", _substeps);
-    ImGui::Text("Rendering: %3.2f FPS", Double(ImGui::GetIO().Framerate));
+    #ifndef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    ImGui::Text("Rendering: %3.2f FPS (1 thread)", Double(ImGui::GetIO().Framerate));
+    #else
+    ImGui::Text("Rendering: %3.2f FPS (%d threads"
+        #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+        " + TBB"
+        #endif
+        ")", Double(ImGui::GetIO().Framerate), Int(std::thread::hardware_concurrency()));
+    #endif
     ImGui::Spacing();
 
     /* Rendering parameters */
