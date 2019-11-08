@@ -77,7 +77,6 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
         .setProjectionMatrix(camera->projectionMatrix())
         .setLightDirection(_lightDir);
 
-    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     _meshParticles.draw(*_particleShader);
 
     return *this;

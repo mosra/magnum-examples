@@ -208,6 +208,9 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         initializeScene();
     }
 
+    /* Render particles as sprites */
+    GL::Renderer::enable(GL::Renderer::Feature::ProgramPointSize);
+
     /* Start the timer */
     _timeline.start();
 }
