@@ -28,37 +28,5 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include "configure.h"
-
-#ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
-    #include <tbb/tbb.h>
-    #else
-    #include "ThreadPool.h"
-    #endif
-#endif
-
-namespace Magnum { namespace Examples { namespace TaskScheduler {
-
-template<class IndexType, class Function> void forEach(IndexType endIdx, Function&& func) {
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
-    tbb::parallel_for(tbb::blocked_range<IndexType>(IndexType(0), endIdx),
-        [&](const tbb::blocked_range<IndexType>& r) {
-            for(IndexType i = r.begin(), iEnd = r.end(); i < iEnd; ++i) {
-                func(i);
-            }
-        });
-    #else
-    ThreadPool::getUniqueInstance().parallel_for(endIdx, std::forward<Function>(func));
-    #endif
-    #else
-    for(IndexType idx = 0; idx < endIdx; ++idx) {
-        func(idx);
-    }
-    #endif
-}
-
-}}}
+#cmakedefine FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+#cmakedefine FLUIDSIMULATION3D_EXAMPLE_USE_TBB

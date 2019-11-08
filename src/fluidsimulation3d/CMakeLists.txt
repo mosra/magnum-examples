@@ -47,36 +47,32 @@ find_package(Magnum REQUIRED
 find_package(MagnumIntegration REQUIRED ImGui)
 find_package(Threads REQUIRED)
 
-option(FLUID_SIMULATION_EXAMPLE_MULTITHREADING
-    "Build FluidSimulation example with parallel computation"
-    ON)
-option(FLUID_SIMULATION_EXAMPLE_USE_TBB
-    "Using Intel TBB if FluidSimulation is built with parallel computation enabled"
-    OFF)
-
-if(FLUID_SIMULATION_EXAMPLE_MULTITHREADING)
-    add_definitions(-DMULTITHREADING)
-endif()
-
-if(FLUID_SIMULATION_EXAMPLE_USE_TBB)
-    add_definitions(-DUSE_TBB)
-
-    find_package(tbb REQUIRED)
-    add_definitions(${TBB_DEFINITIONS})
-    include_directories(${TBB_INCLUDE_DIRS})
-endif()
-
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
+
+option(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING "Build FluidSimulation example with parallel computation" ON)
+option(FLUIDSIMULATION3D_EXAMPLE_USE_TBB "Using Intel TBB if FluidSimulation is built with parallel computation enabled" OFF)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 corrade_add_resource(FluidSimulation_RESOURCES resources.conf)
 
-include_directories(.)
-file(GLOB_RECURSE CPP_FILES *.cpp)
-
-add_executable(${PROJECT_NAME} WIN32
-    ${CPP_FILES}
+add_executable(magnum-fluidsimulation3d WIN32
+    FluidSimulation3DExample.cpp
+    TaskScheduler.h
+    ThreadPool.h
+    DrawableObjects/FlatShadeObject.h
+    DrawableObjects/ParticleGroup.h
+    DrawableObjects/ParticleGroup.cpp
+    SPH/DomainBox.h
+    SPH/DomainBox.cpp
+    SPH/SPHKernels.h
+    SPH/SPHSolver.h
+    SPH/SPHSolver.cpp
+    Shaders/ParticleSphereShader.h
+    Shaders/ParticleSphereShader.cpp
     ${FluidSimulation_RESOURCES})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(magnum-fluidsimulation3d PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::GL
@@ -87,8 +83,15 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Magnum::Shaders
     MagnumIntegration::ImGui
     Threads::Threads)
+target_include_directories(magnum-fluidsimulation3d PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR})
+if(FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
+    find_package(TBB CONFIG REQUIRED)
+    target_link_libraries(magnum-fluidsimulation3d PRIVATE TBB::tbb)
+endif()
 
-install(TARGETS ${PROJECT_NAME} DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(TARGETS magnum-fluidsimulation3d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-fluidsimulation3d)
