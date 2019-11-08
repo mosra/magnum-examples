@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_Shaders_ParticleSphereShader_h
+#define Magnum_Examples_Shaders_ParticleSphereShader_h
 /*
     This file is part of Magnum.
 
@@ -28,7 +30,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
 #include <Magnum/GL/AbstractShaderProgram.h>
 
 namespace Magnum { namespace Examples {
@@ -73,3 +74,5 @@ class ParticleSphereShader: public GL::AbstractShaderProgram {
 };
 
 }}
+
+#endif

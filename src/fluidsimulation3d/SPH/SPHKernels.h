@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_SPH_SPHKernels_h
+#define Magnum_Examples_SPH_SPHKernels_h
 /*
     This file is part of Magnum.
 
@@ -27,8 +29,6 @@
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-#pragma once
 
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Functions.h>
@@ -108,3 +108,5 @@ class SPHKernels {
 };
 
 }}
+
+#endif

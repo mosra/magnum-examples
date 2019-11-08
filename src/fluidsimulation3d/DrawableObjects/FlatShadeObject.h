@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_DrawableObjects_FlatShadeObject_h
+#define Magnum_Examples_DrawableObjects_FlatShadeObject_h
 /*
     This file is part of Magnum.
 
@@ -27,8 +29,6 @@
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-#pragma once
 
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
@@ -60,3 +60,5 @@ class FlatShadeObject: public SceneGraph::Drawable3D {
 };
 
 }}
+
+#endif

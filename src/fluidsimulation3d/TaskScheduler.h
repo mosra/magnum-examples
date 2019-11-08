@@ -1,3 +1,5 @@
+#ifndef Magnum_Examples_TaskScheduler_h
+#define Magnum_Examples_TaskScheduler_h
 /*
     This file is part of Magnum.
 
@@ -27,8 +29,6 @@
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-#pragma once
 
 #include "configure.h"
 
@@ -62,3 +62,5 @@ template<class IndexType, class Function> void forEach(IndexType endIdx, Functio
 }
 
 }}}
+
+#endif
