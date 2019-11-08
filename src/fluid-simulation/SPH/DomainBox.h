@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include <cassert>
 #include <vector>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Functions.h>
@@ -68,9 +67,8 @@ class DomainBox {
             for(std::size_t i = 0; i != 3; ++i) {
                 cellIdx[i] = Int((ppos[i] - _lowerGridBound[i]) * _invCellLength);
             }
-            assert(isValidIndex<0>(cellIdx[0] &&)
-                   isValidIndex<1>(cellIdx[1] &&)
-                   isValidIndex<2>(cellIdx[2]));
+            CORRADE_INTERNAL_ASSERT(isValidIndex<0>(cellIdx[0]) &&
+                isValidIndex<1>(cellIdx[1]) && isValidIndex<2>(cellIdx[2]));
             return cellIdx;
         }
 
@@ -79,7 +77,7 @@ class DomainBox {
                 UnsignedInt(i) +
                 UnsignedInt(j)*_gridSize[0] +
                 UnsignedInt(k)*_gridSize[0]*_gridSize[1];
-            assert(flatIndex < _cells.size());
+            CORRADE_INTERNAL_ASSERT(flatIndex < _cells.size());
             return flatIndex;
         }
 
