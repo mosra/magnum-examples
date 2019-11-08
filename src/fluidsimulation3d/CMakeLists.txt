@@ -87,6 +87,12 @@ target_include_directories(magnum-fluidsimulation3d PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
 if(FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
+    # TBBConfig.cmake adds -isystem /usr/lib/cmake/TBB/../../../include, which
+    # breaks compilation. Temporary workaround by not including that dir as
+    # system, see https://github.com/intel/tbb/issues/195 and
+    # https://github.com/intel/tbb/pull/196
+    set_target_properties(magnum-fluidsimulation3d PROPERTIES
+        NO_SYSTEM_FROM_IMPORTED ON)
     find_package(TBB CONFIG REQUIRED)
     target_link_libraries(magnum-fluidsimulation3d PRIVATE TBB::tbb)
 endif()
