@@ -97,9 +97,9 @@ class ThreadPool {
                     const std::size_t chunkEnd = Math::min(chunkStart + chunkSize, size);
 
                     /* Must copy func into local lambda's variable */
-                    _tasks[threadIdx] = [chunkStart, chunkEnd, task = func] {
+                    _tasks[threadIdx] = [chunkStart, chunkEnd, func] {
                         for(uint64_t idx = chunkStart; idx < chunkEnd; ++idx) {
-                            task(idx);
+                            func(idx);
                         }
                     };
                 }
