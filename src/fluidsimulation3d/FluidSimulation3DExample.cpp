@@ -141,10 +141,21 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         }
     }
 
-    /* Setup ImGui */
+    /* Setup ImGui, load a better font */
     {
-        _imGuiContext = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(), windowSize(), framebufferSize());
+        ImGui::CreateContext();
         ImGui::StyleColorsDark();
+
+        ImFontConfig fontConfig;
+        fontConfig.FontDataOwnedByAtlas = false;
+        const Vector2 size = Vector2{windowSize()}/dpiScaling();
+        Utility::Resource rs{"data"};
+        Containers::ArrayView<const char> font = rs.getRaw("SourceSansPro-Regular.ttf");
+        ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
+            const_cast<char*>(font.data()), font.size(), 16.0f*framebufferSize().x()/size.x(), &fontConfig);
+
+        _imGuiContext = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
+            Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize());
 
         /* Setup proper blending to be used by ImGui */
         GL::Renderer::setBlendEquation(

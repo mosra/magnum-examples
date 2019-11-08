@@ -40,7 +40,7 @@
 namespace Magnum { namespace Examples {
 
 ParticleSphereShader::ParticleSphereShader() {
-    Utility::Resource rs("shaders");
+    Utility::Resource rs("data");
 
     GL::Shader vertShader{GL::Version::GL330, GL::Shader::Type::Vertex};
     GL::Shader fragShader{GL::Version::GL330, GL::Shader::Type::Fragment};
