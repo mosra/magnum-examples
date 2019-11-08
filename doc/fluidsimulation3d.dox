@@ -1,0 +1,105 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2018 Michal Mikula <miso.mikula@gmail.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-fluidsimulation3d 3D Fluid Simulation
+@brief SPH fluid simulation with a dynamic boundary.
+
+@m_footernavigation
+
+A basic implementation of SPH ([Smoothed-Particle Hydrodynamics](https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics))
+solver. In order to run in real time, accuracy has been heavily sacrificed for
+performance.
+
+@image html fluidsimulation3d.png width=400px
+
+@section examples-fluidsimulation3d-controls Controls
+
+-   @m_class{m-label m-default} **mouse drag** rotates the view
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse drag**
+    pans the view
+-   @m_class{m-label m-default} **mouse wheel** zooms in/out
+-   @m_class{m-label m-default} **H** shows / hides the overlay
+-   @m_class{m-label m-default} **R** resets the simulation
+-   @m_class{m-label m-default} **Space** pauses the simulation
+
+@section examples-fluidsimulation3d-credits Credits
+
+This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).
+
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [Adobe Source Sans Pro](https://github.com/adobe-fonts/source-sans-pro)
+    font, licensed under @m_class{m-label m-success} **OFL 1.1**
+    ([license text](https://github.com/adobe-fonts/source-sans-pro/blob/release/LICENSE.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/ofl-1.1/)).
+    Attribution is required for public use.
+
+@section examples-fluidsimulation3d-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation).
+
+-   @ref fluidsimulation3d/CMakeLists.txt "CMakeLists.txt"
+-   @ref fluidsimulation3d/DrawableObjects/FlatShadeObject.h "DrawableObjects/FlatShadeObject.h"
+-   @ref fluidsimulation3d/DrawableObjects/ParticleGroup.cpp "DrawableObjects/ParticleGroup.cpp"
+-   @ref fluidsimulation3d/DrawableObjects/ParticleGroup.h "DrawableObjects/ParticleGroup.h"
+-   @ref fluidsimulation3d/DrawableObjects/WireframeObjects.h "DrawableObjects/WireframeObjects.h"
+-   @ref fluidsimulation3d/FluidSimulation3DExample.cpp "FluidSimulation3DExample.cpp"
+-   @ref fluidsimulation3d/resources.conf "resources.conf"
+-   @ref fluidsimulation3d/SPH/DomainBox.cpp "SPH/DomainBox.cpp"
+-   @ref fluidsimulation3d/SPH/DomainBox.h "SPH/DomainBox.h"
+-   @ref fluidsimulation3d/SPH/SPHKernels.h "SPH/SPHKernels.h"
+-   @ref fluidsimulation3d/SPH/SPHSolver.cpp "SPH/SPHSolver.cpp"
+-   @ref fluidsimulation3d/SPH/SPHSolver.h "SPH/SPHSolver.h"
+-   @ref fluidsimulation3d/Shaders/ParticleSphereShader.cpp "Shaders/ParticleSphereShader.cpp"
+-   @ref fluidsimulation3d/Shaders/ParticleSphereShader.h "Shaders/ParticleSphereShader.h"
+-   @ref fluidsimulation3d/Shaders/ParticleSphereShader.frag "Shaders/ParticleSphereShader.frag"
+-   @ref fluidsimulation3d/Shaders/ParticleSphereShader.vert "Shaders/ParticleSphereShader.vert"
+-   @ref fluidsimulation3d/TaskScheduler.h "TaskScheduler.h"
+-   @ref fluidsimulation3d/ThreadPool.h "ThreadPool.h"
+
+@example fluidsimulation3d/CMakeLists.txt @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/DrawableObjects/FlatShadeObject.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/DrawableObjects/ParticleGroup.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/DrawableObjects/ParticleGroup.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/DrawableObjects/WireframeObjects.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/FluidSimulation3DExample.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/resources.conf @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/SPH/DomainBox.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/SPH/SPHKernels.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/SPH/DomainBox.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/SPH/SPHSolver.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/SPH/SPHSolver.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/Shaders/ParticleSphereShader.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/Shaders/ParticleSphereShader.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/Shaders/ParticleSphereShader.frag @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/Shaders/ParticleSphereShader.vert @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/TaskScheduler.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/ThreadPool.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+
+*/
+}
