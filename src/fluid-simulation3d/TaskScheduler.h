@@ -30,8 +30,8 @@
 
 #pragma once
 
-#if defined(MULTITHREADING)
-#  ifdef USE_TBB
+#if defined(FLUID3D_MULTITHREADING)
+#  ifdef FLUID3D_USE_TBB
 #    include <tbb/tbb.h>
 #  else
 #    include "ThreadPool.h"
@@ -41,7 +41,7 @@
 namespace Magnum { namespace Examples { namespace TaskScheduler {
 template<class IndexType, class Function>
 void for_each(IndexType endIdx, Function&& func) {
-#ifdef MULTITHREADING
+#ifdef FLUID3D_MULTITHREADING
 #  ifdef USE_TBB
     tbb::parallel_for(tbb::blocked_range<IndexType>(IndexType(0), endIdx),
                       [&](const tbb::blocked_range<IndexType>& r) {

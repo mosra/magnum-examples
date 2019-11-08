@@ -29,7 +29,7 @@
 #
 
 cmake_minimum_required(VERSION 3.4)
-project(magnum-fluidsimulation)
+project(magnum-fluidsimulation3d)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -48,20 +48,20 @@ find_package(Magnum REQUIRED
 find_package(MagnumIntegration REQUIRED ImGui)
 
 ############################################################
-option(FLUID_SIMULATION_EXAMPLE_MULTITHREADING
-    "Build FluidSimulation example with parallel computation"
+option(FLUID_SIMULATION3D_EXAMPLE_MULTITHREADING
+    "Build FluidSimulation3D example with parallel computation"
     ON)
-option(FLUID_SIMULATION_EXAMPLE_USE_TBB
-    "Using Intel TBB if FluidSimulation is built with parallel computation enabled"
+option(FLUID_SIMULATION3D_EXAMPLE_USE_TBB
+    "Using Intel TBB if FluidSimulation3D is built with parallel computation enabled"
     OFF)
 
 
-if(FLUID_SIMULATION_EXAMPLE_MULTITHREADING)
-    add_definitions(-DMULTITHREADING)
+if(FLUID_SIMULATION3D_EXAMPLE_MULTITHREADING)
+    add_definitions(-DFLUID3D_MULTITHREADING)
 endif()
 
-if(FLUID_SIMULATION_EXAMPLE_USE_TBB)
-    add_definitions(-DUSE_TBB)
+if(FLUID_SIMULATION3D_EXAMPLE_USE_TBB)
+    add_definitions(-DFLUID3D_USE_TBB)
 
     find_package(tbb REQUIRED)
     add_definitions(${TBB_DEFINITIONS})
@@ -70,7 +70,7 @@ endif()
 
 ############################################################
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
-corrade_add_resource(FluidSimulation_RESOURCES Resources.conf)
+corrade_add_resource(FluidSimulation3D_RESOURCES Resources.conf)
 
 ############################################################
 include_directories(.)
@@ -78,7 +78,7 @@ file(GLOB_RECURSE CPP_FILES *.cpp)
 
 add_executable(${PROJECT_NAME} WIN32
     ${CPP_FILES}
-    ${FluidSimulation_RESOURCES})
+    ${FluidSimulation3D_RESOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Corrade::Main
