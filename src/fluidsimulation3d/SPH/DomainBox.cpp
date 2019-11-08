@@ -72,8 +72,8 @@ void DomainBox::findNeighbors(const std::vector<Vector3>& positions,
         std::vector<Vector3>& pRelPositions = relativePositions[p];
 
         /* Clear old lists */
-        pNeighbors.resize(0);
-        pRelPositions.resize(0);
+        pNeighbors.clear();
+        pRelPositions.clear();
 
         const Vector3i cellIdx = getCellIndex(ppos);
         for(Int k = -1; k <= 1; ++k) {
