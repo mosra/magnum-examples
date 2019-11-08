@@ -45,6 +45,7 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 find_package(MagnumIntegration REQUIRED ImGui)
+find_package(Threads REQUIRED)
 
 option(FLUID_SIMULATION_EXAMPLE_MULTITHREADING
     "Build FluidSimulation example with parallel computation"
@@ -84,7 +85,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders
-    MagnumIntegration::ImGui)
+    MagnumIntegration::ImGui
+    Threads::Threads)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
