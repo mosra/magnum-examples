@@ -139,13 +139,6 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         if(!tryCreate(conf, glConf)) {
             create(conf, glConf.setSampleCount(0));
         }
-
-        GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-        GL::Renderer::setClearColor(Color3{0.35f});
-
-        /* Loop at 60 Hz max */
-        setSwapInterval(1);
-        setMinimalLoopPeriod(16);
     }
 
     /* Setup ImGui */
@@ -208,10 +201,13 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         initializeScene();
     }
 
-    /* Render particles as sprites */
+    /* Enable depth test, render particles as sprites */
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::ProgramPointSize);
 
-    /* Start the timer */
+    /* Start the timer, loop at 60 Hz max */
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16);
     _timeline.start();
 }
 
