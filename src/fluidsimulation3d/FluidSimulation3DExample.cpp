@@ -28,26 +28,91 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <Corrade/Containers/Pointer.h>
 #include <Corrade/Utility/StlMath.h>
+#include <Magnum/Image.h>
+#include <Magnum/Timeline.h>
 #include <Magnum/Animation/Easing.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/Image.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Version.h>
-#include <Magnum/SceneGraph/Scene.h>
+#include <Magnum/ImGuiIntegration/Context.hpp>
+#include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
+#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/SceneGraph/Scene.h>
 
 #include "DrawableObjects/ParticleGroup.h"
 #include "DrawableObjects/WireframeObjects.h"
-
 #include "SPH/SPHSolver.h"
-#include "FluidSimApp.h"
 
 namespace Magnum { namespace Examples {
+
+class FluidSimulation3DExample: public Platform::Application {
+    public:
+        explicit FluidSimulation3DExample(const Arguments& arguments);
+
+    protected:
+        void viewportEvent(ViewportEvent& event) override;
+        void keyPressEvent(KeyEvent& event) override;
+        void keyReleaseEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void textInputEvent(TextInputEvent& event) override;
+        void drawEvent() override;
+
+        /* Helper functions for camera movement */
+        Float depthAt(const Vector2i& windowPosition);
+        Vector3 unproject(const Vector2i& windowPosition, Float depth) const;
+
+        /* Fluid simulation helper functions */
+        void showMenu();
+        void initializeScene();
+        void simulationStep();
+
+        /* Window control */
+        bool _showMenu = true;
+        ImGuiIntegration::Context _imGuiContext{NoCreate};
+
+        /* Scene and drawable group must be constructed before camera and other
+        scene objects */
+        Containers::Pointer<Scene3D> _scene;
+        Containers::Pointer<SceneGraph::DrawableGroup3D> _drawableGroup;
+
+        /* Camera helpers */
+        Vector3 _defaultCamPosition{0.0f, 1.5f, 8.0f};
+        Vector3 _defaultCamTarget{0.0f, 1.0f, 0.0f};
+        Vector2i _prevMousePosition;
+        Vector3  _rotationPoint, _translationPoint;
+        Float _lastDepth;
+        Containers::Pointer<Object3D> _objCamera;
+        Containers::Pointer<SceneGraph::Camera3D> _camera;
+
+        /* Fluid simulation system */
+        Containers::Pointer<SPHSolver> _fluidSolver;
+        Containers::Pointer<WireframeBox> _drawableBox;
+        Int _substeps = 1;
+        bool _pausedSimulation = false;
+        bool _mousePressed = false;
+        bool _dynamicBoundary = true;
+        Float _boundaryOffset = 0.0f; /* For boundary animation */
+
+        /* Drawable particles */
+        Containers::Pointer<ParticleGroup> _drawableParticles;
+
+        /* Ground grid */
+        Containers::Pointer<WireframeGrid> _grid;
+
+        /* Timeline to adjust number of simulation steps per frame */
+        Timeline _timeline;
+};
 
 using namespace Math::Literals;
 
@@ -55,7 +120,7 @@ namespace {
     constexpr Float ParticleRadius = 0.02f;
 }
 
-FluidSimApp::FluidSimApp(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Setup window */
     {
         const Vector2 dpiScaling = this->dpiScaling({});
@@ -141,7 +206,7 @@ FluidSimApp::FluidSimApp(const Arguments& arguments): Platform::Application{argu
     _timeline.start();
 }
 
-void FluidSimApp::drawEvent() {
+void FluidSimulation3DExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
     _imGuiContext.newFrame();
 
@@ -199,7 +264,7 @@ void FluidSimApp::drawEvent() {
     redraw();
 }
 
-void FluidSimApp::viewportEvent(ViewportEvent& event) {
+void FluidSimulation3DExample::viewportEvent(ViewportEvent& event) {
     /* Resize the main framebuffer */
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
@@ -210,7 +275,7 @@ void FluidSimApp::viewportEvent(ViewportEvent& event) {
     _camera->setViewport(event.framebufferSize());
 }
 
-void FluidSimApp::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
+void FluidSimulation3DExample::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::H:
             _showMenu ^= true;
@@ -231,14 +296,14 @@ void FluidSimApp::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
     }
 }
 
-void FluidSimApp::keyReleaseEvent(KeyEvent& event) {
+void FluidSimulation3DExample::keyReleaseEvent(KeyEvent& event) {
     if(_imGuiContext.handleKeyReleaseEvent(event)) {
         event.setAccepted(true);
         return;
     }
 }
 
-void FluidSimApp::mousePressEvent(MouseEvent& event) {
+void FluidSimulation3DExample::mousePressEvent(MouseEvent& event) {
     if(_imGuiContext.handleMousePressEvent(event)) {
         event.setAccepted(true);
         return;
@@ -267,7 +332,7 @@ void FluidSimApp::mousePressEvent(MouseEvent& event) {
     _mousePressed = true;
 }
 
-void FluidSimApp::mouseReleaseEvent(MouseEvent& event) {
+void FluidSimulation3DExample::mouseReleaseEvent(MouseEvent& event) {
     _mousePressed = false;
 
     if(_imGuiContext.handleMouseReleaseEvent(event)) {
@@ -275,7 +340,7 @@ void FluidSimApp::mouseReleaseEvent(MouseEvent& event) {
     }
 }
 
-void FluidSimApp::mouseMoveEvent(MouseMoveEvent& event) {
+void FluidSimulation3DExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(_imGuiContext.handleMouseMoveEvent(event)) {
         event.setAccepted(true);
         return;
@@ -304,7 +369,7 @@ void FluidSimApp::mouseMoveEvent(MouseMoveEvent& event) {
     event.setAccepted();
 }
 
-void FluidSimApp::mouseScrollEvent(MouseScrollEvent& event) {
+void FluidSimulation3DExample::mouseScrollEvent(MouseScrollEvent& event) {
     const Float delta = event.offset().y();
     if(Math::abs(delta) < 1.0e-2f) {
         return;
@@ -330,13 +395,13 @@ void FluidSimApp::mouseScrollEvent(MouseScrollEvent& event) {
     _objCamera->translateLocal(_rotationPoint * delta * 0.1f);
 }
 
-void FluidSimApp::textInputEvent(TextInputEvent& event) {
+void FluidSimulation3DExample::textInputEvent(TextInputEvent& event) {
     if(_imGuiContext.handleTextInputEvent(event)) {
         event.setAccepted(true);
     }
 }
 
-Float FluidSimApp::depthAt(const Vector2i& windowPosition) {
+Float FluidSimulation3DExample::depthAt(const Vector2i& windowPosition) {
     /* First scale the position from being relative to window size to being
        relative to framebuffer size as those two can be different on HiDPI
        systems */
@@ -351,7 +416,7 @@ Float FluidSimApp::depthAt(const Vector2i& windowPosition) {
     return Math::min<Float>(Containers::arrayCast<const Float>(data.data()));
 }
 
-Vector3 FluidSimApp::unproject(const Vector2i& windowPosition, float depth) const {
+Vector3 FluidSimulation3DExample::unproject(const Vector2i& windowPosition, float depth) const {
     /* We have to take window size, not framebuffer size, since the position is
        in window coordinates and the two can be different on HiDPI systems */
     const Vector2i viewSize = windowSize();
@@ -361,7 +426,7 @@ Vector3 FluidSimApp::unproject(const Vector2i& windowPosition, float depth) cons
     return _camera->projectionMatrix().inverted().transformPoint(in);
 }
 
-void FluidSimApp::showMenu() {
+void FluidSimulation3DExample::showMenu() {
     ImGui::SetNextWindowBgAlpha(0.5f);
     ImGui::Begin("Options", nullptr);
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
@@ -414,7 +479,7 @@ void FluidSimApp::showMenu() {
     ImGui::End();
 }
 
-void FluidSimApp::initializeScene() {
+void FluidSimulation3DExample::initializeScene() {
     if(_fluidSolver->numParticles() > 0) {
         _fluidSolver->reset();
     } else {
@@ -447,7 +512,7 @@ void FluidSimApp::initializeScene() {
     _drawableParticles->setDirty();
 }
 
-void FluidSimApp::simulationStep() {
+void FluidSimulation3DExample::simulationStep() {
     static Float offset = 0.0f;
     if(_dynamicBoundary) {
         /* Change fluid boundary */
@@ -468,3 +533,5 @@ void FluidSimApp::simulationStep() {
 }
 
 }}
+
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::FluidSimulation3DExample)
