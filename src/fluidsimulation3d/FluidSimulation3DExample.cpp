@@ -470,8 +470,12 @@ void FluidSimulation3DExample::showMenu() {
             static Int colorMode = 1;
             if(ImGui::Combo("Color Mode", &colorMode, items, 3))
                 _drawableParticles->setColorMode(ParticleSphereShader::ColorMode(colorMode));
-            if(colorMode == 0) /* Uniform color */
-                ImGui::ColorEdit3("Diffuse Color", _drawableParticles->diffuseColor().data());
+            if(colorMode == 0) { /* Uniform color */
+			    static Color3 color = _drawableParticles->diffuseColor();
+                if(ImGui::ColorEdit3("Diffuse Color", color.data())) {
+					_drawableParticles->setDiffuseColor(color);
+				}
+			}
         }
         ImGui::InputFloat3("Light Direction", _drawableParticles->lightDirection().data());
         ImGui::PopID();
