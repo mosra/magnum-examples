@@ -463,7 +463,7 @@ void FluidSimulation3DExample::showMenu() {
     ImGui::Spacing();
 
     /* Rendering parameters */
-    if(ImGui::CollapsingHeader("Particle Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(ImGui::TreeNodeEx("Particle Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Particle Rendering");
         {
             constexpr const char* items[] = {"Uniform", "Ramp by ID", "Random"};
@@ -482,19 +482,21 @@ void FluidSimulation3DExample::showMenu() {
             _drawableParticles->setLightDirection(lightDir);
         }
         ImGui::PopID();
+        ImGui::TreePop();
     }
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
 
     /* Simulation parameters */
-    if(ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Simulation");
         ImGui::InputFloat("Stiffness", &_fluidSolver->simulationParameters().stiffness);
         ImGui::SliderFloat("Viscosity",   &_fluidSolver->simulationParameters().viscosity,           0.0f, 1.0f);
         ImGui::SliderFloat("Restitution", &_fluidSolver->simulationParameters().boundaryRestitution, 0.0f, 1.0f);
         ImGui::Checkbox("Dynamic Boundary", &_dynamicBoundary);
         ImGui::PopID();
+        ImGui::TreePop();
     }
     ImGui::Spacing();
     ImGui::Separator();
