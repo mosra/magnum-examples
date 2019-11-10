@@ -477,7 +477,10 @@ void FluidSimulation3DExample::showMenu() {
                 }
             }
         }
-        ImGui::InputFloat3("Light Direction", _drawableParticles->lightDirection().data());
+        static Vector3 lightDir = _drawableParticles->lightDirection();
+        if(ImGui::InputFloat3("Light Direction", lightDir.data())) {
+            _drawableParticles->setLightDirection(lightDir);
+        }
         ImGui::PopID();
     }
     ImGui::Spacing();
