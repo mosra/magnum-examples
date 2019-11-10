@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_DrawableObjects_FlatShadeObject_h
-#define Magnum_Examples_DrawableObjects_FlatShadeObject_h
+#ifndef Magnum_Examples_FluidSimulation3D_DrawableObjects_FlatShadeObject_h
+#define Magnum_Examples_FluidSimulation3D_DrawableObjects_FlatShadeObject_h
 /*
     This file is part of Magnum.
 

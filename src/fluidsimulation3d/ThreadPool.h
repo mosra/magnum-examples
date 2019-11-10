@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ThreadPool_h
-#define Magnum_Examples_ThreadPool_h
+#ifndef Magnum_Examples_FluidSimulation3D_ThreadPool_h
+#define Magnum_Examples_FluidSimulation3D_ThreadPool_h
 /*
     This file is part of Magnum.
 

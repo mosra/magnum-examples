@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_SPH_DomainBox_h
-#define Magnum_Examples_SPH_DomainBox_h
+#ifndef Magnum_Examples_FluidSimulation3D_SPH_DomainBox_h
+#define Magnum_Examples_FluidSimulation3D_SPH_DomainBox_h
 /*
     This file is part of Magnum.
 

@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_DrawableObjects_ParticleGroup_h
-#define Magnum_Examples_DrawableObjects_ParticleGroup_h
+#ifndef Magnum_Examples_FluidSimulation3D_DrawableObjects_ParticleGroup_h
+#define Magnum_Examples_FluidSimulation3D_DrawableObjects_ParticleGroup_h
 /*
     This file is part of Magnum.
 
