@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_SPH_SPHSolver_h
-#define Magnum_Examples_SPH_SPHSolver_h
+#ifndef Magnum_Examples_FluidSimulation3D_SPH_SPHSolver_h
+#define Magnum_Examples_FluidSimulation3D_SPH_SPHSolver_h
 /*
     This file is part of Magnum.
 
