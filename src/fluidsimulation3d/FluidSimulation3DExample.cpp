@@ -153,7 +153,7 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         Utility::Resource rs{"data"};
         Containers::ArrayView<const char> font = rs.getRaw("SourceSansPro-Regular.ttf");
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-            const_cast<char*>(font.data()), font.size(), 16.0f*framebufferSize().x()/size.x(), &fontConfig);
+            const_cast<char*>(font.data()), Int(font.size()), 16.0f*framebufferSize().x()/size.x(), &fontConfig);
 
         _imGuiContext = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
             Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize());
@@ -471,11 +471,11 @@ void FluidSimulation3DExample::showMenu() {
             if(ImGui::Combo("Color Mode", &colorMode, items, 3))
                 _drawableParticles->setColorMode(ParticleSphereShader::ColorMode(colorMode));
             if(colorMode == 0) { /* Uniform color */
-			    static Color3 color = _drawableParticles->diffuseColor();
+                static Color3 color = _drawableParticles->diffuseColor();
                 if(ImGui::ColorEdit3("Diffuse Color", color.data())) {
-					_drawableParticles->setDiffuseColor(color);
-				}
-			}
+                    _drawableParticles->setDiffuseColor(color);
+                }
+            }
         }
         ImGui::InputFloat3("Light Direction", _drawableParticles->lightDirection().data());
         ImGui::PopID();

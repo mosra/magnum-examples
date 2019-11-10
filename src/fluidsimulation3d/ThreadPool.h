@@ -46,8 +46,8 @@ namespace Magnum { namespace Examples {
 class ThreadPool {
     public:
         ThreadPool() {
-            const Int maxNumThreads = std::thread::hardware_concurrency();
-            std::size_t nWorkers = maxNumThreads > 1 ? maxNumThreads - 1 : 0;
+            const Int maxNumThreads = Int(std::thread::hardware_concurrency());
+            std::size_t nWorkers = std::size_t(maxNumThreads > 1 ? maxNumThreads - 1 : 0);
 
             _threadTaskReady.resize(nWorkers, 0);
             _tasks.resize(nWorkers + 1);
