@@ -29,7 +29,6 @@
  */
 
 #include "SPHSolver.h"
-
 #include "TaskScheduler.h"
 
 namespace Magnum { namespace Examples {

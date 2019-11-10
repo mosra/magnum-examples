@@ -61,6 +61,7 @@ add_executable(magnum-fluidsimulation3d WIN32
     FluidSimulation3DExample.cpp
     TaskScheduler.h
     ThreadPool.h
+    DrawableObjects/WireframeObjects.h
     DrawableObjects/FlatShadeObject.h
     DrawableObjects/ParticleGroup.h
     DrawableObjects/ParticleGroup.cpp

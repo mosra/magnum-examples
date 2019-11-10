@@ -29,10 +29,9 @@
  */
 
 #include "DomainBox.h"
+#include "TaskScheduler.h"
 
 #include <random>
-
-#include "TaskScheduler.h"
 
 namespace Magnum { namespace Examples {
 
