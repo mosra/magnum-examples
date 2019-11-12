@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_MotionBlurCamera_h
-#define Magnum_Examples_MotionBlurCamera_h
+#ifndef Magnum_Examples_MotionBlur_MotionBlurCamera_h
+#define Magnum_Examples_MotionBlur_MotionBlurCamera_h
 /*
     This file is part of Magnum.
 

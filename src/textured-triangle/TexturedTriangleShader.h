@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TexturedTriangleShader_h
-#define Magnum_Examples_TexturedTriangleShader_h
+#ifndef Magnum_Examples_TexturedTriangle_TexturedTriangleShader_h
+#define Magnum_Examples_TexturedTriangle_TexturedTriangleShader_h
 /*
     This file is part of Magnum.
 

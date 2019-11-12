@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Icosphere_h
-#define Magnum_Examples_Icosphere_h
+#ifndef Magnum_Examples_MotionBlur_Icosphere_h
+#define Magnum_Examples_MotionBlur_Icosphere_h
 /*
     This file is part of Magnum.
 

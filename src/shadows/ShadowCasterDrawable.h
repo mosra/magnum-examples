@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ShadowCasterDrawable_h
-#define Magnum_Examples_ShadowCasterDrawable_h
+#ifndef Magnum_Examples_Shadows_ShadowCasterDrawable_h
+#define Magnum_Examples_Shadows_ShadowCasterDrawable_h
 /*
     This file is part of Magnum.
 
