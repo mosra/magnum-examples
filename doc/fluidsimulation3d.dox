@@ -61,7 +61,7 @@ This example was originally contributed by [Nghia Truong](https://github.com/ttn
 @section examples-fluidsimulation3d-source Source
 
 Full source code is linked below and also available in the
-[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation).
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation3d).
 
 -   @ref fluidsimulation3d/CMakeLists.txt "CMakeLists.txt"
 -   @ref fluidsimulation3d/DrawableObjects/FlatShadeObject.h "DrawableObjects/FlatShadeObject.h"

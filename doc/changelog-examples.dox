@@ -35,7 +35,8 @@ namespace Magnum {
 @subsection changelog-examples-latest-new New features
 
 -   New @ref examples-fluidsimulation3d example (see
-    [mosra/magnum-examples#69](https://github.com/mosra/magnum-examples/pull/69))
+    [mosra/magnum-examples#69](https://github.com/mosra/magnum-examples/pull/69),
+    [mosra/magnum-examples#70](https://github.com/mosra/magnum-examples/pull/70))
 
 @subsection changelog-examples-latest-changes Changes and improvements
 
