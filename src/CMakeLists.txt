@@ -62,6 +62,10 @@ if(WITH_DART_EXAMPLE)
     add_subdirectory(dart)
 endif()
 
+if(WITH_FLUIDSIMULATION2D_EXAMPLE)
+    add_subdirectory(fluidsimulation2d)
+endif()
+
 if(WITH_FLUIDSIMULATION3D_EXAMPLE)
     add_subdirectory(fluidsimulation3d)
 endif()
