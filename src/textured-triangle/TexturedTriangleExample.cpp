@@ -95,7 +95,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setMinificationFilter(GL::SamplerFilter::Linear)
-        .setStorage(1, GL::TextureFormat::RGB8, image->size())
+        .setStorage(1, GL::textureFormat(image->format()), image->size())
         .setSubImage(0, {}, *image);
 }
 

@@ -170,7 +170,9 @@ also stored as resource in the executable.
 
 After the image is loaded, we create a texture from it. Note that we have to
 explicitly set all required texture parameters, otherwise the texture will be
-incomplete.
+incomplete. @ref GL::textureFormat() is a convenience utility that picks up
+@ref GL::TextureFormat::RGB8, @ref GL::TextureFormat::RGBA8 or any other based
+on image's @ref PixelFormat.
 
 @skip Containers::Optional<Trade::ImageData2D>
 @until }
