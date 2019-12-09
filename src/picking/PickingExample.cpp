@@ -194,6 +194,8 @@ class PickingExample: public Platform::Application {
         GL::Renderbuffer _color, _objectId, _depth;
 
         Vector2i _previousMousePosition, _mousePressPosition;
+
+        Vector2 _dpi_normalization{1.0f, 1.0f};
 };
 
 PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")}, _framebuffer{GL::defaultFramebuffer.viewport()} {
@@ -245,6 +247,12 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 4.0f/3.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
+
+    /* dpi normalization to properly convert windows to framebuffer pixels while picking */
+#ifdef MAGNUM_TARGET_GL
+    _dpi_normalization = Vector2(framebufferSize())/Vector2(windowSize());
+#endif
+
 }
 
 void PickingExample::drawEvent() {
@@ -294,10 +302,13 @@ void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
 void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
 
+    /* scale mouse position to account for the HiDPI config */
+    auto dpi_normalized_pos = event.position()*_dpi_normalization;
+
     /* Read object ID at given click position (framebuffer has Y up while windowing system Y down) */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
-        Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
+        Range2Di::fromSize({dpi_normalized_pos.x(), _framebuffer.viewport().sizeY() - dpi_normalized_pos.y() - 1}, {1, 1}),
         {PixelFormat::R8UI});
 
     /* Highlight object under mouse and deselect all other */
