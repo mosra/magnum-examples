@@ -60,6 +60,7 @@ option(WITH_TRIANGLE_VULKAN_EXAMPLE "Build Vulkan Triangle example" OFF)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires the AnySceneImporter plugin)" OFF)
 if(CORRADE_TARGET_EMSCRIPTEN)
     option(WITH_WEBVR_EXAMPLE "Build WebVR example" OFF)
+    option(WITH_WEBXR_EXAMPLE "Build WebXR example" OFF)
 endif()
 
 # A single output location. After a decade of saying NO THIS IS A NON-SOLUTION
