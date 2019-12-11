@@ -5,7 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
 #           Vladimír Vondruš <mosra@centrum.cz>
-#       2017, 2018 — Jonathan Hale <squareys@googlemail.com>
+#       2019 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -30,22 +30,12 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-project(MagnumWebVrExample CXX)
+project(MagnumWebXrExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 endif()
-
-include(CheckSymbolExists)
-check_symbol_exists(EMSCRIPTEN_VR_API_VERSION "emscripten/vr.h" HAS_WEBVR_1_1)
-if(NOT HAS_WEBVR_1_1)
-    message(ERROR "webvr-example requires WebVR 1.1 API in emscripten.")
-endif()
-
-# Closure compiler is not happy about WebVR, complaining about sourceStr and
-# sourceStrPtr that probably got mangled by accident. Let's disable it for now.
-string(REPLACE "--closure 1" "" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 
 find_package(Magnum REQUIRED
     GL
@@ -53,38 +43,38 @@ find_package(Magnum REQUIRED
     Primitives
     Shaders
     EmscriptenApplication)
-e101ce7cfc3c92962a65771f43c2d61775edd348)
-endif()
+
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-webvr
-    WebVrExample.cpp)
-target_link_libraries(magnum-webvr PRIVATE
+add_executable(magnum-webxr WebXrExample.cpp)
+target_link_libraries(magnum-webxr PRIVATE
     Magnum::Application
     Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
     Magnum::Shaders)
+target_link_options(magnum-webxr PRIVATE
+    "SHELL:--js-library ${CMAKE_CURRENT_BINARY_DIR}/library_webxr.js")
 
 # Copy the boilerplate next to the executable so it can be run directly from
 # the build dir; provide an install target as well
-add_custom_command(TARGET magnum-webvr POST_BUILD
+add_custom_command(TARGET magnum-webxr POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
         ${MAGNUM_WEBAPPLICATION_CSS}
-        $<TARGET_FILE_DIR:magnum-webvr>
+        $<TARGET_FILE_DIR:magnum-webxr>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/webvr.html
-        $<TARGET_FILE_DIR:magnum-webvr>/magnum-webvr.html)
+        ${CMAKE_CURRENT_SOURCE_DIR}/webxr.html
+        $<TARGET_FILE_DIR:magnum-webxr>/magnum-webxr.html)
 
-install(FILES webvr.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr RENAME index.html)
-install(TARGETS magnum-webvr DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
+install(FILES webxr.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr RENAME index.html)
+install(TARGETS magnum-webxr DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr)
 install(FILES
     ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
     ${MAGNUM_WEBAPPLICATION_CSS}
-    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
+    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem
-    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.wasm
-    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr OPTIONAL)
+    ${CMAKE_BINARY_DIR}/bin/magnum-webxr.js.mem
+    ${CMAKE_BINARY_DIR}/bin/magnum-webxr.wasm
+    DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr OPTIONAL)

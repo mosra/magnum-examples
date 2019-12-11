@@ -5,6 +5,7 @@
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
 #           Vladimír Vondruš <mosra@centrum.cz>
+#       2019 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
 #
@@ -128,4 +129,8 @@ endif()
 
 if(WITH_WEBVR_EXAMPLE)
     add_subdirectory(webvr)
+endif()
+
+if(WITH_WEBXR_EXAMPLE)
+    add_subdirectory(webxr)
 endif()
