@@ -77,18 +77,18 @@ template<class T> struct SparseMatrix {
         }
     }
 
+    template<class U, class V> void copyData(U& dst, const V& src) {
+        dst.resize(0);
+        for(const auto& vec: src) {
+            dst.insert(dst.end(), vec.begin(), vec.end());
+        }
+    }
+
     void compressData() {
         rowStartIdx[0] = 0;
         for(UnsignedInt i = 0; i < size; ++i) {
             rowStartIdx[i + 1] = rowStartIdx[i] + static_cast<UnsignedInt>(rowIndices[i].size());
         }
-
-        auto copyData = [](auto& dst, const auto& src) {
-                            dst.resize(0);
-                            for(const auto& vec : src) {
-                                dst.insert(dst.end(), vec.begin(), vec.end());
-                            }
-                        };
 
         copyData(compactIndices, rowIndices);
         copyData(compactValues,  rowValues);
