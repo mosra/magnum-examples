@@ -124,6 +124,8 @@ Vector2 gridCenter() {
 
 }
 
+using namespace Math::Literals;
+
 FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
 
     /* Setup window */
@@ -189,18 +191,18 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
         /* Drawable particles */
         _drawableParticles.emplace(_fluidSolver->particlePositions(),
                                    _fluidSolver->particleRadius());
-        _drawableParticles->setColor(Color3{85.0f/255, 200.0f/255, 245.0f/255});
+        _drawableParticles->setColor(0x55c8f5_rgbf);
 
         /* Drawable boundary*/
         _drawableBoundary.emplace(_scene.get(), _drawableGroup.get(),
             MeshTools::compile(Primitives::circle2DWireframe(128)));
         _drawableBoundary->setTransformation(Matrix3::scaling(Vector2{RadiusCircleBoundary + _fluidSolver->particleRadius()}));
-        _drawableBoundary->setColor(Color3{1.0f, 1.0f, 1.0f});
+        _drawableBoundary->setColor(0xffffff_rgbf);
 
         /* Visualize mouse pointer for mouse-fluid interaction */
         _drawablePointer.emplace(_scene.get(), _drawableGroup.get(),
             MeshTools::compile(Primitives::circle2DWireframe(32)));
-        _drawablePointer->setColor(Color3{0.0f, 1.0f, 0.0f});
+        _drawablePointer->setColor(0x00ff00_rgbf);
         _drawablePointer->setEnabled(false);
     }
 
