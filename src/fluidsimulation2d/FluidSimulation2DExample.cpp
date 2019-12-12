@@ -294,7 +294,7 @@ void FluidSimulation2DExample::viewportEvent(ViewportEvent& event) {
     _camera->setViewport(event.framebufferSize());
 }
 
-void FluidSimulation2DExample::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
+void FluidSimulation2DExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::E:
             _fluidSolver->emitParticles();
