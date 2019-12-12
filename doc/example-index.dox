@@ -227,15 +227,23 @@ The following consist of documented source code only:
 
 @parblock
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html ovr.png
 @subpage examples-ovr @m_class{m-label m-primary} **vr** \n @copybrief examples-ovr
 @m_enddiv
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html webvr.png
 @subpage examples-webvr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-webvr
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-0 m-text-center}
+@image html webxr.png
+@subpage examples-webxr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-webxr
 @m_enddiv
 
 @endparblock
