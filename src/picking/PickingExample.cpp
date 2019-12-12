@@ -202,9 +202,10 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     /* Global renderer configuration */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
-    /* Configure framebuffer (using R8UI for object ID which means 255 objects max) */
+    /* Configure framebuffer. Using a 32-bit int for object ID, which is likely
+       enough. Use a smaller type if you have less objects to save memory. */
     _color.setStorage(GL::RenderbufferFormat::RGBA8, GL::defaultFramebuffer.viewport().size());
-    _objectId.setStorage(GL::RenderbufferFormat::R8UI, GL::defaultFramebuffer.viewport().size());
+    _objectId.setStorage(GL::RenderbufferFormat::R32UI, GL::defaultFramebuffer.viewport().size());
     _depth.setStorage(GL::RenderbufferFormat::DepthComponent24, GL::defaultFramebuffer.viewport().size());
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
                .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
