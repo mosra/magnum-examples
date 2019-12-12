@@ -27,6 +27,7 @@
 namespace Magnum {
 /** @page examples-fluidsimulation3d 3D Fluid Simulation
 @brief SPH fluid simulation with a dynamic boundary.
+@m_since_latest_{examples}
 
 @m_footernavigation
 
