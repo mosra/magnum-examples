@@ -27,6 +27,7 @@
 namespace Magnum {
 /** @page examples-webxr WebXR
 @brief Basic WebXR application.
+@m_since_latest_{examples}
 
 @m_footernavigation
 
