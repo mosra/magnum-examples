@@ -27,12 +27,14 @@
 namespace Magnum {
 /** @page examples-fluidsimulation3d 3D Fluid Simulation
 @brief SPH fluid simulation with a dynamic boundary.
+@m_since_latest_{examples}
 
 @m_footernavigation
 
 A basic implementation of SPH ([Smoothed-Particle Hydrodynamics](https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics))
 solver. In order to run in real time, accuracy has been heavily sacrificed for
-performance.
+performance. See also @ref examples-fluidsimulation2d, which runs just realtime
+just in a single thread.
 
 @image html fluidsimulation3d.png width=400px
 
@@ -61,7 +63,7 @@ This example was originally contributed by [Nghia Truong](https://github.com/ttn
 @section examples-fluidsimulation3d-source Source
 
 Full source code is linked below and also available in the
-[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation).
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation3d).
 
 -   @ref fluidsimulation3d/CMakeLists.txt "CMakeLists.txt"
 -   @ref fluidsimulation3d/DrawableObjects/FlatShadeObject.h "DrawableObjects/FlatShadeObject.h"

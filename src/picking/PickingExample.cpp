@@ -219,9 +219,10 @@ PickingExample::PickingExample(const Arguments& arguments):
     /* Global renderer configuration */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
-    /* Configure framebuffer (using R8UI for object ID which means 255 objects max) */
+    /* Configure framebuffer. Using a 32-bit int for object ID, which is likely
+       enough. Use a smaller type if you have less objects to save memory. */
     _color.setStorage(GL::RenderbufferFormat::RGBA8, GL::defaultFramebuffer.viewport().size());
-    _objectId.setStorage(GL::RenderbufferFormat::R8UI, GL::defaultFramebuffer.viewport().size());
+    _objectId.setStorage(GL::RenderbufferFormat::R32UI, GL::defaultFramebuffer.viewport().size());
     _depth.setStorage(GL::RenderbufferFormat::DepthComponent24, GL::defaultFramebuffer.viewport().size());
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
                .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
@@ -299,9 +300,11 @@ void PickingExample::mousePressEvent(MouseEvent& event) {
 void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
+    /* We have to take window size, not framebuffer size, since the position is
+       in window coordinates and the two can be different on HiDPI systems */
     const Vector2 delta = 3.0f*
         Vector2{event.position() - _previousMousePosition}/
-        Vector2{GL::defaultFramebuffer.viewport().size()};
+        Vector2{windowSize()};
 
     (*_cameraObject)
         .rotate(Rad{-delta.y()}, _cameraObject->transformation().right().normalized())
@@ -315,10 +318,16 @@ void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
 void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
 
-    /* Read object ID at given click position (framebuffer has Y up while windowing system Y down) */
+    /* First scale the position from being relative to window size to being
+       relative to framebuffer size as those two can be different on HiDPI
+       systems */
+    const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
+
+    /* Read object ID at given click position */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
-        Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
+        Range2Di::fromSize(fbPosition, {1, 1}),
         {PixelFormat::R8UI});
 
     /* Highlight object under mouse and deselect all other */

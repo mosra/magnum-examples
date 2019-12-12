@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ShadowReceiverDrawable_h
-#define Magnum_Examples_ShadowReceiverDrawable_h
+#ifndef Magnum_Examples_Shadows_ShadowReceiverDrawable_h
+#define Magnum_Examples_Shadows_ShadowReceiverDrawable_h
 /*
     This file is part of Magnum.
 

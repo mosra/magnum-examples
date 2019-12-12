@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Shaders_ParticleSphereShader_h
-#define Magnum_Examples_Shaders_ParticleSphereShader_h
+#ifndef Magnum_Examples_FluidSimulation3D_Shaders_ParticleSphereShader_h
+#define Magnum_Examples_FluidSimulation3D_Shaders_ParticleSphereShader_h
 /*
     This file is part of Magnum.
 

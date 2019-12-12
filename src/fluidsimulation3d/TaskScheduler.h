@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TaskScheduler_h
-#define Magnum_Examples_TaskScheduler_h
+#ifndef Magnum_Examples_FluidSimulation3D_TaskScheduler_h
+#define Magnum_Examples_FluidSimulation3D_TaskScheduler_h
 /*
     This file is part of Magnum.
 

@@ -29,7 +29,8 @@
 #
 
 cmake_minimum_required(VERSION 3.4)
-project(magnum-fluidsimulation3d)
+
+project(FluidSimulation3DExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -61,6 +62,7 @@ add_executable(magnum-fluidsimulation3d WIN32
     FluidSimulation3DExample.cpp
     TaskScheduler.h
     ThreadPool.h
+    DrawableObjects/WireframeObjects.h
     DrawableObjects/FlatShadeObject.h
     DrawableObjects/ParticleGroup.h
     DrawableObjects/ParticleGroup.cpp

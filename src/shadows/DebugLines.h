@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_DebugLines_h
-#define Magnum_Examples_DebugLines_h
+#ifndef Magnum_Examples_Shadows_DebugLines_h
+#define Magnum_Examples_Shadows_DebugLines_h
 /*
     This file is part of Magnum.
 

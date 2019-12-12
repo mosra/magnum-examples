@@ -27,6 +27,7 @@
 namespace Magnum {
 /** @page examples-dart DART Physics
 @brief Integration of [DART Physics](http://dartsim.github.io/) into Magnum.
+@m_since_{examples,2019,10}
 
 @m_footernavigation
 

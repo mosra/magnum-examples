@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_Types_h
-#define Magnum_Examples_Types_h
+#ifndef Magnum_Examples_CubeMap_Types_h
+#define Magnum_Examples_CubeMap_Types_h
 /*
     This file is part of Magnum.
 

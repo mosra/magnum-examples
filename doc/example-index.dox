@@ -149,9 +149,33 @@ The following consist of documented source code only:
 @parblock
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html fluidsimulation2d.png
+@subpage examples-fluidsimulation2d @m_class{m-label m-primary} **ui** @m_class{m-label m-warning} **physics**
+\n @copybrief examples-fluidsimulation2d
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html fluidsimulation3d.png
+@subpage examples-fluidsimulation3d @m_class{m-label m-primary} **ui** @m_class{m-label m-warning} **physics**
+\n @copybrief examples-fluidsimulation3d
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html imgui.png
+@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-imgui
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html motionblur.png
 @subpage examples-motionblur \n @copybrief examples-motionblur
 @m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html mouseinteraction.png
@@ -159,32 +183,10 @@ The following consist of documented source code only:
 \n @copybrief examples-mouseinteraction
 @m_enddiv
 
-@m_div{m-clearfix-s} @m_enddiv
-
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html picking.png
 @subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-picking
-@m_enddiv
-
-@m_div{m-clearfix-l m-show-m} @m_enddiv
-
-@m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html cubemap.jpg
-@subpage examples-cubemap \n @copybrief examples-cubemap
-@m_enddiv
-
-@m_div{m-clearfix-s} @m_enddiv
-
-@m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html shadows2.png
-@subpage examples-shadows \n @copybrief examples-shadows
-@m_enddiv
-
-@m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html text.png
-@subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
-@copybrief examples-text
 @m_enddiv
 
 @endparblock
@@ -194,20 +196,26 @@ The following consist of documented source code only:
 @parblock
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html fluidsimulation3d.png
-@subpage examples-fluidsimulation3d @m_class{m-label m-primary} **ui** @m_class{m-label m-warning} **physics**
-\n @copybrief examples-fluidsimulation3d
+@image html cubemap.jpg
+@subpage examples-cubemap \n @copybrief examples-cubemap
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html imgui.png
-@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-imgui
+@image html shadows2.png
+@subpage examples-shadows \n @copybrief examples-shadows
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv
 
-@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-0 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html text.png
+@subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
+@copybrief examples-text
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-push-m-4 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan
@@ -219,15 +227,23 @@ The following consist of documented source code only:
 
 @parblock
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html ovr.png
 @subpage examples-ovr @m_class{m-label m-primary} **vr** \n @copybrief examples-ovr
 @m_enddiv
 
-@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html webvr.png
 @subpage examples-webvr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-webvr
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-0 m-text-center}
+@image html webxr.png
+@subpage examples-webxr @m_class{m-label m-primary} **vr** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-webxr
 @m_enddiv
 
 @endparblock

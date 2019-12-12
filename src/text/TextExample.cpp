@@ -50,7 +50,7 @@
 
 namespace Magnum { namespace Examples {
 
-using namespace Magnum::Math::Literals;
+using namespace Math::Literals;
 
 class TextExample: public Platform::Application {
     public:
@@ -68,20 +68,21 @@ class TextExample: public Platform::Application {
         Containers::Pointer<Text::AbstractFont> _font;
         Containers::Pointer<Text::GlyphCache> _cache;
 
-        GL::Mesh _text;
+        GL::Mesh _rotatingText{NoCreate};
         GL::Buffer _vertices, _indices;
-        Containers::Pointer<Text::Renderer2D> _text2;
+        Containers::Pointer<Text::Renderer2D> _dynamicText;
         Shaders::DistanceFieldVector2D _shader;
 
-        Matrix3 _transformation;
-        Matrix3 _projection;
+        Matrix3 _transformationRotatingText,
+            _projectionRotatingText,
+            _transformationProjectionDynamicText;
 };
 
 TextExample::TextExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("Magnum Text Example")
         .setWindowFlags(Configuration::WindowFlag::Resizable)},
-    _text{NoCreate},
+    _rotatingText{NoCreate},
     _vertices(GL::Buffer::TargetHint::Array),
     _indices(GL::Buffer::TargetHint::ElementArray)
 {
@@ -109,30 +110,44 @@ TextExample::TextExample(const Arguments& arguments):
     _cache = Containers::pointerCast<Text::GlyphCache>(_font->createGlyphCache());
     CORRADE_INTERNAL_ASSERT(_cache);
 
-    std::tie(_text, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.2f,
+    std::tie(_rotatingText, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.2f,
         "Hello, world!\n"
         "Ahoj, světe!\n"
         "Здравствуй, мир!\n"
         "Γεια σου κόσμε!\n"
         "Hej Världen!",
         _vertices, _indices, GL::BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
+    _transformationRotatingText = Matrix3::rotation(-10.0_degf);
+    _projectionRotatingText = Matrix3::projection(
+        Vector2::xScale(Vector2{windowSize()}.aspectRatio()));
 
-    _text2.reset(new Text::Renderer2D(*_font, *_cache, 0.05f, Text::Alignment::TopRight));
-    _text2->reserve(40, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
+    /* Dynamically updated text that shows rotation/zoom of the other. Size in
+       points that stays the same if you resize the window. Aligned so top
+       right of the bounding box is at mesh origin, and then transformed so the
+       origin is at the top right corner of the window. */
+    _dynamicText.reset(new Text::Renderer2D(*_font, *_cache, 32.0f, Text::Alignment::TopRight));
+    _dynamicText->reserve(40, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
+    _transformationProjectionDynamicText =
+        Matrix3::projection(Vector2{windowSize()})*
+        Matrix3::translation(Vector2{windowSize()}*0.5f);
 
+    /* Set up premultiplied alpha blending to avoid overlapping text characters
+       to cut into each other */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
-    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    _transformation = Matrix3::rotation(-10.0_degf);
-    _projection = Matrix3::scaling(Vector2::yScale(Vector2(GL::defaultFramebuffer.viewport().size()).aspectRatio()));
     updateText();
 }
 
 void TextExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
-    _projection = Matrix3::scaling(Vector2::yScale(Vector2(event.windowSize()).aspectRatio()));
+    _projectionRotatingText = Matrix3::projection(
+        Vector2::xScale(Vector2{windowSize()}.aspectRatio()));
+    _transformationProjectionDynamicText =
+        Matrix3::projection(Vector2{windowSize()})*
+        Matrix3::translation(Vector2{windowSize()}*0.5f);
 }
 
 void TextExample::drawEvent() {
@@ -140,19 +155,21 @@ void TextExample::drawEvent() {
 
     _shader.bindVectorTexture(_cache->texture());
 
-    _shader.setTransformationProjectionMatrix(_projection * _transformation)
-        .setColor(Color3::fromHsv({216.0_degf, 0.85f, 1.0f}))
-        .setOutlineColor(Color3{0.95f})
+    _shader
+        .setTransformationProjectionMatrix(
+            _projectionRotatingText*_transformationRotatingText)
+        .setColor(0x2f83cc_rgbf)
+        .setOutlineColor(0xdcdcdc_rgbf)
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/ _transformation.uniformScaling());
-    _text.draw(_shader);
+        .setSmoothness(0.025f/ _transformationRotatingText.uniformScaling());
+    _rotatingText.draw(_shader);
 
-    _shader.setTransformationProjectionMatrix(_projection*
-        Matrix3::translation(1.0f/ _projection.rotationScaling().diagonal()))
-        .setColor(Color3{1.0f})
+    _shader
+        .setTransformationProjectionMatrix(_transformationProjectionDynamicText)
+        .setColor(0xffffff_rgbf)
         .setOutlineRange(0.5f, 1.0f)
         .setSmoothness(0.075f);
-    _text2->mesh().draw(_shader);
+    _dynamicText->mesh().draw(_shader);
 
     swapBuffers();
 }
@@ -161,9 +178,9 @@ void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
     if(!event.offset().y()) return;
 
     if(event.offset().y() > 0)
-        _transformation = Matrix3::rotation(1.0_degf)*Matrix3::scaling(Vector2(1.1f))* _transformation;
+        _transformationRotatingText = Matrix3::rotation(1.0_degf)*Matrix3::scaling(Vector2{1.1f})* _transformationRotatingText;
     else
-        _transformation = Matrix3::rotation(-1.0_degf)*Matrix3::scaling(Vector2(1.0f/1.1f))* _transformation;
+        _transformationRotatingText = Matrix3::rotation(-1.0_degf)*Matrix3::scaling(Vector2{1.0f/1.1f})* _transformationRotatingText;
 
     updateText();
 
@@ -172,9 +189,9 @@ void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
 }
 
 void TextExample::updateText() {
-    _text2->render(Utility::formatString("Rotation: {:.2}°\nScale: {:.2}",
-        Float(Deg(Complex::fromMatrix(_transformation.rotation()).angle())),
-        _transformation.uniformScaling()));
+    _dynamicText->render(Utility::formatString("Rotation: {:.2}°\nScale: {:.2}",
+        Float(Deg(Complex::fromMatrix(_transformationRotatingText.rotation()).angle())),
+        _transformationRotatingText.uniformScaling()));
 }
 
 }}

@@ -153,7 +153,7 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         Utility::Resource rs{"data"};
         Containers::ArrayView<const char> font = rs.getRaw("SourceSansPro-Regular.ttf");
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-            const_cast<char*>(font.data()), font.size(), 16.0f*framebufferSize().x()/size.x(), &fontConfig);
+            const_cast<char*>(font.data()), Int(font.size()), 16.0f*framebufferSize().x()/size.x(), &fontConfig);
 
         _imGuiContext = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
             Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize());
@@ -463,31 +463,40 @@ void FluidSimulation3DExample::showMenu() {
     ImGui::Spacing();
 
     /* Rendering parameters */
-    if(ImGui::CollapsingHeader("Particle Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(ImGui::TreeNodeEx("Particle Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Particle Rendering");
         {
             constexpr const char* items[] = {"Uniform", "Ramp by ID", "Random"};
             static Int colorMode = 1;
             if(ImGui::Combo("Color Mode", &colorMode, items, 3))
                 _drawableParticles->setColorMode(ParticleSphereShader::ColorMode(colorMode));
-            if(colorMode == 0) /* Uniform color */
-                ImGui::ColorEdit3("Diffuse Color", _drawableParticles->diffuseColor().data());
+            if(colorMode == 0) { /* Uniform color */
+                static Color3 color = _drawableParticles->diffuseColor();
+                if(ImGui::ColorEdit3("Diffuse Color", color.data())) {
+                    _drawableParticles->setDiffuseColor(color);
+                }
+            }
         }
-        ImGui::InputFloat3("Light Direction", _drawableParticles->lightDirection().data());
+        static Vector3 lightDir = _drawableParticles->lightDirection();
+        if(ImGui::InputFloat3("Light Direction", lightDir.data())) {
+            _drawableParticles->setLightDirection(lightDir);
+        }
         ImGui::PopID();
+        ImGui::TreePop();
     }
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
 
     /* Simulation parameters */
-    if(ImGui::CollapsingHeader("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if(ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Simulation");
         ImGui::InputFloat("Stiffness", &_fluidSolver->simulationParameters().stiffness);
         ImGui::SliderFloat("Viscosity",   &_fluidSolver->simulationParameters().viscosity,           0.0f, 1.0f);
         ImGui::SliderFloat("Restitution", &_fluidSolver->simulationParameters().boundaryRestitution, 0.0f, 1.0f);
         ImGui::Checkbox("Dynamic Boundary", &_dynamicBoundary);
         ImGui::PopID();
+        ImGui::TreePop();
     }
     ImGui::Spacing();
     ImGui::Separator();

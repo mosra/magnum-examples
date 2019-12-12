@@ -1,0 +1,106 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2018 Michal Mikula <miso.mikula@gmail.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-fluidsimulation2d 2D Fluid Simulation
+@brief 2D fluid simulation using the APIC method.
+@m_since_latest_{examples}
+
+@m_footernavigation
+
+A 2D fluid simulation using the APIC ([Affine Particle-in-Cell](https://dl.acm.org/citation.cfm?id=2766996))
+method. Compared to @ref examples-fluidsimulation3d, the simulation is running
+in a single thread.
+
+@image html fluidsimulation2d.png width=400px
+
+@section examples-fluidsimulation2d-controls Controls
+
+-   @m_class{m-label m-default} **mouse drag** interacts with the simulation
+-   @m_class{m-label m-default} **E** emits more particles
+-   @m_class{m-label m-default} **H** shows / hides the overlay
+-   @m_class{m-label m-default} **R** resets the simulation
+-   @m_class{m-label m-default} **Space** pauses the simulation
+
+@section examples-fluidsimulation2d-credits Credits
+
+This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).
+
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [Adobe Source Sans Pro](https://github.com/adobe-fonts/source-sans-pro)
+    font, licensed under @m_class{m-label m-success} **OFL 1.1**
+    ([license text](https://github.com/adobe-fonts/source-sans-pro/blob/release/LICENSE.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/ofl-1.1/)).
+    Attribution is required for public use.
+
+@section examples-fluidsimulation2d-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation2d).
+
+-   @ref fluidsimulation2d/CMakeLists.txt "CMakeLists.txt"
+-   @ref fluidsimulation2d/DataStructures/Array2X.h "DataStructures/Array2X.h"
+-   @ref fluidsimulation2d/DataStructures/MathHelpers.h "DataStructures/MathHelpers.h"
+-   @ref fluidsimulation2d/DataStructures/PCGSolver.h "DataStructures/PCGSolver.h"
+-   @ref fluidsimulation2d/DataStructures/SDFObject.h "DataStructures/SDFObject.h"
+-   @ref fluidsimulation2d/DataStructures/SparseMatrix.h "DataStructures/SparseMatrix.h"
+-   @ref fluidsimulation2d/DrawableObjects/FlatShadeObject2D.h "DrawableObjects/FlatShadeObject2D.h"
+-   @ref fluidsimulation2d/DrawableObjects/ParticleGroup2D.cpp "DrawableObjects/ParticleGroup2D.cpp"
+-   @ref fluidsimulation2d/DrawableObjects/ParticleGroup2D.h "DrawableObjects/ParticleGroup2D.h"
+-   @ref fluidsimulation2d/DrawableObjects/WireframeObject2D.h "DrawableObjects/WireframeObject2D.h"
+-   @ref fluidsimulation2d/FluidSimulation2DExample.cpp "FluidSimulation2DExample.cpp"
+-   @ref fluidsimulation2d/FluidSolver/ApicSolver2D.cpp "FluidSolver/ApicSolver2D.cpp"
+-   @ref fluidsimulation2d/FluidSolver/ApicSolver2D.h "FluidSolver/ApicSolver2D.h"
+-   @ref fluidsimulation2d/FluidSolver/SolverData.h "FluidSolver/SolverData.h"
+-   @ref fluidsimulation2d/resources.conf "resources.conf"
+-   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.cpp "Shaders/ParticleSphereShader2D.cpp"
+-   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.frag "Shaders/ParticleSphereShader2D.frag"
+-   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.h "Shaders/ParticleSphereShader.h"
+-   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.vert "Shaders/ParticleSphereShader2D.vert"
+
+@example fluidsimulation2d/CMakeLists.txt @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DataStructures/Array2X.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DataStructures/MathHelpers.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DataStructures/PCGSolver.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DataStructures/SDFObject.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DataStructures/SparseMatrix.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DrawableObjects/FlatShadeObject2D.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DrawableObjects/ParticleGroup2D.cpp @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DrawableObjects/ParticleGroup2D.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/DrawableObjects/WireframeObject2D.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/FluidSolver/ApicSolver2D.cpp @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/FluidSolver/ApicSolver2D.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/FluidSolver/SolverData.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/FluidSimulation2DExample.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/resources.conf @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/Shaders/ParticleSphereShader2D.cpp @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/Shaders/ParticleSphereShader2D.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/Shaders/ParticleSphereShader2D.frag @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+@example fluidsimulation2d/Shaders/ParticleSphereShader2D.vert @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
+
+*/
+}
