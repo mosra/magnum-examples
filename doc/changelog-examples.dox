@@ -45,6 +45,12 @@ namespace Magnum {
 -   The @ref examples-imgui "ImGui example" now lets ImGui update the
     application cursor (see [mosra/magnum-integration#56](https://github.com/mosra/magnum-integration/pull/56))
 
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   The @ref examples-picking "Picking example" wasn't properly handling mouse
+    events on HiDPI systems that have different window and framebuffer size
+    (see [mosra/magnum-examples#72](https://github.com/mosra/magnum-examples/pull/72))
+
 @section changelog-examples-2019-10 2019.10
 
 Released 2019-10-24, tagged as
