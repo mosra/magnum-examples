@@ -109,19 +109,17 @@ class FluidSimulation2DExample: public Platform::Application {
 
 namespace {
 
-constexpr Float GridCellLength = 1.0f;   /* length of 1 grid cell */
-constexpr Int NumGridCellX = 100;        /* number of cells in x dimension */
-constexpr Int NumGridCellY = 100;        /* number of cells in y dimension */
+constexpr Float GridCellLength = 1.0f;      /* length of 1 grid cell */
+constexpr Vector2i NumGridCells{100, 100};   /* number of cells */
 constexpr Vector2 GridStart{-50.0f, -50.0f}; /* lower corner of the grid */
 constexpr Int RadiusCircleBoundary = 45; /* radius of the boundary circle */
 
 /* Viewport will display this window */
 constexpr Float ProjectionScale = 1.05f;
-constexpr Int DomainDisplayW  = Int(NumGridCellX*GridCellLength*ProjectionScale);
-constexpr Int DomainDisplayH  = Int(NumGridCellY*GridCellLength*ProjectionScale);
+const Vector2i DomainDisplaySize = NumGridCells*GridCellLength*ProjectionScale;
 
 Vector2 gridCenter() {
-    return Vector2(NumGridCellX, NumGridCellY) * GridCellLength * 0.5f + GridStart;
+    return Vector2{NumGridCells}*GridCellLength*0.5f + GridStart;
 }
 
 }
@@ -177,7 +175,7 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
 
         _camera.reset(new SceneGraph::Camera2D{*_objCamera});
         _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-            .setProjectionMatrix(Matrix3::projection(Vector2{ DomainDisplayW, DomainDisplayH }))
+            .setProjectionMatrix(Matrix3::projection(Vector2{DomainDisplaySize}))
             .setViewport(GL::defaultFramebuffer.viewport().size());
     }
 
@@ -187,7 +185,7 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
         sceneObjs->emitterT0 = SDFObject{gridCenter() + Vector2(10.0f, 10.0f), 30.0f, SDFObject::ObjectType::Circle};
         sceneObjs->emitter = SDFObject{gridCenter() + Vector2(15.0f, 20.0f), 15.0f, SDFObject::ObjectType::Circle};
         sceneObjs->boundary = SDFObject{gridCenter(), Float(RadiusCircleBoundary), SDFObject::ObjectType::Circle, false};
-        _fluidSolver.reset(new ApicSolver2D{GridStart, GridCellLength, NumGridCellX, NumGridCellY, sceneObjs});
+        _fluidSolver.reset(new ApicSolver2D{GridStart, GridCellLength, NumGridCells.x(), NumGridCells.y(), sceneObjs});
 
         /* Drawable particles */
         _drawableParticles.reset(new ParticleGroup2D{
@@ -233,7 +231,7 @@ void FluidSimulation2DExample::drawEvent() {
     {
         /* Trigger drawable object to update the particles to the GPU */
         _drawableParticles->setDirty();
-        _drawableParticles->draw(_camera, GL::defaultFramebuffer.viewport().size().y(), DomainDisplayH);
+        _drawableParticles->draw(_camera, GL::defaultFramebuffer.viewport().size().y(), DomainDisplaySize.y());
 
         /* Draw other objects (boundary mesh, pointer mesh) */
         _camera->draw(*_drawableGroup);

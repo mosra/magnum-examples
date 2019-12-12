@@ -54,7 +54,7 @@ ApicSolver2D::ApicSolver2D(const Vector2& origin, Float cellSize, Int nI, Int nJ
 /* This function should be called again every time the boundary changes */
 void ApicSolver2D::initBoundary() {
     _grid.boundarySDF.loop2D([&](std::size_t i, std::size_t j) {
-        _grid.boundarySDF(i, j) = _objects->boundary.signedDistance(_grid.getWorldPos(i, j));
+        _grid.boundarySDF(i, j) = _objects->boundary.signedDistance(_grid.getWorldPos({Float(i), Float(j)}));
     });
 
     /* Initialize the fluid cell weights from boundary signed distance field */
@@ -78,7 +78,7 @@ void ApicSolver2D::generateParticles(const SDFObject& sdfObj, Float initialVeloc
     std::vector<Vector2> newParticles;
     _grid.fluidSDF.loop2D(
         [&](std::size_t i, std::size_t j) {
-            const Vector2 cellCenter = _grid.getWorldPos(i + 0.5f, j + 0.5f);
+            const Vector2 cellCenter = _grid.getWorldPos({i + 0.5f, j + 0.5f});
             for(Int k = 0; k < 2; ++k) {
                 const Vector2 ppos = cellCenter + Vector2(distr(gen), distr(gen));
                 if(sdfObj.signedDistance(ppos) < 0) {
@@ -202,7 +202,7 @@ void ApicSolver2D::particleVelocity2Grid() {
     _grid.u.loop2D([&](std::size_t i, std::size_t j) {
         Float sumW = 0.0f;
         Float sumU = 0.0f;
-        const Vector2 nodePos = _grid.getWorldPos(i, j + 0.5f);
+        const Vector2 nodePos = _grid.getWorldPos({Float(i), j + 0.5f});
         _grid.loopNeigborParticles(static_cast<Int>(i), static_cast<Int>(j), -1, 0, -1, 1, [&](UnsignedInt p) {
             const Vector2 xpg = nodePos - _particles.positions[p];
             const auto w      = linearKernel(xpg, _grid.invCellSize);
@@ -218,7 +218,7 @@ void ApicSolver2D::particleVelocity2Grid() {
     _grid.v.loop2D([&](std::size_t i, std::size_t j) {
         Float sumW = 0.0;
         Float sumV = 0.0;
-        const Vector2 nodePos = _grid.getWorldPos(i + 0.5f, j);
+        const Vector2 nodePos = _grid.getWorldPos({i + 0.5f, Float(j)});
         _grid.loopNeigborParticles(static_cast<Int>(i), static_cast<Int>(j), -1, 1, -1, 0, [&](UnsignedInt p) {
             const Vector2 xpg = nodePos - _particles.positions[p];
             const auto w      = linearKernel(xpg, _grid.invCellSize);
@@ -295,7 +295,7 @@ void ApicSolver2D::computeFluidSDF() {
             for(Int i = gridPos.x() - 2; i <= gridPos.x() + 2; ++i) {
                 if(!_grid.isValidCellIdx(i, j)) continue;
 
-                const Vector2 cellCenter = _grid.getWorldPos(i + 0.5f, j + 0.5f);
+                const Vector2 cellCenter = _grid.getWorldPos({i + 0.5f, j + 0.5f});
                 const Float sdfVal = (cellCenter - ppos).length() - _particles.particleRadius;
                 if(_grid.fluidSDF(i, j) > sdfVal)
                     _grid.fluidSDF(i, j) = sdfVal;
@@ -304,7 +304,7 @@ void ApicSolver2D::computeFluidSDF() {
     });
 
     _grid.fluidSDF.loop2D([&](std::size_t i, std::size_t j) {
-        const Vector2 cellCenter = _grid.getWorldPos(i + 0.5f, j + 0.5f);
+        const Vector2 cellCenter = _grid.getWorldPos({i + 0.5f, j + 0.5f});
         const Float sdfVal = _objects->boundary.signedDistance(cellCenter);
         if(_grid.fluidSDF(i, j) > sdfVal)
             _grid.fluidSDF(i, j) = sdfVal;

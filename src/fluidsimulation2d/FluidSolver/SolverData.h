@@ -106,8 +106,8 @@ struct GridData {
     Vector2 getGridPos(const Vector2& worldPos) const {
         return (worldPos - origin)*invCellSize;
     }
-    Vector2 getWorldPos(Float gridX, Float gridY) const {
-        return Vector2(gridX, gridY)*cellSize + origin;
+    Vector2 getWorldPos(const Vector2& gridPos) const {
+        return gridPos*cellSize + origin;
     }
 
     bool isValidCellIdx(Int x, Int y) const {
