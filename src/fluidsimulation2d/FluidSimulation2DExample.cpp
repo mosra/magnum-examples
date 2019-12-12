@@ -479,8 +479,7 @@ Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2i& winPos) {
     /* Compute the world coordinate from window coordinate */
     const Vector2i flippedPos = Vector2i(winPos.x(), framebufferSize().y() - winPos.y());
     const Vector2 ndcPos = Vector2(flippedPos) / Vector2(framebufferSize())*Vector2{2.0f} - Vector2{1.0f};
-    const Vector3 worldPos = invViewProjMat*Vector3{ndcPos, 1.0f};
-    return Vector2(worldPos.x()/worldPos.z(), worldPos.y()/worldPos.z());
+    return invViewProjMat.transformPoint(ndcPos);
 }
 
 }}
