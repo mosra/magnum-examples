@@ -93,8 +93,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-text.wasm
+        $<TARGET_FILE_DIR:magnum-text>/magnum-text.js.mem
+        $<TARGET_FILE_DIR:magnum-text>/magnum-text.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/text OPTIONAL)
 
 # Installation for desktop

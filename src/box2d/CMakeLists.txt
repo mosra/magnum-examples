@@ -88,8 +88,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-box2d.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-box2d.wasm
+        $<TARGET_FILE_DIR:magnum-box2d>/magnum-box2d.js.mem
+        $<TARGET_FILE_DIR:magnum-box2d>/magnum-box2d.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/box2d OPTIONAL)
 
 # Installation for desktop

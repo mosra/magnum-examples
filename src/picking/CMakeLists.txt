@@ -87,8 +87,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-picking.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-picking.wasm
+        $<TARGET_FILE_DIR:magnum-picking>/magnum-picking.js.mem
+        $<TARGET_FILE_DIR:magnum-picking>/magnum-picking.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/picking OPTIONAL)
 
 # Installation for desktop

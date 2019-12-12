@@ -91,8 +91,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-mouseinteraction.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-mouseinteraction.wasm
+        $<TARGET_FILE_DIR:magnum-mouseinteraction>/magnum-mouseinteraction.js.mem
+        $<TARGET_FILE_DIR:magnum-mouseinteraction>/magnum-mouseinteraction.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/mouseinteraction OPTIONAL)
 
 # Installation for desktop

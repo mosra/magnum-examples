@@ -92,8 +92,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-arealights.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-arealights.wasm
+        $<TARGET_FILE_DIR:magnum-arealights>/magnum-arealights.js.mem
+        $<TARGET_FILE_DIR:magnum-arealights>/magnum-arealights.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arealights OPTIONAL)
 
 # Installation for desktop

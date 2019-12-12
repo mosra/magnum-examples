@@ -87,8 +87,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-bullet.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-bullet.wasm
+        $<TARGET_FILE_DIR:magnum-bullet>/magnum-bullet.js.mem
+        $<TARGET_FILE_DIR:magnum-bullet>/magnum-bullet.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/bullet OPTIONAL)
 
 # Installation for desktop

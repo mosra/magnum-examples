@@ -97,8 +97,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-audio.wasm
+        $<TARGET_FILE_DIR:magnum-audio>/magnum-audio.js.mem
+        $<TARGET_FILE_DIR:magnum-audio>/magnum-audio.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/audio OPTIONAL)
 
 # Installation for desktop

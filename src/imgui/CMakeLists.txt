@@ -84,8 +84,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui)
     install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-imgui.js.mem
-        ${CMAKE_CURRENT_BINARY_DIR}/magnum-imgui.wasm
+        $<TARGET_FILE_DIR:magnum-imgui>/magnum-imgui.js.mem
+        $<TARGET_FILE_DIR:magnum-imgui>/magnum-imgui.wasm
         DESTINATION ${MAGNUM_DEPLOY_PREFIX}/imgui OPTIONAL)
 
 # Installation elsewhere
