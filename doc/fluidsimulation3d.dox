@@ -33,7 +33,8 @@ namespace Magnum {
 
 A basic implementation of SPH ([Smoothed-Particle Hydrodynamics](https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics))
 solver. In order to run in real time, accuracy has been heavily sacrificed for
-performance.
+performance. See also @ref examples-fluidsimulation2d, which runs just realtime
+just in a single thread.
 
 @image html fluidsimulation3d.png width=400px
 
