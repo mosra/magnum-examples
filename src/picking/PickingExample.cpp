@@ -279,9 +279,11 @@ void PickingExample::mousePressEvent(MouseEvent& event) {
 void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
 
+    /* We have to take window size, not framebuffer size, since the position is
+       in window coordinates and the two can be different on HiDPI systems */
     const Vector2 delta = 3.0f*
         Vector2{event.position() - _previousMousePosition}/
-        Vector2{GL::defaultFramebuffer.viewport().size()};
+        Vector2{windowSize()};
 
     (*_cameraObject)
         .rotate(Rad{-delta.y()}, _cameraObject->transformation().right().normalized())
@@ -295,10 +297,16 @@ void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
 void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
 
-    /* Read object ID at given click position (framebuffer has Y up while windowing system Y down) */
+    /* First scale the position from being relative to window size to being
+       relative to framebuffer size as those two can be different on HiDPI
+       systems */
+    const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
+
+    /* Read object ID at given click position */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
-        Range2Di::fromSize({event.position().x(), _framebuffer.viewport().sizeY() - event.position().y() - 1}, {1, 1}),
+        Range2Di::fromSize(fbPosition, {1, 1}),
         {PixelFormat::R8UI});
 
     /* Highlight object under mouse and deselect all other */
