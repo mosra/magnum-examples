@@ -166,14 +166,14 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
     /* Setup scene objects and camera */
     {
         /* Setup scene objects */
-        _scene.reset(new Scene2D{});
-        _drawableGroup.reset(new SceneGraph::DrawableGroup2D{});
+        _scene.emplace();
+        _drawableGroup.emplace();
 
         /* Configure camera */
-        _objCamera.reset(new Object2D{_scene.get()});
+        _objCamera.emplace(_scene.get());
         _objCamera->setTransformation(Matrix3::translation(gridCenter()));
 
-        _camera.reset(new SceneGraph::Camera2D{*_objCamera});
+        _camera.emplace(*_objCamera);
         _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
             .setProjectionMatrix(Matrix3::projection(Vector2{DomainDisplaySize}))
             .setViewport(GL::defaultFramebuffer.viewport().size());
@@ -184,25 +184,22 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
         SceneObjects* sceneObjs = new SceneObjects;
         sceneObjs->emitterT0 = SDFObject{gridCenter() + Vector2(10.0f, 10.0f), 30.0f, SDFObject::ObjectType::Circle};
         sceneObjs->emitter = SDFObject{gridCenter() + Vector2(15.0f, 20.0f), 15.0f, SDFObject::ObjectType::Circle};
-        sceneObjs->boundary = SDFObject{gridCenter(), Float(RadiusCircleBoundary), SDFObject::ObjectType::Circle, false};
-        _fluidSolver.reset(new ApicSolver2D{GridStart, GridCellLength, NumGridCells.x(), NumGridCells.y(), sceneObjs});
+        _fluidSolver.emplace(GridStart, GridCellLength, NumGridCells.x(), NumGridCells.y(), sceneObjs);
 
         /* Drawable particles */
-        _drawableParticles.reset(new ParticleGroup2D{
-            _fluidSolver->particlePositions(), _fluidSolver->particleRadius()});
+        _drawableParticles.emplace(_fluidSolver->particlePositions(),
+                                   _fluidSolver->particleRadius());
         _drawableParticles->setColor(Color3{85.0f/255, 200.0f/255, 245.0f/255});
 
         /* Drawable boundary*/
-        _drawableBoundary.reset(new WireframeObject2D(_scene.get(),
-            _drawableGroup.get(),
-            MeshTools::compile(Primitives::circle2DWireframe(128))));
+        _drawableBoundary.emplace(_scene.get(), _drawableGroup.get(),
+            MeshTools::compile(Primitives::circle2DWireframe(128)));
         _drawableBoundary->setTransformation(Matrix3::scaling(Vector2{RadiusCircleBoundary + _fluidSolver->particleRadius()}));
         _drawableBoundary->setColor(Color3{1.0f, 1.0f, 1.0f});
 
         /* Visualize mouse pointer for mouse-fluid interaction */
-        _drawablePointer.reset(new WireframeObject2D(_scene.get(),
-            _drawableGroup.get(),
-            MeshTools::compile(Primitives::circle2DWireframe(32))));
+        _drawablePointer.emplace(_scene.get(), _drawableGroup.get(),
+            MeshTools::compile(Primitives::circle2DWireframe(32)));
         _drawablePointer->setColor(Color3{0.0f, 1.0f, 0.0f});
         _drawablePointer->setEnabled(false);
     }
