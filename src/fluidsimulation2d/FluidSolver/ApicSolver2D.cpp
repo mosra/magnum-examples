@@ -450,7 +450,7 @@ void ApicSolver2D::constrainVelocity() {
 }
 
 void ApicSolver2D::relaxParticlePositions(Float dt) {
-    const Float restDist = _grid.cellSize/Math::sqrt(2.0f)*1.1f;
+    const Float restDist = _grid.cellSize/Constants::sqrt2()*1.1f;
     const Float restDistSqr = restDist*restDist;
     const Float overlappedSqr = restDistSqr*0.0001f;
     const Float jitterMag = restDist/dt/128.0f*0.01f;
