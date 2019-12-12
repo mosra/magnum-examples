@@ -84,6 +84,6 @@ install(FILES
     ${MAGNUM_WEBAPPLICATION_CSS}
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr)
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.js.mem
-    ${CMAKE_CURRENT_BINARY_DIR}/magnum-webvr.wasm
+    $<TARGET_FILE_DIR:magnum-webvr>/magnum-webvr.js.mem
+    $<TARGET_FILE_DIR:magnum-webvr>/magnum-webvr.wasm
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webvr OPTIONAL)

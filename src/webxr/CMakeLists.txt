@@ -78,6 +78,6 @@ install(FILES
     ${MAGNUM_WEBAPPLICATION_CSS}
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr)
 install(FILES
-    ${CMAKE_BINARY_DIR}/bin/magnum-webxr.js.mem
-    ${CMAKE_BINARY_DIR}/bin/magnum-webxr.wasm
+    $<TARGET_FILE_DIR:magnum-webxr>/magnum-webxr.js.mem
+    $<TARGET_FILE_DIR:magnum-webxr>/magnum-webxr.wasm
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr OPTIONAL)
