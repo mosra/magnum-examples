@@ -39,7 +39,7 @@ uniform float particleRadius;
 
 flat in vec3 viewCenter;
 flat in vec3 color;
-layout(location = 0) out lowp vec4 fragmentColor;
+out lowp vec4 fragmentColor;
 
 vec3 shadeLight(vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 halfDir  = normalize(lightDir - viewDir);

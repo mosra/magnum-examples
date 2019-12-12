@@ -295,7 +295,7 @@ void FluidSimulation3DExample::viewportEvent(ViewportEvent& event) {
     _camera->setViewport(event.framebufferSize());
 }
 
-void FluidSimulation3DExample::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
+void FluidSimulation3DExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::H:
             _showMenu ^= true;

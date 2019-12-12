@@ -186,6 +186,7 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
         SceneObjects* sceneObjs = new SceneObjects;
         sceneObjs->emitterT0 = SDFObject{gridCenter() + Vector2(10.0f, 10.0f), 30.0f, SDFObject::ObjectType::Circle};
         sceneObjs->emitter = SDFObject{gridCenter() + Vector2(15.0f, 20.0f), 15.0f, SDFObject::ObjectType::Circle};
+        sceneObjs->boundary = SDFObject{gridCenter(), Float(RadiusCircleBoundary), SDFObject::ObjectType::Circle, false};
         _fluidSolver.emplace(GridStart, GridCellLength, NumGridCells.x(), NumGridCells.y(), sceneObjs);
 
         /* Drawable particles */
@@ -293,7 +294,7 @@ void FluidSimulation2DExample::viewportEvent(ViewportEvent& event) {
     _camera->setViewport(event.framebufferSize());
 }
 
-void FluidSimulation2DExample::keyPressEvent(Platform::Sdl2Application::KeyEvent& event) {
+void FluidSimulation2DExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::E:
             _fluidSolver->emitParticles();

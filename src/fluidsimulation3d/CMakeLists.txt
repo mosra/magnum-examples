@@ -46,7 +46,6 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 find_package(MagnumIntegration REQUIRED ImGui)
-find_package(Threads REQUIRED)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -83,11 +82,14 @@ target_link_libraries(magnum-fluidsimulation3d PRIVATE
     Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders
-    MagnumIntegration::ImGui
-    Threads::Threads)
+    MagnumIntegration::ImGui)
 target_include_directories(magnum-fluidsimulation3d PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
+if(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING)
+    find_package(Threads REQUIRED)
+    target_link_libraries(magnum-fluidsimulation3d PRIVATE Threads::Threads)
+endif()
 if(FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
     # TBBConfig.cmake adds -isystem /usr/lib/cmake/TBB/../../../include, which
     # breaks compilation. Temporary workaround by not including that dir as

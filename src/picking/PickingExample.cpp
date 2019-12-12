@@ -328,7 +328,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize(fbPosition, {1, 1}),
-        {PixelFormat::R8UI});
+        {PixelFormat::R32UI});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
