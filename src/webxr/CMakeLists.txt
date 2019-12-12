@@ -57,8 +57,8 @@ target_link_libraries(magnum-webxr PRIVATE
     Magnum::MeshTools
     Magnum::Primitives
     Magnum::Shaders)
-target_link_options(magnum-webxr PRIVATE
-    "SHELL:--js-library ${CMAKE_CURRENT_BINARY_DIR}/library_webxr.js")
+set_property(TARGET magnum-webxr APPEND_STRING PROPERTY LINK_FLAGS
+    "--js-library ${CMAKE_CURRENT_SOURCE_DIR}/library_webxr.js")
 
 # Copy the boilerplate next to the executable so it can be run directly from
 # the build dir; provide an install target as well
