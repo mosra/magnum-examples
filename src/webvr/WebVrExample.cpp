@@ -148,16 +148,16 @@ WebVrExample::WebVrExample(const Arguments& arguments):
           .setShininess(20);
 
     /* Initialize the VR API of emscripten */
-#if EMSCRIPTEN_VR_API_VERSION >= 10101
+    #if EMSCRIPTEN_VR_API_VERSION >= 10101
     /* This version of the emscripten WebVR API uses callbacks
      * instead of busy polling of emscripten_vr_ready() to notify
      * when the API has finished initializing. */
     emscripten_vr_init([](void* app) {
         static_cast<WebVrExample*>(app)->vrReady();
     }, this);
-#else
+    #else
     emscripten_vr_init();
-#endif
+    #endif
 
     Debug{} << "Browser is running WebVR version"
             << emscripten_vr_version_major()
@@ -168,9 +168,9 @@ WebVrExample::WebVrExample(const Arguments& arguments):
 WebVrExample::~WebVrExample() {
     emscripten_vr_cancel_display_render_loop(_displayHandle);
 
-#if EMSCRIPTEN_VR_API_VERSION >= 10101
+    #if EMSCRIPTEN_VR_API_VERSION >= 10101
     emscripten_vr_deinit();
-#endif
+    #endif
 }
 
 void WebVrExample::vrReady() {
@@ -219,7 +219,7 @@ void WebVrExample::displayPresent() {
 }
 
 void WebVrExample::drawEvent() {
-#if EMSCRIPTEN_VR_API_VERSION < 10101
+    #if EMSCRIPTEN_VR_API_VERSION < 10101
     /* Only initialize once */
     if(_vrInitialized) return;
 
@@ -231,7 +231,7 @@ void WebVrExample::drawEvent() {
     }
 
     vrReady();
-#endif
+    #endif
 }
 
 void WebVrExample::displayRender() {
