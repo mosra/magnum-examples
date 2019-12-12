@@ -43,13 +43,19 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
-    Shaders
-    Sdl2Application)
+    Shaders)
 find_package(MagnumIntegration REQUIRED ImGui)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+    set(ON_EXCEPT_EMSCRIPTEN OFF)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+    set(ON_EXCEPT_EMSCRIPTEN ON)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-option(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING "Build FluidSimulation example with parallel computation" ON)
+option(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING "Build FluidSimulation example with parallel computation" ${ON_EXCEPT_EMSCRIPTEN})
 option(FLUIDSIMULATION3D_EXAMPLE_USE_TBB "Using Intel TBB if FluidSimulation is built with parallel computation enabled" OFF)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -101,7 +107,33 @@ if(FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
     target_link_libraries(magnum-fluidsimulation3d PRIVATE TBB::tbb)
 endif()
 
-install(TARGETS magnum-fluidsimulation3d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
+if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-fluidsimulation3d POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-fluidsimulation3d>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/fluidsimulation3d.html
+            $<TARGET_FILE_DIR:magnum-fluidsimulation3d>/magnum-fluidsimulation3d.html)
+
+    install(FILES fluidsimulation3d.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation3d RENAME index.html)
+    install(TARGETS magnum-fluidsimulation3d DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation3d)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation3d)
+    install(FILES
+        $<TARGET_FILE_DIR:magnum-fluidsimulation3d>/magnum-fluidsimulation3d.js.mem
+        $<TARGET_FILE_DIR:magnum-fluidsimulation3d>/magnum-fluidsimulation3d.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation3d OPTIONAL)
+
+# Installation for desktop
+elseif(NOT CORRADE_TARGET_IOS)
+    install(TARGETS magnum-fluidsimulation3d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-fluidsimulation3d)
