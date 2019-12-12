@@ -35,23 +35,32 @@
 #include "FluidSolver/SolverData.h"
 
 namespace Magnum { namespace Examples {
-/*
- * 2D Affine Particle-in-Cell fluid solver
- */
+
+/* 2D Affine Particle-in-Cell fluid solver */
 class ApicSolver2D {
 public:
-    ApicSolver2D(const Vector2& origin, Float cellSize, Int Ni, Int Nj, SceneObjects* sceneObjs);
+    explicit ApicSolver2D(const Vector2& origin, Float cellSize, Int Ni, Int Nj, SceneObjects* sceneObjs);
 
     /* Manipulation */
-    void reset() { _particles.reset(); _particles.addParticles(_particles.positionsT0, 0); }
+    void reset() {
+        _particles.reset();
+        _particles.addParticles(_particles.positionsT0, 0);
+    }
+
     void emitParticles() { generateParticles(_objects->emitter, 10); }
+
     void addRepulsiveVelocity(const Vector2& p0, const Vector2& p1, Float dt, Float radius, Float magnitude);
+
     void advanceFrame(Float frameDuration);
 
     /* Properties */
     UnsignedInt numParticles() const { return _particles.size(); }
+
     Float particleRadius() const { return _particles.particleRadius; }
-    const std::vector<Vector2>& particlePositions() const { return _particles.positions; }
+
+    const std::vector<Vector2>& particlePositions() const {
+        return _particles.positions;
+    }
 
 private:
     /* Initialization */
@@ -60,22 +69,23 @@ private:
 
     /* Simulation */
     Float timestepCFL() const;
-    void  moveParticles(Float dt);
-    void  collectParticlesToCells();
-    void  particleVelocity2Grid();
-    void  extrapolate(Array2X<Float>& grid, Array2X<Float>& tmp_grid, Array2X<char>& valid, Array2X<char>& old_valid) const;
-    void  addGravity(Float dt);
-    void  computeFluidSDF();
-    void  solvePressures(Float dt);
-    void  constrainVelocity();
-    void  relaxParticlePositions(Float dt);
-    void  gridVelocity2Particle();
+    void moveParticles(Float dt);
+    void collectParticlesToCells();
+    void particleVelocity2Grid();
+    void extrapolate(Array2X<Float>& grid, Array2X<Float>& tmp_grid, Array2X<char>& valid, Array2X<char>& old_valid) const;
+    void addGravity(Float dt);
+    void computeFluidSDF();
+    void solvePressures(Float dt);
+    void constrainVelocity();
+    void relaxParticlePositions(Float dt);
+    void gridVelocity2Particle();
 
     Containers::Pointer<SceneObjects> _objects;
-    ParticleData       _particles;
-    GridData           _grid;
+    ParticleData _particles;
+    GridData _grid;
     LinearSystemSolver _pressureSolver;
 };
-} }
+
+}}
 
 #endif

@@ -37,6 +37,7 @@
 #include <Magnum/Math/Vector2.h>
 
 namespace Magnum { namespace Examples {
+
 struct SDFObject {
     enum class ObjectType {
         /* Basic primitives */
@@ -49,24 +50,27 @@ struct SDFObject {
         Union
     };
 
-    SDFObject() : center{0, 0}, radii{1}, type{ObjectType::Circle}, negativeInside{true} {}
+    explicit SDFObject(): center{0, 0}, radii{1}, type{ObjectType::Circle}, negativeInside{true} {}
 
-    SDFObject(const Vector2& center_, Float radius_, ObjectType type_, bool negativeInside_ = true) :
-        SDFObject(center_, Vector2{ radius_, 0 }, type_, negativeInside_) {}
+    explicit SDFObject(const Vector2& center_, Float radius_, ObjectType type_, bool negativeInside_ = true):
+        SDFObject(center_, Vector2{radius_, 0}, type_, negativeInside_) {}
 
-    SDFObject(const Vector2& center_, const Vector2& radii_, ObjectType type_, bool negativeInside_ = true) :
-        center{center_}, radii{radii_}, type{type_}, negativeInside{negativeInside_} {
+    explicit SDFObject(const Vector2& center_, const Vector2& radii_, ObjectType type_, bool negativeInside_ = true):
+        center{center_}, radii{radii_}, type{type_},
+        negativeInside{negativeInside_}
+    {
         if(type != ObjectType::Circle
            && type != ObjectType::Box) {
             Fatal{} << "Invalid object type";
         }
     }
 
-    SDFObject(SDFObject* obj1_, SDFObject* obj2_, ObjectType type_) :
-        type{type_}, obj1{obj1_}, obj2{obj2_} {
-        if(type != ObjectType::Intersection
-           && type != ObjectType::Subtraction
-           && type != ObjectType::Union) {
+    explicit SDFObject(SDFObject* obj1_, SDFObject* obj2_, ObjectType type_):
+        type{type_}, obj1{obj1_}, obj2{obj2_}
+    {
+        if(type != ObjectType::Intersection &&
+           type != ObjectType::Subtraction &&
+           type != ObjectType::Union) {
             Fatal{} << "Invalid boolean operation";
         }
     }
@@ -74,19 +78,19 @@ struct SDFObject {
     Float signedDistance(const Vector2& pos) const {
         switch(type) {
             case ObjectType::Circle: {
-                const auto dist = (pos - center).length() - radii[0];
+                const Float dist = (pos - center).length() - radii[0];
                 return negativeInside ? dist : -dist;
             }
             case ObjectType::Box: {
-                const auto dx = std::abs(pos[0] - center[0]) - radii[0];
-                const auto dy = std::abs(pos[1] - center[1]) - radii[1];
-                Float      dist { 0 };
+                const Float dx = Math::abs(pos[0] - center[0]) - radii[0];
+                const Float dy = Math::abs(pos[1] - center[1]) - radii[1];
+                Float dist { 0 };
                 if(dx < 0 && dy < 0) {
                     dist = Math::max(dx, dy);
                 } else {
                     const Float dax = Math::max(dx, 0.0f);
                     const Float day = Math::max(dy, 0.0f);
-                    dist = std::sqrt(dax * dax + day * day);
+                    dist = Math::sqrt(dax*dax + day*day);
                 }
                 return negativeInside ? dist : -dist;
             }
@@ -98,17 +102,19 @@ struct SDFObject {
             case ObjectType::Union:
                 return Math::min(obj1->signedDistance(pos), obj2->signedDistance(pos));
         }
+
         return 0;
     }
 
-    Vector2    center;
-    Vector2    radii;
+    Vector2 center;
+    Vector2 radii;
     ObjectType type;
-    bool       negativeInside { true };
+    bool negativeInside { true };
 
-    Containers::Pointer<SDFObject> obj1 { nullptr };
-    Containers::Pointer<SDFObject> obj2 { nullptr };
+    Containers::Pointer<SDFObject> obj1;
+    Containers::Pointer<SDFObject> obj2;
 };
-} }
+
+}}
 
 #endif

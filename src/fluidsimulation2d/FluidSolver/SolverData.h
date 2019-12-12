@@ -47,7 +47,7 @@ struct SceneObjects {
 struct ParticleData {
     explicit ParticleData(Float cellSize) : particleRadius{cellSize* 0.5f} {}
 
-    uint32_t size() const { return static_cast<uint32_t>(positions.size()); }
+    UnsignedInt size() const { return static_cast<UnsignedInt>(positions.size()); }
 
     void addParticles(const std::vector<Vector2>& newParticles, Float initialVelocity_y) {
         if(positionsT0.size() == 0) {
@@ -68,7 +68,7 @@ struct ParticleData {
 
     template<class Function>
     void loopAll(Function&& func) const {
-        for(uint32_t p = 0, pend = size(); p < pend; ++p) {
+        for(UnsignedInt p = 0, pend = size(); p < pend; ++p) {
             func(p);
         }
     }
@@ -82,35 +82,44 @@ struct ParticleData {
 };
 
 struct GridData {
-    GridData(const Vector2& origin_, Float cellSize_, Int Ni_, Int Nj_) :
-        origin{origin_}, Ni{Ni_}, Nj{Nj_},
+    GridData(const Vector2& origin_, Float cellSize_, Int nI_, Int nJ_) :
+        origin{origin_}, nI{nI_}, nJ{nJ_},
         cellSize{cellSize_},
-        invCellSize{Float(1.0) / cellSize} {
-        u.resize(Ni + 1, Nj);
-        v.resize(Ni, Nj + 1);
-        u_tmp.resize(Ni + 1, Nj);
-        v_tmp.resize(Ni, Nj + 1);
-        u_weights.resize(Ni + 1, Nj);
-        v_weights.resize(Ni, Nj + 1);
-        u_valid.resize(Ni + 1, Nj);
-        v_valid.resize(Ni, Nj + 1);
-        u_old_valid.resize(Ni + 1, Nj);
-        v_old_valid.resize(Ni, Nj + 1);
+        invCellSize{1.0f/cellSize}
+    {
+        u.resize(nI + 1, nJ);
+        v.resize(nI, nJ + 1);
+        uTmp.resize(nI + 1, nJ);
+        vTmp.resize(nI, nJ + 1);
+        uWeights.resize(nI + 1, nJ);
+        vWeights.resize(nI, nJ + 1);
+        uValid.resize(nI + 1, nJ);
+        vValid.resize(nI, nJ + 1);
+        uOldValid.resize(nI + 1, nJ);
+        vOldValid.resize(nI, nJ + 1);
 
-        fluidSDF.resize(Ni, Nj);
-        boundarySDF.resize(Ni + 1, Nj + 1);
-        cellParticles.resize(Ni, Nj);
+        fluidSDF.resize(nI, nJ);
+        boundarySDF.resize(nI + 1, nJ + 1);
+        cellParticles.resize(nI, nJ);
     }
 
-    Vector2 getGridPos(const Vector2& worldPos) const { return (worldPos - origin) * invCellSize; }
-    Vector2 getWorldPos(Float grid_x, Float grid_y) const { return Vector2(grid_x, grid_y) * cellSize + origin; }
+    Vector2 getGridPos(const Vector2& worldPos) const {
+        return (worldPos - origin)*invCellSize;
+    }
+    Vector2 getWorldPos(Float gridX, Float gridY) const {
+        return Vector2(gridX, gridY)*cellSize + origin;
+    }
 
-    bool isValidCellIdx(int x, int y) const { return x >= 0 && x < Ni && y >= 0 && y < Nj; }
-    Vector2i getCellIdx(const Vector2& worldPos) const { return Vector2i(getGridPos(worldPos)); }
+    bool isValidCellIdx(Int x, Int y) const {
+        return x >= 0 && x < nI && y >= 0 && y < nJ;
+    }
+    Vector2i getCellIdx(const Vector2& worldPos) const {
+        return Vector2i(getGridPos(worldPos));
+    }
     Vector2i getValidCellIdx(const Vector2& worldPos) const {
-        auto tmp = getCellIdx(worldPos);
-        tmp.x() = Math::max(0, Math::min(Ni - 1, tmp.x()));
-        tmp.y() = Math::max(0, Math::min(Nj - 1, tmp.y()));
+        Vector2i tmp = getCellIdx(worldPos);
+        tmp.x() = Math::max(0, Math::min(nI - 1, tmp.x()));
+        tmp.y() = Math::max(0, Math::min(nJ - 1, tmp.y()));
         return tmp;
     }
 
@@ -123,21 +132,22 @@ struct GridData {
 
     Vector2 constrainBoundary(const Vector2& worldPos) const {
         const Vector2 gridPos = getGridPos(worldPos);
-        const auto    sdfVal  = boundarySDF.interpolateValue(gridPos);
+        const Float sdfVal = boundarySDF.interpolateValue(gridPos);
         if(sdfVal < 0) {
-            const auto normal = boundarySDF.interpolateGradient(gridPos);
-            return worldPos - sdfVal * normal;
+            const Vector2 normal = boundarySDF.interpolateGradient(gridPos);
+            return worldPos - sdfVal*normal;
         } else {
             return worldPos;
         }
     }
 
-    template<class Function>
-    void loopNeigborParticles(int i, int j, int il, int ih, int jl, int jh, Function&& func) const {
-        for(int sj = j + jl; sj <= j + jh; ++sj) {
-            for(int si = i + il; si <= i + ih; ++si) {
-                if(si < 0 || si > Ni - 1 || sj < 0 || sj > Nj - 1) { continue; }
-                const auto& neighbors = cellParticles(si, sj);
+    template<class Function> void loopNeigborParticles(Int i, Int j, Int il, Int ih, Int jl, Int jh, Function&& func) const {
+        for(Int sj = j + jl; sj <= j + jh; ++sj) {
+            for(Int si = i + il; si <= i + ih; ++si) {
+                if(si < 0 || si > nI - 1 || sj < 0 || sj > nJ - 1)
+                    continue;
+
+                const std::vector<UnsignedInt>& neighbors = cellParticles(si, sj);
                 for(auto p : neighbors) {
                     func(p);
                 }
@@ -147,18 +157,18 @@ struct GridData {
 
     /* Grid spatial information */
     const Vector2 origin;
-    const Int     Ni, Nj;
-    const Float   cellSize;
-    const Float   invCellSize;
+    const Int nI, nJ;
+    const Float cellSize;
+    const Float invCellSize;
 
     /* Nodes and cells' data */
-    Array2X<Float> u, u_tmp, u_weights;
-    Array2X<Float> v, v_tmp, v_weights;
-    Array2X<char>  u_valid, v_valid, u_old_valid, v_old_valid;
+    Array2X<Float> u, uTmp, uWeights;
+    Array2X<Float> v, vTmp, vWeights;
+    Array2X<char> uValid, vValid, uOldValid, vOldValid;
     Array2X<Float> boundarySDF;
     Array2X<Float> fluidSDF;
 
-    Array2X<std::vector<uint32_t>> cellParticles;
+    Array2X<std::vector<UnsignedInt>> cellParticles;
 };
 
 struct LinearSystemSolver {
@@ -174,19 +184,20 @@ struct LinearSystemSolver {
     }
 
     void solve() {
-        bool bSuccess = pcgSolver.solve(matrix, rhs, solution);
-        if(!bSuccess) {
+        if(!pcgSolver.solve(matrix, rhs, solution)) {
             Error{} << "Pressure solve failed!";
         }
     }
 
-    /* Use double for linear system (the solver converges slower if using float number) */
+    /* Use double for linear system (the solver converges slower if using float
+       numbers) */
     using pcg_real = Double;
-    PCGSolver<pcg_real>    pcgSolver;
+    PCGSolver<pcg_real> pcgSolver;
     SparseMatrix<pcg_real> matrix;
-    std::vector<pcg_real>  rhs;
-    std::vector<pcg_real>  solution;
+    std::vector<pcg_real> rhs;
+    std::vector<pcg_real> solution;
 };
-} }
+
+}}
 
 #endif

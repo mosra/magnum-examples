@@ -38,6 +38,7 @@
 #include <Magnum/Math/Matrix3.h>
 
 namespace Magnum { namespace Examples {
+
 ParticleSphereShader2D::ParticleSphereShader2D() {
     Utility::Resource rs("data");
 
@@ -47,18 +48,18 @@ ParticleSphereShader2D::ParticleSphereShader2D() {
     fragShader.addSource(rs.get("ParticleSphereShader2D.frag"));
 
     CORRADE_INTERNAL_ASSERT(GL::Shader::compile({ vertShader, fragShader }));
-    attachShaders({ vertShader, fragShader });
+    attachShaders({vertShader, fragShader});
     CORRADE_INTERNAL_ASSERT(link());
 
-    _uNumParticles   = uniformLocation("numParticles");
+    _uNumParticles = uniformLocation("numParticles");
     _uParticleRadius = uniformLocation("particleRadius");
 
     _uColorMode = uniformLocation("colorMode");
-    _uColor     = uniformLocation("uniformColor");
+    _uColor = uniformLocation("uniformColor");
 
     _uViewProjectionMatrix = uniformLocation("viewProjectionMatrix");
-    _uScreenHeight         = uniformLocation("screenHeight");
-    _uDomainHeight         = uniformLocation("domainHeight");
+    _uScreenHeight = uniformLocation("screenHeight");
+    _uDomainHeight = uniformLocation("domainHeight");
 }
 
 ParticleSphereShader2D& ParticleSphereShader2D::setNumParticles(Int numParticles) {

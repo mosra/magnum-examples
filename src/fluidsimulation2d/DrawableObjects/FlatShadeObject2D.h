@@ -38,30 +38,38 @@
 #include <Magnum/SceneGraph/MatrixTransformation2D.h>
 
 namespace Magnum { namespace Examples {
+
 using Object2D = SceneGraph::Object<SceneGraph::MatrixTransformation2D>;
 
-class FlatShadeObject2D : public SceneGraph::Drawable2D {
-public:
-    explicit FlatShadeObject2D(Object2D& object, Shaders::Flat2D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup2D* const drawables) :
-        SceneGraph::Drawable2D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
+class FlatShadeObject2D: public SceneGraph::Drawable2D {
+    public:
+        explicit FlatShadeObject2D(Object2D& object, Shaders::Flat2D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup2D* const drawables):
+            SceneGraph::Drawable2D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
 
-    void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
-        if(_bEnabled) {
+        void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
+            if(!_bEnabled) return;
+
             _shader.setColor(_color)
-                .setTransformationProjectionMatrix(camera.projectionMatrix() * transformation);
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
             _mesh.draw(_shader);
         }
-    }
 
-    FlatShadeObject2D& setColor(const Color3& color) { _color = color; return *this; }
-    FlatShadeObject2D& setEnabled(bool bEnabled) { _bEnabled = bEnabled; return *this; }
+        FlatShadeObject2D& setColor(const Color3& color) {
+            _color = color;
+            return *this;
+        }
+        FlatShadeObject2D& setEnabled(bool bEnabled) {
+            _bEnabled = bEnabled;
+            return *this;
+        }
 
-private:
-    Shaders::Flat2D& _shader;
-    Color3           _color;
-    GL::Mesh&        _mesh;
-    bool             _bEnabled { true };
+    private:
+        Shaders::Flat2D& _shader;
+        Color3 _color;
+        GL::Mesh& _mesh;
+        bool _bEnabled = true;
 };
-} }
+
+}}
 
 #endif

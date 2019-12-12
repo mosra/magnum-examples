@@ -32,34 +32,47 @@
 
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/GL/Mesh.h>
-#include <Magnum/Shaders/Flat.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation2D.h>
+#include <Magnum/Shaders/Flat.h>
 
 #include "DrawableObjects/FlatShadeObject2D.h"
 
 namespace Magnum { namespace Examples {
+
 using Scene2D = SceneGraph::Scene<SceneGraph::MatrixTransformation2D>;
 
 class WireframeObject2D {
-public:
-    explicit WireframeObject2D(Scene2D* const scene, SceneGraph::DrawableGroup2D* const drawableGroup, GL::Mesh&& mesh) :
-        _mesh(std::move(mesh)) {
-        _obj2D.reset(new Object2D{ scene });
-        _flatShader = Shaders::Flat2D{};
-        _drawableObj.reset(new FlatShadeObject2D{ *_obj2D, _flatShader, Color3{ 1.0f }, _mesh, drawableGroup });
-    }
+    public:
+        explicit WireframeObject2D(Scene2D* const scene, SceneGraph::DrawableGroup2D* const drawableGroup, GL::Mesh&& mesh) :
+            _mesh(std::move(mesh)) {
+            _obj2D.reset(new Object2D{ scene });
+            _flatShader = Shaders::Flat2D{};
+            _drawableObj.reset(new FlatShadeObject2D{ *_obj2D, _flatShader, Color3{ 1.0f }, _mesh, drawableGroup });
+        }
 
-    WireframeObject2D& setColor(const Color3& color) { _drawableObj->setColor(color); return *this; }
-    WireframeObject2D& setTransformation(const Matrix3& matrix) { _obj2D->setTransformation(matrix); return *this; }
-    WireframeObject2D& setEnabled(bool bEnabled) { _drawableObj->setEnabled(bEnabled); return *this; }
+        WireframeObject2D& setColor(const Color3& color) {
+            _drawableObj->setColor(color);
+            return *this;
+        }
 
-protected:
-    GL::Mesh                               _mesh{ NoCreate };
-    Shaders::Flat2D                        _flatShader{ NoCreate };
-    Containers::Pointer<Object2D>          _obj2D;
-    Containers::Pointer<FlatShadeObject2D> _drawableObj;
+        WireframeObject2D& setTransformation(const Matrix3& matrix) {
+            _obj2D->setTransformation(matrix);
+            return *this;
+        }
+
+        WireframeObject2D& setEnabled(bool bEnabled) {
+            _drawableObj->setEnabled(bEnabled);
+            return *this;
+        }
+
+    protected:
+        GL::Mesh _mesh{NoCreate};
+        Shaders::Flat2D _flatShader{NoCreate};
+        Containers::Pointer<Object2D> _obj2D;
+        Containers::Pointer<FlatShadeObject2D> _drawableObj;
 };
-} }
+
+}}
 
 #endif

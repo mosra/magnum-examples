@@ -33,10 +33,12 @@
 #include <algorithm>
 #include <vector>
 
+#include "Magnum/Magnum.h"
+
 namespace Magnum { namespace Examples {
-template<class T>
-struct SparseMatrix {
-    explicit SparseMatrix(uint32_t size_ = 0) { resize(size_); }
+
+template<class T> struct SparseMatrix {
+    explicit SparseMatrix(UnsignedInt size_ = 0) { resize(size_); }
 
     void resize(std::size_t size_) {
         size = size_;
@@ -54,12 +56,11 @@ struct SparseMatrix {
         }
     }
 
-    template<class IntType, class U>
-    void addToElement(IntType i_, IntType j_, U inc_val_) {
-        const auto i   = static_cast<uint32_t>(i_);
-        const auto j   = static_cast<uint32_t>(j_);
+    template<class IntType, class U> void addToElement(IntType i_, IntType j_, U inc_val_) {
+        const auto i = static_cast<UnsignedInt>(i_);
+        const auto j = static_cast<UnsignedInt>(j_);
         const auto val = static_cast<T>(inc_val_);
-        auto&      currentRowIndices = rowIndices[i];
+        std::vector<UnsignedInt>& currentRowIndices = rowIndices[i];
 
         auto iter = std::lower_bound(currentRowIndices.begin(), currentRowIndices.end(), j);
         if((iter != currentRowIndices.end()) && (*iter == j)) {
@@ -67,7 +68,7 @@ struct SparseMatrix {
             rowValues[i][k] += val;
         } else {
             auto insert_sorted_vector =
-                [](std::vector<uint32_t>& vec, uint32_t item) {
+                [](std::vector<UnsignedInt>& vec, UnsignedInt item) {
                     return vec.insert(std::upper_bound(vec.begin(), vec.end(), item), item);
                 };
             iter = insert_sorted_vector(currentRowIndices, j);
@@ -78,8 +79,8 @@ struct SparseMatrix {
 
     void compressData() {
         rowStartIdx[0] = 0;
-        for(uint32_t i = 0; i < size; ++i) {
-            rowStartIdx[i + 1] = rowStartIdx[i] + static_cast<uint32_t>(rowIndices[i].size());
+        for(UnsignedInt i = 0; i < size; ++i) {
+            rowStartIdx[i + 1] = rowStartIdx[i] + static_cast<UnsignedInt>(rowIndices[i].size());
         }
 
         auto copyData = [](auto& dst, const auto& src) {
@@ -95,26 +96,27 @@ struct SparseMatrix {
 
     void multiply(const std::vector<T>& x, std::vector<T>& result) const {
         result.resize(size);
-        for(uint32_t i = 0; i < size; ++i) {
+        for(UnsignedInt i = 0; i < size; ++i) {
             T tmp = 0;
-            for(uint32_t j = rowStartIdx[i], jend = rowStartIdx[i + 1]; j < jend; ++j) {
+            for(UnsignedInt j = rowStartIdx[i], jend = rowStartIdx[i + 1]; j < jend; ++j) {
                 tmp += compactValues[j] * x[compactIndices[j]];
             }
             result[i] = tmp;
         }
     }
 
-    uint32_t size;
+    UnsignedInt size;
 
     /* Sparse matrix data */
-    std::vector<std::vector<uint32_t>> rowIndices;
-    std::vector<std::vector<T>>        rowValues;
+    std::vector<std::vector<UnsignedInt>> rowIndices;
+    std::vector<std::vector<T>> rowValues;
 
     /* Compact data */
-    std::vector<T>        compactValues;
-    std::vector<uint32_t> compactIndices;
-    std::vector<uint32_t> rowStartIdx;
+    std::vector<T> compactValues;
+    std::vector<UnsignedInt> compactIndices;
+    std::vector<UnsignedInt> rowStartIdx;
 };
-} }
+
+}}
 
 #endif

@@ -53,77 +53,81 @@
 #include "FluidSolver/ApicSolver2D.h"
 
 namespace Magnum { namespace Examples {
-class FluidSimulation2DExample : public Platform::Application {
-public:
-    explicit FluidSimulation2DExample(const Arguments& arguments);
-    virtual ~FluidSimulation2DExample() = default;
 
-protected:
-    void viewportEvent(ViewportEvent& event) override;
-    void keyPressEvent(KeyEvent& event) override;
-    void keyReleaseEvent(KeyEvent& event) override;
-    void mousePressEvent(MouseEvent& event) override;
-    void mouseReleaseEvent(MouseEvent& event) override;
-    void mouseMoveEvent(MouseMoveEvent& event) override;
-    void mouseScrollEvent(MouseScrollEvent& event) override;
-    void textInputEvent(TextInputEvent& event) override;
-    void drawEvent() override;
+class FluidSimulation2DExample: public Platform::Application {
+    public:
+        explicit FluidSimulation2DExample(const Arguments& arguments);
 
-    /* Fluid simulation helper functions */
-    void    resetSimulation();
-    Vector2 windowPos2WorldPos(const Vector2i& winPos);
+    protected:
+        void viewportEvent(ViewportEvent& event) override;
+        void keyPressEvent(KeyEvent& event) override;
+        void keyReleaseEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void textInputEvent(TextInputEvent& event) override;
+        void drawEvent() override;
 
-    /* Window control */
-    void showMenu();
-    bool _showMenu = true;
-    ImGuiIntegration::Context _imGuiContext{ NoCreate };
+        /* Fluid simulation helper functions */
+        void resetSimulation();
+        Vector2 windowPos2WorldPos(const Vector2i& winPos);
 
-    /* Scene and drawable group must be constructed before camera and other
-       drawble objects */
-    Containers::Pointer<Scene2D>                     _scene;
-    Containers::Pointer<SceneGraph::DrawableGroup2D> _drawableGroup;
+        /* Window control */
+        void showMenu();
 
-    /* Camera helpers */
-    Containers::Pointer<Object2D>             _objCamera;
-    Containers::Pointer<SceneGraph::Camera2D> _camera;
+        bool _showMenu = true;
+        ImGuiIntegration::Context _imGuiContext{ NoCreate };
 
-    /* Fluid simulation system */
-    Containers::Pointer<ApicSolver2D>      _fluidSolver;
-    Containers::Pointer<ParticleGroup2D>   _drawableParticles;
-    Containers::Pointer<WireframeObject2D> _drawableBoundary;
-    Float _speed { 2.0f };
-    Float _evolvedTime { 0 };
-    Int   _numEmission { 0 };
-    bool  _bAutoEmitParticles { true };
-    bool  _pausedSimulation { false };
+        /* Scene and drawable group must be constructed before camera and other
+           drawble objects */
+        Containers::Pointer<Scene2D> _scene;
+        Containers::Pointer<SceneGraph::DrawableGroup2D> _drawableGroup;
 
-    /* Mouse-Fluid interaction */
-    Containers::Pointer<WireframeObject2D> _drawablePointer;
-    Timeline _timeline;
-    Vector2  _lastMousePressedWorldPos;
-    Float    _mouseInteractionRadius { 5 };
-    Float    _mouseInteractionMagnitude { 5 };
-    bool     _bMouseInteraction { true };
+        /* Camera helpers */
+        Containers::Pointer<Object2D> _objCamera;
+        Containers::Pointer<SceneGraph::Camera2D> _camera;
+
+        /* Fluid simulation system */
+        Containers::Pointer<ApicSolver2D> _fluidSolver;
+        Containers::Pointer<ParticleGroup2D> _drawableParticles;
+        Containers::Pointer<WireframeObject2D> _drawableBoundary;
+        Float _speed = 2.0f;
+        Float _evolvedTime = 0.0f;
+        Int _numEmission = 0.0f;
+        bool _bAutoEmitParticles = true;
+        bool _pausedSimulation = false;
+
+        /* Mouse-Fluid interaction */
+        Containers::Pointer<WireframeObject2D> _drawablePointer;
+        Timeline _timeline;
+        Vector2 _lastMousePressedWorldPos;
+        Float _mouseInteractionRadius = 5.0f;
+        Float _mouseInteractionMagnitude = 5.0f;
+        bool _bMouseInteraction = true;
 };
 
 namespace {
-static constexpr Float   GridCellLength = 1.0f;     /* length of 1 grid cell          */
-static constexpr Int     NumGridCellX   = 100;      /* number of cells in x dimension */
-static constexpr Int     NumGridCellY   = 100;      /* number of cells in y dimension */
-static constexpr Vector2 GridStart { -50, -50 };    /* lower corner of the grid       */
-static constexpr Int     radiusCircleBoundary = 45; /* radius of the boundary circle  */
+
+constexpr Float GridCellLength = 1.0f;   /* length of 1 grid cell */
+constexpr Int NumGridCellX = 100;        /* number of cells in x dimension */
+constexpr Int NumGridCellY = 100;        /* number of cells in y dimension */
+constexpr Vector2 GridStart{-50.0f, -50.0f}; /* lower corner of the grid */
+constexpr Int RadiusCircleBoundary = 45; /* radius of the boundary circle */
 
 /* Viewport will display this window */
-static constexpr Float ProjectionScale = 1.05f;
-static constexpr Int   DomainDisplayW  = Int(NumGridCellX * GridCellLength * ProjectionScale);
-static constexpr Int   DomainDisplayH  = Int(NumGridCellY * GridCellLength * ProjectionScale);
+constexpr Float ProjectionScale = 1.05f;
+constexpr Int DomainDisplayW  = Int(NumGridCellX*GridCellLength*ProjectionScale);
+constexpr Int DomainDisplayH  = Int(NumGridCellY*GridCellLength*ProjectionScale);
 
 Vector2 gridCenter() {
     return Vector2(NumGridCellX, NumGridCellY) * GridCellLength * 0.5f + GridStart;
 }
+
 }
 
-FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments) : Platform::Application{arguments, NoCreate} {
+FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+
     /* Setup window */
     {
         const Vector2 dpiScaling = this->dpiScaling({});
@@ -145,14 +149,15 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments) :
 
         ImFontConfig fontConfig;
         fontConfig.FontDataOwnedByAtlas = false;
-        const Vector2                     size = Vector2{ windowSize() } / dpiScaling();
-        Utility::Resource                 rs{ "data" };
+        const Vector2 size = Vector2{windowSize()}/dpiScaling();
+        Utility::Resource rs{"data"};
         Containers::ArrayView<const char> font = rs.getRaw("SourceSansPro-Regular.ttf");
         ImGui::GetIO().Fonts->AddFontFromMemoryTTF(
-            const_cast<char*>(font.data()), Int(font.size()), 16.0f * framebufferSize().x() / size.x(), &fontConfig);
+            const_cast<char*>(font.data()), Int(font.size()),
+            16.0f*framebufferSize().x()/size.x(), &fontConfig);
 
-        _imGuiContext = ImGuiIntegration::Context(*ImGui::GetCurrentContext(),
-                                                  Vector2{ windowSize() } / dpiScaling(), windowSize(), framebufferSize());
+        _imGuiContext = ImGuiIntegration::Context{*ImGui::GetCurrentContext(),
+            Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize()};
 
         /* Setup proper blending to be used by ImGui */
         GL::Renderer::setBlendFunction(
@@ -167,10 +172,10 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments) :
         _drawableGroup.reset(new SceneGraph::DrawableGroup2D{});
 
         /* Configure camera */
-        _objCamera.reset(new Object2D{ _scene.get() });
+        _objCamera.reset(new Object2D{_scene.get()});
         _objCamera->setTransformation(Matrix3::translation(gridCenter()));
 
-        _camera.reset(new SceneGraph::Camera2D{ *_objCamera });
+        _camera.reset(new SceneGraph::Camera2D{*_objCamera});
         _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
             .setProjectionMatrix(Matrix3::projection(Vector2{ DomainDisplayW, DomainDisplayH }))
             .setViewport(GL::defaultFramebuffer.viewport().size());
@@ -179,25 +184,28 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments) :
     /* Setup fluid solver */
     {
         SceneObjects* sceneObjs = new SceneObjects;
-        sceneObjs->emitterT0 = SDFObject(gridCenter() + Vector2(10, 10), 30, SDFObject::ObjectType::Circle);
-        sceneObjs->emitter   = SDFObject(gridCenter() + Vector2(15, 20), 15, SDFObject::ObjectType::Circle);
-        sceneObjs->boundary  = SDFObject(gridCenter(), radiusCircleBoundary, SDFObject::ObjectType::Circle, false);
-        _fluidSolver.reset(new ApicSolver2D{ GridStart, GridCellLength, NumGridCellX, NumGridCellY, sceneObjs });
+        sceneObjs->emitterT0 = SDFObject{gridCenter() + Vector2(10.0f, 10.0f), 30.0f, SDFObject::ObjectType::Circle};
+        sceneObjs->emitter = SDFObject{gridCenter() + Vector2(15.0f, 20.0f), 15.0f, SDFObject::ObjectType::Circle};
+        sceneObjs->boundary = SDFObject{gridCenter(), Float(RadiusCircleBoundary), SDFObject::ObjectType::Circle, false};
+        _fluidSolver.reset(new ApicSolver2D{GridStart, GridCellLength, NumGridCellX, NumGridCellY, sceneObjs});
 
         /* Drawable particles */
-        _drawableParticles.reset(new ParticleGroup2D{ _fluidSolver->particlePositions(), _fluidSolver->particleRadius() });
-        _drawableParticles->setColor(Color3(85.0f / 255, 200.0f / 255, 245.0f / 255));
+        _drawableParticles.reset(new ParticleGroup2D{
+            _fluidSolver->particlePositions(), _fluidSolver->particleRadius()});
+        _drawableParticles->setColor(Color3{85.0f/255, 200.0f/255, 245.0f/255});
 
         /* Drawable boundary*/
-        _drawableBoundary.reset(new WireframeObject2D(_scene.get(), _drawableGroup.get(),
-                                                      MeshTools::compile(Primitives::circle2DWireframe(128))));
-        _drawableBoundary->setTransformation(Matrix3::scaling(Vector2{ radiusCircleBoundary + _fluidSolver->particleRadius() }));
-        _drawableBoundary->setColor(Color3(1, 1, 1));
+        _drawableBoundary.reset(new WireframeObject2D(_scene.get(),
+            _drawableGroup.get(),
+            MeshTools::compile(Primitives::circle2DWireframe(128))));
+        _drawableBoundary->setTransformation(Matrix3::scaling(Vector2{RadiusCircleBoundary + _fluidSolver->particleRadius()}));
+        _drawableBoundary->setColor(Color3{1.0f, 1.0f, 1.0f});
 
         /* Visualize mouse pointer for mouse-fluid interaction */
-        _drawablePointer.reset(new WireframeObject2D(_scene.get(), _drawableGroup.get(),
-                                                     MeshTools::compile(Primitives::circle2DWireframe(32))));
-        _drawablePointer->setColor(Color3(0, 1, 0));
+        _drawablePointer.reset(new WireframeObject2D(_scene.get(),
+            _drawableGroup.get(),
+            MeshTools::compile(Primitives::circle2DWireframe(32))));
+        _drawablePointer->setColor(Color3{0.0f, 1.0f, 0.0f});
         _drawablePointer->setEnabled(false);
     }
 
@@ -216,11 +224,10 @@ void FluidSimulation2DExample::drawEvent() {
     _imGuiContext.newFrame();
 
     /* Enable text input, if needed */
-    if(ImGui::GetIO().WantTextInput && !isTextInputActive()) {
+    if(ImGui::GetIO().WantTextInput && !isTextInputActive())
         startTextInput();
-    } else if(!ImGui::GetIO().WantTextInput && isTextInputActive()) {
+    else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
         stopTextInput();
-    }
 
     /* Draw objects */
     {
@@ -233,17 +240,17 @@ void FluidSimulation2DExample::drawEvent() {
     }
 
     if(!_pausedSimulation) {
-        static constexpr Float frameTime = 1.0f / 60.0f;
-        if(_evolvedTime > 1.0f) { /* pause for a while before starting simulation */
-            _fluidSolver->advanceFrame(frameTime * _speed);
-        }
+        constexpr Float frameTime = 1.0f/60.0f;
+        /* pause for a while before starting simulation */
+        if(_evolvedTime > 1.0f) _fluidSolver->advanceFrame(frameTime*_speed);
         _evolvedTime += frameTime;
 
         /* Emit particles automatically */
         if(_bAutoEmitParticles && _evolvedTime > 10.0f) {
-            static Float lastTime { _evolvedTime };
-            if(_evolvedTime - lastTime > 1.5f /* emit every 1.5 second */
-               && _numEmission < 5) {         /* emit 5 times          */
+            static Float lastTime = _evolvedTime;
+            if(_evolvedTime - lastTime > 1.5f && /* emit every 1.5 second */
+               _numEmission < 5)                 /* emit 5 times */
+            {
                 _fluidSolver->emitParticles();
                 lastTime = _evolvedTime;
                 ++_numEmission;
@@ -252,7 +259,7 @@ void FluidSimulation2DExample::drawEvent() {
     }
 
     /* Menu for parameters */
-    if(_showMenu) { showMenu(); }
+    if(_showMenu) showMenu();
 
     /* Update application cursor */
     _imGuiContext.updateApplicationCursor(*this);
@@ -280,10 +287,10 @@ void FluidSimulation2DExample::drawEvent() {
 
 void FluidSimulation2DExample::viewportEvent(ViewportEvent& event) {
     /* Resize the main framebuffer */
-    GL::defaultFramebuffer.setViewport({ {}, event.framebufferSize() });
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     /* Relayout ImGui */
-    _imGuiContext.relayout(Vector2{ event.windowSize() } / event.dpiScaling(), event.windowSize(), event.framebufferSize());
+    _imGuiContext.relayout(Vector2{event.windowSize()}/event.dpiScaling(), event.windowSize(), event.framebufferSize());
 
     /* Recompute the camera's projection matrix */
     _camera->setViewport(event.framebufferSize());
@@ -307,9 +314,8 @@ void FluidSimulation2DExample::keyPressEvent(Platform::Sdl2Application::KeyEvent
             event.setAccepted(true);
             break;
         default:
-            if(_imGuiContext.handleKeyPressEvent(event)) {
+            if(_imGuiContext.handleKeyPressEvent(event))
                 event.setAccepted(true);
-            }
     }
 }
 
@@ -325,20 +331,22 @@ void FluidSimulation2DExample::mousePressEvent(MouseEvent& event) {
         event.setAccepted(true);
         return;
     }
+
     _lastMousePressedWorldPos = windowPos2WorldPos(event.position());
     if(_bMouseInteraction) {
         _timeline.nextFrame();
         _drawablePointer->setEnabled(true);
-        _drawablePointer->setTransformation(Matrix3::translation(_lastMousePressedWorldPos) *
-                                            Matrix3::scaling(Vector2{ _mouseInteractionRadius }));
+        _drawablePointer->setTransformation(
+            Matrix3::translation(_lastMousePressedWorldPos)*
+            Matrix3::scaling(Vector2{_mouseInteractionRadius}));
         event.setAccepted();
     }
 }
 
 void FluidSimulation2DExample::mouseReleaseEvent(MouseEvent& event) {
-    if(_imGuiContext.handleMouseReleaseEvent(event)) {
+    if(_imGuiContext.handleMouseReleaseEvent(event))
         event.setAccepted(true);
-    }
+
     if(_bMouseInteraction) {
         _drawablePointer->setEnabled(false);
         event.setAccepted();
@@ -350,17 +358,20 @@ void FluidSimulation2DExample::mouseMoveEvent(MouseMoveEvent& event) {
         event.setAccepted(true);
         return;
     }
-    if(!event.buttons()) { return; }
+
+    if(!event.buttons()) return;
 
     const Vector2 currentPos = windowPos2WorldPos(event.position());
     if(_bMouseInteraction) {
         _timeline.nextFrame();
         const auto dt = _timeline.previousFrameDuration();
         if(dt > 1e-4f) {
-            _fluidSolver->addRepulsiveVelocity(_lastMousePressedWorldPos, currentPos, dt,
-                                               _mouseInteractionRadius, _mouseInteractionMagnitude * 0.01f);
-            _drawablePointer->setTransformation(Matrix3::translation(currentPos) *
-                                                Matrix3::scaling(Vector2{ _mouseInteractionRadius }));
+            _fluidSolver->addRepulsiveVelocity(_lastMousePressedWorldPos,
+                currentPos, dt, _mouseInteractionRadius,
+                _mouseInteractionMagnitude*0.01f);
+            _drawablePointer->setTransformation(
+                Matrix3::translation(currentPos)*
+                Matrix3::scaling(Vector2{_mouseInteractionRadius}));
             event.setAccepted();
         }
         _lastMousePressedWorldPos = currentPos;
@@ -369,9 +380,9 @@ void FluidSimulation2DExample::mouseMoveEvent(MouseMoveEvent& event) {
 
 void FluidSimulation2DExample::mouseScrollEvent(MouseScrollEvent& event) {
     const Float delta = event.offset().y();
-    if(Math::abs(delta) < 1.0e-2f) {
+    if(Math::abs(delta) < 1.0e-2f)
         return;
-    }
+
     if(_imGuiContext.handleMouseScrollEvent(event)) {
         /* Prevent scrolling the page */
         event.setAccepted();
@@ -380,9 +391,8 @@ void FluidSimulation2DExample::mouseScrollEvent(MouseScrollEvent& event) {
 }
 
 void FluidSimulation2DExample::textInputEvent(TextInputEvent& event) {
-    if(_imGuiContext.handleTextInputEvent(event)) {
+    if(_imGuiContext.handleTextInputEvent(event))
         event.setAccepted(true);
-    }
 }
 
 void FluidSimulation2DExample::showMenu() {
@@ -400,8 +410,8 @@ void FluidSimulation2DExample::showMenu() {
     if(ImGui::TreeNode("Particle Rendering")) {
         ImGui::PushID("Particle Rendering");
         {
-            constexpr const char* items[]   = { "Uniform", "Ramp by ID" };
-            static Int            colorMode = 1;
+            constexpr const char* items[] = { "Uniform", "Ramp by ID" };
+            static Int colorMode = 1;
             ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
             if(ImGui::Combo("Color Mode", &colorMode, items, 2)) {
                 _drawableParticles->setColorMode(ParticleSphereShader2D::ColorMode(colorMode));
@@ -423,15 +433,15 @@ void FluidSimulation2DExample::showMenu() {
     /* Simulation parameters */
     if(ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::PushID("Simulation");
-        ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
+        ImGui::PushItemWidth(ImGui::GetWindowWidth()*0.3f);
         ImGui::InputFloat("Speed", &_speed);
         ImGui::Checkbox("Auto emit particles 5 times", &_bAutoEmitParticles);
         ImGui::PopItemWidth();
         ImGui::BeginGroup();
         ImGui::Checkbox("Mouse interaction", &_bMouseInteraction);
         if(_bMouseInteraction) {
-            ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
-            ImGui::SliderFloat("Radius",    &_mouseInteractionRadius,    1.0f, 10.0f);
+            ImGui::PushItemWidth(ImGui::GetWindowWidth()*0.5f);
+            ImGui::SliderFloat("Radius", &_mouseInteractionRadius, 1.0f, 10.0f);
             ImGui::SliderFloat("Magnitude", &_mouseInteractionMagnitude, 1.0f, 10.0f);
             ImGui::PopItemWidth();
         }
@@ -461,20 +471,21 @@ void FluidSimulation2DExample::showMenu() {
 void FluidSimulation2DExample::resetSimulation() {
     _fluidSolver->reset();
     _pausedSimulation = false;
-    _evolvedTime      = 0;
-    _numEmission      = 0;
+    _evolvedTime = 0.0f;
+    _numEmission = 0;
 }
 
 Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2i& winPos) {
     /* Compute inverted model view projection matrix */
-    const Matrix3 invViewProjMat = (_camera->projectionMatrix() * _camera->cameraMatrix()).inverted();
+    const Matrix3 invViewProjMat = (_camera->projectionMatrix()*_camera->cameraMatrix()).inverted();
 
     /* Compute the world coordinate from window coordinate */
-    const Vector2i flippedPos = Vector2i(winPos.x(), GL::defaultFramebuffer.viewport().size().y() - winPos.y());
-    const Vector2  ndcPos     = Vector2(flippedPos) / Vector2(GL::defaultFramebuffer.viewport().size()) * Vector2(2) - Vector2(1);
-    const Vector3  worldPos   = invViewProjMat * Vector3(ndcPos, 1);
-    return Vector2(worldPos.x() / worldPos.z(), worldPos.y() / worldPos.z());
+    const Vector2i flippedPos = Vector2i(winPos.x(), framebufferSize().y() - winPos.y());
+    const Vector2 ndcPos = Vector2(flippedPos) / Vector2(framebufferSize())*Vector2{2.0f} - Vector2{1.0f};
+    const Vector3 worldPos = invViewProjMat*Vector3{ndcPos, 1.0f};
+    return Vector2(worldPos.x()/worldPos.z(), worldPos.y()/worldPos.z());
 }
-} }
+
+}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::FluidSimulation2DExample)

@@ -29,7 +29,8 @@
 #
 
 cmake_minimum_required(VERSION 3.4)
-project(magnum-fluidsimulation2d)
+
+project(FluidSimulation2DExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
