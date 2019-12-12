@@ -39,7 +39,11 @@
 #include <Magnum/Math/FunctionsBatch.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
 #include <Magnum/MeshTools/Compile.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Circle.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -209,11 +213,15 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
 
     /* Enable depth test, render particles as sprites */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    #ifndef MAGNUM_TARGET_GLES
     GL::Renderer::enable(GL::Renderer::Feature::ProgramPointSize);
+    #endif
 
     /* Start the timer, loop at 60 Hz max */
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
+    #endif
     _timeline.start();
 }
 

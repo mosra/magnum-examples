@@ -43,9 +43,13 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
-    Shaders
-    Sdl2Application)
+    Shaders)
 find_package(MagnumIntegration REQUIRED ImGui)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -78,11 +82,35 @@ target_link_libraries(magnum-fluidsimulation2d PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders
     MagnumIntegration::ImGui)
-target_include_directories(magnum-fluidsimulation2d PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(magnum-fluidsimulation2d PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-install(TARGETS magnum-fluidsimulation2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
+if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-fluidsimulation2d POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-fluidsimulation2d>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/fluidsimulation2d.html
+            $<TARGET_FILE_DIR:magnum-fluidsimulation2d>/magnum-fluidsimulation2d.html)
+
+    install(FILES fluidsimulation2d.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation2d RENAME index.html)
+    install(TARGETS magnum-fluidsimulation2d DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation2d)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation2d)
+    install(FILES
+        $<TARGET_FILE_DIR:magnum-fluidsimulation2d>/magnum-fluidsimulation2d.js.mem
+        $<TARGET_FILE_DIR:magnum-fluidsimulation2d>/magnum-fluidsimulation2d.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/fluidsimulation2d OPTIONAL)
+
+# Installation for desktop
+elseif(NOT CORRADE_TARGET_IOS)
+    install(TARGETS magnum-fluidsimulation2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-fluidsimulation2d)

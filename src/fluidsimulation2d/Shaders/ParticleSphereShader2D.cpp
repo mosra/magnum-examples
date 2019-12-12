@@ -42,8 +42,20 @@ namespace Magnum { namespace Examples {
 ParticleSphereShader2D::ParticleSphereShader2D() {
     Utility::Resource rs("data");
 
-    GL::Shader vertShader{ GL::Version::GL330, GL::Shader::Type::Vertex };
-    GL::Shader fragShader{ GL::Version::GL330, GL::Shader::Type::Fragment };
+    GL::Shader vertShader{
+        #ifdef MAGNUM_TARGET_GLES
+        GL::Version::GLES300,
+        #else
+        GL::Version::GL330,
+        #endif
+        GL::Shader::Type::Vertex};
+    GL::Shader fragShader{
+        #ifdef MAGNUM_TARGET_GLES
+        GL::Version::GLES300,
+        #else
+        GL::Version::GL330,
+        #endif
+        GL::Shader::Type::Fragment};
     vertShader.addSource(rs.get("ParticleSphereShader2D.vert"));
     fragShader.addSource(rs.get("ParticleSphereShader2D.frag"));
 
