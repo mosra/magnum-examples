@@ -327,7 +327,7 @@ and you can try it with the [scene.obj](https://github.com/mosra/magnum-examples
 file bundled in the example repository. For more advanced models with custom
 textures and materials, @ref building-plugins "Magnum Plugins" provide
 @ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
-[scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf),
+[scene.glb](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.glb),
 and there are more plugins for various other formats.
 
 @m_class{m-block m-success}
@@ -372,7 +372,7 @@ available in the [magnum-examples GitHub repository](https://github.com/mosra/ma
 -   @ref viewer/CMakeLists.txt "CMakeLists.txt"
 -   @ref viewer/ViewerExample.cpp "ViewerExample.cpp"
 -   [scene.obj](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.obj)
--   [scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf)
+-   [scene.glb](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.glb)
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
