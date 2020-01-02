@@ -11,6 +11,8 @@
 #
 #  SDL2_LIBRARY_DEBUG       - SDL2 debug library, if found
 #  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
+#  SDL2_DLL_DEBUG           - SDL2 debug DLL on Windows, if found
+#  SDL2_DLL_RELEASE         - SDL2 release DLL on Windows, if found
 #  SDL2_INCLUDE_DIR         - Root include dir
 #
 
@@ -62,11 +64,15 @@ else()
         elseif(MINGW)
             if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 set(_SDL2_LIBRARY_PATH_SUFFIX x86_64-w64-mingw32/lib)
+                set(_SDL2_RUNTIME_PATH_SUFFIX x86_64-w64-mingw32/bin)
                 list(APPEND _SDL2_PATH_SUFFIXES x86_64-w64-mingw32/include/SDL2)
             elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
                 set(_SDL2_LIBRARY_PATH_SUFFIX i686-w64-mingw32/lib)
+                set(_SDL2_RUNTIME_PATH_SUFFIX i686-w64-mingw32/lib)
                 list(APPEND _SDL2_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
             endif()
+        else()
+            message(FATAL_ERROR "Unsupported compiler")
         endif()
     endif()
 
@@ -101,8 +107,18 @@ find_path(SDL2_INCLUDE_DIR
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
 
-# iOS dependencies
-if(CORRADE_TARGET_IOS)
+# DLL on Windows
+if(CORRADE_TARGET_WINDOWS)
+    find_file(SDL2_DLL_RELEASE
+        NAMES SDL2.dll
+        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+    find_file(SDL2_DLL_DEBUG
+        NAMES SDL2d.dll # not sure?
+        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+endif()
+
+# (Static) iOS dependencies
+if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
     set(_SDL2_FRAMEWORKS
         AudioToolbox
         AVFoundation
@@ -110,6 +126,7 @@ if(CORRADE_TARGET_IOS)
         CoreMotion
         Foundation
         GameController
+        Metal # needed since 2.0.8
         QuartzCore
         UIKit)
     set(_SDL2_FRAMEWORK_LIBRARIES )
@@ -151,17 +168,40 @@ if(NOT TARGET SDL2::SDL2)
         # Link additional `dl` and `pthread` libraries required by a static
         # build of SDL on Unixy platforms (except Apple, where it is most
         # probably some frameworks instead)
-        if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
-            find_package(Threads)
+        if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (SDL2_LIBRARY_DEBUG MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$" OR SDL2_LIBRARY_RELEASE MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"))
+            find_package(Threads REQUIRED)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+                INTERFACE_LINK_LIBRARIES Threads::Threads ${CMAKE_DL_LIBS})
         endif()
 
-        # Link frameworks on iOS
-        if(CORRADE_TARGET_IOS)
+        # Link frameworks on iOS if we have a static SDL
+        if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()
+
+        # Windows dependencies for a static library. Unfortunately there's no
+        # easy way to figure out if a *.lib is static or dynamic, so we're
+        # adding only if a DLL is not found.
+        if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND NOT SDL2_DLL_RELEASE AND NOT SDL2_DLL_DEBUG)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+                # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1338
+                user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32
+                # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1384
+                dinput8)
+            # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1422
+            # additionally has dxerr for MSVC if DirectX SDK is not used, but
+            # according to https://walbourn.github.io/wheres-dxerr-lib/ this
+            # thing is long deprecated.
+            if(MINGW)
+                set_property(TARGET SDL2::SDL2 APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+                    # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1386
+                    dxerr8
+                    # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1388
+                    mingw32)
+            endif()
+        endif()
+
     else()
         add_library(SDL2::SDL2 INTERFACE IMPORTED)
     endif()
