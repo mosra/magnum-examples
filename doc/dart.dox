@@ -67,6 +67,9 @@ package.
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/dart).
+This example depends on the @ref DartIntegration library and the
+@ref Trade::AssimpImporter "AssimpImporter" plugin which are not a part of the
+core Magnum repository, see their documentation for usage instructions.
 
 -   @ref dart/DartExample.cpp "DartExample.cpp"
 -   @ref dart/CMakeLists.txt "CMakeLists.txt"

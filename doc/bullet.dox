@@ -59,6 +59,8 @@ makes use of the Bullet Physics library, see documentation of the
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/bullet).
+This example depends on the @ref BulletIntegration library which is not a part
+of the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref bullet/BulletExample.cpp "BulletExample.cpp"
 -   @ref bullet/CMakeLists.txt "CMakeLists.txt"

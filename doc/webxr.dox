@@ -70,6 +70,8 @@ from [Vhite Rabbit](https://github.com/VhiteRabbit).
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/webxr).
+This example uses the @ref Platform::EmscriptenApplication which is not enabled
+by default in all cases, see its documentation for usage instructions.
 
 -   @ref webxr/CMakeLists.txt "CMakeLists.txt"
 -   @ref webxr/WebXrExample.cpp "WebXrExample.cpp"

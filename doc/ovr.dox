@@ -59,6 +59,8 @@ The example makes use of the Oculus SDK, see documentation of the
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/ovr).
+This example depends on the @ref OvrIntegration library which is not a part of
+the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref ovr/CMakeLists.txt "CMakeLists.txt"
 -   @ref ovr/OvrExample.cpp "OvrExample.cpp"

@@ -60,6 +60,9 @@ documentation for license information.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/audio).
+This example depends on the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter"
+plugin which is not a part of the core Magnum repository, see their
+documentation for usage instructions.
 
 -   @ref audio/AudioExample.cpp "AudioExample.cpp"
 -   @ref audio/CMakeLists.txt "CMakeLists.txt"

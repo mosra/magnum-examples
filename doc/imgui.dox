@@ -70,6 +70,8 @@ license information.
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/imgui).
+This example depends on the @ref ImGuiIntegration library which is not a part
+of the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref imgui/ImGuiExample.cpp "ImGuiExample.cpp"
 -   @ref imgui/CMakeLists.txt "CMakeLists.txt"

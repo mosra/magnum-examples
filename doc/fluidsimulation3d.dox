@@ -64,6 +64,8 @@ This example was originally contributed by [Nghia Truong](https://github.com/ttn
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/fluidsimulation3d).
+This example depends on the @ref ImGuiIntegration library which is not a part
+of the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref fluidsimulation3d/CMakeLists.txt "CMakeLists.txt"
 -   @ref fluidsimulation3d/DrawableObjects/FlatShadeObject.h "DrawableObjects/FlatShadeObject.h"

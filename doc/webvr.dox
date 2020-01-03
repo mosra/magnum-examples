@@ -59,6 +59,8 @@ This example was originally contributed by [Jonathan Hale](https://github.com/Sq
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/webvr).
+This example uses the @ref Platform::EmscriptenApplication which is not enabled
+by default in all cases, see its documentation for usage instructions.
 
 -   @ref webvr/CMakeLists.txt "CMakeLists.txt"
 -   @ref webvr/WebVrExample.cpp "WebVrExample.cpp"

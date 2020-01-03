@@ -56,6 +56,10 @@ supports UTF-8. For mutable text buffer mapping is used.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/text).
+This example depends on either the @ref Text::FreeTypeFont "FreeTypeFont" or
+the @ref Text::StbTrueTypeFont "StbTrueTypeFont" plugin. Neither of them is a
+part of the core Magnum repository, see their documentation for usage
+instructions.
 
 -   @ref text/CMakeLists.txt "CMakeLists.txt"
 -   @ref text/resources.conf "resources.conf"

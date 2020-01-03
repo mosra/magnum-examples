@@ -74,6 +74,9 @@ library, see its documentation for license information.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/arealights).
+This example depends on the @ref Ui library and the @ref Trade::DdsImporter "DdsImporter"
+plugin which are not a part of the core Magnum repository, see their
+documentation for usage instructions.
 
 -   @ref arealights/AreaLights.frag "AreaLights.frag"
 -   @ref arealights/AreaLights.vert "AreaLights.vert"

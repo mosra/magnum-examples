@@ -57,6 +57,9 @@ This example was originally contributed by Michal Mikula.
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/box2d).
+This example depends on the [Box2D](https://box2d.org/) library which you need
+to install separately; additionally you need to put [FindBox2D.cmake](https://github.com/mosra/magnum-examples/blob/master/modules/FindBox2D.cmake)
+into your `modules/` directory.
 
 -   @ref box2d/Box2DExample.cpp "Box2DExample.cpp"
 -   @ref box2d/CMakeLists.txt "CMakeLists.txt"

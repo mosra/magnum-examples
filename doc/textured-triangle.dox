@@ -245,7 +245,7 @@ CMake in any way.
     add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
     # So the TgaImporter gets built implicitly
-    add_custom_target(plugins ALL DEPENDS Magnum::TgaImporter)
+    add_dependencies(magnum-textured-triangle Magnum::TgaImporter)
     @endcode
 @par
     If you're using a Magnum package, @ref Trade::TgaImporter "TgaImporter" is
@@ -318,7 +318,7 @@ and also shows how to open files passed via command-line arguments.
     # git clone https://github.com/mosra/magnum-plugins.git
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
-    add_custom_target(plugins ALL DEPENDS
+    add_dependencies(magnum-textured-triangle
         Magnum::AnyImageImporter
         MagnumPlugins::StbImageImporter)
     @endcode

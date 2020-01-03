@@ -351,7 +351,7 @@ and there are more plugins for various other formats.
     set(WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
-    add_custom_target(plugins ALL DEPENDS
+    add_dependencies(magnum-viewer
         Magnum::AnyImageImporter
         Magnum::AnySceneImporter
         Magnum::ObjImporter
