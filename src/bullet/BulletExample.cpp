@@ -292,7 +292,11 @@ void BulletExample::keyPressEvent(KeyEvent& event) {
 void BulletExample::mousePressEvent(MouseEvent& event) {
     /* Shoot an object on click */
     if(event.button() == MouseEvent::Button::Left) {
-        const Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2{event.position()}/Vector2{GL::defaultFramebuffer.viewport().size()} - Vector2{0.5f})* _camera->projectionSize();
+        /* First scale the position from being relative to window size to being
+           relative to framebuffer size as those two can be different on HiDPI
+           systems */
+        const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
+        const Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2{position}/Vector2{framebufferSize()} - Vector2{0.5f})*_camera->projectionSize();
         const Vector3 direction = (_cameraObject->absoluteTransformation().rotationScaling()*Vector3{clickPoint, -1.0f}).normalized();
 
         auto* object = new RigidBody{

@@ -51,9 +51,10 @@ namespace Magnum {
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
--   The @ref examples-picking "Picking example" wasn't properly handling mouse
-    events on HiDPI systems that have different window and framebuffer size
-    (see [mosra/magnum-examples#72](https://github.com/mosra/magnum-examples/pull/72))
+-   The @ref examples-picking and @ref examples-bullet examples weren't
+    properly handling mouse events on HiDPI systems that have different window
+    and framebuffer size (see [mosra/magnum-examples#72](https://github.com/mosra/magnum-examples/pull/72)
+    and [mosra/magnum-examples#74](https://github.com/mosra/magnum-examples/issues/74))
 
 @section changelog-examples-2019-10 2019.10
 
