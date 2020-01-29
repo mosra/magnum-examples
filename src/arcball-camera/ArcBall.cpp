@@ -34,10 +34,22 @@
 #include <Magnum/Math/Functions.h>
 
 namespace Magnum {
+namespace  {
+/* Project a point in NDC onto the arcball sphere */
+Quaternion ndcToArcBall(const Vector2& p) {
+    const Float dist = Math::dot(p, p);
+    if(dist <= Float(1)) { /* point is on sphere */
+        return Quaternion(Vector3{ p.x(), p.y(), std::sqrt(1.f - dist) }, 0);
+    } else {               /* point is outside sphere */
+        const Vector2 proj = p.normalized();
+        return Quaternion(Vector3{ proj.x(), proj.y(), 0 }, 0);
+    }
+}
+}
+
 ArcBall::ArcBall(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-                 Deg fov, Vector2i windowSize, Object3D& cameraObject) :
-    _fov(fov), _windowSize(windowSize), _aspectRatio(Vector2{ windowSize }.aspectRatio()),
-    _cameraObject(cameraObject) {
+                 Deg fov, Vector2i windowSize) :
+    _fov(fov), _windowSize(windowSize) {
     setViewParameters(eye, viewCenter, upDir);
 }
 
@@ -63,7 +75,6 @@ void ArcBall::reset() {
     _targetPosition  = _positionT0;
     _targetZooming   = _zoomingT0;
     _targetQRotation = _qRotationT0;
-    updateMatrices();
 }
 
 void ArcBall::setLagging(Float lagging) {
@@ -83,7 +94,6 @@ void ArcBall::rotate(const Vector2i& mousePos) {
     const Quaternion prevQRotation    = ndcToArcBall(_prevMousePosNDC);
     _prevMousePosNDC = mousePosNDC;
     _targetQRotation = (currentQRotation * prevQRotation * _targetQRotation).normalized();
-    update();
 }
 
 void ArcBall::translate(const Vector2i& mousePos) {
@@ -94,22 +104,20 @@ void ArcBall::translate(const Vector2i& mousePos) {
 }
 
 void ArcBall::translateDelta(const Vector2& translationNDC) {
-    /* Half size of the screen view port at the view center */
+    /* Half size of the screen viewport at the view center and perpendicular with the viewDir */
     const Float hh = std::abs(_targetZooming) * Math::tan(_fov * 0.5f);
-    const Float hw = hh * _aspectRatio;
+    const Float hw = hh * Vector2{ _windowSize }.aspectRatio();
 
     _targetPosition += (_inverseViewMatrix * Vector4(translationNDC.x() * hw,
                                                      translationNDC.y() * hh,
                                                      0.0f, 0.0f)).xyz();
-    update();
 }
 
-void ArcBall::zoom(Float zoomValue) {
-    _targetZooming += zoomValue;
-    update();
+void ArcBall::zoom(Float delta) {
+    _targetZooming += delta;
 }
 
-bool ArcBall::update() {
+bool ArcBall::updateTransformation() {
     const Vector3    diffViewCenter = _targetPosition - _currentPosition;
     const Quaternion diffRotation   = _targetQRotation - _currentQRotation;
     const Float      diffZooming    = _targetZooming - _currentZooming;
@@ -148,34 +156,11 @@ void ArcBall::updateMatrices() {
                   Matrix4::from(_currentQRotation.toMatrix(), Vector3(0, 0, 0)) *
                   Matrix4::translation(_currentPosition);
     _inverseViewMatrix = _viewMatrix.inverted();
-    _cameraObject.setTransformation(getTransformation());
-}
-
-Vector3 ArcBall::cameraPosition() const {
-    return (_inverseViewMatrix * Vector4{ 0, 0, 0, 1 }).xyz();
-}
-
-Vector3 ArcBall::viewDir() const {
-    return (_inverseViewMatrix * Vector4{ 0, 0, -1, 0 }).xyz().normalized();
-}
-
-Vector3 ArcBall::upDir() const {
-    return (_inverseViewMatrix * Vector4{ 0, 1, 0, 0 }).xyz().normalized();
 }
 
 Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {
     Vector2 mousePosNDC = Vector2(static_cast<Float>(mousePos.x()) * 2 / _windowSize.x() - 1,
                                   1 - 2 * static_cast<Float>(mousePos.y()) / _windowSize.y());
     return mousePosNDC;
-}
-
-Quaternion ArcBall::ndcToArcBall(const Vector2& p) {
-    const Float dist = Math::dot(p, p);
-    if(dist <= 1.f) { /* point is on sphere */
-        return Quaternion(Vector3{ p.x(), p.y(), std::sqrt(1.f - dist) }, 0);
-    } else {          /* point is outside sphere */
-        const Vector2 proj = p.normalized();
-        return Quaternion(Vector3{ proj.x(), proj.y(), 0 }, 0);
-    }
 }
 }

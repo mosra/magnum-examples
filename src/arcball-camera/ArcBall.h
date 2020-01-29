@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_ArcBallCamera_h
-#define Magnum_Examples_ArcBallCamera_h
+#ifndef Magnum_Examples_ArcBall_h
+#define Magnum_Examples_ArcBall_h
 
 /*
     This file is part of Magnum.
@@ -36,12 +36,8 @@
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/Math/Quaternion.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/SceneGraph/Object.h>
 
 namespace Magnum {
-using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
-
 /*
  * Implementation of Ken Shoemake's arcball camera with smooth navigation feature
  * https://www.talisman.org/~erlkonig/misc/shoemake92-arcball.pdf
@@ -49,7 +45,7 @@ using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 class ArcBall {
 public:
     ArcBall(const Vector3& cameraPosition, const Vector3& viewCenter, const Vector3& upDir,
-            Deg fov, Vector2i windowSize, Object3D& cameraObject);
+            Deg fov, Vector2i windowSize);
 
     /* Set the camera view parameters: eye position, view center, up direction */
     void setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir);
@@ -60,8 +56,18 @@ public:
     /* Update screen size after the window has been resized */
     void reshape(const Vector2i& windowSize) { _windowSize = windowSize; }
 
-    /* Set the amount of lagging such that the camera will (slowly) smoothly navigate
+    /* Update the scenegraph camera if arcball has been changed */
+    template<class Object3D> bool update(Object3D& cameraObject) {
+        if(updateTransformation()) { /* call the internal update */
+            cameraObject.setTransformation(transformation());
+            return true;
+        }
+        return false;
+    }
+
+    /* Get/Set the amount of lagging such that the camera will (slowly) smoothly navigate
      * Lagging must be in [0, 1) */
+    Float lagging() const { return _lagging; }
     void setLagging(Float lagging);
 
     /* Initialize the first (screen) mouse position for camera transformation.
@@ -78,11 +84,8 @@ public:
      * Note that NDC position must be in [-1, -1] to [1, 1] */
     void translateDelta(const Vector2& translationNDC);
 
-    /* Zoom the camera (positive zoom values = zoom in, negative values = zoom out) */
-    void zoom(Float zoomValue);
-
-    /* Update any unfinished transformation due to lagging, return true if the camera matrices have changed */
-    bool update();
+    /* Zoom the camera (positive zoom delta = zoom in, negative delta = zoom out) */
+    void zoom(Float delta);
 
     /* Get the camera's view matrix */
     const Matrix4& viewMatrix() const { return _viewMatrix; }
@@ -90,19 +93,22 @@ public:
     /* Get the camera's inverse view matrix (which also produces transformation of the camera) */
     const Matrix4& inverseViewMatrix() const { return _inverseViewMatrix; }
 
-    /* Get the camera's transformation matrix (which is also inverse of the view matrix) */
-    const Matrix4& getTransformation() const { return _inverseViewMatrix; }
+    /* Get the camera's transformation matrix */
+    const Matrix4& transformation() const { return _inverseViewMatrix; }
 
     /* Get the camera position in world space */
-    Vector3 cameraPosition() const;
+    Vector3 cameraPosition() const { return _inverseViewMatrix.translation(); }
 
     /* Get the view direction of the camera from the camera position to the center view position */
-    Vector3 viewDir() const;
+    Vector3 viewDir() const { return -_inverseViewMatrix.backward(); }
 
     /* Get the up direction of the camera */
-    Vector3 upDir() const;
+    Vector3 upDir() const { return _inverseViewMatrix.up(); }
 
-private:
+protected:
+    /* Update any unfinished transformation due to lagging, return true if the camera matrices have changed */
+    bool updateTransformation();
+
     /* Update the camera matrices */
     void updateMatrices();
 
@@ -111,12 +117,8 @@ private:
      *   and the bottom right is [1, -1] NDC  */
     Vector2 screenCoordToNDC(const Vector2i& mousePos) const;
 
-    /* Project a point in NDC onto the arcball sphere */
-    static Quaternion ndcToArcBall(const Vector2& p);
-
     Deg      _fov;
     Vector2i _windowSize;
-    Float    _aspectRatio;
 
     Vector2 _prevMousePosNDC;
     Float   _lagging { 0 };
@@ -125,8 +127,6 @@ private:
     Quaternion _targetQRotation, _currentQRotation, _qRotationT0;
     Float      _targetZooming, _currentZooming, _zoomingT0;
     Matrix4    _viewMatrix, _inverseViewMatrix;
-
-    Object3D& _cameraObject;
 };
 }
 #endif

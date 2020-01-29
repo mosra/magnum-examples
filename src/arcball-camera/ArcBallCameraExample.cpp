@@ -29,7 +29,9 @@
  */
 
 #include "ArcBall.h"
+#include "ArcBallCamera.h"
 
+#include <Corrade/Containers/Pointer.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
@@ -45,6 +47,8 @@
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/VertexColor.h>
+
+#define USING_SCENEGRAPH_ARCBALL_CAMERA
 
 namespace Magnum { namespace Examples {
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
@@ -68,11 +72,13 @@ private:
     GL::Mesh                    _mesh { NoCreate };
     Shaders::VertexColor3D      _shader{ NoCreate };
 
-    ArcBall* _arcball { nullptr };
-    bool     _bLagging { false };
-
-    Object3D*             _cameraObject { nullptr };
-    SceneGraph::Camera3D* _camera { nullptr };
+#ifndef USING_SCENEGRAPH_ARCBALL_CAMERA
+    Containers::Pointer<ArcBall> _arcballCamera;
+    Object3D*                    _cameraObject { nullptr };
+    SceneGraph::Camera3D*        _camera { nullptr };
+#else
+    Containers::Pointer<ArcBallCamera> _arcballCamera;
+#endif
 };
 
 class VertexColorDrawable : public SceneGraph::Drawable3D {
@@ -140,7 +146,7 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
             { 1.0, 1.0, 1.0 }
         };
 
-        const std::vector<UnsignedInt> cubeIndices {
+        const std::vector<UnsignedByte> cubeIndices {
             // front
             0, 1, 2,
             2, 3, 0,
@@ -162,21 +168,16 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
         };
 
         GL::Buffer vertexBuffer;
-        vertexBuffer.setData(MeshTools::interleave(cubeVertices, cubeColors));
-
-        Containers::Array<char> indexData;
-        MeshIndexType           indexType;
-        UnsignedInt             indexStart, indexEnd;
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cubeIndices);
         GL::Buffer indexBuffer;
-        indexBuffer.setData(indexData);
+        vertexBuffer.setData(MeshTools::interleave(cubeVertices, cubeColors));
+        indexBuffer.setData(cubeIndices);
 
         _mesh = GL::Mesh{};
         _mesh.setCount(cubeIndices.size())
             .addVertexBuffer(std::move(vertexBuffer), 0,
                              Shaders::VertexColor3D::Position{},
                              Shaders::VertexColor3D::Color3{})
-            .setIndexBuffer(std::move(indexBuffer), 0, indexType, indexStart, indexEnd);
+            .setIndexBuffer(std::move(indexBuffer), 0, MeshIndexType::UnsignedByte);
 
         _shader = Shaders::VertexColor3D{};
         new VertexColorDrawable{ *(new Object3D{ &_scene }), _shader, _mesh, _drawables };
@@ -184,21 +185,28 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
 
     /* Set up the camera */
     {
-        _cameraObject = new Object3D{ &_scene };
-        _camera       = new SceneGraph::Camera3D{ *_cameraObject };
-
         /* Setup the arcball after the camera objects */
         const Vector3 eye(0, 0, -10);
         const Vector3 center(0, 0, 0);
         const Vector3 up(0, 1, 0);
         const Deg     fov { 45.0_degf };
-        _arcball = new ArcBall(eye, center, up, fov, windowSize(), *_cameraObject);
+#ifndef USING_SCENEGRAPH_ARCBALL_CAMERA
+        _arcballCamera.reset(new ArcBall(eye, center, up, fov, windowSize()));
+
+        _cameraObject = new Object3D{ &_scene };
+        _cameraObject->setTransformation(_arcballCamera->transformation()); /* initialize the camera position */
 
         /* Must set aspect ratio so when resizing window the objects are still displayed correctly */
+        _camera = new SceneGraph::Camera3D{ *_cameraObject };
         _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
             .setProjectionMatrix(Matrix4::perspectiveProjection(
                                      fov, Vector2{ windowSize() }.aspectRatio(), 0.01f, 100.0f))
             .setViewport(GL::defaultFramebuffer.viewport().size());
+
+#else
+        _arcballCamera.reset(new ArcBallCamera(&_scene, eye, center, up, fov,
+                                               windowSize(), GL::defaultFramebuffer.viewport().size()));
+#endif
     }
 
     /* Start the timer, loop at 60 Hz max */
@@ -213,65 +221,70 @@ void ArcBallCameraExample::drawEvent() {
      * This will do nothing if the camera has not been changed
      * Otherwise, camera transformation will be propagated into the camera objects
      */
-    _arcball->update();
-    _camera->draw(_drawables);
 
+#ifndef USING_SCENEGRAPH_ARCBALL_CAMERA
+    bool bCamChanged = _arcballCamera->update(*_cameraObject);
+    _camera->draw(_drawables);
+#else
+    bool bCamChanged = _arcballCamera->update();
+    _arcballCamera->draw(_drawables);
+#endif
     swapBuffers();
-    redraw();
+    if(bCamChanged) {
+        redraw();
+    }
 }
 
 void ArcBallCameraExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({ {}, event.framebufferSize() });
+#ifndef USING_SCENEGRAPH_ARCBALL_CAMERA
     _camera->setViewport(event.framebufferSize());
-    _arcball->reshape(windowSize());
+    _arcballCamera->reshape(windowSize());
+#else
+    _arcballCamera->reshape(windowSize(), GL::defaultFramebuffer.viewport().size());
+#endif
 }
 
 void ArcBallCameraExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::Plus:
         case KeyEvent::Key::NumAdd:
-            _arcball->zoom(1.0f);
-            event.setAccepted(true);
+            _arcballCamera->zoom(1.0f);
             break;
         case KeyEvent::Key::Minus:
         case KeyEvent::Key::NumSubtract:
-            _arcball->zoom(-1.0f);
-            event.setAccepted(true);
+            _arcballCamera->zoom(-1.0f);
             break;
         case KeyEvent::Key::Left:
-            _arcball->translateDelta(Vector2(-0.1, 0));
-            event.setAccepted(true);
+            _arcballCamera->translateDelta(Vector2{ -0.1f, 0 });
             break;
         case KeyEvent::Key::Right:
-            _arcball->translateDelta(Vector2(0.1, 0));
-            event.setAccepted(true);
+            _arcballCamera->translateDelta(Vector2{ 0.1f, 0 });
             break;
         case KeyEvent::Key::Up:
-            _arcball->translateDelta(Vector2(0, 0.1));
-            event.setAccepted(true);
+            _arcballCamera->translateDelta(Vector2{ 0, 0.1f });
             break;
         case KeyEvent::Key::Down:
-            _arcball->translateDelta(Vector2(0, -0.1));
-            event.setAccepted(true);
+            _arcballCamera->translateDelta(Vector2{ 0, -0.1f });
             break;
 
         case KeyEvent::Key::L:
-            _bLagging ^= true;
-            _arcball->setLagging(_bLagging ? 0.9f : 0.0f);
-            event.setAccepted(true);
+            _arcballCamera->setLagging(_arcballCamera->lagging() > 0 ? 0.0f : 0.8f);
             break;
         case KeyEvent::Key::R:
-            _arcball->reset();
-            event.setAccepted(true);
+            _arcballCamera->reset();
             break;
-        default:;
+        default:
+            return;
     }
+    event.setAccepted(true);
+    redraw(); /* camera has changed, redraw! */
 }
 
 void ArcBallCameraExample::mousePressEvent(MouseEvent& event) {
     if(!(event.button() == MouseEvent::Button::Left ||
          event.button() == MouseEvent::Button::Right)) { return; }
-    _arcball->initTransformation(event.position());
+    _arcballCamera->initTransformation(event.position());
     event.setAccepted();
 }
 
@@ -280,11 +293,12 @@ void ArcBallCameraExample::mouseMoveEvent(MouseMoveEvent& event) {
          event.buttons() & MouseMoveEvent::Button::Right)) { return; }
 
     if(event.buttons() & MouseMoveEvent::Button::Left) {
-        _arcball->rotate(event.position());
+        _arcballCamera->rotate(event.position());
     } else {
-        _arcball->translate(event.position());
+        _arcballCamera->translate(event.position());
     }
     event.setAccepted();
+    redraw(); /* camera has changed, redraw! */
 }
 
 void ArcBallCameraExample::mouseScrollEvent(MouseScrollEvent& event) {
@@ -292,8 +306,9 @@ void ArcBallCameraExample::mouseScrollEvent(MouseScrollEvent& event) {
     if(Math::abs(delta) < 1.0e-2f) {
         return;
     }
-    _arcball->zoom(delta);
+    _arcballCamera->zoom(delta);
     event.setAccepted();
+    redraw(); /* camera has changed, redraw! */
 }
 } }
 
