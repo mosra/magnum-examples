@@ -39,7 +39,7 @@
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 
-namespace Magnum {
+namespace Magnum { namespace Examples {
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 using Scene3D  = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
 
@@ -78,5 +78,5 @@ private:
     Object3D*             _cameraObject { nullptr };
     SceneGraph::Camera3D* _camera { nullptr };
 };
-}
+} }
 #endif

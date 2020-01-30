@@ -37,7 +37,7 @@
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/Math/Quaternion.h>
 
-namespace Magnum {
+namespace Magnum { namespace Examples {
 /*
  * Implementation of Ken Shoemake's arcball camera with smooth navigation feature
  * https://www.talisman.org/~erlkonig/misc/shoemake92-arcball.pdf
@@ -128,5 +128,5 @@ protected:
     Float      _targetZooming, _currentZooming, _zoomingT0;
     Matrix4    _viewMatrix, _inverseViewMatrix;
 };
-}
+} }
 #endif

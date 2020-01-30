@@ -33,7 +33,7 @@
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Functions.h>
 
-namespace Magnum {
+namespace Magnum { namespace Examples {
 namespace  {
 /* Project a point in NDC onto the arcball sphere */
 Quaternion ndcToArcBall(const Vector2& p) {
@@ -163,4 +163,4 @@ Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {
                                   1 - 2 * static_cast<Float>(mousePos.y()) / _windowSize.y());
     return mousePosNDC;
 }
-}
+} }
