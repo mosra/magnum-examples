@@ -78,10 +78,8 @@ void ArcBall::reset() {
 }
 
 void ArcBall::setLagging(Float lagging) {
-    if(lagging < 0.0f || lagging > 0.9f) {
-        Error() << "Invalid camera's lagging parameter";
-    }
-    _lagging = Math::clamp(lagging, 0.0f, 0.9f);
+    CORRADE_INTERNAL_ASSERT(lagging > 0.0f && lagging < 1.0f);
+    _lagging = lagging;
 }
 
 void ArcBall::initTransformation(const Vector2i& mousePos) {

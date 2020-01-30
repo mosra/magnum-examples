@@ -48,10 +48,10 @@ using Scene3D  = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
  */
 class ArcBallCamera : public ArcBall {
 public:
-    ArcBallCamera(Scene3D* scene, const Vector3& cameraPosition, const Vector3& viewCenter, const Vector3& upDir,
-                  Deg fov, Vector2i windowSize, Vector2i viewportSize) :
+    ArcBallCamera(Scene3D& scene, const Vector3& cameraPosition, const Vector3& viewCenter, const Vector3& upDir,
+                  Deg fov, const Vector2i& windowSize, const Vector2i& viewportSize) :
         ArcBall(cameraPosition, viewCenter, upDir, fov, windowSize) {
-        _cameraObject = new Object3D{ scene };
+        _cameraObject = new Object3D{ &scene };
         _cameraObject->setTransformation(transformation()); /* initialize the camera position */
         _camera = new SceneGraph::Camera3D{ *_cameraObject };
         _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
@@ -67,7 +67,13 @@ public:
     }
 
     /* Update the scenegraph camera if arcball has been changed */
-    bool update() { return ArcBall::update(*_cameraObject); }
+    bool update() {
+        if(updateTransformation()) { /* call the internal update */
+            _cameraObject->setTransformation(transformation());
+            return true;
+        }
+        return false;
+    }
 
     /* Draw objects using the internal scenegraph camera */
     void draw(SceneGraph::DrawableGroup3D& drawables) {

@@ -48,10 +48,10 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-arcballcamera WIN32
+add_executable(magnum-arcball-camera WIN32
     ArcBall.cpp
     ArcBallCameraExample.cpp)
-target_link_libraries(magnum-arcballcamera PRIVATE
+target_link_libraries(magnum-arcball-camera PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::GL
@@ -59,11 +59,11 @@ target_link_libraries(magnum-arcballcamera PRIVATE
     Magnum::MeshTools
     Magnum::SceneGraph
     Magnum::Shaders)
-target_include_directories(magnum-arcballcamera PRIVATE
+target_include_directories(magnum-arcball-camera PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
 
-install(TARGETS magnum-arcballcamera DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(TARGETS magnum-arcball-camera DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
-set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-arcballcamera)
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-arcball-camera)
