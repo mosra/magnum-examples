@@ -107,6 +107,10 @@ if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
 
+if(WITH_RAYTRACING_EXAMPLE)
+    add_subdirectory(raytracing)
+endif()
+
 if(WITH_SHADOWS_EXAMPLE)
     add_subdirectory(shadows)
 endif()
