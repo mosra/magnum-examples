@@ -51,6 +51,7 @@ cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "
 option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
 option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
 option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
+option(WITH_RAY_TRACING_EXAMPLE "Build Ray Tracing example" OFF)
 option(WITH_SHADOWS_EXAMPLE "Build Shadow Mapping example" OFF)
 option(WITH_TEXT_EXAMPLE "Build Text example (requires some TTF font plugin)" OFF)
 cmake_dependent_option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires some TGA importer plugin)" OFF "NOT MAGNUM_TARGET_GLES" OFF)
