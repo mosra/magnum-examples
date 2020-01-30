@@ -90,6 +90,9 @@ public:
     /* Get the camera's transformation matrix */
     const Matrix4& transformation() const { return _inverseViewMatrix; }
 
+    /* Return the distance from the camera position to the center view */
+    Float viewDistance() const { return std::abs(_targetZooming); }
+
 protected:
     /* Update the camera matrices */
     void updateMatrices();
