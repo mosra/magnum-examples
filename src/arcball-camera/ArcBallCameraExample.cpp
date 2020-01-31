@@ -31,6 +31,7 @@
 #include "ArcBall.h"
 #include "ArcBallCamera.h"
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -111,52 +112,55 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
 
     /* Setup the cube with vertex color */
     {
-        const std::vector<Vector3> cubeVertices {
-            // front
-            { -1.0, -1.0,  1.0 },
-            { 1.0, -1.0,  1.0 },
-            { 1.0,  1.0,  1.0 },
-            { -1.0,  1.0,  1.0 },
-            // back
-            { -1.0, -1.0, -1.0 },
-            { 1.0, -1.0, -1.0 },
-            { 1.0,  1.0, -1.0 },
-            { -1.0,  1.0, -1.0 }
-        };
+        const Containers::Array<Vector3> cubeVertices {
+            Containers::InPlaceInit, {
+                // front
+                { -1.0, -1.0,  1.0 },
+                { 1.0, -1.0,  1.0 },
+                { 1.0,  1.0,  1.0 },
+                { -1.0,  1.0,  1.0 },
+                // back
+                { -1.0, -1.0, -1.0 },
+                { 1.0, -1.0, -1.0 },
+                { 1.0,  1.0, -1.0 },
+                { -1.0,  1.0, -1.0 }
+            } };
 
-        const std::vector<Vector3> cubeColors {
-            // front colors
-            { 1.0, 0.0, 0.0 },
-            { 0.0, 1.0, 0.0 },
-            { 0.0, 0.0, 1.0 },
-            { 1.0, 1.0, 1.0 },
-            // back colors
-            { 1.0, 0.0, 0.0 },
-            { 0.0, 1.0, 0.0 },
-            { 0.0, 0.0, 1.0 },
-            { 1.0, 1.0, 1.0 }
-        };
+        const Containers::Array<Vector3> cubeColors {
+            Containers::InPlaceInit, {
+                // front colors
+                { 1.0, 0.0, 0.0 },
+                { 0.0, 1.0, 0.0 },
+                { 0.0, 0.0, 1.0 },
+                { 1.0, 1.0, 1.0 },
+                // back colors
+                { 1.0, 0.0, 0.0 },
+                { 0.0, 1.0, 0.0 },
+                { 0.0, 0.0, 1.0 },
+                { 1.0, 1.0, 1.0 }
+            } };
 
-        const std::vector<UnsignedByte> cubeIndices {
-            // front
-            0, 1, 2,
-            2, 3, 0,
-            // right
-            1, 5, 6,
-            6, 2, 1,
-            // back
-            7, 6, 5,
-            5, 4, 7,
-            // left
-            4, 0, 3,
-            3, 7, 4,
-            // bottom
-            4, 5, 1,
-            1, 0, 4,
-            // top
-            3, 2, 6,
-            6, 7, 3
-        };
+        const Containers::Array<char> cubeIndices {
+            Containers::InPlaceInit, {
+                // front
+                0, 1, 2,
+                2, 3, 0,
+                // right
+                1, 5, 6,
+                6, 2, 1,
+                // back
+                7, 6, 5,
+                5, 4, 7,
+                // left
+                4, 0, 3,
+                3, 7, 4,
+                // bottom
+                4, 5, 1,
+                1, 0, 4,
+                // top
+                3, 2, 6,
+                6, 7, 3
+            } };
 
         GL::Buffer vertexBuffer;
         GL::Buffer indexBuffer;
