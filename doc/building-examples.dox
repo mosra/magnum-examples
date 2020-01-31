@@ -222,6 +222,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
 -   `WITH_PRIMITIVES_EXAMPLE` --- Build the @ref examples-primitives "Primitives"
     example.
+-   `WITH_RAY_TRACING_EXAMPLE` --- Build the @ref examples-raytracing "RayTracing"
+    example.
 -   `WITH_SHADOWS_EXAMPLE` --- Build the @ref examples-shadows example.
 -   `WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example. Requires
     the @ref Text library and some TTF font plugin such as
