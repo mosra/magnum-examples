@@ -33,7 +33,7 @@
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Functions.h>
 
-namespace Magnum {
+namespace Magnum { namespace Examples {
 namespace  {
 /* Project a point in NDC onto the arcball sphere */
 Quaternion ndcToArcBall(const Vector2& p) {
@@ -78,10 +78,8 @@ void ArcBall::reset() {
 }
 
 void ArcBall::setLagging(Float lagging) {
-    if(lagging < 0.0f || lagging > 0.9f) {
-        Error() << "Invalid camera's lagging parameter";
-    }
-    _lagging = Math::clamp(lagging, 0.0f, 0.9f);
+    CORRADE_INTERNAL_ASSERT(lagging > 0.0f && lagging < 1.0f);
+    _lagging = lagging;
 }
 
 void ArcBall::initTransformation(const Vector2i& mousePos) {
@@ -133,20 +131,25 @@ bool ArcBall::updateTransformation() {
         return false;
     }
 
-    /* Interpolate between the current transformation and the target transformation */
-    Float t = 1 - _lagging;
-
-    /* Nearly done: just jump directly to the target */
     if(dViewCenter < 1.0e-6f
        && dRotation < 1.0e-6f
-       && dZooming < 1.0e-6f) {
-        t = 1;
+       && dZooming < 1.0e-6f) { /* nearly done: just jump directly to the target */
+        _currentPosition  = _targetPosition;
+        _currentQRotation = _targetQRotation;
+        _currentZooming   = _targetZooming;
+    } else { /* interpolate between the current transformation and the target transformation */
+        Float t = 1 - _lagging;
+        _currentPosition = Math::lerp(_currentPosition, _targetPosition, t);
+        _currentZooming  = Math::lerp(_currentZooming, _targetZooming, t);
+
+        /* slerpShortestPath set a much smaller eps, thus deadlock still occurs */
+        static constexpr Float eps = 0.9995f;
+        if(std::abs(Math::dot(_currentQRotation, _targetQRotation)) > eps) {
+            _currentQRotation = _targetQRotation;
+        } else {
+            _currentQRotation = Math::slerpShortestPath(_currentQRotation, _targetQRotation, t).normalized();
+        }
     }
-
-    _currentPosition  = Math::lerp(_currentPosition, _targetPosition, t);
-    _currentQRotation = Math::slerpShortestPath(_currentQRotation, _targetQRotation, t).normalized();
-    _currentZooming   = Math::lerp(_currentZooming, _targetZooming, t);
-
     updateMatrices();
     return true;
 }
@@ -163,4 +166,4 @@ Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {
                                   1 - 2 * static_cast<Float>(mousePos.y()) / _windowSize.y());
     return mousePosNDC;
 }
-}
+} }

@@ -37,7 +37,7 @@
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/Math/Quaternion.h>
 
-namespace Magnum {
+namespace Magnum { namespace Examples {
 /*
  * Implementation of Ken Shoemake's arcball camera with smooth navigation feature
  * https://www.talisman.org/~erlkonig/misc/shoemake92-arcball.pdf
@@ -56,14 +56,8 @@ public:
     /* Update screen size after the window has been resized */
     void reshape(const Vector2i& windowSize) { _windowSize = windowSize; }
 
-    /* Update the scenegraph camera if arcball has been changed */
-    template<class Object3D> bool update(Object3D& cameraObject) {
-        if(updateTransformation()) { /* call the internal update */
-            cameraObject.setTransformation(transformation());
-            return true;
-        }
-        return false;
-    }
+    /* Update any unfinished transformation due to lagging, return true if the camera matrices have changed */
+    bool updateTransformation();
 
     /* Get/Set the amount of lagging such that the camera will (slowly) smoothly navigate
      * Lagging must be in [0, 1) */
@@ -96,19 +90,10 @@ public:
     /* Get the camera's transformation matrix */
     const Matrix4& transformation() const { return _inverseViewMatrix; }
 
-    /* Get the camera position in world space */
-    Vector3 cameraPosition() const { return _inverseViewMatrix.translation(); }
-
-    /* Get the view direction of the camera from the camera position to the center view position */
-    Vector3 viewDir() const { return -_inverseViewMatrix.backward(); }
-
-    /* Get the up direction of the camera */
-    Vector3 upDir() const { return _inverseViewMatrix.up(); }
+    /* Return the distance from the camera position to the center view */
+    Float viewDistance() const { return std::abs(_targetZooming); }
 
 protected:
-    /* Update any unfinished transformation due to lagging, return true if the camera matrices have changed */
-    bool updateTransformation();
-
     /* Update the camera matrices */
     void updateMatrices();
 
@@ -128,5 +113,5 @@ protected:
     Float      _targetZooming, _currentZooming, _zoomingT0;
     Matrix4    _viewMatrix, _inverseViewMatrix;
 };
-}
+} }
 #endif
