@@ -186,46 +186,46 @@ void RayTracer::generateSceneObjects() {
 
     /* Big sphere as floor */
     _sceneObjects->addObject(new Sphere(Vector3{ 0, -1000, 0 }, 1000, new Lambertian(Vector3{ 0.5f, 0.5f, 0.5f })));
+    const Vector3 centerBigSphere1{ 0, 1, 0 };
+    const Vector3 centerBigSphere2{ -4, 1, 0 };
+    const Vector3 centerBigSphere3{ 4, 1, 0 };
 
     for(Int a = -10; a <= 10; a++) {
         for(Int b = -10; b <= 10; b++) {
             const Float   radius = 0.2f + (2 * Rnd::rand01() - 1) * 0.05f;
             const Vector3 center(a + 0.9f * Rnd::rand01(), radius, b + 0.9f * Rnd::rand01());
-            const Float   selectMat = Rnd::rand01();
-            if((center - Vector3(4.f, 0.2f, 0.f)).length() > 0.9f) {
+            if((center - centerBigSphere1).length() > 1 + radius
+               && (center - centerBigSphere2).length() > 1 + radius
+               && (center - centerBigSphere3).length() > 1 + radius) {
+                Material*   material;
+                const Float selectMat = Rnd::rand01();
                 if(selectMat < 0.7f) { // diffuse
-                    _sceneObjects->addObject(new Sphere(center, radius,
-                                                        new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
-                                                                               Rnd::rand01() * Rnd::rand01(),
-                                                                               Rnd::rand01() * Rnd::rand01())
-                                                                       )
-                                                        )
-                                             );
+                    material = new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
+                                                      Rnd::rand01() * Rnd::rand01(),
+                                                      Rnd::rand01() * Rnd::rand01())
+                                              );
                 } else if(selectMat < 0.9f) { // metal
-                    _sceneObjects->addObject(new Sphere(center, radius,
-                                                        new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
-                                                                          0.5f * (1.f + Rnd::rand01()),
-                                                                          0.5f * (1.f + Rnd::rand01())),
-                                                                  0.5f * Rnd::rand01()
-                                                                  )
-                                                        )
-                                             );
+                    material = new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
+                                                 0.5f * (1.f + Rnd::rand01()),
+                                                 0.5f * (1.f + Rnd::rand01())),
+                                         0.5f * Rnd::rand01());
                 } else { // dielectric
-                    _sceneObjects->addObject(new Sphere(center, radius, new Dielectric(1.1f + 3.f * Rnd::rand01())));
+                    material = new Dielectric(1.1f + 3.f * Rnd::rand01());
                 }
+                _sceneObjects->addObject(new Sphere(center, radius, material));
             }
         }
     }
 
-    _sceneObjects->addObject(new Sphere(Vector3(0.f, 1.f, 0.f), 1.f, new Dielectric(1.5f)));
-    _sceneObjects->addObject(new Sphere(Vector3(-4.f, 1.f, 0.f), 1.f, new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
-                                                                                             Rnd::rand01() * Rnd::rand01(),
-                                                                                             Rnd::rand01() * Rnd::rand01())
-                                                                                     )));
-    _sceneObjects->addObject(new Sphere(Vector3(4.f, 1.f, 0.f), 1.f, new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
-                                                                                       0.5f * (1.f + Rnd::rand01()),
-                                                                                       0.5f * (1.f + Rnd::rand01())),
-                                                                               0
-                                                                               )));
+    _sceneObjects->addObject(new Sphere(centerBigSphere1, 1.f, new Dielectric(1.5f)));
+    _sceneObjects->addObject(new Sphere(centerBigSphere2, 1.f, new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
+                                                                                      Rnd::rand01() * Rnd::rand01(),
+                                                                                      Rnd::rand01() * Rnd::rand01())
+                                                                              )));
+    _sceneObjects->addObject(new Sphere(centerBigSphere3, 1.f, new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
+                                                                                 0.5f * (1.f + Rnd::rand01()),
+                                                                                 0.5f * (1.f + Rnd::rand01())),
+                                                                         0
+                                                                         )));
 }
 } }
