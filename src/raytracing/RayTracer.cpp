@@ -44,8 +44,8 @@ constexpr Int   MaxSamplesPerPixel = 512;
 constexpr Int   MaxRayDepth        = 16;
 constexpr Float CameraAperture     = 0.02f;
 
-const Vector3 SkyColor   = Vector3{ 1.0f, 1.0f, 1.0f };
-const Vector3 FloorColor = Vector3{ 0.5f, 0.7f, 1.0f };
+const Vector3 BackgroundColor1 = Vector3{ 1.0f, 1.0f, 1.0f };
+const Vector3 BackgroundColor2 = Vector3{ 0.5f, 0.7f, 1.0f };
 
 constexpr bool bConsistentScene = false;
 
@@ -63,6 +63,22 @@ void loopBlock(const Vector2i& blockStart, const Vector2i& imageSize, Function&&
             func(x, y);
         }
     }
+}
+
+/* Shade the objects */
+inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
+    HitInfo hitInfo;
+    if(objects.intersect(r, 0.001f, 1e10f, hitInfo)) {
+        Ray     scatteredRay;
+        Vector3 attenuation(0, 0, 0);
+        if(depth < MaxRayDepth && hitInfo.material->scatter(r, hitInfo, attenuation, scatteredRay)) {
+            attenuation *= shade(scatteredRay, objects, depth + 1);
+        }
+        return attenuation;
+    }
+    const Vector3 dir = r.direction.normalized();
+    Float         t   = 0.5f * (dir.y() + 1.0f);
+    return (1.0f - t) * BackgroundColor1 + t * BackgroundColor2;
 }
 }
 
@@ -165,59 +181,51 @@ Vector2i RayTracer::getNextBlock(const Vector2i& currentBlock) {
     return nextBlock;
 }
 
-Vector3 RayTracer::shade(const Ray& r, ObjectList& world, Int depth) const {
-    HitInfo hitInfo;
-    if(world.intersect(r, 0.001f, 1e10f, hitInfo)) {
-        Ray     scatteredRay;
-        Vector3 attenuation;
-        if(depth < MaxRayDepth && hitInfo.material->scatter(r, hitInfo, attenuation, scatteredRay)) {
-            return attenuation * shade(scatteredRay, world, depth + 1);
-        } else {
-            return Vector3(0, 0, 0);
-        }
-    }
-    const Vector3 dir = r.direction.normalized();
-    Float         t   = 0.5f * (dir.y() + 1.0f);
-    return (1.0f - t) * SkyColor + t * FloorColor;
-}
-
 void RayTracer::generateSceneObjects() {
     _sceneObjects.reset(new ObjectList);
+
+    /* Big sphere as floor */
     _sceneObjects->addObject(new Sphere(Vector3{ 0, -1000, 0 }, 1000, new Lambertian(Vector3{ 0.5f, 0.5f, 0.5f })));
 
     for(Int a = -10; a <= 10; a++) {
         for(Int b = -10; b <= 10; b++) {
-            const Vector3 center(a + 0.9f * Rnd::rand01(), 0.2f, b + 0.9f * Rnd::rand01());
+            const Float   radius = 0.2f + (2 * Rnd::rand01() - 1) * 0.05f;
+            const Vector3 center(a + 0.9f * Rnd::rand01(), radius, b + 0.9f * Rnd::rand01());
             const Float   selectMat = Rnd::rand01();
             if((center - Vector3(4.f, 0.2f, 0.f)).length() > 0.9f) {
-                if(selectMat < 0.8f) { // diffuse
-                    _sceneObjects->addObject(new Sphere(
-                                                 center, 0.2f,
-                                                 new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
-                                                                        Rnd::rand01() * Rnd::rand01(),
-                                                                        Rnd::rand01() * Rnd::rand01())
-                                                                )
-                                                 )
+                if(selectMat < 0.7f) { // diffuse
+                    _sceneObjects->addObject(new Sphere(center, radius,
+                                                        new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
+                                                                               Rnd::rand01() * Rnd::rand01(),
+                                                                               Rnd::rand01() * Rnd::rand01())
+                                                                       )
+                                                        )
                                              );
-                } else if(selectMat < 0.95f) { // metal
-                    _sceneObjects->addObject(new Sphere(
-                                                 center, 0.2f,
-                                                 new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
-                                                                   0.5f * (1.f + Rnd::rand01()),
-                                                                   0.5f * (1.f + Rnd::rand01())),
-                                                           0.5f * Rnd::rand01()
-                                                           )
-                                                 )
+                } else if(selectMat < 0.9f) { // metal
+                    _sceneObjects->addObject(new Sphere(center, radius,
+                                                        new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
+                                                                          0.5f * (1.f + Rnd::rand01()),
+                                                                          0.5f * (1.f + Rnd::rand01())),
+                                                                  0.5f * Rnd::rand01()
+                                                                  )
+                                                        )
                                              );
                 } else { // dielectric
-                    _sceneObjects->addObject(new Sphere(center, 0.2f, new Dielectric(1.f + 3.f * Rnd::rand01())));
+                    _sceneObjects->addObject(new Sphere(center, radius, new Dielectric(1.1f + 3.f * Rnd::rand01())));
                 }
             }
         }
     }
 
     _sceneObjects->addObject(new Sphere(Vector3(0.f, 1.f, 0.f), 1.f, new Dielectric(1.5f)));
-    _sceneObjects->addObject(new Sphere(Vector3(-4.f, 1.f, 0.f), 1.f, new Lambertian(Vector3(0.4f, 0.2f, 0.1f))));
-    _sceneObjects->addObject(new Sphere(Vector3(4.f, 1.f, 0.f), 1.f, new Metal(Vector3(0.7f, 0.6f, 0.5f), 0.0f)));
+    _sceneObjects->addObject(new Sphere(Vector3(-4.f, 1.f, 0.f), 1.f, new Lambertian(Vector3(Rnd::rand01() * Rnd::rand01(),
+                                                                                             Rnd::rand01() * Rnd::rand01(),
+                                                                                             Rnd::rand01() * Rnd::rand01())
+                                                                                     )));
+    _sceneObjects->addObject(new Sphere(Vector3(4.f, 1.f, 0.f), 1.f, new Metal(Vector3(0.5f * (1.f + Rnd::rand01()),
+                                                                                       0.5f * (1.f + Rnd::rand01()),
+                                                                                       0.5f * (1.f + Rnd::rand01())),
+                                                                               0
+                                                                               )));
 }
 } }

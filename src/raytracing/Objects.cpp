@@ -40,41 +40,40 @@ Sphere::~Sphere() { delete _material; }
 bool Sphere::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
     const Vector3 dir   = r.direction;
     const Vector3 oc    = r.origin - _center;
-    const Float   a     = Math::dot(dir, dir);
-    const Float   b     = 2.0f * dot(dir, oc);
-    const Float   c     = Math::dot(oc, oc) - _radius * _radius;
-    const Float   delta = b * b - 4.0f * a * c;
+    const Float   a     = r.length2;
+    const Float   b     = dot(dir, oc);
+    const Float   c     = dot(oc, oc) - _radiusSqr;
+    const Float   delta = b * b - a * c;
 
     if(delta > 0.0f) {
-        Float tmp = (-b - std::sqrt(delta)) / (2.0f * a);
-        if(tmp < t_max && tmp > t_min) { /* ray is outside sphere */
-            hitInfo.t        = tmp;
-            hitInfo.p        = r.point(tmp);
-            hitInfo.normal   = (hitInfo.p - _center) / _radius;
-            hitInfo.material = _material;
+        const Float t1 = (-b - std::sqrt(delta)) / a;
+        if(t1 < t_max && t1 > t_min) {
+            computeHitInfo(r, t1, hitInfo);
             return true;
         }
-        tmp = (-b + std::sqrt(delta)) / (2.0f * a);
-        if(tmp < t_max && tmp > t_min) { /* ray is inside sphere */
-            hitInfo.t        = tmp;
-            hitInfo.p        = r.point(tmp);
-            hitInfo.normal   = (hitInfo.p - _center) / _radius;
-            hitInfo.material = _material;
+        const Float t2 = (-b + std::sqrt(delta)) / a;
+        if(t2 < t_max && t2 > t_min) {
+            computeHitInfo(r, t2, hitInfo);
             return true;
         }
     }
     return false;
 }
 
+void Sphere::computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const {
+    hitInfo.t        = t;
+    hitInfo.p        = r.point(t);
+    hitInfo.normal   = (hitInfo.p - _center) * _radiusInv;
+    hitInfo.material = _material;
+}
+
 bool ObjectList::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
-    HitInfo tmpHitInfo;
-    bool    bHit       = false;
-    Float   minHitTime = t_max;
+    bool  bHit       = false;
+    Float minHitTime = t_max;
     for(std::size_t i = 0; i < _objects.size(); ++i) {
-        if(_objects[i]->intersect(r, t_min, minHitTime, tmpHitInfo)) {
+        if(_objects[i]->intersect(r, t_min, minHitTime, hitInfo)) {
             bHit       = true;
-            minHitTime = tmpHitInfo.t;
-            hitInfo    = tmpHitInfo;
+            minHitTime = hitInfo.t;
         }
     }
     return bHit;

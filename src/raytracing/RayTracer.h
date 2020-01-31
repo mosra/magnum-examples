@@ -80,9 +80,6 @@ private:
     /* Identify next block to render */
     Vector2i getNextBlock(const Vector2i& currentBlock);
 
-    /* Shade the objects */
-    Vector3 shade(const Ray& r, ObjectList& world, Int depth) const;
-
     Corrade::Containers::Pointer<Camera>                    _camera;
     Corrade::Containers::Pointer<ObjectList>                _sceneObjects;
     Corrade::Containers::Array<Math::Vector4<UnsignedByte>> _pixels;
