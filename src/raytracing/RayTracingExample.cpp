@@ -160,9 +160,6 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
             _arcballCamera->translateDelta(Vector2{ 0, -0.05f });
             break;
 
-        case KeyEvent::Key::L:
-            _arcballCamera->setLagging(_arcballCamera->lagging() > 0 ? 0.0f : 0.8f);
-            break;
         case KeyEvent::Key::R:
             _arcballCamera->reset();
             break;
