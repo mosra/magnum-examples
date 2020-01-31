@@ -100,25 +100,27 @@ RayTracingExample::RayTracingExample(const Arguments& arguments) :
 }
 
 void RayTracingExample::drawEvent() {
-    if(!_bPaused) {
-        /* Call arcball update in every frame
-         * This will do nothing if the camera has not been changed
-         * Otherwise, camera transformation will be propagated into the ray tracer
-         */
-        if(_arcballCamera->updateTransformation()) {
-            const Matrix4& transformation = _arcballCamera->transformation();
-            const Vector3  eye        = transformation.translation();
-            const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
-            const Vector3  up         = transformation.up();
-            const Deg      fov { 45.0_degf };
-            _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio());
-        }
-
-        /* Render a block of pixels */
-        renderAndUpdateBlockPixels();
-        swapBuffers();
-        redraw();
+    if(_bPaused) {
+        return;
     }
+
+    /* Call arcball update in every frame
+     * This will do nothing if the camera has not been changed
+     * Otherwise, camera transformation will be propagated into the ray tracer
+     */
+    if(_arcballCamera->updateTransformation()) {
+        const Matrix4& transformation = _arcballCamera->transformation();
+        const Vector3  eye        = transformation.translation();
+        const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
+        const Vector3  up         = transformation.up();
+        const Deg      fov { 45.0_degf };
+        _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio());
+    }
+
+    /* Render a block of pixels */
+    renderAndUpdateBlockPixels();
+    swapBuffers();
+    redraw();
 }
 
 void RayTracingExample::renderAndUpdateBlockPixels() {
@@ -168,6 +170,11 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
             _rayTracer->markNextBlock() ^= true;
             break;
 
+        case KeyEvent::Key::N:
+            _rayTracer->generateSceneObjects();
+            _rayTracer->clearBuffers();
+            break;
+
         case KeyEvent::Key::Space:
             _bPaused ^= true;
             break;
@@ -176,7 +183,7 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
             return;
     }
     event.setAccepted(true);
-    redraw(); /* camera has changed, redraw! */
+    redraw(); /* camera has changed, or ray tracer started/paused, redraw! */
 }
 
 void RayTracingExample::mousePressEvent(MouseEvent& event) {

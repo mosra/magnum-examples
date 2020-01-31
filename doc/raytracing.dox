@@ -45,6 +45,7 @@ The current implementation runs on single thread and performs iterative renderin
 -   @m_class{m-label m-default} **Up/Down/Left/Right arrows** translate the camera
 -   @m_class{m-label m-default} **+/-** zoom the camera
 -   @m_class{m-label m-default} **M** toggle marking the next render block by a different color
+-   @m_class{m-label m-default} **N** generate a new random scene
 -   @m_class{m-label m-default} **Spacing** pause/resume rendering
 
 @section examples-raytracing-credits Credits

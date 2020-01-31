@@ -44,17 +44,6 @@ struct Ray;
 class ObjectList;
 class Camera;
 
-/* Parameter for ray tracing */
-namespace  {
-constexpr Int   BlockSize          = 64;
-constexpr Int   MaxSamplesPerPixel = 512;
-constexpr Int   MaxRayDepth        = 32;
-constexpr Float CameraAperture     = 0.01f;
-
-const Vector3 SkyColor   = Vector3{ 1.0f, 1.0f, 1.0f };
-const Vector3 FloorColor = Vector3{ 0.5f, 0.7f, 1.0f };
-}
-
 class RayTracer {
 public:
     RayTracer(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
@@ -74,46 +63,30 @@ public:
     /* Update size of the render buffer, should be called in the viewportEvent */
     void resizeBuffers(const Vector2i& imageSize);
 
+    /* Clear data in the render buffer */
+    void clearBuffers();
+
+    /* Generate scene, will produce a new, different scene if bConsistentScene is false */
+    void generateSceneObjects();
+
     /* Get the rendered image
-     * This should be called after renderNextBlock() in every drawEvent */
-    const Corrade::Containers::Array<UnsignedByte>& renderedBuffer() const { return _pixels; }
+     * This should be called after renderBlock() in every drawEvent */
+    const Corrade::Containers::Array<Math::Vector4<UnsignedByte>>& renderedBuffer() const { return _pixels; }
 
     /* Return number of render pass */
     Int maxSamplesPerPixels() const { return _maxSamplesPerPixels; }
 
 private:
-    /* Clear data in the render buffer */
-    void clearBuffers();
-
     /* Identify next block to render */
     Vector2i getNextBlock(const Vector2i& currentBlock);
-
-    /* Perform operation on the entire block of pixels */
-    template<class Function>
-    void loopBlock(const Vector2i& blockStart, Function&& func) {
-        for(Int y = blockStart.y(), yend = blockStart.y() + BlockSize; y < yend; ++y) {
-            for(Int x = blockStart.x(), xend = blockStart.x() + BlockSize; x < xend; ++x) {
-                if(x < 0
-                   || y < 0
-                   || x >= _imageSize.x()
-                   || y >= _imageSize.y()) {
-                    continue;
-                }
-                func(x, y);
-            }
-        }
-    }
 
     /* Shade the objects */
     Vector3 shade(const Ray& r, ObjectList& world, Int depth) const;
 
-    /* Generate objects in the scene */
-    void generateScene();
-
-    Corrade::Containers::Pointer<Camera>     _camera;
-    Corrade::Containers::Pointer<ObjectList> _sceneObjects;
-    Corrade::Containers::Array<UnsignedByte> _pixels;
-    Corrade::Containers::Array<Vector4>      _buffer;
+    Corrade::Containers::Pointer<Camera>                    _camera;
+    Corrade::Containers::Pointer<ObjectList>                _sceneObjects;
+    Corrade::Containers::Array<Math::Vector4<UnsignedByte>> _pixels;
+    Corrade::Containers::Array<Vector4>                     _buffer;
 
     Vector2i _imageSize;
     Vector2i _numBlocks;

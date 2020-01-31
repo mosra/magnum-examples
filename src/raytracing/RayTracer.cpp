@@ -28,6 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <ctime>
+
 #include <Magnum/Math/Vector4.h>
 
 #include "RayTracer.h"
@@ -36,15 +38,43 @@
 #include "Materials.h"
 
 namespace Magnum { namespace Examples {
+namespace  {
+constexpr Int   BlockSize          = 64;
+constexpr Int   MaxSamplesPerPixel = 512;
+constexpr Int   MaxRayDepth        = 16;
+constexpr Float CameraAperture     = 0.02f;
+
+const Vector3 SkyColor   = Vector3{ 1.0f, 1.0f, 1.0f };
+const Vector3 FloorColor = Vector3{ 0.5f, 0.7f, 1.0f };
+
+constexpr bool bConsistentScene = false;
+
+/* Perform operation on the entire block of pixels */
+template<class Function>
+void loopBlock(const Vector2i& blockStart, const Vector2i& imageSize, Function&& func) {
+    for(Int y = blockStart.y(), yend = blockStart.y() + BlockSize; y < yend; ++y) {
+        for(Int x = blockStart.x(), xend = blockStart.x() + BlockSize; x < xend; ++x) {
+            if(x < 0
+               || y < 0
+               || x >= imageSize.x()
+               || y >= imageSize.y()) {
+                continue;
+            }
+            func(x, y);
+        }
+    }
+}
+}
+
 RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
                      Deg fov, Float aspectRatio,
                      const Vector2i& imageSize) {
-    /* Set a fixed seed number for random generator,
-     *   so the results should look the same each time running the program */
-    srand(0);
+    /* If bConsistentScene == true, then set a fixed seed number for random generator,
+     *   so the render image will look the same each time running the program */
+    srand(bConsistentScene ? 0 : time(nullptr));
     setViewParameters(eye, viewCenter, upDir, fov, aspectRatio);
     resizeBuffers(imageSize);
-    generateScene();
+    generateSceneObjects();
 }
 
 void RayTracer::setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
@@ -61,7 +91,7 @@ void RayTracer::resizeBuffers(const Vector2i& imageSize) {
     while(_busy.load()) {}
     _busy.store(true);
     _imageSize = imageSize;
-    Containers::arrayResize(_pixels, imageSize.x() * imageSize.y() * 4);
+    Containers::arrayResize(_pixels, imageSize.x() * imageSize.y());
     Containers::arrayResize(_buffer, imageSize.x() * imageSize.y());
     _numBlocks = Vector2i((imageSize.x() + BlockSize - 1) / BlockSize,
                           (imageSize.y() + BlockSize - 1) / BlockSize);
@@ -89,39 +119,29 @@ void RayTracer::renderBlock() {
 
     /* Render the current block */
     Vector2i blockStart = _currentBlock * BlockSize;
-    loopBlock(blockStart, [&](Int x, Int y) {
+    loopBlock(blockStart, _imageSize, [&](Int x, Int y) {
                   const Float u       = (x + Rnd::rand01()) / static_cast<Float>(_imageSize.x());
                   const Float v       = (y + Rnd::rand01()) / static_cast<Float>(_imageSize.y());
                   const Ray r         = _camera->getRay(u, v);
                   const Vector3 color = shade(r, *_sceneObjects, 0);
+                  const Int pixelIdx  = y * _imageSize.x() + x;
+                  Vector4& pixelColor = _buffer[pixelIdx];
 
                   /* Accumulate into the render buffer */
-                  const Int pixelIdx    = (y * _imageSize.x() + x);
-                  _buffer[pixelIdx][0] += color[0];
-                  _buffer[pixelIdx][1] += color[1];
-                  _buffer[pixelIdx][2] += color[2];
-                  _buffer[pixelIdx][3] += 1.0f;
+                  pixelColor += Vector4{ color, 1.0f };
 
                   /* Update the pixel buffer */
-                  const Float nSamples = _buffer[pixelIdx][3];
-                  if(nSamples > 0) {
-                      _pixels[pixelIdx * 4 + 0] = static_cast<UnsignedByte>(255.99f * (std::sqrt(_buffer[pixelIdx][0] / nSamples)));
-                      _pixels[pixelIdx * 4 + 1] = static_cast<UnsignedByte>(255.99f * (std::sqrt(_buffer[pixelIdx][1] / nSamples)));
-                      _pixels[pixelIdx * 4 + 2] = static_cast<UnsignedByte>(255.99f * (std::sqrt(_buffer[pixelIdx][2] / nSamples)));
-                      _pixels[pixelIdx * 4 + 3] = 255u;
-                  }
+                  _pixels[pixelIdx].xyz() = Math::Vector3<UnsignedByte>{ 255.99f * Math::sqrt(pixelColor.xyz() / pixelColor.w()) };
+                  _pixels[pixelIdx].w()   = 255u;
               });
     _currentBlock = getNextBlock(_currentBlock);
 
     /* Mark out the next block to display */
     if(_bMarkNextBlock && _maxSamplesPerPixels < MaxSamplesPerPixel) {
         blockStart = _currentBlock * BlockSize;
-        loopBlock(blockStart, [&](Int x, Int y) {
-                      const Int pixelIdx        = (y * _imageSize.x() + x);
-                      _pixels[pixelIdx * 4 + 0] = 100u;
-                      _pixels[pixelIdx * 4 + 1] = 100u;
-                      _pixels[pixelIdx * 4 + 2] = 100u;
-                      _pixels[pixelIdx * 4 + 2] = 255u;
+        loopBlock(blockStart, _imageSize, [&](Int x, Int y) {
+                      const Int pixelIdx = y * _imageSize.x() + x;
+                      _pixels[pixelIdx]  = { 100u, 100u, 255u, 255u };
                   });
     }
 
@@ -161,7 +181,7 @@ Vector3 RayTracer::shade(const Ray& r, ObjectList& world, Int depth) const {
     return (1.0f - t) * SkyColor + t * FloorColor;
 }
 
-void RayTracer::generateScene() {
+void RayTracer::generateSceneObjects() {
     _sceneObjects.reset(new ObjectList);
     _sceneObjects->addObject(new Sphere(Vector3{ 0, -1000, 0 }, 1000, new Lambertian(Vector3{ 0.5f, 0.5f, 0.5f })));
 

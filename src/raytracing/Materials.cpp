@@ -47,9 +47,8 @@ inline bool refract(const Vector3& v, const Vector3& n, Float ni_over_nt, Vector
     if(discriminant > 0) {
         refracted = ni_over_nt * (uv - n * dt) - n * sqrt(discriminant);
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 inline Float schlick(Float cosine, Float ref_idx) {
