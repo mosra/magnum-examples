@@ -95,9 +95,9 @@ RayTracingExample::RayTracingExample(const Arguments& arguments) :
         resizeBuffers(framebufferSize());
     }
 
-    /* Start the timer, loop at 60 Hz max */
-    setSwapInterval(1);
-    setMinimalLoopPeriod(16);
+    /* Start the timer, loop frame as fast as possible*/
+    setSwapInterval(0);
+    setMinimalLoopPeriod(0);
 }
 
 void RayTracingExample::drawEvent() {
