@@ -58,6 +58,7 @@ private:
 
     void renderAndUpdateBlockPixels();
     void resizeBuffers(const Vector2i& bufferSize);
+    void updateRayTracerCamera();
 
     Containers::Pointer<ArcBall> _arcballCamera;
     GL::Texture2D                _texBuffer{ NoCreate };
@@ -109,12 +110,7 @@ void RayTracingExample::drawEvent() {
      * Otherwise, camera transformation will be propagated into the ray tracer
      */
     if(_arcballCamera->updateTransformation()) {
-        const Matrix4& transformation = _arcballCamera->transformation();
-        const Vector3  eye        = transformation.translation();
-        const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
-        const Vector3  up         = transformation.up();
-        const Deg      fov { 45.0_degf };
-        _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio());
+        updateRayTracerCamera();
     }
 
     /* Render a block of pixels */
@@ -132,11 +128,12 @@ void RayTracingExample::renderAndUpdateBlockPixels() {
 }
 
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
-    _arcballCamera->reshape(windowSize());
     const auto newBufferSize = event.framebufferSize();
     GL::defaultFramebuffer.setViewport({ {}, newBufferSize });
-    _rayTracer->resizeBuffers(newBufferSize);
     resizeBuffers(newBufferSize);
+    _rayTracer->resizeBuffers(newBufferSize);
+    _arcballCamera->reshape(windowSize());
+    updateRayTracerCamera();
 }
 
 void RayTracingExample::keyPressEvent(KeyEvent& event) {
@@ -226,6 +223,15 @@ void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
 
     _frameBuffer = GL::Framebuffer(GL::defaultFramebuffer.viewport());
     _frameBuffer.attachTexture(GL::Framebuffer::ColorAttachment{ 0 }, _texBuffer, 0);
+}
+
+void RayTracingExample::updateRayTracerCamera() {
+    const Matrix4& transformation = _arcballCamera->transformation();
+    const Vector3  eye        = transformation.translation();
+    const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
+    const Vector3  up         = transformation.up();
+    const Deg      fov { 45.0_degf };
+    _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio());
 }
 } }
 
