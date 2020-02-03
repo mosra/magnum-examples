@@ -32,7 +32,7 @@
  */
 
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/SceneGraph/AbstractTranslationRotation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 
@@ -40,25 +40,29 @@
 
 namespace Magnum { namespace Examples {
 
-using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
-using Scene3D = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
-
 /* Arcball camera implementation integrated into the SceneGraph */
 class ArcBallCamera: public ArcBall {
     public:
-        ArcBallCamera(Scene3D& scene, const Vector3& cameraPosition,
-            const Vector3& viewCenter, const Vector3& upDir, Deg fov,
-            const Vector2i& windowSize, const Vector2i& viewportSize):
+        template<class Transformation> ArcBallCamera(
+            SceneGraph::Scene<Transformation>& scene,
+            const Vector3& cameraPosition, const Vector3& viewCenter,
+            const Vector3& upDir, Deg fov, const Vector2i& windowSize,
+            const Vector2i& viewportSize):
             ArcBall{cameraPosition, viewCenter, upDir, fov, windowSize}
         {
-            _cameraObject = new Object3D{&scene};
-            /* Initialize the camera position */
-            _cameraObject->setTransformation(transformationMatrix());
-            _camera = new SceneGraph::Camera3D{*_cameraObject};
-            _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+            /* Create a camera object of a concrete type */
+            auto* cameraObject = new SceneGraph::Object<Transformation>{&scene};
+            (*(_camera = new SceneGraph::Camera3D{*cameraObject}))
+                .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
                 .setProjectionMatrix(Matrix4::perspectiveProjection(
                     fov, Vector2{windowSize}.aspectRatio(), 0.01f, 100.0f))
                 .setViewport(viewportSize);
+
+            /* Save the abstract transformation interface and initialize the
+               camera position through that */
+            (*(_cameraObject = cameraObject))
+                .rotate(transformation().rotation())
+                .translate(transformation().translation());
         }
 
         /* Update screen and viewport size after the window has been resized */
@@ -69,12 +73,14 @@ class ArcBallCamera: public ArcBall {
 
         /* Update the SceneGraph camera if arcball has been changed */
         bool update() {
-            if(updateTransformation()) { /* call the internal update */
-                _cameraObject->setTransformation(transformationMatrix());
-                return true;
-            }
+            /* call the internal update */
+            if(!updateTransformation()) return false;
 
-            return false;
+            (*_cameraObject)
+                .resetTransformation()
+                .rotate(transformation().rotation())
+                .translate(transformation().translation());
+            return true;
         }
 
         /* Draw objects using the internal scenegraph camera */
@@ -83,7 +89,7 @@ class ArcBallCamera: public ArcBall {
         }
 
     private:
-        Object3D* _cameraObject{};
+        SceneGraph::AbstractTranslationRotation3D* _cameraObject{};
         SceneGraph::Camera3D* _camera{};
 };
 
