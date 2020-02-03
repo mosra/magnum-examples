@@ -15,6 +15,7 @@ export DEB_LDFLAGS_MAINT_STRIP = -Wl,-Bsymbolic-functions
 override_dh_auto_configure:
 	dh_auto_configure -- \
 		-DCMAKE_BUILD_TYPE=Release \
+		-DWITH_ARCBALL_EXAMPLE=ON \
 		-DWITH_AREALIGHTS_EXAMPLE=ON \
 		-DWITH_AUDIO_EXAMPLE=ON \
 		-DWITH_BOX2D_EXAMPLE=ON \
