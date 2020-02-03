@@ -32,8 +32,7 @@
 
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Functions.h>
-#include <Magnum/Math/Matrix4.h>
-#include <Magnum/Math/Quaternion.h>
+#include <Magnum/Math/DualQuaternion.h>
 #include <Magnum/Math/Vector2.h>
 #include <Magnum/Math/Vector3.h>
 
@@ -83,22 +82,28 @@ class ArcBall {
         /* Zoom the camera (positive delta = zoom in, negative = zoom out) */
         void zoom(Float delta);
 
-        /* Get the camera's view matrix */
-        const Matrix4& viewMatrix() const { return _viewMatrix; }
+        /* Get the camera's view transformation as a qual quaternion */
+        const DualQuaternion& view() const { return _view; }
+
+        /* Get the camera's view transformation as a matrix */
+        Matrix4 viewMatrix() const { return _view.toMatrix(); }
 
         /* Get the camera's inverse view matrix (which also produces
            transformation of the camera) */
-        const Matrix4& inverseViewMatrix() const { return _inverseViewMatrix; }
+        Matrix4 inverseViewMatrix() const { return _inverseView.toMatrix(); }
+
+        /* Get the camera's transformation as a dual quaternion */
+        const DualQuaternion& transformation() const { return _inverseView; }
 
         /* Get the camera's transformation matrix */
-        const Matrix4& transformation() const { return _inverseViewMatrix; }
+        Matrix4 transformationMatrix() const { return _inverseView.toMatrix(); }
 
         /* Return the distance from the camera position to the center view */
         Float viewDistance() const { return Math::abs(_targetZooming); }
 
     protected:
-        /* Update the camera matrices */
-        void updateMatrices();
+        /* Update the camera transformations */
+        void updateInternalTransformations();
 
         /* Transform from screen coordinate to NDC - normalized device
            coordinate. The top-left of the screen corresponds to [-1, 1] NDC,
@@ -114,7 +119,7 @@ class ArcBall {
         Vector3 _targetPosition, _currentPosition, _positionT0;
         Quaternion _targetQRotation, _currentQRotation, _qRotationT0;
         Float _targetZooming, _currentZooming, _zoomingT0;
-        Matrix4 _viewMatrix, _inverseViewMatrix;
+        DualQuaternion _view, _inverseView;
 };
 
 }}

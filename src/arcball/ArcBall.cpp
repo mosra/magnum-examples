@@ -72,7 +72,7 @@ void ArcBall::setViewParameters(const Vector3& eye, const Vector3& viewCenter,  
     _zoomingT0 = _currentZooming = _targetZooming;
     _qRotationT0 = _currentQRotation = _targetQRotation;
 
-    updateMatrices();
+    updateInternalTransformations();
 }
 
 void ArcBall::reset() {
@@ -111,7 +111,7 @@ void ArcBall::translateDelta(const Vector2& translationNDC) {
     const Float hh = Math::abs(_targetZooming)*Math::tan(_fov*0.5f);
     const Float hw = hh*Vector2{_windowSize}.aspectRatio();
 
-    _targetPosition += _inverseViewMatrix.transformVector(
+    _targetPosition += _inverseView.transformVector(
         {translationNDC.x()*hw, translationNDC.y()*hh, 0.0f});
 }
 
@@ -152,15 +152,15 @@ bool ArcBall::updateTransformation() {
         _currentQRotation = Math::slerpShortestPath(_currentQRotation, _targetQRotation, t);
     }
 
-    updateMatrices();
+    updateInternalTransformations();
     return true;
 }
 
-void ArcBall::updateMatrices() {
-    _viewMatrix = Matrix4::translation(Vector3::zAxis(_currentZooming))*
-                  Matrix4::from(_currentQRotation.toMatrix(), {})*
-                  Matrix4::translation(_currentPosition);
-    _inverseViewMatrix = _viewMatrix.inverted();
+void ArcBall::updateInternalTransformations() {
+    _view = DualQuaternion::translation(Vector3::zAxis(_currentZooming))*
+            DualQuaternion{_currentQRotation}*
+            DualQuaternion::translation(_currentPosition);
+    _inverseView = _view.inverted();
 }
 
 Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {

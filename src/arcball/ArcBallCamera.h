@@ -53,7 +53,7 @@ class ArcBallCamera: public ArcBall {
         {
             _cameraObject = new Object3D{&scene};
             /* Initialize the camera position */
-            _cameraObject->setTransformation(transformation());
+            _cameraObject->setTransformation(transformationMatrix());
             _camera = new SceneGraph::Camera3D{*_cameraObject};
             _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
                 .setProjectionMatrix(Matrix4::perspectiveProjection(
@@ -70,7 +70,7 @@ class ArcBallCamera: public ArcBall {
         /* Update the SceneGraph camera if arcball has been changed */
         bool update() {
             if(updateTransformation()) { /* call the internal update */
-                _cameraObject->setTransformation(transformation());
+                _cameraObject->setTransformation(transformationMatrix());
                 return true;
             }
 
