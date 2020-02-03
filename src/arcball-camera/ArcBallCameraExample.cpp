@@ -129,15 +129,15 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
         const Containers::Array<Vector3> cubeColors {
             Containers::InPlaceInit, {
                 // front colors
-                { 1.0, 0.0, 0.0 },
-                { 0.0, 1.0, 0.0 },
+                { 0.0, 1.0, 1.0 },
                 { 0.0, 0.0, 1.0 },
-                { 1.0, 1.0, 1.0 },
+                { 0.0, 0.0, 0.0 },
+                { 0.0, 1.0, 0.0 },
                 // back colors
-                { 1.0, 0.0, 0.0 },
-                { 0.0, 1.0, 0.0 },
-                { 0.0, 0.0, 1.0 },
-                { 1.0, 1.0, 1.0 }
+                { 1.0, 1.0, 0.0 },
+                { 1.0, 1.0, 1.0 },
+                { 1.0, 0.0, 1.0 },
+                { 1.0, 0.0, 0.0 }
             } };
 
         const Containers::Array<char> cubeIndices {
