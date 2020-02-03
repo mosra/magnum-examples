@@ -48,6 +48,7 @@
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/Flat.h>
 
 namespace Magnum { namespace Examples {
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
@@ -68,25 +69,33 @@ private:
 
     Scene3D                            _scene;
     SceneGraph::DrawableGroup3D        _drawables;
-    GL::Mesh                           _mesh { NoCreate };
-    Shaders::VertexColor3D             _shader{ NoCreate };
     Containers::Pointer<ArcBallCamera> _arcballCamera;
+
+    GL::Mesh _triMesh { NoCreate };
+    GL::Mesh _lineMesh { NoCreate };
 };
 
 class VertexColorDrawable : public SceneGraph::Drawable3D {
 public:
-    explicit VertexColorDrawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh,
+    explicit VertexColorDrawable(Object3D& object, GL::Mesh& triMesh, GL::Mesh& lineMesh,
                                  SceneGraph::DrawableGroup3D& drawables) :
-        SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
+        SceneGraph::Drawable3D{object, &drawables}, _triMesh(triMesh), _lineMesh(lineMesh) {
+        _flatShader.setColor(Color3(0, 0, 0)); /* set black outline */
+    }
 
     void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-        _shader.setTransformationProjectionMatrix(camera.projectionMatrix() * transformation);
-        _mesh.draw(_shader);
+        const Matrix4 transformationPrjMatrix = camera.projectionMatrix() * transformation;
+        _colorShader.setTransformationProjectionMatrix(transformationPrjMatrix);
+        _flatShader.setTransformationProjectionMatrix(transformationPrjMatrix);
+        _triMesh.draw(_colorShader);
+        _lineMesh.draw(_flatShader);
     }
 
 private:
-    Shaders::VertexColor3D& _shader;
-    GL::Mesh&               _mesh;
+    Shaders::VertexColor3D _colorShader;
+    Shaders::Flat3D        _flatShader;
+    GL::Mesh&              _triMesh;
+    GL::Mesh&              _lineMesh;
 };
 
 ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
@@ -114,68 +123,90 @@ ArcBallCameraExample::ArcBallCameraExample(const Arguments& arguments) :
     {
         const Containers::Array<Vector3> cubeVertices {
             Containers::InPlaceInit, {
-                // front
-                { -1.0, -1.0,  1.0 },
-                { 1.0, -1.0,  1.0 },
-                { 1.0,  1.0,  1.0 },
-                { -1.0,  1.0,  1.0 },
-                // back
-                { -1.0, -1.0, -1.0 },
-                { 1.0, -1.0, -1.0 },
-                { 1.0,  1.0, -1.0 },
-                { -1.0,  1.0, -1.0 }
+                { 1, 1, 1 },
+                { -1, 1, 1 },
+                { -1, -1, 1 },
+                { 1, -1, 1 },
+                { 1, -1, -1 },
+                { 1, 1, -1 },
+                { -1, 1, -1 },
+                { -1, -1, -1 }
             } };
 
         const Containers::Array<Vector3> cubeColors {
             Containers::InPlaceInit, {
-                // front colors
-                { 0.0, 1.0, 1.0 },
-                { 0.0, 0.0, 1.0 },
-                { 0.0, 0.0, 0.0 },
-                { 0.0, 1.0, 0.0 },
-                // back colors
-                { 1.0, 1.0, 0.0 },
-                { 1.0, 1.0, 1.0 },
-                { 1.0, 0.0, 1.0 },
-                { 1.0, 0.0, 0.0 }
+                { 0, 1, 1 },
+                { 0, 0, 1 },
+                { 0, 0, 0 },
+                { 0, 1, 0 },
+                { 1, 1, 0 },
+                { 1, 1, 1 },
+                { 1, 0, 1 },
+                { 1, 0, 0 }
             } };
 
-        const Containers::Array<char> cubeIndices {
+        const Containers::Array<char> cubeFaceIndices {
             Containers::InPlaceInit, {
-                // front
                 0, 1, 2,
-                2, 3, 0,
-                // right
-                1, 5, 6,
-                6, 2, 1,
-                // back
-                7, 6, 5,
-                5, 4, 7,
-                // left
-                4, 0, 3,
-                3, 7, 4,
-                // bottom
-                4, 5, 1,
-                1, 0, 4,
-                // top
-                3, 2, 6,
-                6, 7, 3
+                0, 2, 3,
+                0, 3, 4,
+                0, 4, 5,
+                0, 5, 6,
+                0, 6, 1,
+                1, 6, 7,
+                1, 7, 2,
+                7, 4, 3,
+                7, 3, 2,
+                4, 7, 6,
+                4, 6, 5
             } };
 
-        GL::Buffer vertexBuffer;
-        GL::Buffer indexBuffer;
-        vertexBuffer.setData(MeshTools::interleave(cubeVertices, cubeColors));
-        indexBuffer.setData(cubeIndices);
+        const Containers::Array<char> cubeEdgeIndices {
+            Containers::InPlaceInit, {
+                0, 1,
+                1, 2,
+                2, 3,
+                3, 0,
+                4, 7,
+                7, 6,
+                6, 5,
+                5, 4,
+                0, 5,
+                1, 6,
+                2, 7,
+                3, 4
+            } };
 
-        _mesh = GL::Mesh{};
-        _mesh.setCount(cubeIndices.size())
-            .addVertexBuffer(std::move(vertexBuffer), 0,
-                             Shaders::VertexColor3D::Position{},
-                             Shaders::VertexColor3D::Color3{})
-            .setIndexBuffer(std::move(indexBuffer), 0, MeshIndexType::UnsignedByte);
+        /* Setup the cube faces */
+        {
+            GL::Buffer vertexBuffer;
+            GL::Buffer indexBuffer;
+            vertexBuffer.setData(MeshTools::interleave(cubeVertices, cubeColors));
+            indexBuffer.setData(cubeFaceIndices);
 
-        _shader = Shaders::VertexColor3D{};
-        new VertexColorDrawable{ *(new Object3D{ &_scene }), _shader, _mesh, _drawables };
+            _triMesh = GL::Mesh{};
+            _triMesh.setCount(cubeFaceIndices.size())
+                .addVertexBuffer(std::move(vertexBuffer), 0,
+                                 Shaders::VertexColor3D::Position{},
+                                 Shaders::VertexColor3D::Color3{})
+                .setIndexBuffer(std::move(indexBuffer), 0, MeshIndexType::UnsignedByte);
+        }
+
+        /* Setup the cube edges */
+        {
+            GL::Buffer vertexBuffer;
+            GL::Buffer indexBuffer;
+            vertexBuffer.setData(cubeVertices);
+            indexBuffer.setData(cubeEdgeIndices);
+
+            _lineMesh = GL::Mesh{ GL::MeshPrimitive::Lines };
+            _lineMesh.setCount(cubeEdgeIndices.size())
+                .addVertexBuffer(std::move(vertexBuffer), 0,
+                                 Shaders::VertexColor3D::Position{})
+                .setIndexBuffer(std::move(indexBuffer), 0, MeshIndexType::UnsignedByte);
+        }
+
+        new VertexColorDrawable{ *(new Object3D{ &_scene }), _triMesh, _lineMesh, _drawables };
     }
 
     /* Set up the camera */
