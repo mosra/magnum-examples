@@ -111,8 +111,8 @@ void ArcBall::translateDelta(const Vector2& translationNDC) {
     const Float hh = Math::abs(_targetZooming)*Math::tan(_fov*0.5f);
     const Float hw = hh*Vector2{_windowSize}.aspectRatio();
 
-    _targetPosition += (_inverseViewMatrix*Vector4{
-        translationNDC.x()*hw, translationNDC.y()*hh, 0.0f, 0.0f}).xyz();
+    _targetPosition += _inverseViewMatrix.transformVector(
+        {translationNDC.x()*hw, translationNDC.y()*hh, 0.0f});
 }
 
 void ArcBall::zoom(const Float delta) {
