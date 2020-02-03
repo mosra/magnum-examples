@@ -31,58 +31,62 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "ArcBall.h"
-
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 
+#include "ArcBall.h"
+
 namespace Magnum { namespace Examples {
+
 using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
-using Scene3D  = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
+using Scene3D = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
 
-/*
- * SceneGraph arcball camera implementation
- */
-class ArcBallCamera : public ArcBall {
-public:
-    ArcBallCamera(Scene3D& scene, const Vector3& cameraPosition, const Vector3& viewCenter, const Vector3& upDir,
-                  Deg fov, const Vector2i& windowSize, const Vector2i& viewportSize) :
-        ArcBall(cameraPosition, viewCenter, upDir, fov, windowSize) {
-        _cameraObject = new Object3D{ &scene };
-        _cameraObject->setTransformation(transformation()); /* initialize the camera position */
-        _camera = new SceneGraph::Camera3D{ *_cameraObject };
-        _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-            .setProjectionMatrix(Matrix4::perspectiveProjection(
-                                     fov, Vector2{ windowSize }.aspectRatio(), 0.01f, 100.0f))
-            .setViewport(viewportSize);
-    }
-
-    /* Update screen size and viewport size after the window has been resized */
-    void reshape(const Vector2i& windowSize, const Vector2i& viewportSize) {
-        _windowSize = windowSize;
-        _camera->setViewport(viewportSize);
-    }
-
-    /* Update the scenegraph camera if arcball has been changed */
-    bool update() {
-        if(updateTransformation()) { /* call the internal update */
+/* Arcball camera implementation integrated into the SceneGraph */
+class ArcBallCamera: public ArcBall {
+    public:
+        ArcBallCamera(Scene3D& scene, const Vector3& cameraPosition,
+            const Vector3& viewCenter, const Vector3& upDir, Deg fov,
+            const Vector2i& windowSize, const Vector2i& viewportSize):
+            ArcBall{cameraPosition, viewCenter, upDir, fov, windowSize}
+        {
+            _cameraObject = new Object3D{&scene};
+            /* Initialize the camera position */
             _cameraObject->setTransformation(transformation());
-            return true;
+            _camera = new SceneGraph::Camera3D{*_cameraObject};
+            _camera->setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
+                .setProjectionMatrix(Matrix4::perspectiveProjection(
+                    fov, Vector2{windowSize}.aspectRatio(), 0.01f, 100.0f))
+                .setViewport(viewportSize);
         }
-        return false;
-    }
 
-    /* Draw objects using the internal scenegraph camera */
-    void draw(SceneGraph::DrawableGroup3D& drawables) {
-        _camera->draw(drawables);
-    }
+        /* Update screen and viewport size after the window has been resized */
+        void reshape(const Vector2i& windowSize, const Vector2i& viewportSize) {
+            _windowSize = windowSize;
+            _camera->setViewport(viewportSize);
+        }
 
-private:
-    Object3D*             _cameraObject { nullptr };
-    SceneGraph::Camera3D* _camera { nullptr };
+        /* Update the SceneGraph camera if arcball has been changed */
+        bool update() {
+            if(updateTransformation()) { /* call the internal update */
+                _cameraObject->setTransformation(transformation());
+                return true;
+            }
+
+            return false;
+        }
+
+        /* Draw objects using the internal scenegraph camera */
+        void draw(SceneGraph::DrawableGroup3D& drawables) {
+            _camera->draw(drawables);
+        }
+
+    private:
+        Object3D* _cameraObject{};
+        SceneGraph::Camera3D* _camera{};
 };
-} }
+
+}}
+
 #endif
