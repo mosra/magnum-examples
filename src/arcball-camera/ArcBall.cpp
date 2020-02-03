@@ -78,7 +78,7 @@ void ArcBall::reset() {
 }
 
 void ArcBall::setLagging(Float lagging) {
-    CORRADE_INTERNAL_ASSERT(lagging > 0.0f && lagging < 1.0f);
+    CORRADE_INTERNAL_ASSERT(lagging >= 0.0f && lagging < 1.0f);
     _lagging = lagging;
 }
 
@@ -143,8 +143,9 @@ bool ArcBall::updateTransformation() {
         _currentZooming  = Math::lerp(_currentZooming, _targetZooming, t);
 
         /* slerpShortestPath set a much smaller eps, thus deadlock still occurs */
-        static constexpr Float eps = 0.9995f;
-        if(std::abs(Math::dot(_currentQRotation, _targetQRotation)) > eps) {
+        static constexpr Float eps       = 1.0e-6f;
+        static constexpr Float threshold = 1.0f - eps;
+        if(std::abs(Math::dot(_currentQRotation, _targetQRotation)) > threshold) {
             _currentQRotation = _targetQRotation;
         } else {
             _currentQRotation = Math::slerpShortestPath(_currentQRotation, _targetQRotation, t).normalized();

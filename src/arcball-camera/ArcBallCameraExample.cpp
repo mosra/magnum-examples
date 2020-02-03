@@ -239,7 +239,7 @@ void ArcBallCameraExample::keyPressEvent(KeyEvent& event) {
             break;
 
         case KeyEvent::Key::L:
-            _arcballCamera->setLagging(_arcballCamera->lagging() > 0 ? 0.0f : 0.8f);
+            _arcballCamera->setLagging(_arcballCamera->lagging() > 0 ? 0.0f : 0.85f);
             break;
         case KeyEvent::Key::R:
             _arcballCamera->reset();
