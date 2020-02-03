@@ -28,7 +28,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/Optional.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -70,7 +70,7 @@ class ArcBallExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
         GL::Mesh _mesh{NoCreate};
         Shaders::VertexColor3D _shader{NoCreate};
-        Containers::Pointer<ArcBallCamera> _arcballCamera;
+        Containers::Optional<ArcBallCamera> _arcballCamera;
 };
 
 class VertexColorDrawable: public SceneGraph::Drawable3D {
