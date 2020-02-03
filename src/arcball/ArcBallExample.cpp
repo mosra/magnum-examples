@@ -63,6 +63,7 @@ class ArcBallExample: public Platform::Application {
         void viewportEvent(ViewportEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
         void mouseMoveEvent(MouseMoveEvent& event) override;
         void mouseScrollEvent(MouseScrollEvent& event) override;
 
@@ -107,8 +108,6 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
         if(!tryCreate(conf, glConf)) {
             create(conf, glConf.setSampleCount(0));
         }
-
-        SDL_CaptureMouse(SDL_TRUE);
     }
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -242,10 +241,23 @@ void ArcBallExample::mousePressEvent(MouseEvent& event) {
     if(event.button() != MouseEvent::Button::Left &&
        event.button() != MouseEvent::Button::Right) return;
 
+    /* Enable mouse capture so the mouse can drag outside of the window */
+    /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
+    SDL_CaptureMouse(SDL_TRUE);
+
     _arcballCamera->initTransformation(event.position());
 
     event.setAccepted();
     redraw(); /* camera has changed, redraw! */
+}
+
+void ArcBallExample::mouseReleaseEvent(MouseEvent& event) {
+    if(event.button() != MouseEvent::Button::Left &&
+       event.button() != MouseEvent::Button::Right) return;
+
+    /* Disable mouse capture again */
+    /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
+    SDL_CaptureMouse(SDL_FALSE);
 }
 
 void ArcBallExample::mouseMoveEvent(MouseMoveEvent& event) {
