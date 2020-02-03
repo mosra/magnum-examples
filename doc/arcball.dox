@@ -26,51 +26,53 @@
 
 namespace Magnum {
 
-/** @page examples-arcball-camera ArcBall Camera
-@brief ArcBall Camera example.
+/** @page examples-arcball ArcBall Camera
+@brief Intuitive camera control with smooth navigation.
 @m_since_latest_{examples}
 
 @m_footernavigation
 
+@image html arcball.png width=400px
+
 This is an implementation of [Ken Shoemake's arcball camera](https://www.talisman.org/~erlkonig/misc/shoemake92-arcball.pdf)
 with smooth navigation feature. Using arcball, the camera control is more
-accurate and consistent.
+accurate and consistent. See also the @ref examples-mouseinteraction example
+for an alternative approach.
 
-@image html arcball-camera.png width=400px
+@section examples-arcball-controls Controls
 
-@section examples-arcball-camera-controls Controls
+-   @m_class{m-label m-default} **mouse drag** rotates the camera
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse
+    drag** pans the camera
+-   @m_class{m-label m-default} **mouse wheel** zooms in/out
+-   @m_class{m-label m-default} **R** resets the camera to its original
+    position
+-   @m_class{m-label m-default} **L** toggles lagging (smooth camera
+    navigation)
 
--   @m_class{m-label m-default} **Left mouse drag** rotate the camera
--   @m_class{m-label m-default} **Right mouse drag** translate the camera
--   @m_class{m-label m-default} **Middle mouse scrolling** zoom the camera
-    in/out
--   @m_class{m-label m-default} **R** reset the camera to its original
-    transformation
--   @m_class{m-label m-default} **L** toggle lagging (smooth camera navigation)
--   @m_class{m-label m-default} **Up/Down/Left/Right arrows** translate the
-    camera
--   @m_class{m-label m-default} **+/-** zoom the camera
-
-@section examples-arcball-camera-credits Credits
+@section examples-arcball-credits Credits
 
 This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).
 
-@section examples-arcball-camera-source Source
+@section examples-arcball-source Source
 
 Full source code is linked below and also available in the
-[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/arcball-camera).
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/arcball). The `ArcBall.h` and `ArcBall.cpp` files are completely
+standalone, depending only on the @ref Math library, and ready to be integrated
+into your project. The `ArcBallCamera.h` file provides an optional
+@ref SceneGraph integration that you can but don't have to use.
 
--   @ref arcball-camera/CMakeLists.txt "CMakeLists.txt"
--   @ref arcball-camera/ArcBall.h "ArcBall.h"
--   @ref arcball-camera/ArcBall.cpp "ArcBall.cpp"
--   @ref arcball-camera/ArcBallCamera.h "ArcBallCamera.h"
--   @ref arcball-camera/ArcBallCameraExample.cpp "ArcBallCameraExample.cpp"
+-   @ref arcball/ArcBall.cpp "ArcBall.cpp"
+-   @ref arcball/ArcBall.h "ArcBall.h"
+-   @ref arcball/ArcBallCamera.h "ArcBallCamera.h"
+-   @ref arcball/ArcBallExample.cpp "ArcBallExample.cpp"
+-   @ref arcball/CMakeLists.txt "CMakeLists.txt"
 
-@example arcball-camera/CMakeLists.txt @m_examplenavigation{examples-arcball-camera,arcball-camera/} @m_footernavigation
-@example arcball-camera/ArcBall.h @m_examplenavigation{examples-arcball-camera,arcball-camera/} @m_footernavigation
-@example arcball-camera/ArcBall.cpp @m_examplenavigation{examples-arcball-camera,arcball-camera/} @m_footernavigation
-@example arcball-camera/ArcBallCamera.h @m_examplenavigation{examples-arcball-camera,arcball-camera/} @m_footernavigation
-@example arcball-camera/ArcBallCameraExample.cpp @m_examplenavigation{examples-arcball-camera,arcball-camera/} @m_footernavigation
+@example arcball/ArcBall.cpp @m_examplenavigation{examples-arcball,arcball/} @m_footernavigation
+@example arcball/ArcBall.h @m_examplenavigation{examples-arcball,arcball/} @m_footernavigation
+@example arcball/ArcBallCamera.h @m_examplenavigation{examples-arcball,arcball/} @m_footernavigation
+@example arcball/ArcBallExample.cpp @m_examplenavigation{examples-arcball,arcball/} @m_footernavigation
+@example arcball/CMakeLists.txt @m_examplenavigation{examples-arcball,arcball/} @m_footernavigation
 */
 
 }
