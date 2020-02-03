@@ -28,7 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/Buffer.h>
@@ -37,7 +36,6 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
-#include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -118,33 +116,24 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
 
     /* Setup the cube with vertex color */
     {
-        const Containers::Array<Vector3> cubePositions{Containers::InPlaceInit, {
+        const struct {
+            Vector3 position;
+            Color3 color;
+        } cubeVertices[] {
             /* front */
-            {-1.0f, -1.0f,  1.0f},
-            { 1.0f, -1.0f,  1.0f},
-            { 1.0f,  1.0f,  1.0f},
-            {-1.0f,  1.0f,  1.0f},
+            {{-1.0f, -1.0f,  1.0f}, 0xffff00_rgbf},
+            {{ 1.0f, -1.0f,  1.0f}, 0x0000ff_rgbf},
+            {{ 1.0f,  1.0f,  1.0f}, 0x000000_rgbf},
+            {{-1.0f,  1.0f,  1.0f}, 0x00ff00_rgbf},
+
             /* back */
-            {-1.0f, -1.0f, -1.0f},
-            { 1.0f, -1.0f, -1.0f},
-            { 1.0f,  1.0f, -1.0f},
-            {-1.0f,  1.0f, -1.0f}
-        }};
+            {{-1.0f, -1.0f, -1.0f}, 0xffff00_rgbf},
+            {{ 1.0f, -1.0f, -1.0f}, 0xffffff_rgbf},
+            {{ 1.0f,  1.0f, -1.0f}, 0xff00ff_rgbf},
+            {{-1.0f,  1.0f, -1.0f}, 0xff0000_rgbf}
+        };
 
-        const Containers::Array<Color3> cubeColors{Containers::InPlaceInit, {
-            /* front colors */
-            0x00ffff_rgbf,
-            0x0000ff_rgbf,
-            0x000000_rgbf,
-            0x00ff00_rgbf,
-            /* back colors */
-            0xffff00_rgbf,
-            0xffffff_rgbf,
-            0xff00ff_rgbf,
-            0xff0000_rgbf,
-        }};
-
-        const Containers::Array<char> cubeIndices{Containers::InPlaceInit, {
+        UnsignedByte cubeIndices[]{
             /* front */
             0, 1, 2, 2, 3, 0,
             /* right */
@@ -157,19 +146,14 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             4, 5, 1, 1, 0, 4,
             /* top */
             3, 2, 6, 6, 7, 3
-        }};
-
-        GL::Buffer vertexBuffer;
-        GL::Buffer indexBuffer;
-        vertexBuffer.setData(MeshTools::interleave(cubePositions, cubeColors));
-        indexBuffer.setData(cubeIndices);
+        };
 
         _mesh = GL::Mesh{};
-        _mesh.setCount(cubeIndices.size())
-            .addVertexBuffer(std::move(vertexBuffer), 0,
+        _mesh.setCount(Containers::arraySize(cubeIndices))
+            .addVertexBuffer(GL::Buffer{cubeVertices}, 0,
                 Shaders::VertexColor3D::Position{},
                 Shaders::VertexColor3D::Color3{})
-            .setIndexBuffer(std::move(indexBuffer), 0, MeshIndexType::UnsignedByte);
+            .setIndexBuffer(GL::Buffer{cubeIndices}, 0, MeshIndexType::UnsignedByte);
 
         _shader = Shaders::VertexColor3D{};
         new VertexColorDrawable{*(new Object3D{ &_scene }), _shader, _mesh, _drawables};
