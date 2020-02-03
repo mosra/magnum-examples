@@ -42,11 +42,13 @@ namespace Magnum { namespace Examples {
    feature: https://www.talisman.org/~erlkonig/misc/shoemake92-arcball.pdf */
 class ArcBall {
     public:
-        ArcBall(const Vector3& cameraPosition, const Vector3& viewCenter, const Vector3& upDir, Deg fov, const Vector2i& windowSize);
+        ArcBall(const Vector3& cameraPosition, const Vector3& viewCenter,
+            const Vector3& upDir, Deg fov, const Vector2i& windowSize);
 
         /* Set the camera view parameters: eye position, view center, up
            direction */
-        void setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir);
+        void setViewParameters(const Vector3& eye, const Vector3& viewCenter,
+            const Vector3& upDir);
 
         /* Reset the camera to its initial position, view center, and up dir */
         void reset();

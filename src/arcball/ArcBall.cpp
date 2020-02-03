@@ -53,11 +53,16 @@ Quaternion ndcToArcBall(const Vector2& p) {
 
 }
 
-ArcBall::ArcBall(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir, Deg fov, const Vector2i& windowSize): _fov{fov}, _windowSize{windowSize} {
+ArcBall::ArcBall(const Vector3& eye, const Vector3& viewCenter,
+    const Vector3& upDir, Deg fov, const Vector2i& windowSize):
+    _fov{fov}, _windowSize{windowSize}
+{
     setViewParameters(eye, viewCenter, upDir);
 }
 
-void ArcBall::setViewParameters(const Vector3& eye, const Vector3& viewCenter,  const Vector3& upDir) {
+void ArcBall::setViewParameters(const Vector3& eye, const Vector3& viewCenter,
+    const Vector3& upDir)
+{
     const Vector3 dir = viewCenter - eye;
     Vector3 zAxis = dir.normalized();
     Vector3 xAxis = (Math::cross(zAxis, upDir.normalized())).normalized();
@@ -66,7 +71,8 @@ void ArcBall::setViewParameters(const Vector3& eye, const Vector3& viewCenter,  
 
     _targetPosition = -viewCenter;
     _targetZooming = -dir.length();
-    _targetQRotation = Quaternion::fromMatrix(Matrix3x3{xAxis, yAxis, -zAxis}.transposed()).normalized();
+    _targetQRotation = Quaternion::fromMatrix(
+        Matrix3x3{xAxis, yAxis, -zAxis}.transposed()).normalized();
 
     _positionT0  = _currentPosition = _targetPosition;
     _zoomingT0 = _currentZooming = _targetZooming;
@@ -95,7 +101,8 @@ void ArcBall::rotate(const Vector2i& mousePos) {
     const Quaternion currentQRotation = ndcToArcBall(mousePosNDC);
     const Quaternion prevQRotation = ndcToArcBall(_prevMousePosNDC);
     _prevMousePosNDC = mousePosNDC;
-    _targetQRotation = (currentQRotation*prevQRotation*_targetQRotation).normalized();
+    _targetQRotation =
+        (currentQRotation*prevQRotation*_targetQRotation).normalized();
 }
 
 void ArcBall::translate(const Vector2i& mousePos) {
@@ -149,7 +156,8 @@ bool ArcBall::updateTransformation() {
         const Float t = 1 - _lagging;
         _currentPosition = Math::lerp(_currentPosition, _targetPosition, t);
         _currentZooming  = Math::lerp(_currentZooming, _targetZooming, t);
-        _currentQRotation = Math::slerpShortestPath(_currentQRotation, _targetQRotation, t);
+        _currentQRotation = Math::slerpShortestPath(
+            _currentQRotation, _targetQRotation, t);
     }
 
     updateInternalTransformations();

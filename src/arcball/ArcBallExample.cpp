@@ -152,10 +152,12 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             .addVertexBuffer(GL::Buffer{cubeVertices}, 0,
                 Shaders::VertexColor3D::Position{},
                 Shaders::VertexColor3D::Color3{})
-            .setIndexBuffer(GL::Buffer{cubeIndices}, 0, MeshIndexType::UnsignedByte);
+            .setIndexBuffer(GL::Buffer{cubeIndices}, 0,
+                MeshIndexType::UnsignedByte);
 
         _shader = Shaders::VertexColor3D{};
-        new VertexColorDrawable{*(new Object3D{ &_scene }), _shader, _mesh, _drawables};
+        new VertexColorDrawable{*(new Object3D{&_scene}),
+            _shader, _mesh, _drawables};
     }
 
     /* Set up the camera */
@@ -180,7 +182,6 @@ void ArcBallExample::drawEvent() {
     /* Call arcball update in every frame. This will do nothing if the camera
        has not been changed. Otherwise, camera transformation will be
        propagated into the camera objects. */
-
     bool camChanged = _arcballCamera->update();
     _arcballCamera->draw(_drawables);
     swapBuffers();
