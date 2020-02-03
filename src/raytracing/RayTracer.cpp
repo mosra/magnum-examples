@@ -109,8 +109,7 @@ void RayTracer::resizeBuffers(const Vector2i& imageSize) {
     _imageSize = imageSize;
     Containers::arrayResize(_pixels, imageSize.x() * imageSize.y());
     Containers::arrayResize(_buffer, imageSize.x() * imageSize.y());
-    _numBlocks = Vector2i((imageSize.x() + BlockSize - 1) / BlockSize,
-                          (imageSize.y() + BlockSize - 1) / BlockSize);
+    _numBlocks = (imageSize + Vector2i{ BlockSize - 1 }) / BlockSize;
     clearBuffers();
     _busy.store(false);
 }
@@ -121,11 +120,11 @@ void RayTracer::clearBuffers() {
     for(std::size_t i = 0; i < _buffer.size(); ++i) {
         _buffer[i] = Vector4(0);
     }
-    _maxSamplesPerPixels = 0;
+    _numRenderPass = 0;
 }
 
 void RayTracer::renderBlock() {
-    if(_maxSamplesPerPixels >= MaxSamplesPerPixel) {
+    if(_numRenderPass >= MaxSamplesPerPixel) {
         return;
     }
 
@@ -153,7 +152,7 @@ void RayTracer::renderBlock() {
     _currentBlock = getNextBlock(_currentBlock);
 
     /* Mark out the next block to display */
-    if(_bMarkNextBlock && _maxSamplesPerPixels < MaxSamplesPerPixel) {
+    if(_bMarkNextBlock && _numRenderPass < MaxSamplesPerPixel) {
         blockStart = _currentBlock * BlockSize;
         loopBlock(blockStart, _imageSize, [&](Int x, Int y) {
                       const Int pixelIdx = y * _imageSize.x() + x;
@@ -176,7 +175,7 @@ Vector2i RayTracer::getNextBlock(const Vector2i& currentBlock) {
         nextBlock.x() = 0;
         nextBlock.y()   = _numBlocks.y() - 1;
         _blockMovingDir = 1;
-        ++_maxSamplesPerPixels;
+        ++_numRenderPass;
     }
     return nextBlock;
 }

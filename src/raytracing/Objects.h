@@ -38,8 +38,8 @@
 
 namespace Magnum { namespace Examples {
 struct Ray;
-class Material;
 struct HitInfo;
+class Material;
 
 class Object {
 public:
@@ -57,12 +57,10 @@ public:
     bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
 private:
     void computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const;
-
-private:
     Vector3   _center;
     Float     _radiusSqr;
     Float     _radiusInv;
-    Material* _material { nullptr };
+    Material* _material { nullptr }; /* have to use raw pointer as Containers::Pointer cannot be copied */
 };
 
 class ObjectList : public Object {
@@ -70,7 +68,6 @@ public:
     ObjectList() = default;
     bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
     void addObject(Object* const object);
-
 private:
     Containers::Array<Containers::Pointer<Object>> _objects;
 };

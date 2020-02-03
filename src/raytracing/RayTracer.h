@@ -52,18 +52,18 @@ public:
     /* Render a block in the buffer image. This should be called in every drawEvent */
     void renderBlock();
 
-    /* Mark next render block by a different color */
+    /* Toggle marking next render block by a different color */
     bool& markNextBlock() { return _bMarkNextBlock; }
     const bool& markNextBlock() const { return _bMarkNextBlock; }
 
-    /* Set the camera view parameters: eye position, view center, up direction */
+    /* Set the camera view parameters */
     void setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
                            Deg fov, Float aspectRatio);
 
     /* Update size of the render buffer, should be called in the viewportEvent */
     void resizeBuffers(const Vector2i& imageSize);
 
-    /* Clear data in the render buffer */
+    /* Clear the render buffer data */
     void clearBuffers();
 
     /* Generate scene, will produce a new, different scene if bConsistentScene is false */
@@ -73,11 +73,11 @@ public:
      * This should be called after renderBlock() in every drawEvent */
     const Corrade::Containers::Array<Math::Vector4<UnsignedByte>>& renderedBuffer() const { return _pixels; }
 
-    /* Return number of render pass */
-    Int maxSamplesPerPixels() const { return _maxSamplesPerPixels; }
+    /* Return number of render pass (current number of samples per pixel) */
+    Int numRenderPass() const { return _numRenderPass; }
 
 private:
-    /* Identify next block to render */
+    /* Identify the next pixel block to render */
     Vector2i getNextBlock(const Vector2i& currentBlock);
 
     Corrade::Containers::Pointer<Camera>                    _camera;
@@ -89,7 +89,7 @@ private:
     Vector2i _numBlocks;
     Vector2i _currentBlock;
     Int      _blockMovingDir { 1 };
-    Int      _maxSamplesPerPixels { 0 };
+    Int      _numRenderPass { 0 };
 
     bool              _bMarkNextBlock { true };
     std::atomic<bool> _busy { false };

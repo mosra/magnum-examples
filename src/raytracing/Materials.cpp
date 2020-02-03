@@ -41,9 +41,9 @@ inline Vector3 reflect(const Vector3& v, const Vector3& n) {
 }
 
 inline bool refract(const Vector3& v, const Vector3& n, Float ni_over_nt, Vector3& refracted) {
-    Vector3 uv           = v.normalized();
-    Float   dt           = dot(uv, n);
-    Float   discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
+    const Vector3 uv           = v.normalized();
+    const Float   dt           = dot(uv, n);
+    const Float   discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
     if(discriminant > 0) {
         refracted = ni_over_nt * (uv - n * dt) - n * sqrt(discriminant);
         return true;
@@ -77,22 +77,22 @@ bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuat
 
     Float   ni_over_nt;
     Float   cosine;
-    Vector3 outward_normal;
+    Vector3 outwardNormal;
     if(dot(r.direction, hitInfo.normal) > 0) {
-        outward_normal = -hitInfo.normal;
-        ni_over_nt     = _refractiveIndex;
-        cosine         = dot(r.direction, hitInfo.normal) / r.direction.length();
-        cosine         = std::sqrt(1 - _refractiveIndex * _refractiveIndex * (1 - cosine * cosine));
+        outwardNormal = -hitInfo.normal;
+        ni_over_nt    = _refractiveIndex;
+        cosine        = dot(r.direction, hitInfo.normal) / r.direction.length();
+        cosine        = std::sqrt(1 - _refractiveIndex * _refractiveIndex * (1 - cosine * cosine));
     } else {
-        outward_normal = hitInfo.normal;
-        ni_over_nt     = 1.0f / _refractiveIndex;
-        cosine         = -dot(r.direction, hitInfo.normal) / r.direction.length();
+        outwardNormal = hitInfo.normal;
+        ni_over_nt    = 1.0f / _refractiveIndex;
+        cosine        = -dot(r.direction, hitInfo.normal) / r.direction.length();
     }
 
-    Vector3 refractedDir;
-    Float   reflectionProbability = Math::refract(r.direction, outward_normal, ni_over_nt, refractedDir) ?
-                                    Math::schlick(cosine, _refractiveIndex) :
-                                    1.0f;
+    Vector3     refractedDir;
+    const Float reflectionProbability = Math::refract(r.direction, outwardNormal, ni_over_nt, refractedDir) ?
+                                        Math::schlick(cosine, _refractiveIndex) :
+                                        1.0f;
     scatteredRay = Ray(hitInfo.p, Rnd::rand01() < reflectionProbability ?
                        Math::reflect(r.direction, hitInfo.normal) :
                        refractedDir);
