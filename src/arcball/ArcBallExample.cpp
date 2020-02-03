@@ -196,27 +196,6 @@ void ArcBallExample::viewportEvent(ViewportEvent& event) {
 
 void ArcBallExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
-        case KeyEvent::Key::Plus:
-        case KeyEvent::Key::NumAdd:
-            _arcballCamera->zoom(1.0f);
-            break;
-        case KeyEvent::Key::Minus:
-        case KeyEvent::Key::NumSubtract:
-            _arcballCamera->zoom(-1.0f);
-            break;
-        case KeyEvent::Key::Left:
-            _arcballCamera->translateDelta(Vector2::xAxis(-0.1f));
-            break;
-        case KeyEvent::Key::Right:
-            _arcballCamera->translateDelta(Vector2::xAxis(0.1f));
-            break;
-        case KeyEvent::Key::Up:
-            _arcballCamera->translateDelta(Vector2::yAxis(0.1f));
-            break;
-        case KeyEvent::Key::Down:
-            _arcballCamera->translateDelta(Vector2::yAxis(-0.1f));
-            break;
-
         case KeyEvent::Key::L:
             if(_arcballCamera->lagging() > 0.0f) {
                 Debug{} << "Lagging disabled";
@@ -238,9 +217,6 @@ void ArcBallExample::keyPressEvent(KeyEvent& event) {
 }
 
 void ArcBallExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left &&
-       event.button() != MouseEvent::Button::Right) return;
-
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_TRUE);
@@ -251,21 +227,18 @@ void ArcBallExample::mousePressEvent(MouseEvent& event) {
     redraw(); /* camera has changed, redraw! */
 }
 
-void ArcBallExample::mouseReleaseEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left &&
-       event.button() != MouseEvent::Button::Right) return;
-
+void ArcBallExample::mouseReleaseEvent(MouseEvent&) {
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_FALSE);
 }
 
 void ArcBallExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(event.buttons() & MouseMoveEvent::Button::Left)
-        _arcballCamera->rotate(event.position());
-    else if(event.buttons() & MouseMoveEvent::Button::Right)
+    if(!event.buttons()) return;
+
+    if(event.modifiers() & MouseMoveEvent::Modifier::Shift)
         _arcballCamera->translate(event.position());
-    else return;
+    else _arcballCamera->rotate(event.position());
 
     event.setAccepted();
     redraw(); /* camera has changed, redraw! */
