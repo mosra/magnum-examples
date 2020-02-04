@@ -28,7 +28,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "ArcBall.h"
+#include "../arcball/ArcBall.h"
 #include "RayTracer.h"
 
 #include <Corrade/Containers/Pointer.h>

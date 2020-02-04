@@ -45,7 +45,7 @@ find_package(Magnum REQUIRED
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-raytracing WIN32
-    ArcBall.cpp
+    ../arcball/ArcBall.cpp
     Materials.cpp
     Objects.cpp
     RayTracer.cpp
