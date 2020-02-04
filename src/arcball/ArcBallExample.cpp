@@ -43,6 +43,7 @@
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/MeshVisualizer.h>
 
 #include "ArcBall.h"
 #include "ArcBallCamera.h"
@@ -71,25 +72,31 @@ class ArcBallExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
         GL::Mesh _mesh{NoCreate};
         Shaders::VertexColor3D _shader{NoCreate};
+        Shaders::MeshVisualizer _wireframeShader{NoCreate};
         Containers::Optional<ArcBallCamera> _arcballCamera;
 };
 
 class VertexColorDrawable: public SceneGraph::Drawable3D {
     public:
         explicit VertexColorDrawable(Object3D& object,
-            Shaders::VertexColor3D& shader, GL::Mesh& mesh,
+            Shaders::VertexColor3D& shader,
+            Shaders::MeshVisualizer& wireframeShader, GL::Mesh& mesh,
             SceneGraph::DrawableGroup3D& drawables):
-                SceneGraph::Drawable3D{object, &drawables},
-                _shader(shader), _mesh(mesh) {}
+                SceneGraph::Drawable3D{object, &drawables}, _shader(shader),
+                _wireframeShader(wireframeShader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
             _shader.setTransformationProjectionMatrix(
                 camera.projectionMatrix()*transformation);
+            _wireframeShader.setTransformationProjectionMatrix(
+                camera.projectionMatrix()*transformation);
             _mesh.draw(_shader);
+            _mesh.draw(_wireframeShader);
         }
 
     private:
         Shaders::VertexColor3D& _shader;
+        Shaders::MeshVisualizer& _wireframeShader;
         GL::Mesh& _mesh;
 };
 
@@ -112,6 +119,14 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+
+    /* For cube wireframe vizualization */
+    GL::Renderer::setDepthFunction(GL::Renderer::DepthFunction::LessOrEqual);
+    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
+        GL::Renderer::BlendEquation::Add);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One,
+        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
 
     /* Setup the cube with vertex color */
     {
@@ -156,8 +171,12 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
                 MeshIndexType::UnsignedByte);
 
         _shader = Shaders::VertexColor3D{};
+        _wireframeShader = Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe};
+        _wireframeShader.setViewportSize(Vector2{framebufferSize()})
+            .setColor(0x00000000_rgbaf)
+            .setWireframeColor(0x000000ff_rgbaf);
         new VertexColorDrawable{*(new Object3D{&_scene}),
-            _shader, _mesh, _drawables};
+            _shader, _wireframeShader, _mesh, _drawables};
     }
 
     /* Set up the camera */
@@ -193,6 +212,7 @@ void ArcBallExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     _arcballCamera->reshape(event.windowSize(), event.framebufferSize());
+    _wireframeShader.setViewportSize(Vector2{framebufferSize()});
 }
 
 void ArcBallExample::keyPressEvent(KeyEvent& event) {
