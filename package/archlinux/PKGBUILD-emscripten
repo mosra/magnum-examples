@@ -27,6 +27,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
+        -DWITH_ARCBALL_EXAMPLE=OFF \
         -DWITH_AREALIGHTS_EXAMPLE=OFF \
         -DWITH_AUDIO_EXAMPLE=OFF \
         -DWITH_BOX2D_EXAMPLE=OFF \

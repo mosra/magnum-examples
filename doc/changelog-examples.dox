@@ -41,6 +41,8 @@ namespace Magnum {
     [mosra/magnum-examples#70](https://github.com/mosra/magnum-examples/pull/70))
 -   New @ref examples-webxr example (see
     [mosra/magnum-examples#73](https://github.com/mosra/magnum-examples/pull/73))
+-   New @ref examples-arcball example (see
+    [mosra/magnum-examples#75](https://github.com/mosra/magnum-examples/pull/75))
 
 @subsection changelog-examples-latest-changes Changes and improvements
 

@@ -39,8 +39,8 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
-if(WITH_ARCBALL_CAMERA_EXAMPLE)
-    add_subdirectory(arcball-camera)
+if(WITH_ARCBALL_EXAMPLE)
+    add_subdirectory(arcball)
 endif()
 
 if(WITH_AREALIGHTS_EXAMPLE)

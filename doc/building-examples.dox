@@ -195,7 +195,7 @@ class, unless said otherwise. Some examples depend on plugins, extras and
 integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 
--   `WITH_ARCBALL_CAMERA_EXAMPLE` -- Build the @ref examples-arcball-camera example.
+-   `WITH_ARCBALL_EXAMPLE` -- Build the @ref examples-arcball example.
 -   `WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights example.
     Requires the @ref Ui library and some TTF font plugin such as
     @ref Text::FreeTypeFont "FreeTypeFont".

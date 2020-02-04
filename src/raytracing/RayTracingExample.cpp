@@ -226,7 +226,7 @@ void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
 }
 
 void RayTracingExample::updateRayTracerCamera() {
-    const Matrix4& transformation = _arcballCamera->transformation();
+    const Matrix4& transformation = _arcballCamera->transformationMatrix();
     const Vector3  eye        = transformation.translation();
     const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
     const Vector3  up         = transformation.up();

@@ -31,7 +31,8 @@ namespace Magnum {
 @m_footernavigation
 
 Provides rotation, panning and zooming controls that are relative to depth at
-mouse cursor for more convenient interaction with complex scenes.
+mouse cursor for more convenient interaction with complex scenes. See also the
+@ref examples-arcball example for an alternative approach.
 
 @image html mouseinteraction.png
 
@@ -45,8 +46,7 @@ Position* enabled.
 -   @m_class{m-label m-default} **mouse drag** rotates the scene around the
     cursor
 -   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse
-    drag**
-    pans the scene at depth of the cursor
+    drag** pans the scene at depth of the cursor
 -   @m_class{m-label m-default} **mouse wheel** zooms in/out relative to cursor
     position
 -   @m_class{m-label m-default} **Num 1** / @m_class{m-label m-warning} **Ctrl**
