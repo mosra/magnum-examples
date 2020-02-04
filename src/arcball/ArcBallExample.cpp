@@ -130,21 +130,22 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
 
     /* Setup the cube with vertex color */
     {
+        const Deg hue = 360.0_degf/8;
         const struct {
             Vector3 position;
             Color3 color;
         } cubeVertices[] {
             /* front */
-            {{-1.0f, -1.0f,  1.0f}, 0xffff00_rgbf},
-            {{ 1.0f, -1.0f,  1.0f}, 0x0000ff_rgbf},
-            {{ 1.0f,  1.0f,  1.0f}, 0x000000_rgbf},
-            {{-1.0f,  1.0f,  1.0f}, 0x00ff00_rgbf},
+            {{-1.0f, -1.0f,  1.0f}, Color3::fromHsv({hue*1.0f, 0.666f, 1.0f})},
+            {{ 1.0f, -1.0f,  1.0f}, Color3::fromHsv({hue*2.0f, 0.666f, 1.0f})},
+            {{ 1.0f,  1.0f,  1.0f}, Color3::fromHsv({hue*3.0f, 0.666f, 1.0f})},
+            {{-1.0f,  1.0f,  1.0f}, Color3::fromHsv({hue*4.0f, 0.666f, 1.0f})},
 
             /* back */
-            {{-1.0f, -1.0f, -1.0f}, 0xffff00_rgbf},
-            {{ 1.0f, -1.0f, -1.0f}, 0xffffff_rgbf},
-            {{ 1.0f,  1.0f, -1.0f}, 0xff00ff_rgbf},
-            {{-1.0f,  1.0f, -1.0f}, 0xff0000_rgbf}
+            {{-1.0f, -1.0f, -1.0f}, Color3::fromHsv({hue*5.0f, 0.666f, 1.0f})},
+            {{ 1.0f, -1.0f, -1.0f}, Color3::fromHsv({hue*6.0f, 0.666f, 1.0f})},
+            {{ 1.0f,  1.0f, -1.0f}, Color3::fromHsv({hue*7.0f, 0.666f, 1.0f})},
+            {{-1.0f,  1.0f, -1.0f}, Color3::fromHsv({hue*8.0f, 0.666f, 1.0f})}
         };
 
         UnsignedByte cubeIndices[]{
