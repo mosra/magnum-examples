@@ -38,12 +38,12 @@ The current implementation runs on single thread and performs iterative renderin
 
 @section examples-raytracing-controls Controls
 
--   @m_class{m-label m-default} **Left mouse drag** rotate the camera
--   @m_class{m-label m-default} **Right mouse drag** translate the camera
--   @m_class{m-label m-default} **Middle mouse scrolling** zoom the camera in/out
+-   @m_class{m-label m-default} **mouse drag** rotates the camera
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse
+    drag** pans the camera
+-   @m_class{m-label m-default} **mouse wheel** zooms in/out
 -   @m_class{m-label m-default} **R** reset the camera to its original transformation
--   @m_class{m-label m-default} **Up/Down/Left/Right arrows** translate the camera
--   @m_class{m-label m-default} **+/-** zoom the camera
+-   @m_class{m-label m-default} **D** toggle Depth-of-Field
 -   @m_class{m-label m-default} **M** toggle marking the next render block by a different color
 -   @m_class{m-label m-default} **N** generate a new random scene
 -   @m_class{m-label m-default} **Spacing** pause/resume rendering
@@ -57,8 +57,6 @@ This example was originally contributed by [Nghia Truong](https://github.com/ttn
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/raytracing).
 
--   @ref raytracing/ArcBall.h "ArcBall.h"
--   @ref raytracing/ArcBall.cpp "ArcBall.cpp"
 -   @ref raytracing/Camera.h "Camera.h"
 -   @ref raytracing/CMakeLists.txt "CMakeLists.txt"
 -   @ref raytracing/Materials.h "Materials.h"
@@ -71,8 +69,6 @@ Full source code is linked below and also available in the
 -   @ref raytracing/RndGenerators.h "RndGenerators.h"
 
 
-@example raytracing/ArcBall.h @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
-@example raytracing/ArcBall.cpp @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
 @example raytracing/Camera.h @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
 @example raytracing/CMakeLists.txt @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
 @example raytracing/Materials.h @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation

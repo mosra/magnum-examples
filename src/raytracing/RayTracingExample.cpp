@@ -53,6 +53,7 @@ private:
     void viewportEvent(ViewportEvent& event) override;
     void keyPressEvent(KeyEvent& event) override;
     void mousePressEvent(MouseEvent& event) override;
+    void mouseReleaseEvent(MouseEvent& event) override;
     void mouseMoveEvent(MouseMoveEvent& event) override;
     void mouseScrollEvent(MouseScrollEvent& event) override;
 
@@ -131,35 +132,14 @@ void RayTracingExample::renderAndUpdateBlockPixels() {
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
     const auto newBufferSize = event.framebufferSize();
     GL::defaultFramebuffer.setViewport({ {}, newBufferSize });
+    _arcballCamera->reshape(windowSize());
     resizeBuffers(newBufferSize);
     _rayTracer->resizeBuffers(newBufferSize);
-    _arcballCamera->reshape(windowSize());
     updateRayTracerCamera();
 }
 
 void RayTracingExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
-        case KeyEvent::Key::Plus:
-        case KeyEvent::Key::NumAdd:
-            _arcballCamera->zoom(0.5f);
-            break;
-        case KeyEvent::Key::Minus:
-        case KeyEvent::Key::NumSubtract:
-            _arcballCamera->zoom(-0.5f);
-            break;
-        case KeyEvent::Key::Left:
-            _arcballCamera->translateDelta(Vector2{ -0.05f, 0 });
-            break;
-        case KeyEvent::Key::Right:
-            _arcballCamera->translateDelta(Vector2{ 0.05f, 0 });
-            break;
-        case KeyEvent::Key::Up:
-            _arcballCamera->translateDelta(Vector2{ 0, 0.05f });
-            break;
-        case KeyEvent::Key::Down:
-            _arcballCamera->translateDelta(Vector2{ 0, -0.05f });
-            break;
-
         case KeyEvent::Key::R:
             _arcballCamera->reset();
             Debug{} << "Reset camera";
@@ -196,23 +176,27 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
 }
 
 void RayTracingExample::mousePressEvent(MouseEvent& event) {
-    if(!(event.button() == MouseEvent::Button::Left ||
-         event.button() == MouseEvent::Button::Right)) { return; }
+    /* Enable mouse capture so the mouse can drag outside of the window */
+    /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
+    SDL_CaptureMouse(SDL_TRUE);
+
     _arcballCamera->initTransformation(event.position());
     event.setAccepted();
 }
 
-void RayTracingExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left ||
-         event.buttons() & MouseMoveEvent::Button::Right)) { return; }
+void RayTracingExample::mouseReleaseEvent(MouseEvent&) {
+    /* Disable mouse capture again */
+    /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
+    SDL_CaptureMouse(SDL_FALSE);
+}
 
-    if(event.buttons() & MouseMoveEvent::Button::Left) {
-        _arcballCamera->rotate(event.position());
-    } else {
+void RayTracingExample::mouseMoveEvent(MouseMoveEvent& event) {
+    if(!event.buttons()) { return; }
+
+    if(event.modifiers() & MouseMoveEvent::Modifier::Shift) {
         _arcballCamera->translate(event.position());
-    }
+    } else { _arcballCamera->rotate(event.position()); }
     event.setAccepted();
-    redraw(); /* camera has changed, redraw! */
 }
 
 void RayTracingExample::mouseScrollEvent(MouseScrollEvent& event) {
@@ -222,7 +206,6 @@ void RayTracingExample::mouseScrollEvent(MouseScrollEvent& event) {
     }
     _arcballCamera->zoom(delta);
     event.setAccepted();
-    redraw(); /* camera has changed, redraw! */
 }
 
 void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
