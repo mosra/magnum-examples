@@ -39,9 +39,9 @@ namespace Magnum { namespace Examples {
 class Camera {
 public:
     Camera(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-           Deg fov, Float aspectRatio, Float aperture) :
+           Deg fov, Float aspectRatio, Float lensRadius) :
         _origin(eye),
-        _lensRadius(aperture * 0.5f) {
+        _lensRadius(lensRadius) {
         _w = (eye - viewCenter).normalized();
         _u = (Math::cross(upDir, _w)).normalized();
         _v = Math::cross(_w, _u);

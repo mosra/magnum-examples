@@ -47,7 +47,7 @@ class Camera;
 class RayTracer {
 public:
     RayTracer(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-              Deg fov, Float aspectRatio, const Vector2i& imageSize);
+              Deg fov, Float aspectRatio, Float lensRadius, const Vector2i& imageSize);
 
     /* Render a block in the buffer image. This should be called in every drawEvent */
     void renderBlock();
@@ -58,7 +58,7 @@ public:
 
     /* Set the camera view parameters */
     void setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-                           Deg fov, Float aspectRatio);
+                           Deg fov, Float aspectRatio, Float lensRadius);
 
     /* Update size of the render buffer, should be called in the viewportEvent */
     void resizeBuffers(const Vector2i& imageSize);

@@ -65,6 +65,7 @@ private:
     GL::Framebuffer              _frameBuffer{ NoCreate };
 
     Containers::Pointer<RayTracer> _rayTracer;
+    bool _depthOfField { false };
     bool _bPaused { false };
 };
 
@@ -90,7 +91,7 @@ RayTracingExample::RayTracingExample(const Arguments& arguments) :
         const Vector3 up         = Vector3(0, 1, 0);
         const Deg     fov { 45.0_degf };
         _arcballCamera.reset(new ArcBall(eye, viewCenter, up, fov, windowSize()));
-        _rayTracer.reset(new RayTracer(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio(),
+        _rayTracer.reset(new RayTracer(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio(), 0,
                                        framebufferSize()));
         resizeBuffers(framebufferSize());
     }
@@ -161,6 +162,17 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
 
         case KeyEvent::Key::R:
             _arcballCamera->reset();
+            Debug{} << "Reset camera";
+            break;
+
+        case KeyEvent::Key::D:
+            _depthOfField ^= true;
+            updateRayTracerCamera();
+            if(_depthOfField) {
+                Debug{} << "Depth-of-Field enabled";
+            } else {
+                Debug{} << "Depth-of-Field disabled";
+            }
             break;
 
         case KeyEvent::Key::M:
@@ -231,7 +243,8 @@ void RayTracingExample::updateRayTracerCamera() {
     const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
     const Vector3  up         = transformation.up();
     const Deg      fov { 45.0_degf };
-    _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio());
+    _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio(),
+                                  _depthOfField ? 0.08f : 0.0f);
 }
 } }
 

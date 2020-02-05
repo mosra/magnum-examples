@@ -39,10 +39,9 @@
 
 namespace Magnum { namespace Examples {
 namespace  {
-constexpr Int   BlockSize          = 64;
-constexpr Int   MaxSamplesPerPixel = 512;
-constexpr Int   MaxRayDepth        = 16;
-constexpr Float CameraAperture     = 0.02f;
+constexpr Int BlockSize          = 64;
+constexpr Int MaxSamplesPerPixel = 512;
+constexpr Int MaxRayDepth        = 16;
 
 const Vector3 BackgroundColor1 = Vector3{ 1.0f, 1.0f, 1.0f };
 const Vector3 BackgroundColor2 = Vector3{ 0.5f, 0.7f, 1.0f };
@@ -83,21 +82,21 @@ inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
 }
 
 RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-                     Deg fov, Float aspectRatio,
+                     Deg fov, Float aspectRatio,  Float lensRadius,
                      const Vector2i& imageSize) {
     /* If bConsistentScene == true, then set a fixed seed number for random generator,
      *   so the render image will look the same each time running the program */
     srand(bConsistentScene ? 0 : time(nullptr));
-    setViewParameters(eye, viewCenter, upDir, fov, aspectRatio);
+    setViewParameters(eye, viewCenter, upDir, fov, aspectRatio, lensRadius);
     resizeBuffers(imageSize);
     generateSceneObjects();
 }
 
 void RayTracer::setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-                                  Deg fov, Float aspectRatio) {
+                                  Deg fov, Float aspectRatio, Float lensRadius) {
     while(_busy.load()) {}
     _busy.store(true);
-    _camera.reset(new Camera(eye, viewCenter, upDir, fov, aspectRatio, CameraAperture));
+    _camera.reset(new Camera(eye, viewCenter, upDir, fov, aspectRatio, lensRadius));
     clearBuffers(); /* clear buffer as camera has changed */
     _busy.store(false);
 }
