@@ -103,7 +103,7 @@ if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
 
-if(WITH_RAY_TRACING_EXAMPLE)
+if(WITH_RAYTRACING_EXAMPLE)
     add_subdirectory(raytracing)
 endif()
 

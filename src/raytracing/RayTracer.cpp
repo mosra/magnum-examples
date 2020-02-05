@@ -30,6 +30,7 @@
 
 #include <ctime>
 
+#include <Magnum/Math/Packing.h>
 #include <Magnum/Math/Vector4.h>
 
 #include "RayTracer.h"
@@ -145,8 +146,7 @@ void RayTracer::renderBlock() {
                   pixelColor += Vector4{ color, 1.0f };
 
                   /* Update the pixel buffer */
-                  _pixels[pixelIdx].xyz() = Math::Vector3<UnsignedByte>{ 255.99f * Math::sqrt(pixelColor.xyz() / pixelColor.w()) };
-                  _pixels[pixelIdx].w()   = 255u;
+                  _pixels[pixelIdx] = { Math::pack<Color3ub>(Math::sqrt(pixelColor.xyz() / pixelColor.w())),  255u };
               });
     _currentBlock = getNextBlock(_currentBlock);
 

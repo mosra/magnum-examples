@@ -38,12 +38,12 @@ namespace Magnum { namespace Examples {
 struct Ray {
     Ray() = default;
     Ray(const Vector3& origin_, const Vector3& dir_) :
-        origin(origin_), direction(dir_), length2(dot(dir_, dir_)) {}
+        origin(origin_), direction(dir_), lengthSquared(dot(dir_, dir_)) {}
     Vector3 point(Float t) const { return origin + t * direction; }
 
     Vector3 origin;
     Vector3 direction;
-    Float   length2;
+    Float   lengthSquared;
 };
 
 class Material;

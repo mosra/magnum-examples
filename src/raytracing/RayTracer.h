@@ -36,6 +36,7 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Vector3.h>
+#include <Magnum/Math/Color.h>
 
 #include <atomic>
 
@@ -71,7 +72,7 @@ public:
 
     /* Get the rendered image
      * This should be called after renderBlock() in every drawEvent */
-    const Corrade::Containers::Array<Math::Vector4<UnsignedByte>>& renderedBuffer() const { return _pixels; }
+    const Corrade::Containers::Array<Color4ub>& renderedBuffer() const { return _pixels; }
 
     /* Return number of render pass (current number of samples per pixel) */
     Int numRenderPass() const { return _numRenderPass; }
@@ -80,10 +81,10 @@ private:
     /* Identify the next pixel block to render */
     Vector2i getNextBlock(const Vector2i& currentBlock);
 
-    Corrade::Containers::Pointer<Camera>                    _camera;
-    Corrade::Containers::Pointer<ObjectList>                _sceneObjects;
-    Corrade::Containers::Array<Math::Vector4<UnsignedByte>> _pixels;
-    Corrade::Containers::Array<Vector4>                     _buffer;
+    Containers::Pointer<Camera>     _camera;
+    Containers::Pointer<ObjectList> _sceneObjects;
+    Containers::Array<Color4ub>     _pixels;
+    Containers::Array<Vector4>      _buffer;
 
     Vector2i _imageSize;
     Vector2i _numBlocks;

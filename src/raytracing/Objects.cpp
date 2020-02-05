@@ -40,7 +40,7 @@ Sphere::~Sphere() { delete _material; }
 bool Sphere::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
     const Vector3 dir   = r.direction;
     const Vector3 oc    = r.origin - _center;
-    const Float   a     = r.length2;
+    const Float   a     = r.lengthSquared;
     const Float   b     = dot(dir, oc);
     const Float   c     = dot(oc, oc) - _radiusSqr;
     const Float   delta = b * b - a * c;

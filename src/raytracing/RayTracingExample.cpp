@@ -213,7 +213,6 @@ void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
     _texBuffer.setMagnificationFilter(GL::SamplerFilter::Linear)
         .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
         .setStorage(1, GL::TextureFormat::RGBA8, bufferSize);
 
     _frameBuffer = GL::Framebuffer(GL::defaultFramebuffer.viewport());
