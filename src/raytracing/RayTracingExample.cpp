@@ -39,7 +39,14 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Platform/Sdl2Application.h>
+
+#if defined(CORRADE_TARGET_ANDROID)
+#  include <Magnum/Platform/AndroidApplication.h>
+#elif defined(CORRADE_TARGET_EMSCRIPTEN)
+#  include <Magnum/Platform/EmscriptenApplication.h>
+#else
+#  include <Magnum/Platform/Sdl2Application.h>
+#endif
 
 namespace Magnum { namespace Examples {
 using namespace Math::Literals;
@@ -124,8 +131,7 @@ void RayTracingExample::drawEvent() {
 void RayTracingExample::renderAndUpdateBlockPixels() {
     _rayTracer->renderBlock();
     const auto& pixels = _rayTracer->renderedBuffer();
-    const auto  image  = ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels);
-    _texBuffer.setSubImage(0, {}, image);
+    _texBuffer.setSubImage(0, {}, ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
     GL::AbstractFramebuffer::blit(_frameBuffer, GL::defaultFramebuffer, _frameBuffer.viewport(), GL::FramebufferBlit::Color);
 }
 
@@ -133,8 +139,8 @@ void RayTracingExample::viewportEvent(ViewportEvent& event) {
     const auto newBufferSize = event.framebufferSize();
     GL::defaultFramebuffer.setViewport({ {}, newBufferSize });
     _arcballCamera->reshape(windowSize());
-    resizeBuffers(newBufferSize);
     _rayTracer->resizeBuffers(newBufferSize);
+    resizeBuffers(newBufferSize);
     updateRayTracerCamera();
 }
 

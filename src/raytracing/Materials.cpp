@@ -53,8 +53,8 @@ bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo, Vector3& attenuatio
 }
 
 bool Metal::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
-    const Vector3 reflected = Math::reflect(r.unitDirection, hitInfo.unitNormal);
-    scatteredRay = Ray(hitInfo.p, reflected + _fuzziness * Rnd::randomInSphere());
+    const Vector3 reflectedRay = Math::reflect(r.unitDirection, hitInfo.unitNormal);
+    scatteredRay = Ray(hitInfo.p, reflectedRay + _fuzziness * Rnd::randomInSphere());
     attenuation  = _albedo;
     return (dot(scatteredRay.unitDirection, hitInfo.unitNormal) > 0);
 }

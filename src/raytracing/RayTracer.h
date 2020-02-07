@@ -74,9 +74,6 @@ public:
      * This should be called after renderBlock() in every drawEvent */
     const Corrade::Containers::Array<Color4ub>& renderedBuffer() const { return _pixels; }
 
-    /* Return number of render pass (current number of samples per pixel) */
-    Int numRenderPass() const { return _numRenderPass; }
-
 private:
     /* Identify the next pixel block to render */
     Vector2i getNextBlock(const Vector2i& currentBlock);

@@ -43,8 +43,8 @@ public:
         _origin(eye),
         _lensRadius(lensRadius) {
         _w = (eye - viewCenter).normalized();
-        _u = (Math::cross(upDir, _w)).normalized();
-        _v = Math::cross(_w, _u);
+        _u = Math::cross(upDir, _w).normalized();
+        _v = Math::cross(_w, _u).normalized();
 
         Float       halfHeight    = Math::tan(fov * 0.5f);
         Float       halfWidth     = aspectRatio * halfHeight;

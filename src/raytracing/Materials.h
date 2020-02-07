@@ -55,7 +55,7 @@ private:
 
 class Metal : public Material {
 public:
-    Metal(const Vector3& albedo, Float f) : _albedo(albedo), _fuzziness(Math::min(f, 1.0f)) { }
+    Metal(const Vector3& albedo, Float f) : _albedo(albedo), _fuzziness(Math::min(f, 1.0f)) {}
     bool scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const override;
 private:
     Vector3 _albedo;

@@ -40,7 +40,7 @@ Sphere::~Sphere() { delete _material; }
 bool Sphere::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
     const Vector3 dir   = r.unitDirection;
     const Vector3 oc    = r.origin - _center;
-    const Float   a     = 1; /* a  = || r || = 1, as ray diriection is normalized */
+    const Float   a     = 1; /* a  = || r ||, and ray diriection r is normalized */
     const Float   b     = dot(dir, oc);
     const Float   c     = dot(oc, oc) - _radiusSqr;
     const Float   delta = b * b - a * c;

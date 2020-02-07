@@ -51,8 +51,7 @@ class Sphere : public Object {
 public:
     Sphere() = default;
     Sphere(const Vector3& center, Float radius, Material* const _material) :
-        _center(center), _radiusSqr(radius * radius),
-        _material(_material) {}
+        _center(center), _radiusSqr(radius * radius), _material(_material) {}
     ~Sphere();
     bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
 private:
