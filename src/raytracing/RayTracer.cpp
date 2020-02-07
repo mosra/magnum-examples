@@ -76,8 +76,7 @@ inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
         }
         return attenuation;
     }
-    const Vector3 dir = r.direction.normalized();
-    Float         t   = 0.5f * (dir.y() + 1.0f);
+    Float t = 0.5f * (r.unitDirection.y() + 1.0f);
     return (1.0f - t) * BackgroundColor1 + t * BackgroundColor2;
 }
 }

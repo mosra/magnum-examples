@@ -38,12 +38,11 @@ namespace Magnum { namespace Examples {
 struct Ray {
     Ray() = default;
     Ray(const Vector3& origin_, const Vector3& dir_) :
-        origin(origin_), direction(dir_), lengthSquared(dot(dir_, dir_)) {}
-    Vector3 point(Float t) const { return origin + t * direction; }
+        origin(origin_), unitDirection(dir_.normalized()) {}
+    Vector3 point(Float t) const { return origin + t * unitDirection; }
 
     Vector3 origin;
-    Vector3 direction;
-    Float   lengthSquared;
+    Vector3 unitDirection;
 };
 
 class Material;
@@ -51,7 +50,7 @@ class Material;
 struct HitInfo {
     Float     t;
     Vector3   p;
-    Vector3   normal;
+    Vector3   unitNormal;
     Material* material { nullptr };
 };
 } }

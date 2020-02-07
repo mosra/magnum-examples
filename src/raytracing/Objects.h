@@ -51,7 +51,7 @@ class Sphere : public Object {
 public:
     Sphere() = default;
     Sphere(const Vector3& center, Float radius, Material* const _material) :
-        _center(center), _radiusSqr(radius * radius), _radiusInv(1.0f / radius),
+        _center(center), _radiusSqr(radius * radius),
         _material(_material) {}
     ~Sphere();
     bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
@@ -59,7 +59,6 @@ private:
     void computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const;
     Vector3   _center;
     Float     _radiusSqr;
-    Float     _radiusInv;
     Material* _material { nullptr }; /* have to use raw pointer as Containers::Pointer cannot be copied */
 };
 

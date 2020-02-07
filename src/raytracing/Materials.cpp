@@ -28,6 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <Magnum/Math/Functions.h>
+
 #include "RndGenerators.h"
 #include "Materials.h"
 #include "Ray.h"
@@ -35,22 +37,7 @@
 namespace Magnum { namespace Examples {
 struct HitInfo;
 
-namespace Math {
-inline Vector3 reflect(const Vector3& v, const Vector3& n) {
-    return v - 2 * dot(v, n) * n;
-}
-
-inline bool refract(const Vector3& v, const Vector3& n, Float ni_over_nt, Vector3& refracted) {
-    const Vector3 uv           = v.normalized();
-    const Float   dt           = dot(uv, n);
-    const Float   discriminant = 1.0 - ni_over_nt * ni_over_nt * (1 - dt * dt);
-    if(discriminant > 0) {
-        refracted = ni_over_nt * (uv - n * dt) - n * sqrt(discriminant);
-        return true;
-    }
-    return false;
-}
-
+namespace {
 inline Float schlick(Float cosine, Float ref_idx) {
     Float r0 = (1 - ref_idx) / (1 + ref_idx);
     r0 = r0 * r0;
@@ -59,17 +46,17 @@ inline Float schlick(Float cosine, Float ref_idx) {
 }
 
 bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
-    const Vector3 target = hitInfo.p + hitInfo.normal + Rnd::randomInSphere();
+    const Vector3 target = hitInfo.p + hitInfo.unitNormal + Rnd::randomInSphere();
     scatteredRay = Ray(hitInfo.p, target - hitInfo.p);
     attenuation  = _albedo;
     return true;
 }
 
 bool Metal::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
-    const Vector3 reflected = Math::reflect(r.direction.normalized(), hitInfo.normal);
+    const Vector3 reflected = Math::reflect(r.unitDirection, hitInfo.unitNormal);
     scatteredRay = Ray(hitInfo.p, reflected + _fuzziness * Rnd::randomInSphere());
     attenuation  = _albedo;
-    return (dot(scatteredRay.direction, hitInfo.normal) > 0);
+    return (dot(scatteredRay.unitDirection, hitInfo.unitNormal) > 0);
 }
 
 bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
@@ -78,24 +65,27 @@ bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuat
     Float   ni_over_nt;
     Float   cosine;
     Vector3 outwardNormal;
-    if(dot(r.direction, hitInfo.normal) > 0) {
-        outwardNormal = -hitInfo.normal;
+    if(dot(r.unitDirection, hitInfo.unitNormal) > 0) {
+        outwardNormal = -hitInfo.unitNormal;
         ni_over_nt    = _refractiveIndex;
-        cosine        = dot(r.direction, hitInfo.normal) / r.direction.length();
+        cosine        = dot(r.unitDirection, hitInfo.unitNormal);
         cosine        = std::sqrt(1 - _refractiveIndex * _refractiveIndex * (1 - cosine * cosine));
     } else {
-        outwardNormal = hitInfo.normal;
+        outwardNormal = hitInfo.unitNormal;
         ni_over_nt    = 1.0f / _refractiveIndex;
-        cosine        = -dot(r.direction, hitInfo.normal) / r.direction.length();
+        cosine        = -dot(r.unitDirection, hitInfo.unitNormal);
     }
 
-    Vector3     refractedDir;
-    const Float reflectionProbability = Math::refract(r.direction, outwardNormal, ni_over_nt, refractedDir) ?
-                                        Math::schlick(cosine, _refractiveIndex) :
-                                        1.0f;
-    scatteredRay = Ray(hitInfo.p, Rnd::rand01() < reflectionProbability ?
-                       Math::reflect(r.direction, hitInfo.normal) :
-                       refractedDir);
+    const Vector3 refractedDir          = Math::refract(r.unitDirection, outwardNormal, ni_over_nt);
+    const Float   reflectionProbability = dot(refractedDir, refractedDir) > 0 ?
+                                          schlick(cosine, _refractiveIndex) :
+                                          1.0f;
+    scatteredRay.origin = hitInfo.p;
+    if(Rnd::rand01() < reflectionProbability) {
+        scatteredRay.unitDirection = Math::reflect(r.unitDirection, hitInfo.unitNormal);
+    } else {
+        scatteredRay.unitDirection = refractedDir.normalized();
+    }
     return true;
 }
 } }

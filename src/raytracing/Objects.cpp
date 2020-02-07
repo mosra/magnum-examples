@@ -38,9 +38,9 @@ namespace Magnum { namespace Examples {
 Sphere::~Sphere() { delete _material; }
 
 bool Sphere::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
-    const Vector3 dir   = r.direction;
+    const Vector3 dir   = r.unitDirection;
     const Vector3 oc    = r.origin - _center;
-    const Float   a     = r.lengthSquared;
+    const Float   a     = 1; /* a  = || r || = 1, as ray diriection is normalized */
     const Float   b     = dot(dir, oc);
     const Float   c     = dot(oc, oc) - _radiusSqr;
     const Float   delta = b * b - a * c;
@@ -61,10 +61,10 @@ bool Sphere::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo)
 }
 
 void Sphere::computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const {
-    hitInfo.t        = t;
-    hitInfo.p        = r.point(t);
-    hitInfo.normal   = (hitInfo.p - _center) * _radiusInv;
-    hitInfo.material = _material;
+    hitInfo.t          = t;
+    hitInfo.p          = r.point(t);
+    hitInfo.unitNormal = (hitInfo.p - _center).normalized();
+    hitInfo.material   = _material;
 }
 
 bool ObjectList::intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const {
