@@ -121,7 +121,7 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
         .setSize(resolution);
     GLConfiguration glConf;
     glConf.setSampleCount(16)
-          .setSRGBCapable(true);
+          .setSrgbCapable(true);
     if(!tryCreate(conf, glConf))
         create(conf, glConf.setSampleCount(0));
 
@@ -131,7 +131,7 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
         Error() << "Could not turn off VSync.";
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSRGB);
+    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSrgb);
 
     _session->configureRendering();
 
