@@ -49,7 +49,7 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>

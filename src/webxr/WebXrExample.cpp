@@ -45,7 +45,7 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/UVSphere.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include <emscripten.h>
 #include <emscripten/html5.h>

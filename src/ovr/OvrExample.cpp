@@ -41,12 +41,11 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
 #include <Magnum/OvrIntegration/Session.h>
@@ -67,7 +66,6 @@ class OvrExample: public Platform::Application {
         OvrIntegration::Context _ovrContext;
         std::unique_ptr<OvrIntegration::Session> _session;
 
-        GL::Buffer _indexBuffer{NoCreate}, _vertexBuffer{NoCreate};
         GL::Mesh _mesh{NoCreate};
         Shaders::Phong _shader{NoCreate};
 
@@ -143,24 +141,7 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
                       .mapForRead(GL::Framebuffer::ColorAttachment(0));
 
     /* Setup cube mesh */
-    const Trade::MeshData3D cube = Primitives::cubeSolid();
-    _vertexBuffer = GL::Buffer();
-    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)),
-                          GL::BufferUsage::StaticDraw);
-
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    std::tie(indexData, indexType, indexStart, indexEnd) =
-            MeshTools::compressIndices(cube.indices());
-
-    _indexBuffer = GL::Buffer{};
-    _indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
-    _mesh = GL::Mesh{cube.primitive()};
-    _mesh.setCount(cube.indices().size())
-         .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-         .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
+    _mesh = MeshTools::compile(Primitives::cubeSolid());
 
     /* Setup shader */
     _shader = Shaders::Phong();

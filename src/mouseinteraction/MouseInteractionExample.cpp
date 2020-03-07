@@ -46,7 +46,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 

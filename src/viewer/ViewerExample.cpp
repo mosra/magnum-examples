@@ -49,7 +49,7 @@
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/Trade/MeshObjectData3D.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 #include <Magnum/Trade/SceneData.h>
@@ -215,12 +215,12 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     }
 
     /* Load all meshes. Meshes that fail to load will be NullOpt. */
-    _meshes = Containers::Array<Containers::Optional<GL::Mesh>>{importer->mesh3DCount()};
-    for(UnsignedInt i = 0; i != importer->mesh3DCount(); ++i) {
-        Debug{} << "Importing mesh" << i << importer->mesh3DName(i);
+    _meshes = Containers::Array<Containers::Optional<GL::Mesh>>{importer->meshCount()};
+    for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
+        Debug{} << "Importing mesh" << i << importer->meshName(i);
 
-        Containers::Optional<Trade::MeshData3D> meshData = importer->mesh3D(i);
-        if(!meshData || !meshData->hasNormals() || meshData->primitive() != MeshPrimitive::Triangles) {
+        Containers::Optional<Trade::MeshData> meshData = importer->mesh(i);
+        if(!meshData || !meshData->hasAttribute(Trade::MeshAttribute::Normal) || meshData->primitive() != MeshPrimitive::Triangles) {
             Warning{} << "Cannot load the mesh, skipping";
             continue;
         }

@@ -54,7 +54,7 @@
 #include <Magnum/Text/Alignment.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/Ui/Anchor.h>
 #include <Magnum/Ui/Button.h>
 #include <Magnum/Ui/Label.h>

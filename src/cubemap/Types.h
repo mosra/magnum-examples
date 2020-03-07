@@ -36,11 +36,11 @@
 
 namespace Magnum {
 
-extern template class ResourceManager<GL::Buffer, GL::Mesh, Trade::AbstractImporter, GL::Texture2D, GL::CubeMapTexture, GL::AbstractShaderProgram>;
+extern template class ResourceManager<GL::Mesh, Trade::AbstractImporter, GL::Texture2D, GL::CubeMapTexture, GL::AbstractShaderProgram>;
 
 namespace Examples {
 
-typedef ResourceManager<GL::Buffer, GL::Mesh, Trade::AbstractImporter, GL::Texture2D, GL::CubeMapTexture, GL::AbstractShaderProgram> CubeMapResourceManager;
+typedef ResourceManager<GL::Mesh, Trade::AbstractImporter, GL::Texture2D, GL::CubeMapTexture, GL::AbstractShaderProgram> CubeMapResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 

@@ -37,7 +37,7 @@
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "MotionBlurCamera.h"
 #include "Icosphere.h"

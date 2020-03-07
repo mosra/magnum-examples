@@ -36,7 +36,7 @@
 #include <Magnum/Math/Functions.h>
 #include <Magnum/Shaders/Generic.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 

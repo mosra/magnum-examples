@@ -44,7 +44,7 @@
 #include <Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
-#include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
