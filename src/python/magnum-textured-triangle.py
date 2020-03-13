@@ -136,7 +136,7 @@ class TexturedTriangleExample(Application):
 
         self._shader.color = (1.0, 0.7, 0.7)
         self._shader.bind_texture(self._texture)
-        self._mesh.draw(self._shader)
+        self._shader.draw(self._mesh)
 
         self.swap_buffers()
 

@@ -53,7 +53,7 @@ class ColoredDrawable(scenegraph.Drawable3D):
         self._shader.transformation_matrix = transformation_matrix
         self._shader.normal_matrix = transformation_matrix.rotation_scaling()
         self._shader.projection_matrix = camera.projection_matrix
-        self._mesh.draw(self._shader)
+        self._shader.draw(self._mesh)
 
 class ViewerExample(Application):
     def __init__(self):
@@ -93,9 +93,9 @@ class ViewerExample(Application):
                                         '../viewer/scene.glb'))
         suzanne_object = Object3D(parent=self._manipulator)
         suzanne_mesh = meshtools.compile(
-            importer.mesh3d(importer.mesh3d_for_name('Suzanne')))
+            importer.mesh(importer.mesh_for_name('Suzanne')))
         suzanne_eyes_mesh = meshtools.compile(
-            importer.mesh3d(importer.mesh3d_for_name('Eyes')))
+            importer.mesh(importer.mesh_for_name('Eyes')))
         self._suzanne = ColoredDrawable(suzanne_object, self._drawables,
             suzanne_mesh, colored_shader, Color3(0.15, 0.49, 1.0))
         self._suzanne_eyes = ColoredDrawable(suzanne_object, self._drawables,

@@ -53,7 +53,7 @@ class CubeDrawable(scenegraph.Drawable3D):
         self._shader.transformation_matrix = transformation_matrix
         self._shader.normal_matrix = transformation_matrix.rotation_scaling()
         self._shader.projection_matrix = camera.projection_matrix
-        self._mesh.draw(self._shader)
+        self._shader.draw(self._mesh)
 
 class PrimitivesSceneGraphExample(Application):
     def __init__(self):

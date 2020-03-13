@@ -60,7 +60,7 @@ class TriangleExample(Application):
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR)
 
-        self._mesh.draw(self._shader)
+        self._shader.draw(self._mesh)
         self.swap_buffers()
 
 exit(TriangleExample().exec())
