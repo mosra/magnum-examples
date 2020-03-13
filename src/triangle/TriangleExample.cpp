@@ -74,7 +74,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
-    _mesh.draw(_shader);
+    _shader.draw(_mesh);
 
     swapBuffers();
 }

@@ -104,9 +104,10 @@ void TexturedTriangleExample::drawEvent() {
 
     using namespace Math::Literals;
 
-    _shader.setColor(0xffb2b2_rgbf)
-        .bindTexture(_texture);
-    _mesh.draw(_shader);
+    _shader
+        .setColor(0xffb2b2_rgbf)
+        .bindTexture(_texture)
+        .draw(_mesh);
 
     swapBuffers();
 }

@@ -86,12 +86,14 @@ class VertexColorDrawable: public SceneGraph::Drawable3D {
                 _wireframeShader(wireframeShader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setTransformationProjectionMatrix(
-                camera.projectionMatrix()*transformation);
-            _wireframeShader.setTransformationProjectionMatrix(
-                camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
-            _mesh.draw(_wireframeShader);
+            _shader
+                .setTransformationProjectionMatrix(
+                    camera.projectionMatrix()*transformation)
+                .draw(_mesh);
+            _wireframeShader
+                .setTransformationProjectionMatrix(
+                    camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
     private:

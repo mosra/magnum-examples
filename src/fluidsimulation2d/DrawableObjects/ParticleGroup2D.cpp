@@ -71,9 +71,9 @@ ParticleGroup2D& ParticleGroup2D::draw(Containers::Pointer<SceneGraph::Camera2D>
         /* view/prj matrices and size */
         .setViewProjectionMatrix(camera->projectionMatrix()*camera->cameraMatrix())
         .setScreenHeight(screenHeight)
-        .setDomainHeight(projectionHeight);
+        .setDomainHeight(projectionHeight)
+        .draw(_meshParticles);
 
-    _meshParticles.draw(*_particleShader);
     return *this;
 }
 } }

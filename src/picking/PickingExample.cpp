@@ -158,8 +158,8 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
                 .setColor(_color*(_selected ? 2.0f : 1.0f))
                 /* relative to the camera */
                 .setLightPosition({13.0f, 2.0f, 5.0f})
-                .setObjectId(_id);
-            _mesh.draw(_shader);
+                .setObjectId(_id)
+                .draw(_mesh);
         }
 
         UnsignedByte _id;

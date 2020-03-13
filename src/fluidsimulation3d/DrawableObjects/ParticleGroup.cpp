@@ -75,9 +75,8 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
         /* view/prj matrices and light */
         .setViewMatrix(camera->cameraMatrix())
         .setProjectionMatrix(camera->projectionMatrix())
-        .setLightDirection(_lightDir);
-
-    _meshParticles.draw(*_particleShader);
+        .setLightDirection(_lightDir)
+        .draw(_meshParticles);
 
     return *this;
 }

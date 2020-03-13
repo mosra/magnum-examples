@@ -112,10 +112,10 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& pre
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
-    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .setTexture(*_texture);
-
-    _cube->draw(*_shader);
+    (*_shader)
+        .setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+        .setTexture(*_texture)
+        .draw(*_cube);
 }
 
 }}

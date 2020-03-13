@@ -104,8 +104,8 @@ void PrimitivesExample::drawEvent() {
         .setAmbientColor(Color3::fromHsv({_color.hue(), 1.0f, 0.3f}))
         .setTransformationMatrix(_transformation)
         .setNormalMatrix(_transformation.normalMatrix())
-        .setProjectionMatrix(_projection);
-    _mesh.draw(_shader);
+        .setProjectionMatrix(_projection)
+        .draw(_mesh);
 
     swapBuffers();
 }

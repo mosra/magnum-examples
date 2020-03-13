@@ -465,7 +465,7 @@ void AreaLightsExample::drawEvent() {
         if(i == 0)
             GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
-        _plane.draw(_areaLightShader);
+        _areaLightShader.draw(_plane);
 
         if(i == 0)
             GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
@@ -476,13 +476,15 @@ void AreaLightsExample::drawEvent() {
        Draw twice for two-sided lights. */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     for(std::size_t i: {0, 1, 2}) {
-        _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
-            .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]);
-        _plane.draw(_flatShader);
+        _flatShader
+            .setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
+            .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i])
+            .draw(_plane);
 
         if(_lightTwoSided[i]) {
-            _flatShader.setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]*Matrix4::scaling(Vector3::xScale(-1.0f)));
-            _plane.draw(_flatShader);
+            _flatShader
+                .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]*Matrix4::scaling(Vector3::xScale(-1.0f)))
+                .draw(_plane);
         }
     }
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
