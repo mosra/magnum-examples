@@ -57,7 +57,7 @@ Reflector::Reflector(CubeMapResourceManager& resourceManager, Object3D* parent, 
         resourceManager.set(_sphere.key(),
             MeshTools::compile(MeshTools::compressIndices(
                 Primitives::uvSphereSolid(16, 32,
-                    Primitives::UVSphereTextureCoords::Generate))),
+                    Primitives::UVSphereFlag::TextureCoordinates))),
             ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
