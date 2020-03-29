@@ -50,6 +50,8 @@ namespace Magnum {
     application cursor (see [mosra/magnum-integration#56](https://github.com/mosra/magnum-integration/pull/56))
 -   Avoid using obsolete APIs in the @ref examples-imgui "ImGui example" (see
     [mosra/magnum-integration#65](https://github.com/mosra/magnum-integration/pull/65))
+-   Fixed the @ref examples-picking to not limit object count to 256 (see
+    [mosra/magnum-examples#79](https://github.com/mosra/magnum-examples/pull/79))
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
