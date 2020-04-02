@@ -72,7 +72,7 @@ class ArcBallExample: public Platform::Application {
         SceneGraph::DrawableGroup3D _drawables;
         GL::Mesh _mesh{NoCreate};
         Shaders::VertexColor3D _shader{NoCreate};
-        Shaders::MeshVisualizer _wireframeShader{NoCreate};
+        Shaders::MeshVisualizer3D _wireframeShader{NoCreate};
         Containers::Optional<ArcBallCamera> _arcballCamera;
 };
 
@@ -80,23 +80,25 @@ class VertexColorDrawable: public SceneGraph::Drawable3D {
     public:
         explicit VertexColorDrawable(Object3D& object,
             Shaders::VertexColor3D& shader,
-            Shaders::MeshVisualizer& wireframeShader, GL::Mesh& mesh,
+            Shaders::MeshVisualizer3D& wireframeShader, GL::Mesh& mesh,
             SceneGraph::DrawableGroup3D& drawables):
                 SceneGraph::Drawable3D{object, &drawables}, _shader(shader),
                 _wireframeShader(wireframeShader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setTransformationProjectionMatrix(
-                camera.projectionMatrix()*transformation);
-            _wireframeShader.setTransformationProjectionMatrix(
-                camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
-            _mesh.draw(_wireframeShader);
+            _shader
+                .setTransformationProjectionMatrix(
+                    camera.projectionMatrix()*transformation)
+                .draw(_mesh);
+            _wireframeShader
+                .setTransformationMatrix(transformation)
+                .setProjectionMatrix(camera.projectionMatrix())
+                .draw(_mesh);
         }
 
     private:
         Shaders::VertexColor3D& _shader;
-        Shaders::MeshVisualizer& _wireframeShader;
+        Shaders::MeshVisualizer3D& _wireframeShader;
         GL::Mesh& _mesh;
 };
 
@@ -172,7 +174,7 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
                 MeshIndexType::UnsignedByte);
 
         _shader = Shaders::VertexColor3D{};
-        _wireframeShader = Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe};
+        _wireframeShader = Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe};
         _wireframeShader.setViewportSize(Vector2{framebufferSize()})
             .setColor(0x00000000_rgbaf)
             .setWireframeColor(0x000000ff_rgbaf);

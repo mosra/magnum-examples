@@ -54,8 +54,9 @@ void DebugLines::draw(const Matrix4& transformationProjectionMatrix) {
         GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
         _buffer.setData(_lines, GL::BufferUsage::StreamDraw);
         _mesh.setCount(_lines.size());
-        _shader.setTransformationProjectionMatrix(transformationProjectionMatrix);
-        _mesh.draw(_shader);
+        _shader
+            .setTransformationProjectionMatrix(transformationProjectionMatrix)
+            .draw(_mesh);
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     }
 }

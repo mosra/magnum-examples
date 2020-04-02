@@ -32,7 +32,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
@@ -44,7 +44,7 @@
 #include <Magnum/SceneGraph/AbstractObject.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "DebugLines.h"
 #include "ShadowCasterShader.h"
@@ -67,7 +67,6 @@ class ShadowsExample: public Platform::Application {
 
     private:
         struct Model {
-            GL::Buffer indexBuffer, vertexBuffer;
             GL::Mesh mesh;
             Float radius;
         };
@@ -79,7 +78,7 @@ class ShadowsExample: public Platform::Application {
         void keyPressEvent(KeyEvent &event) override;
         void keyReleaseEvent(KeyEvent &event) override;
 
-        void addModel(const Trade::MeshData3D& meshData3D);
+        void addModel(const Trade::MeshData& meshData3D);
         void renderDebugLines();
         Object3D* createSceneObject(Model& model, bool makeCaster, bool makeReceiver);
         void recompileReceiverShader(std::size_t numLayers);
@@ -190,15 +189,12 @@ Object3D* ShadowsExample::createSceneObject(Model& model, bool makeCaster, bool 
     return object;
 }
 
-void ShadowsExample::addModel(const Trade::MeshData3D& meshData3D) {
+void ShadowsExample::addModel(const Trade::MeshData& meshData) {
     _models.emplace_back();
     Model& model = _models.back();
 
-    model.vertexBuffer.setData(MeshTools::interleave(meshData3D.positions(0), meshData3D.normals(0)),
-        GL::BufferUsage::StaticDraw);
-
     Float maxMagnitudeSquared = 0.0f;
-    for(Vector3 position: meshData3D.positions(0)) {
+    for(Vector3 position: meshData.positions3DAsArray()) {
         Float magnitudeSquared = position.dot();
 
         if(magnitudeSquared > maxMagnitudeSquared) {
@@ -207,16 +203,7 @@ void ShadowsExample::addModel(const Trade::MeshData3D& meshData3D) {
     }
     model.radius = std::sqrt(maxMagnitudeSquared);
 
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData3D.indices());
-    model.indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
-    model.mesh.setPrimitive(meshData3D.primitive())
-        .setCount(meshData3D.indices().size())
-        .addVertexBuffer(model.vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-        .setIndexBuffer(model.indexBuffer, 0, indexType, indexStart, indexEnd);
+    model.mesh = MeshTools::compile(MeshTools::compressIndices(meshData));
 }
 
 void ShadowsExample::drawEvent() {

@@ -51,7 +51,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -105,8 +105,8 @@ class ColoredDrawable: public SceneGraph::Drawable3D {
             _shader.setDiffuseColor(_color)
                 .setTransformationMatrix(transformation*_primitiveTransformation)
                 .setProjectionMatrix(camera.projectionMatrix())
-                .setNormalMatrix(transformation.normalMatrix());
-            _mesh.draw(_shader);
+                .setNormalMatrix(transformation.normalMatrix())
+                .draw(_mesh);
         }
 
         Shaders::Phong& _shader;

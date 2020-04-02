@@ -46,7 +46,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -88,8 +88,9 @@ class VertexColorDrawable: public SceneGraph::Drawable3D {
         explicit VertexColorDrawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
     private:
@@ -102,9 +103,10 @@ class FlatDrawable: public SceneGraph::Drawable3D {
         explicit FlatDrawable(Object3D& object, Shaders::Flat3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setColor(0x747474_rgbf)
-                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setColor(0x747474_rgbf)
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
     private:

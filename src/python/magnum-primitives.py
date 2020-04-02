@@ -66,8 +66,8 @@ class PrimitivesExample(Application):
         self._shader.transformation_matrix = self._transformation
         self._shader.normal_matrix = self._transformation.rotation_scaling()
         self._shader.projection_matrix = self._projection
+        self._shader.draw(self._mesh)
 
-        self._mesh.draw(self._shader)
         self.swap_buffers()
 
     def mouse_release_event(self, event: Application.MouseEvent):

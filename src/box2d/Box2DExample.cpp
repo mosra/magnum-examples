@@ -44,7 +44,7 @@
 #include <Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
-#include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -81,8 +81,8 @@ class BoxDrawable: public SceneGraph::Drawable2D {
         void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) override {
             _shader
                 .setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-                .setColor(_color);
-            _mesh.draw(_shader);
+                .setColor(_color)
+                .draw(_mesh);
         }
 
         GL::Mesh& _mesh;

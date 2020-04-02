@@ -614,8 +614,8 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
-                .setProjectionMatrix(camera.projectionMatrix());
-            mesh.draw(*_colorShader);
+                .setProjectionMatrix(camera.projectionMatrix())
+                .draw(mesh);
         } else {
             (*_textureShader)
                 .setAmbientColor(_materials[i].ambientColor)
@@ -626,8 +626,8 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
-                .setProjectionMatrix(camera.projectionMatrix());
-            mesh.draw(*_textureShader);
+                .setProjectionMatrix(camera.projectionMatrix())
+                .draw(mesh);
         }
 
         if(_isSoftBody[i])

@@ -51,7 +51,7 @@ using a Phong shader.
 
 @dontinclude primitives/PrimitivesExample.cpp
 @skip #include
-@until Trade/MeshData3D
+@until Trade/MeshData
 
 @note Magnum does not provide any global "include everything" header, but
     instead keeps the headers small with little dependencies. It may be a bit
@@ -82,29 +82,28 @@ the data gives us the best memory access performance. We can do it by hand as
 in the previous example, but using @ref MeshTools::interleave() is much more
 convenient. We upload the interleaved data directly to a vertex buffer.
 
-@skip Trade::MeshData3D
+@skip Trade::MeshData
 @until vertices.setData(
+@until )
 
 Why do we need an indexed mesh and what it actually is? In most meshes the
 same vertex data are shared among more than one vertex, even a simple square
 consists of two triangles sharing two adjacent vertices. To save precious GPU
 memory, the mesh can be indexed, i.e. containing a buffer with unique vertex
 data and an index buffer telling which data belong to which vertex. The indices
-are by default just 32-bit integers. But most meshes don't need the full 32-bit
-range to index vertex data --- our mesh has only 36 unique vertices, thus even
-the smallest possible 8-bit range is large enough.
-@ref MeshTools::compressIndices() again does all the boring work for us --- it
-checks index range and creates an array consisting of @ref UnsignedByte,
-@ref UnsignedShort or @ref UnsignedInt indices based on that.
+coming from @ref Trade::MeshData::indicesAsArray() are by default 32-bit
+integers, but most meshes don't need the full 32-bit range to index vertex data
+--- our mesh has only 36 unique vertices, thus going to a 16-bit or even 8-bit
+type would be enough. @ref MeshTools::compressIndices() again does all the
+boring work for us --- it checks index range and creates an array consisting of
+@ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt indices based on
+that.
 
-@skip Containers::Array<char>
+@skip std::pair<Containers::Array<char>
 @until indices.
 
 Everything is now ready for configuring the mesh. We set the primitive type,
-index count, add our vertex buffer and specify the index buffer. The `indexStart`
-and `indexEnd` parameters are purely optional, but they might improve memory
-access performance on desktop GL as the GPU will know what subset of vertex
-data are used.
+index count, add our vertex buffer and specify the index buffer and type.
 
 @skip _mesh.setPrimitive
 @until .setIndexBuffer
@@ -114,19 +113,26 @@ data are used.
 @par Handling generic meshes
     Please note that the above isn't a one-size-fits-all recipe. Other
     primitives may not be indexed, some (such as wireframe primitives) may not
-    contain normals and may be suited for use with different shaders. Covering
-    all differences is out of the scope of this tutorial, see documentation of
-    particular primitives in the @ref Primitives namespace, the @ref MeshTools
-    functions, the @ref Shaders namespace and the @ref GL::Mesh class for the
-    full picture.
+    contain normals and may be suited for use with different shaders.
+    Additionally, with the `*AsArray()` APIs we're taking a shortcut and
+    extracting the position, normal and index arrays in a contiguous array of a
+    canonical type to avoid dealing with attribute data stored as @ref Vector2s
+    or @ref Vector3h, indices stored as @ref UnsignedByte, extra attributes or
+    paddings in the vertex layout and so on.
+@par
+    Covering all possible differences and optimization opportunities is out of
+    the scope of this tutorial, see documentation of the @ref Trade::MeshData
+    class, particular primitives in the @ref Primitives namespace, various
+    @ref MeshTools functions, the @ref Shaders namespace and the @ref GL::Mesh
+    class for the full picture.
 @par
     While the purpose of this example is to explain the low-level APIs for
     building vertex and index buffers, all code from this section could be
     simplified to a single line of code with @ref MeshTools::compile() --- it's
     a generic utility that prepares the mesh for use with any of the builtin
-    shaders. It's very convenient and probably enough for many use cases, but
-    you give up access to the buffers and lose control over the data layout in
-    exchange.
+    shaders. It takes *some* control away from you, but compared to the above
+    it also preserves the original vertex formats and attribute layout without
+    forcing you to deal with those manually:
 @par
     @code{.cpp}
     _mesh = MeshTools::compile(Primitives::cubeSolid());

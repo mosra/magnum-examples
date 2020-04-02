@@ -53,7 +53,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/DualQuaternionTransformation.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -142,9 +142,10 @@ AudioExample::AudioExample(const Arguments& arguments):
 
         private:
             void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
-                _shader.setColor(_color)
-                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-                _mesh.draw(_shader);
+                _shader
+                    .setColor(_color)
+                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                    .draw(_mesh);
             }
 
             Color4 _color;

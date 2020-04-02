@@ -114,7 +114,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(GL::Texture2D** frames, Obj
 void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {
     for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i)
         frames[i]->bind((i+currentFrame)%MotionBlurCamera::FrameCount);
-    mesh.draw(shader);
+    shader.draw(mesh);
 }
 
 }}

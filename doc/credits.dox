@@ -58,6 +58,8 @@ namespace Magnum {
     bugreports, buildsystem fixes
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
     Gentoo ebuild
+-   **Marco Melorio** ([\@Melix19](https://github.com/Melix19)) --- various
+    fixes
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- memory leak plugs
     in the @ref examples-bullet example
 -   **Michal Mikula** --- the @ref examples-box2d example

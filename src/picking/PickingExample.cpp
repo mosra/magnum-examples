@@ -49,7 +49,7 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -145,7 +145,7 @@ PhongIdShader::PhongIdShader() {
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
+        explicit PickableObject(UnsignedInt id, PhongIdShader& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -158,11 +158,11 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
                 .setColor(_color*(_selected ? 2.0f : 1.0f))
                 /* relative to the camera */
                 .setLightPosition({13.0f, 2.0f, 5.0f})
-                .setObjectId(_id);
-            _mesh.draw(_shader);
+                .setObjectId(_id)
+                .draw(_mesh);
         }
 
-        UnsignedByte _id;
+        UnsignedInt _id;
         bool _selected;
         PhongIdShader& _shader;
         Color3 _color;
@@ -311,7 +311,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
-    UnsignedByte id = Containers::arrayCast<UnsignedByte>(data.data())[0];
+    UnsignedInt id = Containers::arrayCast<UnsignedInt>(data.data())[0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);
 

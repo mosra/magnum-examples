@@ -49,9 +49,10 @@ class FlatShadeObject2D: public SceneGraph::Drawable2D {
         void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
             if(!_bEnabled) return;
 
-            _shader.setColor(_color)
-                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setColor(_color)
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
         FlatShadeObject2D& setColor(const Color3& color) {

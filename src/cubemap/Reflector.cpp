@@ -39,13 +39,13 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/UVSphere.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "ReflectorShader.h"
 
@@ -54,28 +54,11 @@ namespace Magnum { namespace Examples {
 Reflector::Reflector(CubeMapResourceManager& resourceManager, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
     /* Sphere mesh */
     if(!(_sphere = resourceManager.get<GL::Mesh>("sphere"))) {
-        Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32, Primitives::UVSphereTextureCoords::Generate);
-
-        GL::Buffer* buffer = new GL::Buffer;
-        buffer->setData(MeshTools::interleave(sphereData.positions(0), sphereData.textureCoords2D(0)), GL::BufferUsage::StaticDraw);
-
-        Containers::Array<char> indexData;
-        MeshIndexType indexType;
-        UnsignedInt indexStart, indexEnd;
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(sphereData.indices());
-
-        GL::Buffer* indexBuffer = new GL::Buffer;
-        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
-
-        GL::Mesh* mesh = new GL::Mesh;
-        mesh->setPrimitive(sphereData.primitive())
-            .setCount(sphereData.indices().size())
-            .addVertexBuffer(*buffer, 0, ReflectorShader::Position{}, ReflectorShader::TextureCoords{})
-            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
-
-        resourceManager.set("sphere-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set("sphere-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set(_sphere.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager.set(_sphere.key(),
+            MeshTools::compile(MeshTools::compressIndices(
+                Primitives::uvSphereSolid(16, 32,
+                    Primitives::UVSphereFlag::TextureCoordinates))),
+            ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Tarnish texture */
@@ -113,9 +96,8 @@ void Reflector::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& 
         .setDiffuseColor(Color3(0.3f))
         .setCameraMatrix(static_cast<Object3D&>(camera.object()).absoluteTransformation().rotationScaling())
         .setTexture(*_texture)
-        .setTarnishTexture(*_tarnishTexture);
-
-    _sphere->draw(*_shader);
+        .setTarnishTexture(*_tarnishTexture)
+        .draw(*_sphere);
 }
 
 }}

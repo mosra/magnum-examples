@@ -46,7 +46,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Timeline.h>
-#include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "DrawableObjects/ParticleGroup2D.h"
 #include "DrawableObjects/WireframeObject2D.h"
