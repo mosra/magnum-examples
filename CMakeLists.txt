@@ -36,6 +36,7 @@ find_package(Magnum REQUIRED)
 
 include(CMakeDependentOption)
 option(WITH_ARCBALL_EXAMPLE "Build ArcBall Camera example" OFF)
+option(WITH_ANIMATED_GIF_EXAMPLE "Build Animated Gif example" OFF)
 option(WITH_AREALIGHTS_EXAMPLE "Build Area Lights example (requires the Ui library and some TTF font plugin)" OFF)
 option(WITH_AUDIO_EXAMPLE "Build Audio example (requires the Audio library and the StbVorbisAudioImporter plugin)" OFF)
 option(WITH_BOX2D_EXAMPLE "Build Box2D integration example" OFF)

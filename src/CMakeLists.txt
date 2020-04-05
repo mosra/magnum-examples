@@ -39,6 +39,10 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
+if(WITH_ANIMATED_GIF_EXAMPLE)
+    add_subdirectory(animated-gif)
+endif()
+
 if(WITH_ARCBALL_EXAMPLE)
     add_subdirectory(arcball)
 endif()

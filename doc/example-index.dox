@@ -184,9 +184,9 @@ The following consist of documented source code only:
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html picking.png
-@subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-picking
+@image html animated-gif.png
+@subpage examples-animated-gif @m_class{m-label m-warning} **animation**
+\n @copybrief examples-animated-gif
 @m_enddiv
 
 @endparblock
@@ -214,15 +214,21 @@ The following consist of documented source code only:
 
 @m_div{m-clearfix-l m-show-m} @m_enddiv
 
-@m_div{m-col-m-4 m-col-s-6 m-push-m-2 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html picking.png
+@subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-picking
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html text.png
 @subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
 @copybrief examples-text
 @m_enddiv
 
-@m_div{m-clearfix-s} @m_enddiv
-
-@m_div{m-col-m-4 m-col-s-6 m-push-m-2 m-push-s-3 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan
