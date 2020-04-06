@@ -91,7 +91,7 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
     /* Load GIF importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
-        manager.loadAndInstantiate("StbImageImporter");
+        manager.loadAndInstantiate(args.value("importer"));
     if(!importer || !importer->openFile(args.value("file")))
         std::exit(1);
 
