@@ -26,6 +26,7 @@
 namespace Magnum {
 /** @page examples-animated-gif Animated GIF
 @brief Playing back an animated GIF. On the GPU or in a terminal.
+@m_since_latest_{examples}
 
 @m_footernavigation
 
@@ -52,7 +53,7 @@ is bundled in the repository, see the links below.
 
 @m_class{m-block m-primary}
 
-@thirdparty This example bundles the *Newtons cradle animation book* image by
+@thirdparty This example bundles the *Newton's cradle animation book* image by
     DemonDeLuxe (Dominique Toussaint), CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=3717500
 
 @section examples-animated-gif-source Source

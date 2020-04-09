@@ -133,7 +133,8 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
        state (in case this is an animated GIF). Convert them to floats and set
        up a player to trigger a redraw. */
     if(importer->importerState()) {
-        const auto frameDelays = Containers::arrayView(reinterpret_cast<const Int*>(importer->importerState()), imageCount);
+        const auto frameDelays = Containers::arrayView(
+            reinterpret_cast<const Int*>(importer->importerState()), imageCount);
 
         Containers::Array<std::pair<Float, Int>> frames{std::size_t(imageCount)};
         Float frameTime = 0.0f;
