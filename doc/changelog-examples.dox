@@ -54,6 +54,8 @@ namespace Magnum {
     [mosra/magnum-integration#65](https://github.com/mosra/magnum-integration/pull/65))
 -   Fixed the @ref examples-picking to not limit object count to 256 (see
     [mosra/magnum-examples#79](https://github.com/mosra/magnum-examples/pull/79))
+-   The @ref examples-box2d and @ref examples-bullet examples are now using
+    instanced rendering to draw the whole scene in a single draw call.
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
