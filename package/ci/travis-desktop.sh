@@ -57,7 +57,7 @@ cmake .. \
 ninja install
 cd ../..
 
-# Crosscompile Magnum Extras
+# Magnum Extras
 git clone --depth 1 git://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build && cd build
