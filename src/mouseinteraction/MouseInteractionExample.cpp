@@ -235,7 +235,7 @@ void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
             transformation = Matrix4::rotationY(90.0_degf - 90.0_degf*multiplier);
         else if(event.key() == KeyEvent::Key::NumThree) /* Right/left */
             transformation = Matrix4::rotationY(90.0_degf*multiplier);
-        else CORRADE_ASSERT_UNREACHABLE();
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
         _cameraObject->setTransformation(transformation*Matrix4::translation(viewTranslation));
         redraw();

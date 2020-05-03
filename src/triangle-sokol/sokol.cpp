@@ -35,7 +35,7 @@
 /* Integrate with Magnum a bit */
 #define SOKOL_ASSERT(c) CORRADE_INTERNAL_ASSERT(c)
 #define SOKOL_LOG(c) do { Corrade::Utility::Debug{} << c; } while(0)
-#define SOKOL_UNREACHABLE CORRADE_ASSERT_UNREACHABLE()
+#define SOKOL_UNREACHABLE CORRADE_INTERNAL_ASSERT_UNREACHABLE()
 #define SOKOL_IMPL
 #define SOKOL_GLCORE33
 #include "sokol_gfx.h"
