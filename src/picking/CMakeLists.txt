@@ -47,11 +47,9 @@ find_package(Magnum REQUIRED
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(Picking_RESOURCES resources.conf)
 
-add_executable(magnum-picking WIN32
-    PickingExample.cpp
-    ${Picking_RESOURCES})
+add_executable(magnum-picking WIN32 PickingExample.cpp)
+
 target_link_libraries(magnum-picking PRIVATE
     Corrade::Main
     Magnum::Application
