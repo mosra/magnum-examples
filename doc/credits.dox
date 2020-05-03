@@ -33,6 +33,8 @@ namespace Magnum {
     Python examples
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaro)) --- the
     @ref examples-shadows example
+-   **Brandon Pomeroy** ([\@pomeroyb](https://github.com/pomeroyb)) --- updates
+    to the @ref examples-picking example
 -   **Davide Bacchet** ([\@dbacchet](https://github.com/dbacchet)) --- HiDPI
     fixes to the @ref examples-picking example
 -   **[\@denesik](https://github.com/denesik)** --- original
