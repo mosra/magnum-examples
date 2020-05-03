@@ -57,6 +57,11 @@ namespace Magnum {
 -   The @ref examples-box2d and @ref examples-bullet examples are now using
     instanced rendering to draw the whole scene in a single draw call.
 
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   The library again compiles and tests cleanly with @ref CORRADE_NO_ASSERT
+    enabled, and this setup is verified on the CI to avoid further regressions
+
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
 -   The @ref examples-picking and @ref examples-bullet examples weren't

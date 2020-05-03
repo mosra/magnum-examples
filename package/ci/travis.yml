@@ -28,6 +28,7 @@ matrix:
     - JOBID=linux-nondeprecated
     - TARGET=desktop
     - BUILD_DEPRECATED=OFF
+    - CMAKE_CXX_FLAGS="-DCORRADE_NO_ASSERT"
   - language: cpp
     os: linux
     dist: xenial
