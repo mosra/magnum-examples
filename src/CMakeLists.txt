@@ -107,6 +107,10 @@ if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
 
+if(WITH_PRIMITIVES_SCENEGRAPH_EXAMPLE)
+    add_subdirectory(primitives-scenegraph)
+endif()
+
 if(WITH_SHADOWS_EXAMPLE)
     add_subdirectory(shadows)
 endif()
