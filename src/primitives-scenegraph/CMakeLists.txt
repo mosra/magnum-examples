@@ -42,7 +42,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     Shaders
-	SceneGraph
+    SceneGraph
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -55,7 +55,7 @@ target_link_libraries(magnum-primitives-scenegraph PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-	Magnum::SceneGraph
+    Magnum::SceneGraph
     Magnum::Shaders)
 
 install(TARGETS magnum-primitives-scenegraph DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
