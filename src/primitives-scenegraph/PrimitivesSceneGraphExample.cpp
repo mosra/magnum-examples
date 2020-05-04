@@ -170,6 +170,7 @@ void PrimitivesSceneGraphExample::mousePressEvent(MouseEvent& event) {
 
 void PrimitivesSceneGraphExample::mouseReleaseEvent(MouseEvent& event) {	
 	if (event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
+
 	//Change the color of each object
 	for (auto* o : _objects) o->setColor(Color3::fromHsv({ o->getColor().hue() + 50.0_degf, 1.0f, 1.0f }));
 
@@ -184,13 +185,14 @@ void PrimitivesSceneGraphExample::mouseMoveEvent(MouseMoveEvent& event) {
 		Vector2{ event.position() - _previousMousePosition } /
 		Vector2{ windowSize() };
 
-	//
+	/* Dragging with right mouse button will rotate the camera */
 	if ((event.buttons() & MouseMoveEvent::Button::Right)) {
 		(*_cameraObject)
 			.rotate(Rad{ -delta.y() }, _cameraObject->transformation().right().normalized())
 			.rotateY(Rad{ -delta.x() });
 	}
 	
+	/* Dragging with left mouse button will rotate the objects locally */
 	if ((event.buttons() & MouseMoveEvent::Button::Left)) {
 		for (auto* o : _objects) {
 			(*o).transformLocal(Matrix4::rotationX(Rad{ delta.y() }) * Matrix4::rotationY(Rad{ delta.x() }));
