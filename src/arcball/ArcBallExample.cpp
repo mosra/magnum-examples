@@ -29,21 +29,26 @@
  */
 
 #include <Corrade/Containers/Optional.h>
-#include <Magnum/Mesh.h>
-#include <Magnum/GL/Buffer.h>
+#include <Magnum/DebugTools/ColorMap.h>
+#include <Magnum/ImageView.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
+#include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/VertexColor.h>
 #include <Magnum/Shaders/MeshVisualizer.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "ArcBall.h"
 #include "ArcBallCamera.h"
@@ -71,34 +76,30 @@ class ArcBallExample: public Platform::Application {
         Scene3D _scene;
         SceneGraph::DrawableGroup3D _drawables;
         GL::Mesh _mesh{NoCreate};
-        Shaders::VertexColor3D _shader{NoCreate};
-        Shaders::MeshVisualizer3D _wireframeShader{NoCreate};
         Containers::Optional<ArcBallCamera> _arcballCamera;
+
+        /* Stuff for visualizing the cube */
+        Shaders::MeshVisualizer3D _shader{NoCreate};
+        GL::Texture2D _colormap{NoCreate};
 };
 
-class VertexColorDrawable: public SceneGraph::Drawable3D {
+class VisualizationDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit VertexColorDrawable(Object3D& object,
-            Shaders::VertexColor3D& shader,
-            Shaders::MeshVisualizer3D& wireframeShader, GL::Mesh& mesh,
+        explicit VisualizationDrawable(Object3D& object,
+            Shaders::MeshVisualizer3D& shader, GL::Mesh& mesh,
             SceneGraph::DrawableGroup3D& drawables):
                 SceneGraph::Drawable3D{object, &drawables}, _shader(shader),
-                _wireframeShader(wireframeShader), _mesh(mesh) {}
+                _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
             _shader
-                .setTransformationProjectionMatrix(
-                    camera.projectionMatrix()*transformation)
-                .draw(_mesh);
-            _wireframeShader
                 .setTransformationMatrix(transformation)
                 .setProjectionMatrix(camera.projectionMatrix())
                 .draw(_mesh);
         }
 
     private:
-        Shaders::VertexColor3D& _shader;
-        Shaders::MeshVisualizer3D& _wireframeShader;
+        Shaders::MeshVisualizer3D& _shader;
         GL::Mesh& _mesh;
 };
 
@@ -122,64 +123,38 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
-    /* For cube wireframe vizualization */
-    GL::Renderer::setDepthFunction(GL::Renderer::DepthFunction::LessOrEqual);
-    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add,
-        GL::Renderer::BlendEquation::Add);
-    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One,
-        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-    GL::Renderer::enable(GL::Renderer::Feature::Blending);
-
-    /* Setup the cube with vertex color */
+    /* Setup a cube with vertex ID and wireframe visualized */
     {
-        const Deg hue = 360.0_degf/8;
-        const struct {
-            Vector3 position;
-            Color3 color;
-        } cubeVertices[] {
-            /* front */
-            {{-1.0f, -1.0f,  1.0f}, Color3::fromHsv({hue*1.0f, 0.666f, 1.0f})},
-            {{ 1.0f, -1.0f,  1.0f}, Color3::fromHsv({hue*2.0f, 0.666f, 1.0f})},
-            {{ 1.0f,  1.0f,  1.0f}, Color3::fromHsv({hue*3.0f, 0.666f, 1.0f})},
-            {{-1.0f,  1.0f,  1.0f}, Color3::fromHsv({hue*4.0f, 0.666f, 1.0f})},
+        const Trade::MeshData cube = Primitives::cubeSolid();
+        _mesh = MeshTools::compile(cube);
 
-            /* back */
-            {{-1.0f, -1.0f, -1.0f}, Color3::fromHsv({hue*5.0f, 0.666f, 1.0f})},
-            {{ 1.0f, -1.0f, -1.0f}, Color3::fromHsv({hue*6.0f, 0.666f, 1.0f})},
-            {{ 1.0f,  1.0f, -1.0f}, Color3::fromHsv({hue*7.0f, 0.666f, 1.0f})},
-            {{-1.0f,  1.0f, -1.0f}, Color3::fromHsv({hue*8.0f, 0.666f, 1.0f})}
-        };
+        const auto map = DebugTools::ColorMap::turbo();
+        const Vector2i size{Int(map.size()), 1};
+        _colormap = GL::Texture2D{};
+        _colormap
+            .setMinificationFilter(SamplerFilter::Linear)
+            .setMagnificationFilter(SamplerFilter::Linear)
+            .setWrapping(SamplerWrapping::ClampToEdge)
+            .setStorage(1, GL::TextureFormat::RGB8, size)
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Unorm, size, map});
 
-        UnsignedByte cubeIndices[]{
-            /* front */
-            0, 1, 2, 2, 3, 0,
-            /* right */
-            1, 5, 6, 6, 2, 1,
-            /* back */
-            7, 6, 5, 5, 4, 7,
-            /* left */
-            4, 0, 3, 3, 7, 4,
-            /* bottom */
-            4, 5, 1, 1, 0, 4,
-            /* top */
-            3, 2, 6, 6, 7, 3
-        };
+        _shader = Shaders::MeshVisualizer3D{
+            Shaders::MeshVisualizer3D::Flag::Wireframe|
+            Shaders::MeshVisualizer3D::Flag::VertexId};
+        _shader
+            .setViewportSize(Vector2{framebufferSize()})
+            .setColor(0xffffff_rgbf)
+            .setWireframeColor(0xffffff_rgbf)
+            .setWireframeWidth(2.0f)
+            .setColorMapTransformation(0.0f, 1.0f/cube.vertexCount())
+            .bindColorMapTexture(_colormap);
 
-        _mesh = GL::Mesh{};
-        _mesh.setCount(Containers::arraySize(cubeIndices))
-            .addVertexBuffer(GL::Buffer{cubeVertices}, 0,
-                Shaders::VertexColor3D::Position{},
-                Shaders::VertexColor3D::Color3{})
-            .setIndexBuffer(GL::Buffer{cubeIndices}, 0,
-                MeshIndexType::UnsignedByte);
-
-        _shader = Shaders::VertexColor3D{};
-        _wireframeShader = Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe};
-        _wireframeShader.setViewportSize(Vector2{framebufferSize()})
-            .setColor(0x00000000_rgbaf)
-            .setWireframeColor(0x000000ff_rgbaf);
-        new VertexColorDrawable{*(new Object3D{&_scene}),
-            _shader, _wireframeShader, _mesh, _drawables};
+        auto object = new Object3D{&_scene};
+        (*object)
+            .rotateY(40.0_degf)
+            .rotateX(-30.0_degf)
+            ;
+        new VisualizationDrawable{*object, _shader, _mesh, _drawables};
     }
 
     /* Set up the camera */
@@ -215,7 +190,7 @@ void ArcBallExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     _arcballCamera->reshape(event.windowSize(), event.framebufferSize());
-    _wireframeShader.setViewportSize(Vector2{framebufferSize()});
+    _shader.setViewportSize(Vector2{framebufferSize()});
 }
 
 void ArcBallExample::keyPressEvent(KeyEvent& event) {

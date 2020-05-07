@@ -39,6 +39,7 @@ endif()
 
 find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
+    DebugTools
     GL
     MeshTools
     Primitives
@@ -54,9 +55,11 @@ add_executable(magnum-arcball WIN32
 target_link_libraries(magnum-arcball PRIVATE
     Corrade::Main
     Magnum::Application
+    Magnum::DebugTools
     Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools
+    Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders)
 target_include_directories(magnum-arcball PRIVATE
