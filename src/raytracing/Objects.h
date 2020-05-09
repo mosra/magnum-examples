@@ -50,7 +50,6 @@ class Object {
 
 class Sphere: public Object {
     public:
-        explicit Sphere() = default;
         explicit Sphere(const Vector3& center, Float radius,
             Containers::Pointer<Material>&& material): _center{center},
             _radiusSqr{radius*radius}, _material{std::move(material)} {}
@@ -61,7 +60,7 @@ class Sphere: public Object {
         void computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const;
 
         Vector3 _center;
-        Float _radiusSqr = 0.0f;
+        Float _radiusSqr;
         Containers::Pointer<Material> _material;
 };
 
