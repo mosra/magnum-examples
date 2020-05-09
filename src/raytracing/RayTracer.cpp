@@ -94,6 +94,8 @@ RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter,
     generateSceneObjects();
 }
 
+RayTracer::~RayTracer() = default;
+
 void RayTracer::setViewParameters(const Vector3& eye,
     const Vector3& viewCenter, const Vector3& upDir, Deg fov,
     Float aspectRatio, Float lensRadius)

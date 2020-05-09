@@ -51,6 +51,8 @@ class RayTracer {
             const Vector3& upDir, Deg fov, Float aspectRatio, Float lensRadius,
             const Vector2i& imageSize);
 
+        ~RayTracer();
+
         /* Render a block in the buffer image. This should be called in every
            drawEvent(). */
         void renderBlock();
