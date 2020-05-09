@@ -30,7 +30,7 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-project(ArcBall CXX)
+project(MagnumArcBallExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -62,9 +62,6 @@ target_link_libraries(magnum-arcball PRIVATE
     Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders)
-target_include_directories(magnum-arcball PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS magnum-arcball DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
