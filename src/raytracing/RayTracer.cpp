@@ -145,10 +145,10 @@ void RayTracer::renderBlock() {
         const Ray r = _camera->ray(u, v);
         const Vector3 color = shade(r, *_sceneObjects, 0);
         const Int pixelIdx  = y*_imageSize.x() + x;
-        Vector4& pixelColor = _buffer[pixelIdx];
+        Color4& pixelColor = _buffer[pixelIdx];
 
         /* Accumulate into the render buffer */
-        pixelColor += Vector4{color, 1.0f};
+        pixelColor += Color4{color, 1.0f};
         /* Update the pixel buffer */
         _pixels[pixelIdx] = {
             Math::pack<Color3ub>(Math::sqrt(pixelColor.rgb()/pixelColor.a())),

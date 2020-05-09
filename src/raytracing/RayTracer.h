@@ -89,7 +89,7 @@ class RayTracer {
         Containers::Pointer<Camera> _camera;
         Containers::Pointer<ObjectList> _sceneObjects;
         Containers::Array<Color4ub> _pixels;
-        Containers::Array<Vector4> _buffer;
+        Containers::Array<Color4> _buffer;
 
         Vector2i _imageSize;
         Vector2i _numBlocks;
