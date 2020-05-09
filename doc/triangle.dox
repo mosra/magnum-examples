@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-triangle Your first triangle
+/** @page examples-triangle Your First Triangle
 @brief Basic rendering with builtin shaders.
 
 @m_keywords{Triangle}

@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-picking Object picking
+/** @page examples-picking Object Picking
 @brief Usage of multiple framebuffer attachments to implement object picking.
 
 @m_footernavigation

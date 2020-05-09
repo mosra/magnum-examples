@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-viewer Model viewer
+/** @page examples-viewer Model Viewer
 @brief Scene graph, resource management and model importing.
 
 @m_keywords{Viewer}

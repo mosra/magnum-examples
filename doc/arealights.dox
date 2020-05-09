@@ -25,7 +25,7 @@
 */
 
 namespace Magnum {
-/** @page examples-arealights Area lights
+/** @page examples-arealights Area Lights
 @brief Basic real-time area lights.
 
 @m_footernavigation

@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-textured-triangle Textured triangle
+/** @page examples-textured-triangle Textured Triangle
 @brief Importing image data, texturing and custom shaders.
 
 @tableofcontents

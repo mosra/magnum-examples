@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-cubemap Cube map
+/** @page examples-cubemap Cube Map
 @brief Demonstrates usage of cube map textures and texture blending.
 
 @m_footernavigation
