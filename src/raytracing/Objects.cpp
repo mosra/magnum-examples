@@ -36,8 +36,6 @@
 
 namespace Magnum { namespace Examples {
 
-Sphere::~Sphere() { delete _material; }
-
 bool Sphere::intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const {
     const Vector3 dir = r.unitDirection;
     const Vector3 oc = r.origin - _center;
@@ -66,7 +64,7 @@ void Sphere::computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const {
     hitInfo.t = t;
     hitInfo.p = r.point(t);
     hitInfo.unitNormal = (hitInfo.p - _center).normalized();
-    hitInfo.material = _material;
+    hitInfo.material = _material.get();
 }
 
 bool ObjectList::intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const {
@@ -81,8 +79,8 @@ bool ObjectList::intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInf
     return hit;
 }
 
-void ObjectList::addObject(Object* const object) {
-    arrayAppend(_objects, Containers::pointer(object));
+void ObjectList::addObject(Containers::Pointer<Object>&& object) {
+    arrayAppend(_objects, std::move(object));
 }
 
 }}

@@ -193,9 +193,9 @@ void RayTracer::generateSceneObjects() {
     _sceneObjects.emplace();
 
     /* Big sphere as floor */
-    _sceneObjects->addObject(new Sphere{
+    _sceneObjects->addObject(Containers::pointer<Sphere>(
         Vector3{0.0f, -1000.0f, 0.0f}, 1000.0f,
-        new Lambertian{Vector3{0.5f, 0.5f, 0.5f}}});
+        Containers::pointer<Lambertian>(Vector3{0.5f, 0.5f, 0.5f})));
 
     const Vector3 centerBigSphere1{0.0f, 1.0f, 0.0f};
     const Vector3 centerBigSphere2{-4.0f, 1.0f, 0.0f};
@@ -208,39 +208,43 @@ void RayTracer::generateSceneObjects() {
                (center - centerBigSphere2).length() > 1.0f + radius &&
                (center - centerBigSphere3).length() > 1.0f + radius)
             {
-                Material* material;
+                Containers::Pointer<Material> material;
                 const Float selectMat = Rnd::rand01();
 
                 /* Diffuse */
                 if(selectMat < 0.7f)
-                    material = new Lambertian{{Rnd::rand01()*Rnd::rand01(),
-                                               Rnd::rand01()*Rnd::rand01(),
-                                               Rnd::rand01()*Rnd::rand01()}};
+                    material = Containers::pointer<Lambertian>(Vector3{
+                        Rnd::rand01()*Rnd::rand01(),
+                        Rnd::rand01()*Rnd::rand01(),
+                        Rnd::rand01()*Rnd::rand01()});
                 /* \m/ */
                 else if(selectMat < 0.9f)
-                    material = new Metal{{0.5f*(1.0f + Rnd::rand01()),
-                                          0.5f*(1.0f + Rnd::rand01()),
-                                          0.5f*(1.0f + Rnd::rand01())},
-                                         0.5f*Rnd::rand01()};
+                    material = Containers::pointer<Metal>(Vector3{
+                        0.5f*(1.0f + Rnd::rand01()),
+                        0.5f*(1.0f + Rnd::rand01()),
+                        0.5f*(1.0f + Rnd::rand01())}, 0.5f*Rnd::rand01());
                 /* Dielectric */
-                else material = new Dielectric{1.1f + 3.0f*Rnd::rand01()};
+                else material = Containers::pointer<Dielectric>(
+                    1.1f + 3.0f*Rnd::rand01());
 
-                _sceneObjects->addObject(new Sphere(center, radius, material));
+                _sceneObjects->addObject(Containers::pointer<Sphere>(
+                    center, radius, std::move(material)));
             }
         }
     }
 
-    _sceneObjects->addObject(new Sphere{centerBigSphere1, 1.0f,
-        new Dielectric{1.5f}});
-    _sceneObjects->addObject(new Sphere{centerBigSphere2, 1.0f,
-        new Lambertian{{Rnd::rand01()*Rnd::rand01(),
-                        Rnd::rand01()*Rnd::rand01(),
-                        Rnd::rand01()*Rnd::rand01()}}});
-    _sceneObjects->addObject(new Sphere{centerBigSphere3, 1.0f,
-        new Metal{{0.5f*(1.0f + Rnd::rand01()),
-                   0.5f*(1.0f + Rnd::rand01()),
-                   0.5f*(1.0f + Rnd::rand01())},
-                   0.0f}});
+    _sceneObjects->addObject(Containers::pointer<Sphere>(centerBigSphere1,
+        1.0f, Containers::pointer<Dielectric>(1.5f)));
+    _sceneObjects->addObject(Containers::pointer<Sphere>(centerBigSphere2,
+        1.0f, Containers::pointer<Lambertian>(Vector3{
+            Rnd::rand01()*Rnd::rand01(),
+            Rnd::rand01()*Rnd::rand01(),
+            Rnd::rand01()*Rnd::rand01()})));
+    _sceneObjects->addObject(Containers::pointer<Sphere>(centerBigSphere3,
+        1.0f, Containers::pointer<Metal>(Vector3{
+            0.5f*(1.0f + Rnd::rand01()),
+            0.5f*(1.0f + Rnd::rand01()),
+            0.5f*(1.0f + Rnd::rand01())}, 0.0f)));
 }
 
 }}

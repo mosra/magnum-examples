@@ -51,7 +51,7 @@ struct HitInfo {
     Float t;
     Vector3 p;
     Vector3 unitNormal;
-    Material* material = nullptr;
+    const Material* material = nullptr;
 };
 
 }}

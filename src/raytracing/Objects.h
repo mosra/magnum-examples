@@ -51,9 +51,9 @@ class Object {
 class Sphere: public Object {
     public:
         explicit Sphere() = default;
-        explicit Sphere(const Vector3& center, Float radius, Material* material):
-            _center{center}, _radiusSqr{radius*radius}, _material{material} {}
-        ~Sphere();
+        explicit Sphere(const Vector3& center, Float radius,
+            Containers::Pointer<Material>&& material): _center{center},
+            _radiusSqr{radius*radius}, _material{std::move(material)} {}
 
         bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
 
@@ -62,14 +62,13 @@ class Sphere: public Object {
 
         Vector3 _center;
         Float _radiusSqr = 0.0f;
-        /* have to use raw pointer as Containers::Pointer cannot be copied */
-        Material* _material = nullptr;
+        Containers::Pointer<Material> _material;
 };
 
 class ObjectList: public Object {
     public:
         bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
-        void addObject(Object* object);
+        void addObject(Containers::Pointer<Object>&& object);
 
     private:
         Containers::Array<Containers::Pointer<Object>> _objects;
