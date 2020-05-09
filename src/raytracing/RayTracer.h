@@ -49,12 +49,15 @@ class RayTracer {
     public:
         explicit RayTracer(const Vector3& eye, const Vector3& viewCenter,
             const Vector3& upDir, Deg fov, Float aspectRatio, Float lensRadius,
-            const Vector2i& imageSize);
+            const Vector2i& imageSize, UnsignedInt blockSize,
+            UnsignedInt maxSamplesPerPixel, UnsignedInt maxRayDepth);
 
         ~RayTracer();
 
         /* Whether the raytracer is done processing all iterations */
-        bool done() const;
+        bool done() const {
+            return _numRenderPass >= _maxSamplesPerPixel;
+        }
 
         /* Render a block in the buffer image. This should be called in every
            drawEvent(). */
@@ -98,7 +101,8 @@ class RayTracer {
         Vector2i _numBlocks;
         Vector2i _currentBlock;
         Int _blockMovingDir = 1;
-        Int _numRenderPass = 0;
+        UnsignedInt _numRenderPass = 0;
+        UnsignedInt _blockSize, _maxSamplesPerPixel, _maxRayDepth;
 
         bool _markNextBlock = true;
         std::atomic<bool> _busy{false};

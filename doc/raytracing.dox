@@ -51,6 +51,12 @@ after around 100 iterations.
 -   @m_class{m-label m-default} **N** generate a new random scene
 -   @m_class{m-label m-default} **Space** pause/resume rendering
 
+Additionally, various options can be set via command line:
+
+-   `--block-size PIXELS` --- size of a block to render at a time (default: 64)
+-   `--max-samples COUNT` --- max samples per pixel (default: 100)
+-   `--max-ray-depth DEPTH` ---  max ray depth (default: 16)
+
 @section examples-raytracing-credits Credits
 
 This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).

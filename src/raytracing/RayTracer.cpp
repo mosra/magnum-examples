@@ -41,21 +41,17 @@ namespace Magnum { namespace Examples {
 
 namespace  {
 
-constexpr Int BlockSize = 64;
-constexpr Int MaxSamplesPerPixel = 512;
-constexpr Int MaxRayDepth = 16;
-
 constexpr Vector3 BackgroundColor1{1.0f, 1.0f, 1.0f};
 constexpr Vector3 BackgroundColor2{0.5f, 0.7f, 1.0f};
 
 constexpr bool ConsistentScene = false;
 
 /* Perform operation on the entire block of pixels */
-template<class Function> void loopBlock(const Vector2i& blockStart,
-    const Vector2i& imageSize, Function&& func)
+template<class Function> void loopBlock(UnsignedInt blockSize,
+    const Vector2i& blockStart, const Vector2i& imageSize, Function&& func)
 {
-    for(Int y = blockStart.y(), yend = blockStart.y() + BlockSize; y < yend; ++y) {
-        for(Int x = blockStart.x(), xend = blockStart.x() + BlockSize; x < xend; ++x) {
+    for(Int y = blockStart.y(), yend = blockStart.y() + blockSize; y < yend; ++y) {
+        for(Int x = blockStart.x(), xend = blockStart.x() + blockSize; x < xend; ++x) {
             if(x < 0 || y < 0 || x >= imageSize.x() || y >= imageSize.y())
                 continue;
 
@@ -65,15 +61,15 @@ template<class Function> void loopBlock(const Vector2i& blockStart,
 }
 
 /* Shade the objects */
-inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
+inline Vector3 shade(UnsignedInt maxRayDepth, const Ray& r, ObjectList& objects, UnsignedInt depth) {
     HitInfo hitInfo;
     if(objects.intersect(r, 0.001f, 1e10f, hitInfo)) {
         Ray scatteredRay;
         Vector3 attenuation{0.0f, 0.0f, 0.0f};
-        if(depth < MaxRayDepth &&
+        if(depth < maxRayDepth &&
             hitInfo.material->scatter(r, hitInfo, attenuation, scatteredRay))
         {
-            attenuation *= shade(scatteredRay, objects, depth + 1);
+            attenuation *= shade(maxRayDepth, scatteredRay, objects, depth + 1);
         }
 
         return attenuation;
@@ -87,7 +83,10 @@ inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
 
 RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter,
     const Vector3& upDir, Deg fov, Float aspectRatio,  Float lensRadius,
-    const Vector2i& imageSize)
+    const Vector2i& imageSize, UnsignedInt blockSize,
+    UnsignedInt maxSamplesPerPixel, UnsignedInt maxRayDepth):
+    _blockSize{blockSize}, _maxSamplesPerPixel{maxSamplesPerPixel},
+    _maxRayDepth{maxRayDepth}
 {
     /* If ConsistentScene == true, then set a fixed seed number for random
        generator, so the render image will look the same each time running the
@@ -100,8 +99,6 @@ RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter,
 }
 
 RayTracer::~RayTracer() = default;
-
-bool RayTracer::done() const { return _numRenderPass >= MaxSamplesPerPixel; }
 
 void RayTracer::setViewParameters(const Vector3& eye,
     const Vector3& viewCenter, const Vector3& upDir, Deg fov,
@@ -123,7 +120,7 @@ void RayTracer::resizeBuffers(const Vector2i& imageSize) {
     _imageSize = imageSize;
     arrayResize(_pixels, imageSize.product());
     arrayResize(_buffer, imageSize.product());
-    _numBlocks = (imageSize + Vector2i{BlockSize - 1})/BlockSize;
+    _numBlocks = (imageSize + Vector2i{Int(_blockSize - 1)})/_blockSize;
     clearBuffers();
     _busy.store(false);
 }
@@ -138,19 +135,19 @@ void RayTracer::clearBuffers() {
 }
 
 void RayTracer::renderBlock() {
-    if(_numRenderPass >= MaxSamplesPerPixel) return;
+    if(_numRenderPass >= _maxSamplesPerPixel) return;
 
     /* Wait if there's any buffer is currently resized */
     while(_busy.load()) {}
     _busy.store(true);
 
     /* Render the current block */
-    Vector2i blockStart = _currentBlock * BlockSize;
-    loopBlock(blockStart, _imageSize, [&](Int x, Int y) {
+    Vector2i blockStart = _currentBlock*_blockSize;
+    loopBlock(_blockSize, blockStart, _imageSize, [&](Int x, Int y) {
         const Float u = (x + Rnd::rand01())/Float(_imageSize.x());
         const Float v = (y + Rnd::rand01())/Float(_imageSize.y());
         const Ray r = _camera->ray(u, v);
-        const Vector3 color = shade(r, *_sceneObjects, 0);
+        const Vector3 color = shade(_maxRayDepth, r, *_sceneObjects, 0);
         const Int pixelIdx  = y*_imageSize.x() + x;
         Color4& pixelColor = _buffer[pixelIdx];
 
@@ -165,9 +162,9 @@ void RayTracer::renderBlock() {
 
     /* Mark out the next block to display */
     _currentBlock = nextBlock(_currentBlock);
-    if(_markNextBlock && _numRenderPass < MaxSamplesPerPixel) {
-        blockStart = _currentBlock * BlockSize;
-        loopBlock(blockStart, _imageSize, [&](Int x, Int y) {
+    if(_markNextBlock && _numRenderPass < _maxSamplesPerPixel) {
+        blockStart = _currentBlock*_blockSize;
+        loopBlock(_blockSize, blockStart, _imageSize, [&](Int x, Int y) {
             const Int pixelIdx = y*_imageSize.x() + x;
             _pixels[pixelIdx] = {100u, 100u, 255u, 255u};
         });

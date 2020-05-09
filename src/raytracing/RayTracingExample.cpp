@@ -29,6 +29,7 @@
 */
 
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -72,10 +73,23 @@ class RayTracingExample: public Platform::Application {
 };
 
 RayTracingExample::RayTracingExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}
-        .setTitle("Magnum Ray Tracing Example")
-        .setWindowFlags(Configuration::WindowFlag::Resizable)}
+    Platform::Application{arguments, NoCreate}
 {
+    Utility::Arguments args;
+    args.addOption("block-size", "64")
+            .setHelp("block-size", "size of a block to render at a time", "PIXELS")
+        .addOption("max-samples", "100")
+            .setHelp("max-samples", "max samples per pixel", "COUNT")
+        .addOption("max-ray-depth", "16")
+            .setHelp("max-ray-depth", "max ray depth", "DEPTH")
+        .parse(arguments.argc, arguments.argv);
+
+    /* Delayed context creation so the command-line help is displayed w/o
+       the engine startup log */
+    create(Configuration{}
+        .setTitle("Magnum Ray Tracing Example")
+        .setWindowFlags(Configuration::WindowFlag::Resizable));
+
     /* Set up the camera and ray tracer */
     {
         const Vector3 eye{5.0f, 1.0f, 5.5f};
@@ -84,7 +98,10 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
         const Deg fov = 45.0_degf;
         _arcballCamera.emplace(eye, viewCenter, up, fov, windowSize());
         _rayTracer.emplace(eye, viewCenter, up, fov,
-            Vector2{framebufferSize()}.aspectRatio(), 0.0f, framebufferSize());
+            Vector2{framebufferSize()}.aspectRatio(), 0.0f, framebufferSize(),
+            args.value<UnsignedInt>("block-size"),
+            args.value<UnsignedInt>("max-samples"),
+            args.value<UnsignedInt>("max-ray-depth"));
         resizeBuffers(framebufferSize());
     }
 
