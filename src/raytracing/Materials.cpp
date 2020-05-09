@@ -48,21 +48,27 @@ inline Float schlick(Float cosine, Float refIdx) {
 
 }
 
-bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
+bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo,
+    Vector3& attenuation, Ray& scatteredRay) const
+{
     const Vector3 target = hitInfo.p + hitInfo.unitNormal + Rnd::randomInSphere();
     scatteredRay = Ray(hitInfo.p, target - hitInfo.p);
     attenuation  = _albedo;
     return true;
 }
 
-bool Metal::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
+bool Metal::scatter(const Ray& r, const HitInfo& hitInfo,
+    Vector3& attenuation, Ray& scatteredRay) const
+{
     const Vector3 reflectedRay = Math::reflect(r.unitDirection, hitInfo.unitNormal);
     scatteredRay = Ray(hitInfo.p, reflectedRay + _fuzziness*Rnd::randomInSphere());
     attenuation  = _albedo;
     return Math::dot(scatteredRay.unitDirection, hitInfo.unitNormal) > 0;
 }
 
-bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
+bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo,
+    Vector3& attenuation, Ray& scatteredRay) const
+{
     attenuation = Vector3{1.0f, 1.0f, 1.0f};
 
     Float niOverNt;

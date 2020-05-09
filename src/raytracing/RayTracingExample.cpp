@@ -113,8 +113,10 @@ void RayTracingExample::drawEvent() {
 void RayTracingExample::renderAndUpdateBlockPixels() {
     _rayTracer->renderBlock();
     const auto& pixels = _rayTracer->renderedBuffer();
-    _texture.setSubImage(0, {}, ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
-    GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer, _framebuffer.viewport(), GL::FramebufferBlit::Color);
+    _texture.setSubImage(0, {},
+        ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
+    GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
+        _framebuffer.viewport(), GL::FramebufferBlit::Color);
 }
 
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
@@ -199,7 +201,7 @@ void RayTracingExample::mouseScrollEvent(MouseScrollEvent& event) {
 void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
     _texture = GL::Texture2D();
     _texture.setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
+        .setMinificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setStorage(1, GL::TextureFormat::RGBA8, bufferSize);
 

@@ -51,7 +51,9 @@ constexpr Vector3 BackgroundColor2{0.5f, 0.7f, 1.0f};
 constexpr bool ConsistentScene = false;
 
 /* Perform operation on the entire block of pixels */
-template<class Function> void loopBlock(const Vector2i& blockStart, const Vector2i& imageSize, Function&& func) {
+template<class Function> void loopBlock(const Vector2i& blockStart,
+    const Vector2i& imageSize, Function&& func)
+{
     for(Int y = blockStart.y(), yend = blockStart.y() + BlockSize; y < yend; ++y) {
         for(Int x = blockStart.x(), xend = blockStart.x() + BlockSize; x < xend; ++x) {
             if(x < 0 || y < 0 || x >= imageSize.x() || y >= imageSize.y())
@@ -68,8 +70,11 @@ inline Vector3 shade(const Ray& r, ObjectList& objects, Int depth) {
     if(objects.intersect(r, 0.001f, 1e10f, hitInfo)) {
         Ray scatteredRay;
         Vector3 attenuation{0.0f, 0.0f, 0.0f};
-        if(depth < MaxRayDepth && hitInfo.material->scatter(r, hitInfo, attenuation, scatteredRay))
+        if(depth < MaxRayDepth &&
+            hitInfo.material->scatter(r, hitInfo, attenuation, scatteredRay))
+        {
             attenuation *= shade(scatteredRay, objects, depth + 1);
+        }
 
         return attenuation;
     }
