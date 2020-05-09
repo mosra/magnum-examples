@@ -76,9 +76,6 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
         .setTitle("Magnum Ray Tracing Example")
         .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
-    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-
     /* Set up the camera and ray tracer */
     {
         const Vector3 eye{5.0f, 1.0f, 5.5f};
