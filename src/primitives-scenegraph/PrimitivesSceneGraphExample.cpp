@@ -3,8 +3,9 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
+			Brandon Pomeroy <brandon@pomeroyb.com>
 
     This is free and unencumbered software released into the public domain.
 
