@@ -57,7 +57,7 @@ class DrawableObject : public Object3D, SceneGraph::Drawable3D {
 		explicit DrawableObject(Shaders::Phong& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables) : Object3D{ &parent }, SceneGraph::Drawable3D{ *this, &drawables }, _shader(shader), _color{ color }, _mesh(mesh) {}
 
 		void setColor(Color3 color) { _color = color; }
-		Color3 getColor() { return _color; }
+		Color3 color() const { return _color; }
 
 	private:
 		virtual void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
@@ -172,7 +172,7 @@ void PrimitivesSceneGraphExample::mouseReleaseEvent(MouseEvent& event) {
 	if (event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
 
 	//Change the color of each object
-	for (auto* o : _objects) o->setColor(Color3::fromHsv({ o->getColor().hue() + 50.0_degf, 1.0f, 1.0f }));
+	for (auto* o : _objects) o->setColor(Color3::fromHsv({ o->color().hue() + 50.0_degf, 1.0f, 1.0f }));
 
     event.setAccepted();
     redraw();
