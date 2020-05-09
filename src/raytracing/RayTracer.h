@@ -54,6 +54,12 @@ class RayTracer {
 
         ~RayTracer();
 
+        /* Current block */
+        Vector2i currentBlock() const { return _currentBlock; }
+
+        /* Current iteration */
+        UnsignedInt iteration() const { return _numRenderPass; }
+
         /* Whether the raytracer is done processing all iterations */
         bool done() const {
             return _numRenderPass >= _maxSamplesPerPixel;

@@ -30,6 +30,7 @@
 
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Renderer.h>
@@ -128,6 +129,11 @@ void RayTracingExample::drawEvent() {
 }
 
 void RayTracingExample::renderAndUpdateBlockPixels() {
+    /* Update window title with current iteration index */
+    if(_rayTracer->currentBlock() == Vector2i{}) setWindowTitle(
+        Utility::formatString("Magnum Ray Tracing Example (iteration {})",
+            _rayTracer->iteration() + 2));
+
     _rayTracer->renderBlock();
     const auto& pixels = _rayTracer->renderedBuffer();
     _texture.setSubImage(0, {},
