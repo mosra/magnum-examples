@@ -53,6 +53,9 @@ class RayTracer {
 
         ~RayTracer();
 
+        /* Whether the raytracer is done processing all iterations */
+        bool done() const;
+
         /* Render a block in the buffer image. This should be called in every
            drawEvent(). */
         void renderBlock();

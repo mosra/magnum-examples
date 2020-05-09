@@ -96,6 +96,8 @@ RayTracer::RayTracer(const Vector3& eye, const Vector3& viewCenter,
 
 RayTracer::~RayTracer() = default;
 
+bool RayTracer::done() const { return _numRenderPass >= MaxSamplesPerPixel; }
+
 void RayTracer::setViewParameters(const Vector3& eye,
     const Vector3& viewCenter, const Vector3& upDir, Deg fov,
     Float aspectRatio, Float lensRadius)

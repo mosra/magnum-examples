@@ -105,7 +105,9 @@ void RayTracingExample::drawEvent() {
     /* Render a block of pixels */
     renderAndUpdateBlockPixels();
     swapBuffers();
-    redraw();
+
+    /* Draw again if the raytracer is not done with all samples yet */
+    if(!_rayTracer->done()) redraw();
 }
 
 void RayTracingExample::renderAndUpdateBlockPixels() {
