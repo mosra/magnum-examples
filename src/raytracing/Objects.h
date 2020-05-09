@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_RayTracing_Objects_h
 #define Magnum_Examples_RayTracing_Objects_h
-
 /*
     This file is part of Magnum.
 
@@ -29,7 +28,7 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
@@ -37,37 +36,43 @@
 #include <Magnum/Math/Vector3.h>
 
 namespace Magnum { namespace Examples {
+
 struct Ray;
 struct HitInfo;
 class Material;
 
 class Object {
-public:
-    virtual bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const = 0;
-    virtual ~Object() = default;
+    public:
+        virtual ~Object() = default;
+
+        virtual bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const = 0;
 };
 
-class Sphere : public Object {
-public:
-    Sphere() = default;
-    Sphere(const Vector3& center, Float radius, Material* const _material) :
-        _center(center), _radiusSqr(radius * radius), _material(_material) {}
-    ~Sphere();
-    bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
-private:
-    void computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const;
-    Vector3   _center;
-    Float     _radiusSqr;
-    Material* _material { nullptr }; /* have to use raw pointer as Containers::Pointer cannot be copied */
+class Sphere: public Object {
+    public:
+        explicit Sphere() = default;
+        explicit Sphere(const Vector3& center, Float radius, Material* material):
+            _center{center}, _radiusSqr{radius*radius}, _material{material} {}
+        ~Sphere();
+
+        bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
+
+    private:
+        void computeHitInfo(const Ray& r, Float t, HitInfo& hitInfo) const;
+
+        Vector3 _center;
+        Float _radiusSqr = 0.0f;
+        /* have to use raw pointer as Containers::Pointer cannot be copied */
+        Material* _material = nullptr;
 };
 
-class ObjectList : public Object {
-public:
-    ObjectList() = default;
-    bool intersect(const Ray& r, Float t_min, Float t_max, HitInfo& hitInfo) const override;
-    void addObject(Object* const object);
-private:
-    Containers::Array<Containers::Pointer<Object>> _objects;
+class ObjectList: public Object {
+    public:
+        bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
+        void addObject(Object* object);
+
+    private:
+        Containers::Array<Containers::Pointer<Object>> _objects;
 };
 } }
 #endif

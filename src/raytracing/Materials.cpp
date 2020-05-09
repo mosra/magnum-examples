@@ -26,7 +26,7 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
 
 #include <Magnum/Math/Functions.h>
 
@@ -35,14 +35,17 @@
 #include "Ray.h"
 
 namespace Magnum { namespace Examples {
+
 struct HitInfo;
 
 namespace {
-inline Float schlick(Float cosine, Float ref_idx) {
-    Float r0 = (1 - ref_idx) / (1 + ref_idx);
-    r0 = r0 * r0;
-    return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+
+inline Float schlick(Float cosine, Float refIdx) {
+    Float r0 = (1.0f - refIdx)/(1.0f + refIdx);
+    r0 = r0*r0;
+    return r0 + (1 - r0)*Math::pow(1.0f - cosine, 5.0f);
 }
+
 }
 
 bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
@@ -54,38 +57,38 @@ bool Lambertian::scatter(const Ray&, const HitInfo& hitInfo, Vector3& attenuatio
 
 bool Metal::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
     const Vector3 reflectedRay = Math::reflect(r.unitDirection, hitInfo.unitNormal);
-    scatteredRay = Ray(hitInfo.p, reflectedRay + _fuzziness * Rnd::randomInSphere());
+    scatteredRay = Ray(hitInfo.p, reflectedRay + _fuzziness*Rnd::randomInSphere());
     attenuation  = _albedo;
-    return (dot(scatteredRay.unitDirection, hitInfo.unitNormal) > 0);
+    return Math::dot(scatteredRay.unitDirection, hitInfo.unitNormal) > 0;
 }
 
 bool Dielectric::scatter(const Ray& r, const HitInfo& hitInfo, Vector3& attenuation, Ray& scatteredRay) const {
-    attenuation = Vector3{ 1, 1, 1 };
+    attenuation = Vector3{1.0f, 1.0f, 1.0f};
 
-    Float   ni_over_nt;
-    Float   cosine;
+    Float niOverNt;
+    Float cosine;
     Vector3 outwardNormal;
-    if(dot(r.unitDirection, hitInfo.unitNormal) > 0) {
+    if(Math::dot(r.unitDirection, hitInfo.unitNormal) > 0) {
         outwardNormal = -hitInfo.unitNormal;
-        ni_over_nt    = _refractiveIndex;
-        cosine        = dot(r.unitDirection, hitInfo.unitNormal);
-        cosine        = std::sqrt(1 - _refractiveIndex * _refractiveIndex * (1 - cosine * cosine));
+        niOverNt = _refractiveIndex;
+        cosine = Math::dot(r.unitDirection, hitInfo.unitNormal);
+        cosine = Math::sqrt(1 - _refractiveIndex*_refractiveIndex*(1 - cosine*cosine));
     } else {
         outwardNormal = hitInfo.unitNormal;
-        ni_over_nt    = 1.0f / _refractiveIndex;
-        cosine        = -dot(r.unitDirection, hitInfo.unitNormal);
+        niOverNt = 1.0f/_refractiveIndex;
+        cosine = -Math::dot(r.unitDirection, hitInfo.unitNormal);
     }
 
-    const Vector3 refractedDir          = Math::refract(r.unitDirection, outwardNormal, ni_over_nt);
-    const Float   reflectionProbability = dot(refractedDir, refractedDir) > 0 ?
-                                          schlick(cosine, _refractiveIndex) :
-                                          1.0f;
+    const Vector3 refractedDir = Math::refract(r.unitDirection, outwardNormal, niOverNt);
+    const Float reflectionProbability =
+        Math::dot(refractedDir, refractedDir) > 0 ?
+            schlick(cosine, _refractiveIndex) : 1.0f;
     scatteredRay.origin = hitInfo.p;
-    if(Rnd::rand01() < reflectionProbability) {
+    if(Rnd::rand01() < reflectionProbability)
         scatteredRay.unitDirection = Math::reflect(r.unitDirection, hitInfo.unitNormal);
-    } else {
-        scatteredRay.unitDirection = refractedDir.normalized();
-    }
+    else scatteredRay.unitDirection = refractedDir.normalized();
+
     return true;
 }
-} }
+
+}}

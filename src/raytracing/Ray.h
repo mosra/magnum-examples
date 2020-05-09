@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_RayTracing_Ray_h
 #define Magnum_Examples_RayTracing_Ray_h
-
 /*
     This file is part of Magnum.
 
@@ -29,27 +28,32 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
 
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Vector3.h>
 
 namespace Magnum { namespace Examples {
+
 struct Ray {
-    Ray() = default;
-    Ray(const Vector3& origin_, const Vector3& dir_) : origin(origin_), unitDirection(dir_.normalized()) {}
+    explicit Ray() = default;
+    explicit Ray(const Vector3& origin, const Vector3& dir) : origin{origin}, unitDirection{dir.normalized()} {}
+
     Vector3 point(Float t) const { return origin + t * unitDirection; }
+
     Vector3 origin;
     Vector3 unitDirection;
 };
 
 class Material;
+
 struct HitInfo {
-    Float     t;
-    Vector3   p;
-    Vector3   unitNormal;
-    Material* material { nullptr };
+    Float t;
+    Vector3 p;
+    Vector3 unitNormal;
+    Material* material = nullptr;
 };
-} }
+
+}}
 
 #endif

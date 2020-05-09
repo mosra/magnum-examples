@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_RayTracing_Camera_h
 #define Magnum_Examples_RayTracing_Camera_h
-
 /*
     This file is part of Magnum.
 
@@ -32,44 +31,44 @@
  */
 
 #include <Magnum/Math/Functions.h>
+
 #include "RndGenerators.h"
 #include "Ray.h"
 
 namespace Magnum { namespace Examples {
+
 class Camera {
-public:
-    Camera(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-           Deg fov, Float aspectRatio, Float lensRadius) :
-        _origin(eye),
-        _lensRadius(lensRadius) {
-        _w = (eye - viewCenter).normalized();
-        _u = Math::cross(upDir, _w).normalized();
-        _v = Math::cross(_w, _u).normalized();
+    public:
+        explicit Camera(const Vector3& eye, const Vector3& viewCenter,
+            const Vector3& upDir, Deg fov, Float aspectRatio,
+            Float lensRadius): _origin{eye}, _lensRadius{lensRadius}
+        {
+            _w = (eye - viewCenter).normalized();
+            _u = Math::cross(upDir, _w).normalized();
+            _v = Math::cross(_w, _u).normalized();
 
-        Float       halfHeight    = Math::tan(fov * 0.5f);
-        Float       halfWidth     = aspectRatio * halfHeight;
-        const Float focusDistance = (eye - viewCenter).length();
-        _lowerLeftCorner = _origin -
-                           halfWidth * focusDistance * _u -
-                           halfHeight * focusDistance * _v -
-                           focusDistance * _w;
-        _horitonalEdge = 2 * halfWidth * focusDistance * _u;
-        _verticalEdge  = 2 * halfHeight * focusDistance * _v;
-    }
+            const Float halfHeight = Math::tan(fov*0.5f);
+            const Float halfWidth = aspectRatio*halfHeight;
+            const Float focusDistance = (eye - viewCenter).length();
+            _lowerLeftCorner = _origin - halfWidth*focusDistance*_u -
+                halfHeight*focusDistance*_v - focusDistance*_w;
+            _horitonalEdge = 2.0f*halfWidth*focusDistance*_u;
+            _verticalEdge  = 2.0f*halfHeight*focusDistance*_v;
+        }
 
-    Ray getRay(Float s, Float t) {
-        const Vector2 rd     = _lensRadius * Rnd::rndInDisk();
-        const Vector3 offset = _u * rd.x() + _v * rd.y();
-        return Ray(_origin + offset,
-                   _lowerLeftCorner + s * _horitonalEdge + t * _verticalEdge - offset - _origin);
-    }
+        Ray ray(Float s, Float t) const {
+            const Vector2 rd = _lensRadius*Rnd::rndInDisk();
+            const Vector3 offset = _u*rd.x() + _v*rd.y();
+            return Ray{_origin + offset, _lowerLeftCorner + s*_horitonalEdge +
+                t*_verticalEdge - offset - _origin};
+        }
 
-private:
-    Vector3 _origin;
-    Float   _lensRadius;
-    Vector3 _u, _v, _w;
-    Vector3 _lowerLeftCorner;
-    Vector3 _horitonalEdge, _verticalEdge;
+    private:
+        Vector3 _origin;
+        Float   _lensRadius;
+        Vector3 _u, _v, _w;
+        Vector3 _lowerLeftCorner;
+        Vector3 _horitonalEdge, _verticalEdge;
 };
 } }
 

@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_RayTracing_RndGenerators_h
 #define Magnum_Examples_RayTracing_RndGenerators_h
-
 /*
     This file is part of Magnum.
 
@@ -29,33 +28,37 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
 
 #include <cstdlib>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Vector2.h>
 #include <Magnum/Math/Vector3.h>
 
-using namespace Magnum;
 namespace Magnum { namespace Examples { namespace Rnd {
+
 inline Float rand01() {
-    return rand() / static_cast<Float>(RAND_MAX + 1.0f);
+    return rand() / Float(Float(RAND_MAX) + 1.0f);
 }
 
 inline Vector2 rndInDisk() {
     Vector2 p;
-    do {
-        p = 2.0f * Vector2(rand01(), rand01()) - Vector2(1, 1);
-    } while (Math::dot(p, p) >= 1.0f);
+
+    do p = 2.0f*Vector2{rand01(), rand01()} - Vector2{1.0f, 1.0f};
+    while(Math::dot(p, p) >= 1.0f);
+
     return p;
 }
 
 inline Vector3 randomInSphere() {
     Vector3 p;
-    do {
-        p = 2.0f * Vector3(rand01(), rand01(), rand01()) - Vector3(1, 1, 1);
-    } while (Math::dot(p, p) >= 1.0f);
+
+    do p = 2.0f*Vector3{rand01(), rand01(), rand01()} - Vector3{1.0f, 1.0f, 1.0f};
+    while(Math::dot(p, p) >= 1.0f);
+
     return p;
 }
-} } }
+
+}}}
+
 #endif

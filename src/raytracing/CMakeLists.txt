@@ -30,7 +30,7 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-project(RayTracing CXX)
+project(MagnumRayTracingExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -38,16 +38,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Corrade REQUIRED Main)
-find_package(Magnum REQUIRED
-    GL)
-
-if(CORRADE_TARGET_ANDROID)
-    find_package(Magnum REQUIRED AndroidApplication)
-elseif(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(Magnum REQUIRED EmscriptenApplication)
-else()
-    find_package(Magnum REQUIRED Sdl2Application)
-endif()
+find_package(Magnum REQUIRED GL Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -62,9 +53,6 @@ target_link_libraries(magnum-raytracing PRIVATE
     Magnum::Application
     Magnum::GL
     Magnum::Magnum)
-target_include_directories(magnum-raytracing PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS magnum-raytracing DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

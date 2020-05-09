@@ -26,10 +26,7 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-#include "../arcball/ArcBall.h"
-#include "RayTracer.h"
+*/
 
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -39,88 +36,74 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
+#include <Magnum/Platform/Sdl2Application.h>
 
-#if defined(CORRADE_TARGET_ANDROID)
-#  include <Magnum/Platform/AndroidApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#  include <Magnum/Platform/EmscriptenApplication.h>
-#else
-#  include <Magnum/Platform/Sdl2Application.h>
-#endif
+#include "../arcball/ArcBall.h"
+#include "RayTracer.h"
 
 namespace Magnum { namespace Examples {
+
 using namespace Math::Literals;
 
-class RayTracingExample : public Platform::Application {
-public:
-    explicit RayTracingExample(const Arguments& arguments);
+class RayTracingExample: public Platform::Application {
+    public:
+        explicit RayTracingExample(const Arguments& arguments);
 
-private:
-    void drawEvent() override;
-    void viewportEvent(ViewportEvent& event) override;
-    void keyPressEvent(KeyEvent& event) override;
-    void mousePressEvent(MouseEvent& event) override;
-    void mouseReleaseEvent(MouseEvent& event) override;
-    void mouseMoveEvent(MouseMoveEvent& event) override;
-    void mouseScrollEvent(MouseScrollEvent& event) override;
+    private:
+        void drawEvent() override;
+        void viewportEvent(ViewportEvent& event) override;
+        void keyPressEvent(KeyEvent& event) override;
+        void mousePressEvent(MouseEvent& event) override;
+        void mouseReleaseEvent(MouseEvent& event) override;
+        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void mouseScrollEvent(MouseScrollEvent& event) override;
 
-    void renderAndUpdateBlockPixels();
-    void resizeBuffers(const Vector2i& bufferSize);
-    void updateRayTracerCamera();
+        void renderAndUpdateBlockPixels();
+        void resizeBuffers(const Vector2i& bufferSize);
+        void updateRayTracerCamera();
 
-    Containers::Pointer<ArcBall> _arcballCamera;
-    GL::Texture2D                _texBuffer{ NoCreate };
-    GL::Framebuffer              _frameBuffer{ NoCreate };
+        Containers::Pointer<ArcBall> _arcballCamera;
+        GL::Texture2D _texture{NoCreate};
+        GL::Framebuffer _framebuffer{NoCreate};
 
-    Containers::Pointer<RayTracer> _rayTracer;
-    bool _depthOfField { false };
-    bool _bPaused { false };
+        Containers::Pointer<RayTracer> _rayTracer;
+        bool _depthOfField = false;
+        bool _paused = false;
 };
 
-RayTracingExample::RayTracingExample(const Arguments& arguments) :
-    Platform::Application{arguments, NoCreate} {
-    /* Setup window */
-    {
-        const Vector2 dpiScaling = this->dpiScaling({});
-        Configuration conf;
-        conf.setTitle("Magnum Ray Tracing Example")
-            .setSize(conf.size(), dpiScaling)
-            .setWindowFlags(Configuration::WindowFlag::Resizable);
-        create(conf, GLConfiguration{});
-    }
-
+RayTracingExample::RayTracingExample(const Arguments& arguments):
+    Platform::Application{arguments, Configuration{}
+        .setTitle("Magnum Ray Tracing Example")
+        .setWindowFlags(Configuration::WindowFlag::Resizable)}
+{
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
     /* Set up the camera and ray tracer */
     {
-        const Vector3 eye        = Vector3(5.f, 1.f, 5.5f);
-        const Vector3 viewCenter = Vector3(1.f, 0.5f, 0.f);
-        const Vector3 up         = Vector3(0, 1, 0);
-        const Deg     fov { 45.0_degf };
-        _arcballCamera.reset(new ArcBall(eye, viewCenter, up, fov, windowSize()));
-        _rayTracer.reset(new RayTracer(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio(), 0,
-                                       framebufferSize()));
+        const Vector3 eye{5.0f, 1.0f, 5.5f};
+        const Vector3 viewCenter{1.0f, 0.5f, 0.0f};
+        const Vector3 up{0.0f, 1.0f, 0.0f};
+        const Deg fov = 45.0_degf;
+        _arcballCamera.emplace(eye, viewCenter, up, fov, windowSize());
+        _rayTracer.emplace(eye, viewCenter, up, fov,
+            Vector2{framebufferSize()}.aspectRatio(), 0.0f, framebufferSize());
         resizeBuffers(framebufferSize());
     }
 
-    /* Start the timer, loop frame as fast as possible*/
+    /* Start the timer, loop frame as fast as possible */
     setSwapInterval(0);
     setMinimalLoopPeriod(0);
 }
 
 void RayTracingExample::drawEvent() {
-    if(_bPaused) {
-        return;
-    }
+    if(_paused) return;
 
-    /* Call arcball update in every frame
-     * This will do nothing if the camera has not been changed
-     * Otherwise, camera transformation will be propagated into the ray tracer
-     */
-    if(_arcballCamera->updateTransformation()) {
+    /* Call arcball update in every frame. This will do nothing if the camera
+       has not been changed; otherwise camera transformation will be propagated
+       into the ray tracer */
+    if(_arcballCamera->updateTransformation())
         updateRayTracerCamera();
-    }
 
     /* Render a block of pixels */
     renderAndUpdateBlockPixels();
@@ -131,8 +114,8 @@ void RayTracingExample::drawEvent() {
 void RayTracingExample::renderAndUpdateBlockPixels() {
     _rayTracer->renderBlock();
     const auto& pixels = _rayTracer->renderedBuffer();
-    _texBuffer.setSubImage(0, {}, ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
-    GL::AbstractFramebuffer::blit(_frameBuffer, GL::defaultFramebuffer, _frameBuffer.viewport(), GL::FramebufferBlit::Color);
+    _texture.setSubImage(0, {}, ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
+    GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer, _framebuffer.viewport(), GL::FramebufferBlit::Color);
 }
 
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
@@ -154,11 +137,10 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
         case KeyEvent::Key::D:
             _depthOfField ^= true;
             updateRayTracerCamera();
-            if(_depthOfField) {
+            if(_depthOfField)
                 Debug{} << "Depth-of-Field enabled";
-            } else {
+            else
                 Debug{} << "Depth-of-Field disabled";
-            }
             break;
 
         case KeyEvent::Key::M:
@@ -171,12 +153,13 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
             break;
 
         case KeyEvent::Key::Space:
-            _bPaused ^= true;
+            _paused ^= true;
             break;
 
         default:
             return;
     }
+
     event.setAccepted(true);
     redraw(); /* camera has changed, or ray tracer started/paused, redraw! */
 }
@@ -199,41 +182,43 @@ void RayTracingExample::mouseReleaseEvent(MouseEvent&) {
 void RayTracingExample::mouseMoveEvent(MouseMoveEvent& event) {
     if(!event.buttons()) { return; }
 
-    if(event.modifiers() & MouseMoveEvent::Modifier::Shift) {
+    if(event.modifiers() & MouseMoveEvent::Modifier::Shift)
         _arcballCamera->translate(event.position());
-    } else { _arcballCamera->rotate(event.position()); }
+    else _arcballCamera->rotate(event.position());
+
     event.setAccepted();
 }
 
 void RayTracingExample::mouseScrollEvent(MouseScrollEvent& event) {
     const Float delta = event.offset().y();
-    if(Math::abs(delta) < 1.0e-2f) {
-        return;
-    }
+    if(Math::abs(delta) < 1.0e-2f) return;
+
     _arcballCamera->zoom(delta);
     event.setAccepted();
 }
 
 void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
-    _texBuffer = GL::Texture2D();
-    _texBuffer.setMagnificationFilter(GL::SamplerFilter::Linear)
+    _texture = GL::Texture2D();
+    _texture.setMagnificationFilter(GL::SamplerFilter::Linear)
         .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setStorage(1, GL::TextureFormat::RGBA8, bufferSize);
 
-    _frameBuffer = GL::Framebuffer(GL::defaultFramebuffer.viewport());
-    _frameBuffer.attachTexture(GL::Framebuffer::ColorAttachment{ 0 }, _texBuffer, 0);
+    _framebuffer = GL::Framebuffer(GL::defaultFramebuffer.viewport());
+    _framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, _texture, 0);
 }
 
 void RayTracingExample::updateRayTracerCamera() {
     const Matrix4& transformation = _arcballCamera->transformationMatrix();
-    const Vector3  eye        = transformation.translation();
-    const Vector3  viewCenter = transformation.translation() - transformation.backward() * _arcballCamera->viewDistance();
-    const Vector3  up         = transformation.up();
-    const Deg      fov { 45.0_degf };
-    _rayTracer->setViewParameters(eye, viewCenter, up, fov, Vector2{ framebufferSize() }.aspectRatio(),
-                                  _depthOfField ? 0.08f : 0.0f);
+    const Vector3 eye = transformation.translation();
+    const Vector3 viewCenter = transformation.translation() -
+        transformation.backward()*_arcballCamera->viewDistance();
+    const Vector3 up = transformation.up();
+    const Deg fov = 45.0_degf;
+    _rayTracer->setViewParameters(eye, viewCenter, up, fov,
+        Vector2{framebufferSize()}.aspectRatio(), _depthOfField ? 0.08f : 0.0f);
 }
-} }
+
+}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::RayTracingExample)

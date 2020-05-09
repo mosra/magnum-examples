@@ -29,8 +29,9 @@
     THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+*/
 
+#include <atomic>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pointer.h>
@@ -38,59 +39,66 @@
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/Math/Color.h>
 
-#include <atomic>
-
 namespace Magnum { namespace Examples {
+
 struct Ray;
 class ObjectList;
 class Camera;
 
 class RayTracer {
-public:
-    RayTracer(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-              Deg fov, Float aspectRatio, Float lensRadius, const Vector2i& imageSize);
+    public:
+        explicit RayTracer(const Vector3& eye, const Vector3& viewCenter,
+            const Vector3& upDir, Deg fov, Float aspectRatio, Float lensRadius,
+            const Vector2i& imageSize);
 
-    /* Render a block in the buffer image. This should be called in every drawEvent */
-    void renderBlock();
+        /* Render a block in the buffer image. This should be called in every
+           drawEvent(). */
+        void renderBlock();
 
-    /* Toggle marking next render block by a different color */
-    bool& markNextBlock() { return _bMarkNextBlock; }
-    const bool& markNextBlock() const { return _bMarkNextBlock; }
+        /* Toggle marking next render block by a different color */
+        bool& markNextBlock() { return _markNextBlock; }
+        const bool& markNextBlock() const { return _markNextBlock; }
 
-    /* Set the camera view parameters */
-    void setViewParameters(const Vector3& eye, const Vector3& viewCenter, const Vector3& upDir,
-                           Deg fov, Float aspectRatio, Float lensRadius);
+        /* Set the camera view parameters */
+        void setViewParameters(const Vector3& eye, const Vector3& viewCenter,
+            const Vector3& upDir, Deg fov, Float aspectRatio, Float lensRadius);
 
-    /* Update size of the render buffer, should be called in the viewportEvent */
-    void resizeBuffers(const Vector2i& imageSize);
+        /* Update size of the render buffer. Should be called in the
+           viewportEvent(). */
+        void resizeBuffers(const Vector2i& imageSize);
 
-    /* Clear the render buffer data */
-    void clearBuffers();
+        /* Clear the render buffer data */
+        void clearBuffers();
 
-    /* Generate scene, will produce a new, different scene if bConsistentScene is false */
-    void generateSceneObjects();
+        /* Generate scene. Will produce a new, different scene if
+           ConsistentScene is false. */
+        void generateSceneObjects();
 
-    /* Get the rendered image
-     * This should be called after renderBlock() in every drawEvent */
-    const Corrade::Containers::Array<Color4ub>& renderedBuffer() const { return _pixels; }
+        /* Get the rendered image. This should be called after renderBlock() in
+           every drawEvent() */
+        Containers::ArrayView<const Color4ub> renderedBuffer() const {
+            return _pixels;
+        }
 
-private:
-    /* Identify the next pixel block to render */
-    Vector2i getNextBlock(const Vector2i& currentBlock);
+    private:
+        /* Identify the next pixel block to render */
+        Vector2i nextBlock(const Vector2i& currentBlock);
 
-    Containers::Pointer<Camera>     _camera;
-    Containers::Pointer<ObjectList> _sceneObjects;
-    Containers::Array<Color4ub>     _pixels;
-    Containers::Array<Vector4>      _buffer;
+        Containers::Pointer<Camera> _camera;
+        Containers::Pointer<ObjectList> _sceneObjects;
+        Containers::Array<Color4ub> _pixels;
+        Containers::Array<Vector4> _buffer;
 
-    Vector2i _imageSize;
-    Vector2i _numBlocks;
-    Vector2i _currentBlock;
-    Int      _blockMovingDir { 1 };
-    Int      _numRenderPass { 0 };
+        Vector2i _imageSize;
+        Vector2i _numBlocks;
+        Vector2i _currentBlock;
+        Int _blockMovingDir = 1;
+        Int _numRenderPass = 0;
 
-    bool              _bMarkNextBlock { true };
-    std::atomic<bool> _busy { false };
+        bool _markNextBlock = true;
+        std::atomic<bool> _busy{false};
 };
-} }
+
+}}
+
 #endif
