@@ -35,8 +35,8 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020 Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,8 +58,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Since 1.71, ImGui depends on the ApplicationServices framework for macOS
-# clipboard support
+# In 1.71 ImGui depends on the ApplicationServices framework for macOS
+# clipboard support. It's removed again in 1.72. TODO: remove once obsolete
 if(CORRADE_TARGET_APPLE)
     find_library(_IMGUI_ApplicationServices_LIBRARY ApplicationServices)
     mark_as_advanced(_IMGUI_ApplicationServices_LIBRARY)
@@ -73,9 +73,7 @@ find_package(imgui CONFIG QUIET)
 if(imgui_FOUND AND NOT IMGUI_DIR)
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
-        # TODO: remove ${_IMGUI_EXTRA_LIBRARIES} once the ApplicationServices
-        # framework is added directly to vcpkg's target:
-        # https://github.com/microsoft/vcpkg/blob/master/ports/imgui/CMakeLists.txt
+        # TODO: remove once 1.71 is obsolete
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES imgui::imgui ${_IMGUI_EXTRA_LIBRARIES})
 
@@ -102,6 +100,7 @@ else()
         add_library(ImGui::ImGui INTERFACE IMPORTED)
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
             INTERFACE_INCLUDE_DIRECTORIES ${ImGui_INCLUDE_DIR})
+        # TODO: remove once 1.71 is obsolete
         if(_IMGUI_EXTRA_LIBRARIES)
             set_property(TARGET ImGui::ImGui APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_IMGUI_EXTRA_LIBRARIES})
@@ -171,7 +170,7 @@ foreach(_component IN LISTS ImGui_FIND_COMPONENTS)
         endif()
     elseif(_component STREQUAL "SourcesMiscCpp")
         set(ImGui_SourcesMiscCpp_FOUND TRUE)
-        set(ImGui_SOURCES )
+        set(ImGui_MISC_CPP_SOURCES )
 
         foreach(_file imgui_stdlib)
             # Disable the find root path here, it overrides the

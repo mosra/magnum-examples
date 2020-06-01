@@ -32,6 +32,8 @@
 #   font converter plugins
 #  MAGNUM_PLUGINS_IMAGECONVERTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
 #   image converter plugins
+#  MAGNUM_PLUGINS_SCENECONVERTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
+#   scene converter plugins
 #  MAGNUM_PLUGINS_IMPORTER[|_DEBUG|_RELEASE]_DIR  - Directory with dynamic
 #   importer plugins
 #  MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
@@ -53,6 +55,7 @@
 #  AnyAudioImporter             - Any audio importer
 #  AnyImageConverter            - Any image converter
 #  AnyImageImporter             - Any image importer
+#  AnySceneConverter            - Any scene converter
 #  AnySceneImporter             - Any scene importer
 #  Audio                        - Audio library
 #  DebugTools                   - DebugTools library
@@ -91,6 +94,7 @@
 #  distancefieldconverter       - magnum-distancefieldconverter executable
 #  fontconverter                - magnum-fontconverter executable
 #  imageconverter               - magnum-imageconverter executable
+#  sceneconverterter            - magnum-sceneconverter executable
 #  gl-info                      - magnum-gl-info executable
 #  al-info                      - magnum-al-info executable
 #
@@ -125,6 +129,8 @@
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
 #   included
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
+#  MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS - Defined if static libraries keep the
+#   globals unique even across different shared libraries
 #  MAGNUM_TARGET_GL             - Defined if compiled with OpenGL interop
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
@@ -174,6 +180,10 @@
 #   plugin binary installation directory
 #  MAGNUM_PLUGINS_IMPORTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR  - Importer
 #   plugin library installation directory
+#  MAGNUM_PLUGINS_SCENECONVERTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Scene
+#   converter plugin binary installation directory
+#  MAGNUM_PLUGINS_SCENECONVERTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Scene
+#   converter plugin library installation directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Audio
 #   importer plugin binary installation directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Audio
@@ -185,8 +195,8 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -248,6 +258,7 @@ string(REGEX REPLACE "\n" ";" _magnumConfigure "${_magnumConfigure}")
 set(_magnumFlags
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_STATIC_UNIQUE_GLOBALS
     TARGET_GL
     TARGET_GLES
     TARGET_GLES2
@@ -353,11 +364,12 @@ set(_MAGNUM_LIBRARY_COMPONENT_LIST
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
-    AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneImporter
-    MagnumFont MagnumFontConverter ObjImporter TgaImageConverter TgaImporter
-    WavAudioImporter)
+    AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
+    AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
+    TgaImageConverter TgaImporter WavAudioImporter)
 set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
-    distancefieldconverter fontconverter imageconverter gl-info al-info)
+    distancefieldconverter fontconverter imageconverter sceneconverter gl-info
+    al-info)
 
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )
@@ -404,7 +416,11 @@ elseif(CORRADE_TARGET_WINDOWS)
     endif()
 endif()
 
-set(_MAGNUM_Primitives_DEPENDENCIES Trade)
+set(_MAGNUM_Primitives_DEPENDENCIES MeshTools Trade)
+if(MAGNUM_TARGET_GL)
+    # GL not required by Primitives themselves, but transitively by MeshTools
+    list(APPEND _MAGNUM_Primitives_DEPENDENCIES GL)
+endif()
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
@@ -454,7 +470,7 @@ set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
 foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
     if(_component MATCHES ".+AudioImporter")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Audio)
-    elseif(_component MATCHES ".+(Importer|ImageConverter)")
+    elseif(_component MATCHES ".+(Importer|ImageConverter|SceneConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Text TextureTools)
@@ -544,6 +560,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             # ImageConverter plugin specific name suffixes
             elseif(_component MATCHES ".+ImageConverter$")
                 set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX imageconverters)
+
+            # SceneConverter plugin specific name suffixes
+            elseif(_component MATCHES ".+SceneConverter$")
+                set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX sceneconverters)
 
             # FontConverter plugin specific name suffixes
             elseif(_component MATCHES ".+FontConverter$")
@@ -1113,6 +1133,10 @@ set(MAGNUM_PLUGINS_IMPORTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINA
 set(MAGNUM_PLUGINS_IMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_IMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_IMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/importers)
+set(MAGNUM_PLUGINS_SCENECONVERTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/sceneconverters)
+set(MAGNUM_PLUGINS_SCENECONVERTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/sceneconverters)
+set(MAGNUM_PLUGINS_SCENECONVERTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/sceneconverters)
+set(MAGNUM_PLUGINS_SCENECONVERTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/sceneconverters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/audioimporters)
@@ -1125,26 +1149,36 @@ set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/
 # because CMake always converts the path to an absolute location internally,
 # making it impossible to specify relative paths there. Sorry in advance for
 # not having the dir selection button in CMake GUI.
-set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum-d
+set(MAGNUM_PLUGINS_DEBUG_DIR ""
     CACHE STRING "Base directory where to look for Magnum plugins for debug builds")
-set(MAGNUM_PLUGINS_RELEASE_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum
+set(MAGNUM_PLUGINS_RELEASE_DIR ""
     CACHE STRING "Base directory where to look for Magnum plugins for release builds")
-set(MAGNUM_PLUGINS_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
+set(MAGNUM_PLUGINS_DIR ""
     CACHE STRING "Base directory where to look for Magnum plugins")
 
-# Plugin directories
-set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONT_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONT_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fonts)
-set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fontconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/imageconverters)
-set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/importers)
-set(MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/importers)
-set(MAGNUM_PLUGINS_IMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/importers)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/audioimporters)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/audioimporters)
-set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audioimporters)
+# Plugin directories. Set only if the above are non-empty. otherwise empty as
+# well.
+if(MAGNUM_PLUGINS_DIR)
+    set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
+    set(MAGNUM_PLUGINS_FONTCONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/fontconverters)
+    set(MAGNUM_PLUGINS_IMAGECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/imageconverters)
+    set(MAGNUM_PLUGINS_IMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/importers)
+    set(MAGNUM_PLUGINS_SCENECONVERTER_DIR ${MAGNUM_PLUGINS_DIR}/sceneconverters)
+    set(MAGNUM_PLUGINS_AUDIOIMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/audioimporters)
+endif()
+if(MAGNUM_PLUGINS_DEBUG_DIR)
+    set(MAGNUM_PLUGINS_FONT_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fonts)
+    set(MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/fontconverters)
+    set(MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/imageconverters)
+    set(MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/importers)
+    set(MAGNUM_PLUGINS_FONT_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fonts)
+    set(MAGNUM_PLUGINS_SCENECONVERTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/sceneconverters)
+    set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/audioimporters)
+endif()
+if(MAGNUM_PLUGINS_RELEASE_DIR)
+    set(MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/fontconverters)
+    set(MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/imageconverters)
+    set(MAGNUM_PLUGINS_IMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/importers)
+    set(MAGNUM_PLUGINS_SCENECONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/sceneconverters)
+    set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audioimporters)
+endif()
