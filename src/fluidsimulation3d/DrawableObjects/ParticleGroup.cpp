@@ -65,7 +65,7 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
         .setNumParticles(static_cast<int>(_points.size()))
         .setParticleRadius(_particleRadius)
         /* sphere render data */
-        .setPointSizeScale(static_cast<float>(viewportSize.x())/
+        .setPointSizeScale(static_cast<float>(viewportSize.y())/
             Math::tan(22.5_degf)) /* tan(half field-of-view angle (45_deg)*/
         .setColorMode(_colorMode)
         .setAmbientColor(_ambientColor)
