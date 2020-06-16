@@ -221,6 +221,7 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     example.
 -   `WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
     the @ref OvrIntegration library.
+-   `WITH_OCTREE_EXAMPLE` --- Build the @ref examples-octree example.
 -   `WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
 -   `WITH_PRIMITIVES_EXAMPLE` --- Build the @ref examples-primitives "Primitives"
     example.

@@ -1,0 +1,67 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2020 Nghia Truong <nghiatruong.vn@gmail.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page examples-octree Octree
+@brief Octree example
+@m_since_latest_{examples}
+
+@m_footernavigation
+
+@image html octree.png width=400px
+
+This is a simple, single-threaded implementation of loose octree which is commonplace in computer graphics.
+In this example, octree is used for collision detection. In practice, other physics engines such as [Bullet](https://doc.magnum.graphics/magnum/examples-bullet.html) have much more efficient data structures for collision detection and is recommended.
+
+@section examples-octree-controls Controls
+
+-   @m_class{m-label m-default} **B** toggles show/hide tree node bounding boxes
+-   @m_class{m-label m-default} **R** resets the camera to its original position
+-   @m_class{m-label m-default} **Space** Toggles pause/resume particle simulation
+
+@section examples-octree-credits Credits
+
+This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).
+
+@section examples-octree-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/octree).
+This example depends on the @ref ArcBall example for camera navigation.
+
+-   @ref octree/LooseOctree.cpp "LooseOctree.cpp"
+-   @ref octree/LooseOctree.h "LooseOctree.h"
+-   @ref octree/OctreeExample.cpp "OctreeExample.cpp"
+-   @ref octree/CMakeLists.txt "CMakeLists.txt"
+
+@example octree/LooseOctree.cpp @m_examplenavigation{examples-octree,octree/} @m_footernavigation
+@example octree/LooseOctree.h @m_examplenavigation{examples-octree,octree/} @m_footernavigation
+@example octree/OctreeExample.cpp @m_examplenavigation{examples-octree,octree/} @m_footernavigation
+@example octree/CMakeLists.txt @m_examplenavigation{examples-octree,octree/} @m_footernavigation
+*/
+
+}
