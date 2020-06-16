@@ -257,7 +257,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         _octree.emplace(Vector3{ 0 }, 1.0f, std::max(_sphereRadius, 0.1f));
 
         Clock::time_point startTime = Clock::now();
-        _octree->addPointSet(_spheresPos);
+        _octree->setPoints(_spheresPos);
         _octree->build();
         Clock::time_point endTime = Clock::now();
         Float             elapsed = std::chrono::duration<Float, std::milli>(

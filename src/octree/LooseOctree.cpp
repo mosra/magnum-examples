@@ -205,14 +205,14 @@ void LooseOctree::clearPoints() {
     _octreePoints.clear();
 }
 
-void LooseOctree::addPointSet(std::vector<Vector3>& points) {
+void LooseOctree::setPoints(std::vector<Vector3>& points) {
+    clearPoints();
     const std::size_t nPoints = points.size();
     if(nPoints == 0) {
         return;
     }
-    const std::size_t oldNPoints = _octreePoints.size();
-    _octreePoints.resize(oldNPoints + nPoints);
-    for(std::size_t idx = oldNPoints; idx < oldNPoints + nPoints; ++idx) {
+    _octreePoints.resize(nPoints);
+    for(std::size_t idx = 0; idx < nPoints; ++idx) {
         const auto pPoint = &_octreePoints[idx];
         new(pPoint) OctreePoint(&points, idx); /* placement new */
     }

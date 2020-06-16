@@ -246,8 +246,10 @@ public:
     /*
      * Set points data for the tree
      * (the points will not be populated to tree nodes until calling to build())
+     * The given point set will overwrite the existing points in the tree
+     *  (only one point set is allowed at a time)
      */
-    void addPointSet(std::vector<Vector3>& points);
+    void setPoints(std::vector<Vector3>& points);
 
     /* Count the maximum number of points stored in a tree node */
     std::size_t getMaxNumPointInNodes() const;
