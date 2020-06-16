@@ -42,7 +42,8 @@ namespace Magnum {
 -   New @ref examples-webxr example (see
     [mosra/magnum-examples#73](https://github.com/mosra/magnum-examples/pull/73))
 -   New @ref examples-arcball example (see
-    [mosra/magnum-examples#75](https://github.com/mosra/magnum-examples/pull/75))
+    [mosra/magnum-examples#75](https://github.com/mosra/magnum-examples/pull/75),
+    [mosra/magnum-examples#85](https://github.com/mosra/magnum-examples/pull/85))
 -   New @ref examples-raytracing example (see
     [mosra/magnum-examples#76](https://github.com/mosra/magnum-examples/pull/76))
 -   New @ref examples-animated-gif example (see
