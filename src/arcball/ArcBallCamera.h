@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_ArcBallCamera_h
 #define Magnum_Examples_ArcBallCamera_h
-
 /*
     This file is part of Magnum.
 
