@@ -89,7 +89,7 @@ class ArcBallCamera: public ArcBall {
         }
 
         /* Accessor to the raw camera object */
-        SceneGraph::Camera3D* camera() const { return _camera; }
+        SceneGraph::Camera3D& camera() const { return *_camera; }
 
     private:
         SceneGraph::AbstractTranslationRotation3D* _cameraObject{};
