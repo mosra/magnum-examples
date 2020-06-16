@@ -78,7 +78,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     elseif(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     elseif(_component STREQUAL ImGui)
-        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL Shaders)
     endif()
 
     list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})

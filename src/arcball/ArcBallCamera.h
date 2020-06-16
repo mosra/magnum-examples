@@ -1,6 +1,5 @@
 #ifndef Magnum_Examples_ArcBallCamera_h
 #define Magnum_Examples_ArcBallCamera_h
-
 /*
     This file is part of Magnum.
 
@@ -87,6 +86,9 @@ class ArcBallCamera: public ArcBall {
         void draw(SceneGraph::DrawableGroup3D& drawables) {
             _camera->draw(drawables);
         }
+
+        /* Accessor to the raw camera object */
+        SceneGraph::Camera3D& camera() const { return *_camera; }
 
     private:
         SceneGraph::AbstractTranslationRotation3D* _cameraObject{};

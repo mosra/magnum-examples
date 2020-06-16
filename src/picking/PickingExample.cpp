@@ -27,6 +27,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Image.h>
@@ -229,7 +230,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
-    UnsignedInt id = Containers::arrayCast<UnsignedInt>(data.data())[0];
+    UnsignedInt id = data.pixels<UnsignedInt>()[0][0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);
 
