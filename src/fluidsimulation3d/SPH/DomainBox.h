@@ -63,7 +63,7 @@ class DomainBox {
         }
 
         Vector3i getCellIndex(const Vector3& ppos) {
-            Vector3i cellIdx{Math::NoInit};
+            Vector3i cellIdx{NoInit};
             for(std::size_t i = 0; i != 3; ++i) {
                 cellIdx[i] = Int((ppos[i] - _lowerGridBound[i]) * _invCellLength);
             }

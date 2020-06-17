@@ -41,8 +41,8 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/Compile.h>
-#include <Magnum/MeshTools/Concatenate.h>
 #include <Magnum/MeshTools/FlipNormals.h>
+#include <Magnum/MeshTools/Reference.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -55,9 +55,11 @@
 namespace Magnum { namespace Examples {
 
 CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
-    /* Cube mesh. We'll look at it from the inside, so flip face winding */
+    /* Cube mesh. We'll look at it from the inside, so flip face winding. The
+       cube primitive references constant memory, so we have to make the data
+       owned & mutable first. */
     if(!(_cube = resourceManager.get<GL::Mesh>("cube"))) {
-        Trade::MeshData cubeData = MeshTools::concatenate(Primitives::cubeSolid());
+        Trade::MeshData cubeData = MeshTools::owned(Primitives::cubeSolid());
         MeshTools::flipFaceWindingInPlace(cubeData.mutableIndices());
 
         resourceManager.set(_cube.key(), MeshTools::compile(cubeData), ResourceDataState::Final, ResourcePolicy::Resident);
