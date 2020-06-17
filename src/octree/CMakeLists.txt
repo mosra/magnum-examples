@@ -62,9 +62,6 @@ target_link_libraries(magnum-octree PRIVATE
     Magnum::Primitives
     Magnum::SceneGraph
     Magnum::Shaders)
-target_include_directories(magnum-octree PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS magnum-octree DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

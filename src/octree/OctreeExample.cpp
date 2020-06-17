@@ -41,7 +41,6 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Icosphere.h>
-#include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
@@ -63,45 +62,11 @@ struct SphereInstanceData {
     Matrix4   transformationMatrix;
     Matrix3x3 normalMatrix;
     Color3    color;
-
-    static void fill(Containers::Array<SphereInstanceData>& data,
-                     const Matrix4& t, const Color3& color) {
-        arrayAppend(data, Containers::InPlaceInit, t, t.normalMatrix(), color);
-    }
 };
 
 struct BoxInstanceData {
     Matrix4 transformationMatrix;
     Color3  color;
-
-    static void fill(Containers::Array<BoxInstanceData>& data,
-                     const Matrix4& t, const Color3& color) {
-        arrayAppend(data, Containers::InPlaceInit, t, color);
-    }
-};
-
-template<class InstanceData>
-class ColoredDrawable : public SceneGraph::Drawable3D {
-public:
-    explicit ColoredDrawable(Object3D& object, Containers::Array<InstanceData>& instanceData,
-                             const Color3& color, const Matrix4& primitiveTransformation,
-                             SceneGraph::DrawableGroup3D& drawables) :
-        SceneGraph::Drawable3D{object, &drawables}, _instanceData(instanceData),
-        _color{color}, _primitiveTransformation{primitiveTransformation} {}
-    void setEnable(bool bEnable) { _bEnable = bEnable; }
-
-private:
-    void draw(const Matrix4& transformation, SceneGraph::Camera3D&) override {
-        if(_bEnable) {
-            const Matrix4 t = transformation * _primitiveTransformation;
-            InstanceData::fill(_instanceData, t, _color);
-        }
-    }
-
-    Containers::Array<InstanceData>& _instanceData;
-    Color3  _color;
-    Matrix4 _primitiveTransformation;
-    bool    _bEnable { true };
 };
 
 class OctreeExample : public Platform::Application {
@@ -120,43 +85,39 @@ protected:
     void movePoints();
     void collisionDetectionAndHandlingBruteForce();
     void collisionDetectionAndHandlingUsingOctree();
-    void checkCollisionWithSubTree(const OctreeNode* const pNode, std::size_t i,
+    void checkCollisionWithSubTree(const OctreeNode& pNode, std::size_t i,
                                    const Vector3& ppos, const Vector3& pvel,
                                    const Vector3& lower, const Vector3& upper);
-    void updateTreeNodeBoundingBoxes();
+    void drawSpheres();
+    void drawTreeNodeBoundingBoxes();
 
     /* Scene and drawable group must be constructed before camera and other
        drawble objects */
-    Containers::Pointer<Scene3D>                     _scene;
-    Containers::Pointer<SceneGraph::DrawableGroup3D> _drawables;
-    Containers::Pointer<ArcBallCamera>               _arcballCamera;
+    Scene3D _scene;
+    Containers::Pointer<ArcBallCamera> _arcballCamera;
 
     /* Points data as spheres with size */
-    std::vector<Vector3> _spheresPos;
-    std::vector<Vector3> _spheresVel;
-    Float                _sphereRadius;
-    bool                 _bAnimation = true;
+    Containers::Array<Vector3> _spherePositions;
+    Containers::Array<Vector3> _sphereVelocities;
+    Containers::Array<Vector3> _sphereColors;
+    Float _sphereRadius;
+    bool  _animation = true;
 
     /* Octree and boundary boxes */
     Containers::Pointer<LooseOctree> _octree;
 
     /* Spheres rendering */
-    std::vector<Containers::Pointer<Object3D>> _sphereObjs;
-    Containers::Pointer<GL::Mesh>              _sphereMesh;
-    Containers::Pointer<GL::Buffer>            _sphereInstanceBuffer;
-    Containers::Array<SphereInstanceData>      _sphereInstanceData;
-    Containers::Pointer<Shaders::Phong>        _sphereShader;
+    GL::Mesh       _sphereMesh { NoCreate };
+    GL::Buffer     _sphereInstanceBuffer { NoCreate };
+    Shaders::Phong _sphereShader { NoCreate };
+    Containers::Array<SphereInstanceData> _sphereInstanceData;
 
     /* Treenode bounding boxes rendering */
-    std::vector<Containers::Pointer<Object3D>> _boxObjs;
-    Containers::Pointer<GL::Mesh>              _boxMesh;
-    Containers::Pointer<GL::Buffer>            _boxInstanceBuffer;
-    Containers::Array<BoxInstanceData>         _boxInstanceData;
-    Containers::Pointer<Shaders::Flat3D>       _boxShader;
-
-    /* Store all drawable boxes so we can enable/disable them at any time */
-    std::vector<Containers::Pointer<ColoredDrawable<BoxInstanceData>>> _drawableBoxes;
-    bool _bDrawBoundingBoxes = true;
+    GL::Mesh                           _boxMesh { NoCreate };
+    GL::Buffer                         _boxInstanceBuffer { NoCreate };
+    Shaders::Flat3D                    _boxShader { NoCreate };
+    Containers::Array<BoxInstanceData> _boxInstanceData;
+    bool _drawBoundingBoxes = true;
 };
 
 using namespace Math::Literals;
@@ -172,6 +133,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         .addOption("benchmark", "0")
         .setHelp("benchmark", "run the benchmark to compare collision detection time", "BENCHMARK")
         .parse(arguments.argc, arguments.argv);
+    _sphereRadius = args.value<Float>("sphere-radius");
 
     /* Setup window and parameters */
     {
@@ -195,60 +157,44 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         setMinimalLoopPeriod(16);
     }
 
-    /* Setup scene objects and camera */
+    /* Setup camera */
     {
-        /* Setup scene objects */
-        _scene.emplace();
-        _drawables.emplace();
-
         /* Configure camera */
         const Vector3 eye{ Vector3::zAxis(5.0f) };
         const Vector3 viewCenter{ };
         const Vector3 up{ Vector3::yAxis() };
         const Deg     fov = 45.0_degf;
-        _arcballCamera.emplace(*_scene.get(), eye, viewCenter, up, fov, windowSize(), framebufferSize());
+        _arcballCamera.emplace(_scene, eye, viewCenter, up, fov, windowSize(), framebufferSize());
         _arcballCamera->setLagging(0.85f);
     }
 
     /* Setup points (render as spheres) */
     {
         const UnsignedInt numSpheres = args.value<UnsignedInt>("num-spheres");
-        _spheresPos.resize(numSpheres);
-        _spheresVel.resize(numSpheres);
-        _sphereObjs.resize(numSpheres);
+        Containers::arrayResize(_spherePositions,  Containers::NoInit, numSpheres);
+        Containers::arrayResize(_sphereVelocities, Containers::NoInit, numSpheres);
+        Containers::arrayResize(_sphereColors,     Containers::NoInit, numSpheres);
 
         const Float velocityMag = args.value<Float>("sphere-velocity");
         for(std::size_t i = 0; i < numSpheres; ++i) {
-            const Vector3 tmpPos{ std::rand() / Float(RAND_MAX),
-                                  std::rand() / Float(RAND_MAX),
-                                  std::rand() / Float(RAND_MAX) };
-            const Vector3 tmpVel{ std::rand() / Float(RAND_MAX),
-                                  std::rand() / Float(RAND_MAX),
-                                  std::rand() / Float(RAND_MAX) };
-            const Vector3 pos = tmpPos * 2 - Vector3{ 1 };
-            const Vector3 vel = (tmpVel * 2 - Vector3{ 1 }).normalized() * velocityMag;
-            _spheresPos[i] = pos;
-            _spheresVel[i] = vel;
-            _sphereObjs[i].emplace(_scene.get());
-            _sphereObjs[i]->setTransformation(Matrix4::translation(pos));
-
-            _sphereRadius = args.value<Float>("sphere-radius");
-            new ColoredDrawable<SphereInstanceData>{ *_sphereObjs[i], _sphereInstanceData,
-                                                     Color3{ tmpPos },
-                                                     Matrix4::scaling(Vector3{ _sphereRadius }),
-                                                     *_drawables.get() };
+            const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand()) / Float(RAND_MAX);
+            const Vector3 tmpVel = Vector3(std::rand(), std::rand(), std::rand()) / Float(RAND_MAX);
+            const Vector3 pos    = tmpPos * 2 - Vector3{ 1 };
+            const Vector3 vel    = (tmpVel * 2 - Vector3{ 1 }).normalized() * velocityMag;
+            _spherePositions[i]  = pos;
+            _sphereVelocities[i] = vel;
+            _sphereColors[i]     = Color3{ tmpPos };
         }
 
-        _sphereShader.emplace(Shaders::Phong::Flag::VertexColor |
-                              Shaders::Phong::Flag::InstancedTransformation);
-        _sphereInstanceBuffer.emplace();
-        _sphereMesh.emplace();
-        *_sphereMesh = MeshTools::compile(Primitives::icosphereSolid(3));
-        _sphereMesh->addVertexBufferInstanced(*_sphereInstanceBuffer, 1, 0,
-                                              Shaders::Phong::TransformationMatrix{},
-                                              Shaders::Phong::NormalMatrix{},
-                                              Shaders::Phong::Color3{});
-        _sphereMesh->setInstanceCount(_sphereObjs.size());
+        _sphereShader = Shaders::Phong{ Shaders::Phong::Flag::VertexColor |
+                                        Shaders::Phong::Flag::InstancedTransformation };
+        _sphereInstanceBuffer = GL::Buffer{};
+        _sphereMesh           = MeshTools::compile(Primitives::icosphereSolid(3));
+        _sphereMesh.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
+                                             Shaders::Phong::TransformationMatrix{},
+                                             Shaders::Phong::NormalMatrix{},
+                                             Shaders::Phong::Color3{});
+        _sphereMesh.setInstanceCount(_spherePositions.size());
     }
 
     /* Setup octree */
@@ -257,49 +203,32 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         _octree.emplace(Vector3{ 0 }, 1.0f, std::max(_sphereRadius, 0.1f));
 
         Clock::time_point startTime = Clock::now();
-        _octree->setPoints(_spheresPos);
+        _octree->setPoints(_spherePositions);
         _octree->build();
         Clock::time_point endTime = Clock::now();
         Float             elapsed = std::chrono::duration<Float, std::milli>(
             endTime - startTime).count();
         Debug{} << "Build Octree:" << elapsed << "ms";
-        Debug{} << "Allocated nodes:" << _octree->getNumAllocatedNodes();
-        Debug{} << "Max number of points per node:" << _octree->getMaxNumPointInNodes();
+        Debug{} << "Allocated nodes:" << _octree->numAllocatedNodes();
+        Debug{} << "Max number of points per node:" << _octree->maxNumPointInNodes();
     }
 
     /* Treenode bounding boxes render variables */
     {
-        _boxShader.emplace(Shaders::Flat3D::Flag::VertexColor |
-                           Shaders::Flat3D::Flag::InstancedTransformation);
-        _boxInstanceBuffer.emplace();
-        _boxMesh.emplace();
-        *_boxMesh = MeshTools::compile(Primitives::cubeWireframe());
-        _boxMesh->addVertexBufferInstanced(*_boxInstanceBuffer, 1, 0,
-                                           Shaders::Flat3D::TransformationMatrix{},
-                                           Shaders::Flat3D::Color3{});
-
-        /* Add a box for drawing the root node with a different color */
-        _boxObjs.emplace_back(new Object3D(_scene.get()));
-        _boxObjs.back()->setTransformation(
-            Matrix4::translation(_octree->getRootNode()->getCenter()) *
-            Matrix4::scaling(Vector3{ _octree->getRootNode()->getHalfWidth()*1.001f })
-            );
-        _drawableBoxes.emplace_back(
-            new ColoredDrawable<BoxInstanceData>{ *_boxObjs.back(), _boxInstanceData,
-                                                  Color3{ Color3(0, 1, 1) },
-                                                  Matrix4::scaling(Vector3{ 1 }),
-                                                  *_drawables.get() }
-            );
-
-        /* Draw the remaining nodes */
-        updateTreeNodeBoundingBoxes();
+        _boxShader = Shaders::Flat3D{ Shaders::Flat3D::Flag::VertexColor |
+                                      Shaders::Flat3D::Flag::InstancedTransformation };
+        _boxInstanceBuffer = GL::Buffer{};
+        _boxMesh           = MeshTools::compile(Primitives::cubeWireframe());
+        _boxMesh.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,
+                                          Shaders::Flat3D::TransformationMatrix{},
+                                          Shaders::Flat3D::Color3{});
     }
 
     /* Run benchmark */
     if(args.value<std::size_t>("benchmark")) {
         const std::size_t numTest = args.value<std::size_t>("benchmark");
         Debug{} << "Running collision detection benchmark for"
-                << _sphereObjs.size() << "spheres,"
+                << _spherePositions.size() << "spheres,"
                 << numTest << "iterations";
 
         Clock::time_point startTime = Clock::now();
@@ -328,27 +257,17 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 void OctreeExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
 
-    if(_bAnimation) {
+    if(_animation) {
         collisionDetectionAndHandlingUsingOctree();
         movePoints();
         _octree->update();
-        updateTreeNodeBoundingBoxes();
     }
 
-    arrayResize(_sphereInstanceData, 0); /* Reset instance data */
-    arrayResize(_boxInstanceData,    0); /* Reset instance data */
-
+    /* Update camera before drawing instances */
     _arcballCamera->update();
-    _arcballCamera->draw(*_drawables); /* Fill instance data */
 
-    _sphereInstanceBuffer->setData(_sphereInstanceData, GL::BufferUsage::DynamicDraw);
-    _sphereShader->setProjectionMatrix(_arcballCamera->camera().projectionMatrix());
-    _sphereShader->draw(*_sphereMesh);
-
-    _boxInstanceBuffer->setData(_boxInstanceData, GL::BufferUsage::DynamicDraw);
-    _boxMesh->setInstanceCount(_boxInstanceData.size());
-    _boxShader->setTransformationProjectionMatrix(_arcballCamera->camera().projectionMatrix());
-    _boxShader->draw(*_boxMesh);
+    drawSpheres();
+    drawTreeNodeBoundingBoxes();
 
     swapBuffers();
     /* Run next frame immediately */
@@ -356,12 +275,12 @@ void OctreeExample::drawEvent() {
 }
 
 void OctreeExample::collisionDetectionAndHandlingBruteForce() {
-    for(std::size_t i = 0; i < _spheresPos.size(); ++i) {
-        const Vector3 ppos = _spheresPos[i];
-        const Vector3 pvel = _spheresVel[i];
-        for(std::size_t j = i + 1; j < _spheresPos.size(); ++j) {
-            const Vector3 qpos  = _spheresPos[j];
-            const Vector3 qvel  = _spheresVel[j];
+    for(std::size_t i = 0; i < _spherePositions.size(); ++i) {
+        const Vector3 ppos = _spherePositions[i];
+        const Vector3 pvel = _sphereVelocities[i];
+        for(std::size_t j = i + 1; j < _spherePositions.size(); ++j) {
+            const Vector3 qpos  = _spherePositions[j];
+            const Vector3 qvel  = _sphereVelocities[j];
             const Vector3 velpq = pvel - qvel;
             const Vector3 pospq = ppos - qpos;
             const Float   vp    = Math::dot(velpq, pospq);
@@ -369,8 +288,8 @@ void OctreeExample::collisionDetectionAndHandlingBruteForce() {
                 const Float dpq = pospq.length();
                 if(dpq < 2 * _sphereRadius) {
                     const Vector3 vNormal = vp * pospq / (dpq * dpq);
-                    _spheresVel[i] = (_spheresVel[i] - vNormal).normalized();
-                    _spheresVel[j] = (_spheresVel[j] + vNormal).normalized();
+                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).normalized();
+                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).normalized();
                 }
             }
         }
@@ -378,36 +297,36 @@ void OctreeExample::collisionDetectionAndHandlingBruteForce() {
 }
 
 void OctreeExample::collisionDetectionAndHandlingUsingOctree() {
-    const OctreeNode* const rootNode = _octree->getRootNode();
-    for(std::size_t i = 0; i < _spheresPos.size(); ++i) {
-        const Vector3& ppos  = _spheresPos[i];
-        const Vector3& pvel  = _spheresVel[i];
+    const OctreeNode& rootNode = _octree->rootNode();
+    for(std::size_t i = 0; i < _spherePositions.size(); ++i) {
+        const Vector3& ppos  = _spherePositions[i];
+        const Vector3& pvel  = _sphereVelocities[i];
         const Vector3  lower = ppos - Vector3{ _sphereRadius };
         const Vector3  upper = ppos + Vector3{ _sphereRadius };
         checkCollisionWithSubTree(rootNode, i, ppos, pvel, lower, upper);
     }
 }
 
-void OctreeExample::checkCollisionWithSubTree(const OctreeNode* const pNode, std::size_t i,
+void OctreeExample::checkCollisionWithSubTree(const OctreeNode& pNode, std::size_t i,
                                               const Vector3& ppos, const Vector3& pvel,
                                               const Vector3& lower, const Vector3& upper) {
-    if(!pNode->looselyOverlaps(lower, upper)) {
+    if(!pNode.looselyOverlaps(lower, upper)) {
         return;
     }
 
-    if(!pNode->isLeaf()) {
+    if(!pNode.isLeaf()) {
         for(std::size_t childIdx = 0; childIdx < 8; childIdx++) {
-            const OctreeNode* const pChild = pNode->getChildNode(childIdx);
+            const OctreeNode& pChild = pNode.childNode(childIdx);
             checkCollisionWithSubTree(pChild, i, ppos, pvel, lower, upper);
         }
     }
 
-    const auto& pointList = pNode->getPointList();
+    const auto& pointList = pNode.pointList();
     for(const OctreePoint* const point: pointList) {
-        const std::size_t j = point->getIdx();
+        const std::size_t j = point->idx();
         if(j > i) {
-            const Vector3 qpos  = _spheresPos[j];
-            const Vector3 qvel  = _spheresVel[j];
+            const Vector3 qpos  = _spherePositions[j];
+            const Vector3 qvel  = _sphereVelocities[j];
             const Vector3 velpq = pvel - qvel;
             const Vector3 pospq = ppos - qpos;
             const Float   vp    = Math::dot(velpq, pospq);
@@ -415,8 +334,8 @@ void OctreeExample::checkCollisionWithSubTree(const OctreeNode* const pNode, std
                 const Float dpq = pospq.length();
                 if(dpq < 2 * _sphereRadius) {
                     const Vector3 vNormal = vp * pospq / (dpq * dpq);
-                    _spheresVel[i] = (_spheresVel[i] - vNormal).normalized();
-                    _spheresVel[j] = (_spheresVel[j] + vNormal).normalized();
+                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).normalized();
+                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).normalized();
                 }
             }
         }
@@ -426,52 +345,61 @@ void OctreeExample::checkCollisionWithSubTree(const OctreeNode* const pNode, std
 void OctreeExample::movePoints() {
     static constexpr Float dt{ 1.0f / 120.0f };
 
-    for(std::size_t i = 0; i < _spheresPos.size(); ++i) {
-        Vector3 pos = _spheresPos[i] + _spheresVel[i] * dt;
+    for(std::size_t i = 0; i < _spherePositions.size(); ++i) {
+        Vector3 pos = _spherePositions[i] + _sphereVelocities[i] * dt;
         for(std::size_t j = 0; j < 3; ++j) {
             if(pos[j] < -1.0f || pos[j] > 1.0f) {
-                _spheresVel[i][j] = -_spheresVel[i][j];
+                _sphereVelocities[i][j] = -_sphereVelocities[i][j];
             }
             pos[j] = Math::clamp(pos[j], -1.0f, 1.0f);
         }
-        _spheresPos[i] = pos;
-        _sphereObjs[i]->setTransformation(Matrix4::translation(pos));
+        _spherePositions[i] = pos;
     }
 }
 
-void OctreeExample::updateTreeNodeBoundingBoxes() {
-    if(!_bDrawBoundingBoxes) {
-        return;
+void OctreeExample::drawSpheres() {
+    arrayResize(_sphereInstanceData, 0);
+    for(std::size_t idx = 0; idx < _spherePositions.size(); ++idx) {
+        const Vector3 pos = _spherePositions[idx];
+        const Matrix4 t   = _arcballCamera->viewMatrix() *
+                            Matrix4::translation(pos) *
+                            Matrix4::scaling(Vector3{ _sphereRadius });
+        arrayAppend(_sphereInstanceData, Containers::InPlaceInit, t, t.normalMatrix(), _sphereColors[idx]);
     }
-    const auto& activeTreeNodeBlocks = _octree->getActiveTreeNodeBlocks();
-    std::size_t boxIdx{ 1 }; /* Ignore the first idx (root node) */
+    _sphereInstanceBuffer.setData(_sphereInstanceData, GL::BufferUsage::DynamicDraw);
+    _sphereShader.setProjectionMatrix(_arcballCamera->camera().projectionMatrix());
+    _sphereShader.draw(_sphereMesh);
+}
 
-    for(OctreeNodeBlock* const pNodeBlock : activeTreeNodeBlocks) {
-        for(std::size_t childIdx = 0; childIdx < 8; ++childIdx) {
-            const OctreeNode* const pNode = &pNodeBlock->_nodes[childIdx];
-            if(!pNode->isLeaf() || pNode->getPointCount() > 0) { /* non-empty node */
-                if(boxIdx == _boxObjs.size()) {
-                    _boxObjs.emplace_back(new Object3D(_scene.get()));
-                    _drawableBoxes.emplace_back(
-                        new ColoredDrawable<BoxInstanceData>{ *_boxObjs.back(), _boxInstanceData,
-                                                              Color3(0.1f, 0.5f, 0.6f),
-                                                              Matrix4::scaling(Vector3{ 1 }),
-                                                              *_drawables.get() }
-                        );
+void OctreeExample::drawTreeNodeBoundingBoxes() {
+    arrayResize(_boxInstanceData, 0);
+
+    /* Always draw the root node */
+    arrayAppend(_boxInstanceData, Containers::InPlaceInit,
+                _arcballCamera->viewMatrix() *
+                Matrix4::translation(_octree->center()) *
+                Matrix4::scaling(Vector3{ _octree->halfWidth() }),
+                Color3{ 0, 1, 1 });
+
+    /* Draw the remaining non-empty nodes */
+    if(_drawBoundingBoxes) {
+        const auto& activeTreeNodeBlocks = _octree->getActiveTreeNodeBlocks();
+        for(OctreeNodeBlock* const pNodeBlock : activeTreeNodeBlocks) {
+            for(std::size_t childIdx = 0; childIdx < 8; ++childIdx) {
+                const OctreeNode& pNode = pNodeBlock->_nodes[childIdx];
+                if(!pNode.isLeaf() || pNode.pointCount() > 0) { /* non-empty node */
+                    const Matrix4 t = _arcballCamera->viewMatrix() *
+                                      Matrix4::translation(pNode.center()) *
+                                      Matrix4::scaling(Vector3{ pNode.halfWidth() });
+                    arrayAppend(_boxInstanceData, Containers::InPlaceInit, t, Color3{ 0.1f, 0.5f, 0.6f });
                 }
-                _drawableBoxes[boxIdx]->setEnable(true);
-                _boxObjs[boxIdx++]->setTransformation(
-                    Matrix4::translation(pNode->getCenter()) *
-                    Matrix4::scaling(Vector3{ pNode->getHalfWidth() })
-                    );
             }
         }
     }
-
-    /* For the remaining boxes, hide them away */
-    while(boxIdx < _boxObjs.size()) {
-        _drawableBoxes[boxIdx++]->setEnable(false);
-    }
+    _boxInstanceBuffer.setData(_boxInstanceData, GL::BufferUsage::DynamicDraw);
+    _boxMesh.setInstanceCount(_boxInstanceData.size());
+    _boxShader.setTransformationProjectionMatrix(_arcballCamera->camera().projectionMatrix());
+    _boxShader.draw(_boxMesh);
 }
 
 void OctreeExample::viewportEvent(ViewportEvent& event) {
@@ -483,13 +411,7 @@ void OctreeExample::viewportEvent(ViewportEvent& event) {
 void OctreeExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::B:
-            _bDrawBoundingBoxes ^= true;
-            if(!_bDrawBoundingBoxes) {
-                std::size_t boxIdx{ 1 }; /* Ignore the first idx (root node) */
-                while(boxIdx < _drawableBoxes.size()) {
-                    _drawableBoxes[boxIdx++]->setEnable(false);
-                }
-            }
+            _drawBoundingBoxes ^= true;
             event.setAccepted(true);
             break;
         case KeyEvent::Key::R:
@@ -497,7 +419,7 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
             event.setAccepted(true);
             break;
         case KeyEvent::Key::Space:
-            _bAnimation ^= true;
+            _animation ^= true;
             event.setAccepted(true);
             break;
         default:;
