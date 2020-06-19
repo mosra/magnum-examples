@@ -39,6 +39,7 @@ endif()
 
 find_package(Corrade REQUIRED Main)
 find_package(Magnum REQUIRED
+    DebugTools
     GL
     MeshTools
     Primitives
@@ -56,6 +57,7 @@ add_executable(magnum-octree WIN32
 target_link_libraries(magnum-octree PRIVATE
     Corrade::Main
     Magnum::Application
+    Magnum::DebugTools
     Magnum::GL
     Magnum::Magnum
     Magnum::MeshTools

@@ -31,6 +31,7 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Magnum/DebugTools/FrameProfiler.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Context.h>
@@ -101,10 +102,17 @@ protected:
     Containers::Array<Vector3> _sphereVelocities;
     Containers::Array<Vector3> _sphereColors;
     Float _sphereRadius;
-    bool  _animation = true;
+    bool  _animation { true };
+    bool  _collisionDetectionByOctree { true };
 
     /* Octree and boundary boxes */
     Containers::Pointer<LooseOctree> _octree;
+
+    /* Profiling */
+    DebugTools::GLFrameProfiler _profiler{
+        DebugTools::GLFrameProfiler::Value::FrameTime |
+        DebugTools::GLFrameProfiler::Value::CpuDuration, 60 };
+    bool _runProfiler { false };
 
     /* Spheres rendering */
     GL::Mesh       _sphereMesh { NoCreate };
@@ -117,7 +125,7 @@ protected:
     GL::Buffer                         _boxInstanceBuffer { NoCreate };
     Shaders::Flat3D                    _boxShader { NoCreate };
     Containers::Array<BoxInstanceData> _boxInstanceData;
-    bool _drawBoundingBoxes = true;
+    bool _drawBoundingBoxes { true };
 };
 
 using namespace Math::Literals;
@@ -211,6 +219,10 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         Debug{} << "Build Octree:" << elapsed << "ms";
         Debug{} << "Allocated nodes:" << _octree->numAllocatedNodes();
         Debug{} << "Max number of points per node:" << _octree->maxNumPointInNodes();
+        Debug() << "Collision detection using Octree";
+
+        /* Disable profiler by default */
+        _profiler.disable();
     }
 
     /* Treenode bounding boxes render variables */
@@ -256,9 +268,11 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
 void OctreeExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
+    _profiler.beginFrame();
 
     if(_animation) {
-        collisionDetectionAndHandlingUsingOctree();
+        _collisionDetectionByOctree ?
+        collisionDetectionAndHandlingUsingOctree() : collisionDetectionAndHandlingBruteForce();
         movePoints();
         _octree->update();
     }
@@ -268,6 +282,9 @@ void OctreeExample::drawEvent() {
 
     drawSpheres();
     drawTreeNodeBoundingBoxes();
+
+    _profiler.endFrame();
+    _profiler.printStatistics(60);
 
     swapBuffers();
     /* Run next frame immediately */
@@ -412,6 +429,20 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
         case KeyEvent::Key::B:
             _drawBoundingBoxes ^= true;
+            event.setAccepted(true);
+            break;
+        case KeyEvent::Key::O:
+            _collisionDetectionByOctree ^= true;
+            if(_collisionDetectionByOctree) {
+                Debug() << "Collision detection using Octree";
+            } else {
+                Debug() << "Collision detection using Brute-Force method";
+            }
+            event.setAccepted(true);
+            break;
+        case KeyEvent::Key::P:
+            _runProfiler ^= true;
+            if(_runProfiler) { _profiler.enable(); } else { _profiler.disable(); }
             event.setAccepted(true);
             break;
         case KeyEvent::Key::R:
