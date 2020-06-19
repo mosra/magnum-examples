@@ -431,7 +431,9 @@ Float FluidSimulation3DExample::depthAt(const Vector2i& windowPosition) {
     const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
+    #ifndef MAGNUM_TARGET_WEBGL
     GL::defaultFramebuffer.mapForRead(GL::DefaultFramebuffer::ReadAttachment::Front);
+    #endif
     Image2D data = GL::defaultFramebuffer.read(
         Range2Di::fromSize(fbPosition, Vector2i{1}).padded(Vector2i{2}),
         {GL::PixelFormat::DepthComponent, GL::PixelType::Float});
