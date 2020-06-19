@@ -112,7 +112,6 @@ protected:
     DebugTools::GLFrameProfiler _profiler{
         DebugTools::GLFrameProfiler::Value::FrameTime |
         DebugTools::GLFrameProfiler::Value::CpuDuration, 60 };
-    bool _runProfiler { false };
 
     /* Spheres rendering */
     GL::Mesh       _sphereMesh { NoCreate };
@@ -441,8 +440,13 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
             event.setAccepted(true);
             break;
         case KeyEvent::Key::P:
-            _runProfiler ^= true;
-            if(_runProfiler) { _profiler.enable(); } else { _profiler.disable(); }
+            if(_profiler.isEnabled()) {
+                Debug() << "Disable frame profiling";
+                _profiler.disable();
+            } else {
+                Debug() << "Enable frame profiling";
+                _profiler.enable();
+            }
             event.setAccepted(true);
             break;
         case KeyEvent::Key::R:
