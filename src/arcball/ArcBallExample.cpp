@@ -167,7 +167,7 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             windowSize(), framebufferSize());
     }
 
-    /* Start the timer, loop at 60 Hz max */
+    /* Loop at 60 Hz max */
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
 }
