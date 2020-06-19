@@ -377,8 +377,8 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     /* Convert to half-float in case we can't filter float textures */
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::texture_float_linear>()) {
-        CORRADE_INTERNAL_ASSERT(!(image->size().x()%2)); /* so we don't have to think about alignment */
-        auto floats = Containers::arrayCast<Float>(image->data());
+        /* Assume contiguous image data (it will assert if not) */
+        auto floats = image->pixels<Float>().asContiguous();
         Containers::Array<Half> halves{std::size_t(image->size().product()*2)};
         for(std::size_t i = 0; i != floats.size(); ++i)
             halves[i] = Half{floats[i]};
@@ -405,7 +405,8 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     /* Convert to half-float in case we can't filter float textures */
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::OES::texture_float_linear>()) {
-        auto floats = Containers::arrayCast<Float>(image->data());
+        /* Assume contiguous image data (it will assert if not) */
+        auto floats = image->pixels<Float>().asContiguous();
         Containers::Array<Half> halves{std::size_t(image->size().product()*4)};
         for(std::size_t i = 0; i != floats.size(); ++i)
             halves[i] = Half{floats[i]};
