@@ -38,7 +38,11 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 
 #include "../arcball/ArcBall.h"
 #include "RayTracer.h"
@@ -106,8 +110,10 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
         resizeBuffers(framebufferSize());
     }
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Loop frame as fast as possible */
     setSwapInterval(0);
+    #endif
 }
 
 void RayTracingExample::drawEvent() {
@@ -188,18 +194,22 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
 }
 
 void RayTracingExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_TRUE);
+    #endif
 
     _arcballCamera->initTransformation(event.position());
     event.setAccepted();
 }
 
 void RayTracingExample::mouseReleaseEvent(MouseEvent&) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_FALSE);
+    #endif
 }
 
 void RayTracingExample::mouseMoveEvent(MouseMoveEvent& event) {
