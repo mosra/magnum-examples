@@ -192,8 +192,8 @@ void WebXrExample::drawEvent() {
                 _viewMatrices[eye]*_cubeTransformations[i];
             _shader.setTransformationMatrix(transformationMatrix)
                 .setNormalMatrix(transformationMatrix.rotationScaling())
-                .setDiffuseColor(_cubeColors[i]);
-            _cubeMesh.draw(_shader);
+                .setDiffuseColor(_cubeColors[i])
+                .draw(_cubeMesh);
         }
 
         /* Draw controller models */
@@ -202,8 +202,8 @@ void WebXrExample::drawEvent() {
                 _viewMatrices[eye]*_controllerTransformations[i]*Matrix4::scaling(Vector3{0.05f});
             _shader.setTransformationMatrix(transformationMatrix)
                 .setNormalMatrix(transformationMatrix.rotationScaling())
-                .setDiffuseColor(_controllerColors[i]);
-            _controllerMesh.draw(_shader);
+                .setDiffuseColor(_controllerColors[i])
+                .draw(_controllerMesh);
         }
     }
 
