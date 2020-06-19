@@ -106,7 +106,7 @@ cmake .. \
     -DIMGUI_DIR=$HOME/imgui \
     -DWITH_BULLET=OFF \
     -DWITH_DART=OFF \
-    -DWITH_IMGUI=$TARGET_GLES3 \
+    -DWITH_IMGUI=ON \
     -DWITH_OVR=OFF \
     -G Ninja
 ninja install

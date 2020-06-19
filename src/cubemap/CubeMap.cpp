@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -40,46 +40,29 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Functions.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/FlipNormals.h>
-#include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Reference.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "CubeMapShader.h"
 
 namespace Magnum { namespace Examples {
 
 CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
-    /* Cube mesh */
+    /* Cube mesh. We'll look at it from the inside, so flip face winding. The
+       cube primitive references constant memory, so we have to make the data
+       owned & mutable first. */
     if(!(_cube = resourceManager.get<GL::Mesh>("cube"))) {
-        Trade::MeshData3D cubeData = Primitives::cubeSolid();
-        MeshTools::flipFaceWinding(cubeData.indices());
+        Trade::MeshData cubeData = MeshTools::owned(Primitives::cubeSolid());
+        MeshTools::flipFaceWindingInPlace(cubeData.mutableIndices());
 
-        GL::Buffer* buffer = new GL::Buffer;
-        buffer->setData(MeshTools::interleave(cubeData.positions(0)), GL::BufferUsage::StaticDraw);
-
-        Containers::Array<char> indexData;
-        MeshIndexType indexType;
-        UnsignedInt indexStart, indexEnd;
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cubeData.indices());
-
-        GL::Buffer* indexBuffer = new GL::Buffer;
-        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
-
-        GL::Mesh* mesh = new GL::Mesh;
-        mesh->setPrimitive(cubeData.primitive())
-            .setCount(cubeData.indices().size())
-            .addVertexBuffer(*buffer, 0, CubeMapShader::Position{})
-            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
-
-        resourceManager.set("cube-buffer", buffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set("cube-index-buffer", indexBuffer, ResourceDataState::Final, ResourcePolicy::Resident)
-            .set(_cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+        resourceManager.set(_cube.key(), MeshTools::compile(cubeData), ResourceDataState::Final, ResourcePolicy::Resident);
     }
 
     /* Cube map texture */
@@ -131,10 +114,10 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& pre
 }
 
 void CubeMap::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
-    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-        .setTexture(*_texture);
-
-    _cube->draw(*_shader);
+    (*_shader)
+        .setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
+        .setTexture(*_texture)
+        .draw(*_cube);
 }
 
 }}

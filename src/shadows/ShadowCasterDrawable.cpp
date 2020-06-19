@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2016 — Bill Robinson <airbaggins@gmail.com>
 
@@ -39,8 +39,9 @@ namespace Magnum { namespace Examples {
 ShadowCasterDrawable::ShadowCasterDrawable(SceneGraph::AbstractObject3D& parent, SceneGraph::DrawableGroup3D* drawables): Magnum::SceneGraph::Drawable3D{parent, drawables} {}
 
 void ShadowCasterDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& shadowCamera) {
-    _shader->setTransformationMatrix(shadowCamera.projectionMatrix()*transformationMatrix);
-    _mesh->draw(*_shader);
+    (*_shader)
+        .setTransformationMatrix(shadowCamera.projectionMatrix()*transformationMatrix)
+        .draw(*_mesh);
 }
 
 }}

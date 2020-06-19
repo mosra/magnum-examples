@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -163,30 +163,30 @@ The following consist of documented source code only:
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html imgui.png
-@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-imgui
+@image html raytracing.png
+@subpage examples-raytracing
+\n @copybrief examples-raytracing
 @m_enddiv
 
 @m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html motionblur.png
-@subpage examples-motionblur \n @copybrief examples-motionblur
+@image html imgui.png
+@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-imgui
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html mouseinteraction.png
-@subpage examples-mouseinteraction @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-mouseinteraction
+@image html arcball.png
+@subpage examples-arcball \n @copybrief examples-arcball
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html picking.png
-@subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-picking
+@image html mouseinteraction.png
+@subpage examples-mouseinteraction @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-mouseinteraction
 @m_enddiv
 
 @endparblock
@@ -196,9 +196,24 @@ The following consist of documented source code only:
 @parblock
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html animated-gif.png
+@subpage examples-animated-gif @m_class{m-label m-warning} **animation**
+\n @copybrief examples-animated-gif
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html motionblur.png
+@subpage examples-motionblur \n @copybrief examples-motionblur
+@m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html cubemap.jpg
 @subpage examples-cubemap \n @copybrief examples-cubemap
 @m_enddiv
+
+@m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html shadows2.png
@@ -208,14 +223,24 @@ The following consist of documented source code only:
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html picking.png
+@subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-picking
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html text.png
 @subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
 @copybrief examples-text
 @m_enddiv
 
-@m_div{m-clearfix-l m-show-m} @m_enddiv
+@endparblock
 
-@m_div{m-col-m-4 m-col-s-6 m-push-m-4 m-text-center}
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-4 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan

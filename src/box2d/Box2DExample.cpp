@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2018 — Michal Mikula <miso.mikula@gmail.com>
 
@@ -29,6 +29,7 @@
 */
 
 #include <Box2D/Box2D.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -48,7 +49,7 @@
 #include <Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
-#include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -56,6 +57,11 @@ typedef SceneGraph::Object<SceneGraph::TranslationRotationScalingTransformation2
 typedef SceneGraph::Scene<SceneGraph::TranslationRotationScalingTransformation2D> Scene2D;
 
 using namespace Math::Literals;
+
+struct InstanceData {
+    Matrix3 transformation;
+    Color3 color;
+};
 
 class Box2DExample: public Platform::Application {
     public:
@@ -69,7 +75,9 @@ class Box2DExample: public Platform::Application {
         b2Body* createBody(Object2D& object, const Vector2& size, b2BodyType type, const DualComplex& transformation, Float density = 1.0f);
 
         GL::Mesh _mesh{NoCreate};
+        GL::Buffer _instanceBuffer{NoCreate};
         Shaders::Flat2D _shader{NoCreate};
+        Containers::Array<InstanceData> _instanceData;
 
         Scene2D _scene;
         Object2D* _cameraObject;
@@ -80,19 +88,16 @@ class Box2DExample: public Platform::Application {
 
 class BoxDrawable: public SceneGraph::Drawable2D {
     public:
-        explicit BoxDrawable(Object2D& object, GL::Mesh& mesh, Shaders::Flat2D& shader, const Color4& color, SceneGraph::DrawableGroup2D& drawables): SceneGraph::Drawable2D{object, &drawables}, _mesh(mesh), _shader(shader), _color{color} {}
+        explicit BoxDrawable(Object2D& object, Containers::Array<InstanceData>& instanceData, const Color3& color, SceneGraph::DrawableGroup2D& drawables): SceneGraph::Drawable2D{object, &drawables}, _instanceData(instanceData), _color{color} {}
 
     private:
-        void draw(const Matrix3& transformationMatrix, SceneGraph::Camera2D& camera) override {
-            _shader
-                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix)
-                .setColor(_color);
-            _mesh.draw(_shader);
+        void draw(const Matrix3& transformation, SceneGraph::Camera2D&) override {
+            arrayAppend(_instanceData, Containers::InPlaceInit,
+                transformation, _color);
         }
 
-        GL::Mesh& _mesh;
-        Shaders::Flat2D& _shader;
-        Color4 _color;
+        Containers::Array<InstanceData>& _instanceData;
+        Color3 _color;
 };
 
 b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, const b2BodyType type, const DualComplex& transformation, const Float density) {
@@ -150,14 +155,22 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     /* Create the Box2D world with the usual gravity vector */
     _world.emplace(b2Vec2{0.0f, -9.81f});
 
-    /* Create the shader and the box mesh */
-    _shader = Shaders::Flat2D{};
+    /* Create an instanced shader */
+    _shader = Shaders::Flat2D{
+        Shaders::Flat2D::Flag::VertexColor|
+        Shaders::Flat2D::Flag::InstancedTransformation};
+
+    /* Box mesh with an (initially empty) instance buffer */
     _mesh = MeshTools::compile(Primitives::squareSolid());
+    _instanceBuffer = GL::Buffer{};
+    _mesh.addVertexBufferInstanced(_instanceBuffer, 1, 0,
+        Shaders::Flat2D::TransformationMatrix{},
+        Shaders::Flat2D::Color3{});
 
     /* Create the ground */
     auto ground = new Object2D{&_scene};
     createBody(*ground, {11.0f, 0.5f}, b2_staticBody, DualComplex::translation(Vector2::yAxis(-8.0f)));
-    new BoxDrawable{*ground, _mesh, _shader, 0xa5c9ea_rgbf, _drawables};
+    new BoxDrawable{*ground, _instanceData, 0xa5c9ea_rgbf, _drawables};
 
     /* Create a pyramid of boxes */
     for(std::size_t row = 0; row != 15; ++row) {
@@ -166,7 +179,7 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
             const DualComplex transformation = globalTransformation*DualComplex::translation(
                 {Float(row)*0.6f + Float(item)*1.2f - 8.5f, Float(row)*1.0f - 6.0f});
             createBody(*box, {0.5f, 0.5f}, b2_dynamicBody, transformation);
-            new BoxDrawable{*box, _mesh, _shader, 0x2f83cc_rgbf, _drawables};
+            new BoxDrawable{*box, _instanceData, 0x2f83cc_rgbf, _drawables};
         }
     }
 
@@ -188,7 +201,7 @@ void Box2DExample::mousePressEvent(MouseEvent& event) {
 
     auto destroyer = new Object2D{&_scene};
     createBody(*destroyer, {0.5f, 0.5f}, b2_dynamicBody, DualComplex::translation(position), 2.0f);
-    new BoxDrawable{*destroyer, _mesh, _shader, 0xffff66_rgbf, _drawables};
+    new BoxDrawable{*destroyer, _instanceData, 0xffff66_rgbf, _drawables};
 }
 
 void Box2DExample::viewportEvent(ViewportEvent& event) {
@@ -205,7 +218,15 @@ void Box2DExample::drawEvent() {
             .setTranslation({body->GetPosition().x, body->GetPosition().y})
             .setRotation(Complex::rotation(Rad(body->GetAngle())));
 
+    /* Populate instance data with transformations and colors */
+    arrayResize(_instanceData, 0);
     _camera->draw(_drawables);
+
+    /* Upload instance data to the GPU and draw everything in a single call */
+    _instanceBuffer.setData(_instanceData, GL::BufferUsage::DynamicDraw);
+    _mesh.setInstanceCount(_instanceData.size());
+    _shader.setTransformationProjectionMatrix(_camera->projectionMatrix())
+        .draw(_mesh);
 
     swapBuffers();
     redraw();

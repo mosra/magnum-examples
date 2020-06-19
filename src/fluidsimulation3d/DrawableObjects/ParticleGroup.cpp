@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
@@ -36,7 +36,7 @@
 #include <Magnum/Math/Functions.h>
 #include <Magnum/Shaders/Generic.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -65,7 +65,7 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
         .setNumParticles(static_cast<int>(_points.size()))
         .setParticleRadius(_particleRadius)
         /* sphere render data */
-        .setPointSizeScale(static_cast<float>(viewportSize.x())/
+        .setPointSizeScale(static_cast<float>(viewportSize.y())/
             Math::tan(22.5_degf)) /* tan(half field-of-view angle (45_deg)*/
         .setColorMode(_colorMode)
         .setAmbientColor(_ambientColor)
@@ -75,9 +75,8 @@ ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& ca
         /* view/prj matrices and light */
         .setViewMatrix(camera->cameraMatrix())
         .setProjectionMatrix(camera->projectionMatrix())
-        .setLightDirection(_lightDir);
-
-    _meshParticles.draw(*_particleShader);
+        .setLightDirection(_lightDir)
+        .draw(_meshParticles);
 
     return *this;
 }

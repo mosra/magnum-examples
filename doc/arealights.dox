@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2017 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,7 @@
 */
 
 namespace Magnum {
-/** @page examples-arealights Area lights
+/** @page examples-arealights Area Lights
 @brief Basic real-time area lights.
 
 @m_footernavigation
@@ -74,6 +74,9 @@ library, see its documentation for license information.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/arealights).
+This example depends on the @ref Ui library and the @ref Trade::DdsImporter "DdsImporter"
+plugin which are not a part of the core Magnum repository, see their
+documentation for usage instructions.
 
 -   @ref arealights/AreaLights.frag "AreaLights.frag"
 -   @ref arealights/AreaLights.vert "AreaLights.vert"

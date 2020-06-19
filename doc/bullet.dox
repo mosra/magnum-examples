@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 Jan Dupal <dupal.j@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,8 +32,10 @@ namespace Magnum {
 
 A rotating table full of cubes that you can shoot down, showcasing the
 @ref BulletIntegration library together with @ref SceneGraph using
-@ref BulletIntegration::MotionState. It's also possible to visualize various
+@ref BulletIntegration::MotionState, together with visualizing various
 properties of the Bullet physics world using @ref BulletIntegration::DebugDraw.
+Everything is rendered in at most three draw call using instanced
+@ref Shaders::Phong.
 
 @image html bullet.png
 
@@ -59,6 +61,8 @@ makes use of the Bullet Physics library, see documentation of the
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/bullet).
+This example depends on the @ref BulletIntegration library which is not a part
+of the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref bullet/BulletExample.cpp "BulletExample.cpp"
 -   @ref bullet/CMakeLists.txt "CMakeLists.txt"

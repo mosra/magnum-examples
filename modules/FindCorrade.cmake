@@ -75,6 +75,9 @@
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries.
 #   Default are shared libraries.
+#  CORRADE_BUILD_STATIC_UNIQUE_GLOBALS - Defined if static libraries keep their
+#   globals unique even across different shared libraries. Enabled by default
+#   for static builds.
 #  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
 #   possible to safely use certain Corrade features simultaenously in multiple
 #   threads
@@ -88,6 +91,16 @@
 #  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
+#  CORRADE_TARGET_GCC           - Defined if compiling with GCC or GCC-
+#   compatible Clang
+#  CORRADE_TARGET_CLANG         - Defined if compiling with Clang or any of its
+#   variants
+#  CORRADE_TARGET_APPLE_CLANG   - Defined if compiling with Apple's Clang
+#  CORRADE_TARGET_CLANG_CL      - Defined if compiling with Clang-CL (Clang
+#   with a MSVC frontend)
+#  CORRADE_TARGET_MSVC          - Defined if compiling with MSVC or Clang with
+#   a MSVC frontend
+#  CORRADE_TARGET_MINGW         - Defined if compiling under MinGW
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
@@ -183,13 +196,19 @@
 #                     <metadata file>
 #                     <sources>...)
 #
-# The macro adds preprocessor directive ``CORRADE_DYNAMIC_PLUGIN``. Additional
-# libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
+# The macro adds a preprocessor directive ``CORRADE_DYNAMIC_PLUGIN`` when
+# compiling ``<sources>``. Additional libraries can be linked in via
+# :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
 # On DLL platforms, the plugin DLLs and metadata files are put into
-# ``<debug binary install dir>``/``<release binary install dir>`` and the
-# ``*.lib`` files into ``<debug library install dir>``/``<release library install dir>``.
-# On non-DLL platforms everything is put into ``<debug library install dir>``/
-# ``<release library install dir>``.
+# ``<debug binary install dir>`` / ``<release binary install dir>`` and the
+# ``*.lib`` files into ``<debug library install dir>`` /
+# ``<release library install dir>``. On non-DLL platforms everything is put
+# into ``<debug library install dir>`` / ``<release library install dir>``.
+#
+# If the plugin interface disables plugin metadata files, the
+# ``<metadata file>`` can be set to ``""``, in which case no metadata file is
+# copied anywhere. Otherwise the metadata file is copied and renamed to
+# ``<plugin name>``, retaining its original extension.
 #
 #  corrade_add_plugin(<plugin name>
 #                     <debug install dir>
@@ -214,14 +233,20 @@
 #                            <metadata file>
 #                            <sources>...)
 #
-# The macro adds preprocessor directive ``CORRADE_STATIC_PLUGIN``. Additional
-# libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
+# The macro adds a preprocessor directive ``CORRADE_STATIC_PLUGIN`` when
+# compiling ``<sources>``. Additional libraries can be linked in via
+# :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
 # The ``<binary install dir>`` is ignored and included just for compatibility
 # with the :command:`corrade_add_plugin` command, everything is installed into
 # ``<library install dir>``. Note that plugins built in debug configuration
 # (e.g. with :variable:`CMAKE_BUILD_TYPE` set to ``Debug``) have ``"-d"``
 # suffix to make it possible to have both debug and release plugins installed
 # alongside each other.
+#
+# If the plugin interface disables plugin metadata files, the
+# ``<metadata file>`` can be set to ``""``, in which case no metadata file is
+# used. Otherwise the metadata file is bundled and renamed to
+# ``<plugin name>``, retaining its original extension.
 #
 #  corrade_add_static_plugin(<plugin name>
 #                            <install dir>
@@ -247,7 +272,7 @@
 #   This file is part of Corrade.
 #
 #   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#               2017, 2018, 2019 Vladimír Vondruš <mosra@centrum.cz>
+#               2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -289,15 +314,15 @@ endif()
 
 # Read flags from configuration
 file(READ ${_CORRADE_CONFIGURE_FILE} _corradeConfigure)
+string(REGEX REPLACE ";" "\\\\;" _corradeConfigure "${_corradeConfigure}")
+string(REGEX REPLACE "\n" ";" _corradeConfigure "${_corradeConfigure}")
 set(_corradeFlags
-    # WARNING: CAREFUL HERE, the string(FIND) succeeds even if a subset is
-    # found -- so e.g. looking for TARGET_GL will match TARGET_GLES2 as well.
-    # So far that's not a problem, but might become an issue for new flags.
     MSVC2015_COMPATIBILITY
     MSVC2017_COMPATIBILITY
     MSVC2019_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_STATIC_UNIQUE_GLOBALS
     BUILD_MULTITHREADED
     TARGET_UNIX
     TARGET_APPLE
@@ -307,11 +332,15 @@ set(_corradeFlags
     TARGET_WINDOWS_RT
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
+    # TARGET_X86 etc and TARGET_LIBCXX are not exposed to CMake as the meaning
+    # is unclear on platforms with multi-arch binaries or when mixing different
+    # STL implementations. TARGET_GCC etc are figured out via UseCorrade.cmake,
+    # as the compiler can be different when compiling the lib & when using it.
     PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     TESTSUITE_TARGET_XCTEST
     UTILITY_USE_ANSI_COLORS)
 foreach(_corradeFlag ${_corradeFlags})
-    string(FIND "${_corradeConfigure}" "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
+    list(FIND _corradeConfigure "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
     if(NOT _corrade_${_corradeFlag} EQUAL -1)
         set(CORRADE_${_corradeFlag} 1)
     endif()
@@ -475,11 +504,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
 
         # PluginManager library
         elseif(_component STREQUAL PluginManager)
-            # At least static build needs this
-            if(CORRADE_TARGET_UNIX)
-                set_property(TARGET Corrade::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
-            endif()
+            # -ldl is handled by Utility now
 
         # TestSuite library has some additional files
         elseif(_component STREQUAL TestSuite)
@@ -514,6 +539,11 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             set_property(TARGET Corrade::${_component} APPEND PROPERTY
                 COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
+            # Directory::libraryLocation() needs this
+            if(CORRADE_TARGET_UNIX)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+            endif()
             # AndroidLogStreamBuffer class needs to be linked to log library
             if(CORRADE_TARGET_ANDROID)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY

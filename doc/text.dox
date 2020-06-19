@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -56,6 +56,10 @@ supports UTF-8. For mutable text buffer mapping is used.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/text).
+This example depends on either the @ref Text::FreeTypeFont "FreeTypeFont" or
+the @ref Text::StbTrueTypeFont "StbTrueTypeFont" plugin. Neither of them is a
+part of the core Magnum repository, see their documentation for usage
+instructions.
 
 -   @ref text/CMakeLists.txt "CMakeLists.txt"
 -   @ref text/resources.conf "resources.conf"

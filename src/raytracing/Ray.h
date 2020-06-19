@@ -1,10 +1,13 @@
+#ifndef Magnum_Examples_RayTracing_Ray_h
+#define Magnum_Examples_RayTracing_Ray_h
 /*
     This file is part of Magnum.
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
+        2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -27,36 +30,30 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-uniform lowp vec3 ambientColor;
-uniform lowp vec3 color;
-uniform lowp uint objectId;
+#include <Magnum/Magnum.h>
+#include <Magnum/Math/Vector3.h>
 
-in mediump vec3 transformedNormal;
-in highp vec3 lightDirection;
-in highp vec3 cameraDirection;
+namespace Magnum { namespace Examples {
 
-layout(location = 0) out lowp vec4 fragmentColor;
-layout(location = 1) out lowp uint fragmentObjectId;
+struct Ray {
+    explicit Ray() = default;
+    explicit Ray(const Vector3& origin, const Vector3& dir) : origin{origin}, unitDirection{dir.normalized()} {}
 
-void main() {
-    mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
-    highp vec3 normalizedLightDirection = normalize(lightDirection);
+    Vector3 point(Float t) const { return origin + t * unitDirection; }
 
-    /* Add ambient color */
-    fragmentColor.rgb = ambientColor;
+    Vector3 origin;
+    Vector3 unitDirection;
+};
 
-    /* Add diffuse color */
-    lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-    fragmentColor.rgb += color*intensity;
+class Material;
 
-    /* Add specular color, if needed */
-    if(intensity > 0.001) {
-        highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
-        mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), 80.0);
-        fragmentColor.rgb += vec3(1.0)*specularity;
-    }
+struct HitInfo {
+    Float t;
+    Vector3 p;
+    Vector3 unitNormal;
+    const Material* material = nullptr;
+};
 
-    /* Force alpha to 1 */
-    fragmentColor.a = 1.0;
-    fragmentObjectId = objectId;
-}
+}}
+
+#endif

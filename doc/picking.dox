@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-picking Object picking
+/** @page examples-picking Object Picking
 @brief Usage of multiple framebuffer attachments to implement object picking.
 
 @m_footernavigation
@@ -48,21 +48,15 @@ Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/picking).
 
 -   @ref picking/CMakeLists.txt "CMakeLists.txt"
--   @ref picking/PhongId.frag "PhongId.frag"
--   @ref picking/PhongId.vert "PhongId.vert"
 -   @ref picking/PickingExample.cpp "PickingExample.cpp"
--   @ref picking/resources.conf "resources.conf"
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/picking)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
 support that aren't present in `master` in order to keep the example code as
 simple as possible.
 
-@example picking/PhongId.vert @m_examplenavigation{examples-picking,picking/} @m_footernavigation
-@example picking/PhongId.frag @m_examplenavigation{examples-picking,picking/} @m_footernavigation
-@example picking/PickingExample.cpp @m_examplenavigation{examples-picking,picking/} @m_footernavigation
-@example picking/resources.conf @m_examplenavigation{examples-picking,picking/} @m_footernavigation
 @example picking/CMakeLists.txt @m_examplenavigation{examples-picking,picking/} @m_footernavigation
+@example picking/PickingExample.cpp @m_examplenavigation{examples-picking,picking/} @m_footernavigation
 
 */
 }

@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2018 — scturtle <scturtle@gmail.com>
 
@@ -50,7 +50,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #ifdef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/Reference.h>
@@ -146,8 +146,9 @@ class VertexColorDrawable: public SceneGraph::Drawable3D {
         explicit VertexColorDrawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
     private:
@@ -160,9 +161,10 @@ class FlatDrawable: public SceneGraph::Drawable3D {
         explicit FlatDrawable(Object3D& object, Shaders::Flat3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
-            _shader.setColor(0x747474_rgbf)
-                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setColor(0x747474_rgbf)
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
     private:
@@ -307,7 +309,8 @@ Float MouseInteractionExample::depthAt(const Vector2i& windowPosition) {
     /* Unpack the values back. Can't just use UnsignedInt as the values are
        packed as big-endian. */
     Float depth[25];
-    auto packed = Containers::arrayCast<const Math::Vector4<UnsignedByte>>(image.data());
+    /* TODO: remove the asContiguous() when bit unpack functions exist */
+    auto packed = image.pixels<const Math::Vector4<UnsignedByte>>().asContiguous();
     for(std::size_t i = 0; i != packed.size(); ++i)
         depth[i] = Math::unpack<Float, UnsignedInt, 24>((packed[i].x() << 16) | (packed[i].y() << 8) | packed[i].z());
 
@@ -379,7 +382,7 @@ void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
             transformation = Matrix4::rotationY(90.0_degf - 90.0_degf*multiplier);
         else if(event.key() == KeyEvent::Key::NumThree) /* Right/left */
             transformation = Matrix4::rotationY(90.0_degf*multiplier);
-        else CORRADE_ASSERT_UNREACHABLE();
+        else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
         _cameraObject->setTransformation(transformation*Matrix4::translation(viewTranslation));
         redraw();

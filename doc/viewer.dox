@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-viewer Model viewer
+/** @page examples-viewer Model Viewer
 @brief Scene graph, resource management and model importing.
 
 @m_keywords{Viewer}
@@ -327,7 +327,7 @@ and you can try it with the [scene.obj](https://github.com/mosra/magnum-examples
 file bundled in the example repository. For more advanced models with custom
 textures and materials, @ref building-plugins "Magnum Plugins" provide
 @ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
-[scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf),
+[scene.glb](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.glb),
 and there are more plugins for various other formats.
 
 @m_class{m-block m-success}
@@ -351,7 +351,7 @@ and there are more plugins for various other formats.
     set(WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
-    add_custom_target(plugins ALL DEPENDS
+    add_dependencies(magnum-viewer
         Magnum::AnyImageImporter
         Magnum::AnySceneImporter
         Magnum::ObjImporter
@@ -372,7 +372,7 @@ available in the [magnum-examples GitHub repository](https://github.com/mosra/ma
 -   @ref viewer/CMakeLists.txt "CMakeLists.txt"
 -   @ref viewer/ViewerExample.cpp "ViewerExample.cpp"
 -   [scene.obj](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.obj)
--   [scene.gltf](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.gltf)
+-   [scene.glb](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.glb)
 
 The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/viewer)
 contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"

@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -114,7 +114,7 @@ MotionBlurCamera::MotionBlurCanvas::MotionBlurCanvas(GL::Texture2D** frames, Obj
 void MotionBlurCamera::MotionBlurCanvas::draw(std::size_t currentFrame) {
     for(Int i = 0; i != MotionBlurCamera::FrameCount; ++i)
         frames[i]->bind((i+currentFrame)%MotionBlurCamera::FrameCount);
-    mesh.draw(shader);
+    shader.draw(mesh);
 }
 
 }}

@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2018 — Jonathan Hale <squareys@googlemail.com>
 
@@ -36,13 +36,12 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Vector3.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Primitives/UVSphere.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include <Leap.h>
 
@@ -58,7 +57,6 @@ class LeapMotionExample: public Platform::Application {
         void drawEvent() override;
         void drawBone(const Leap::Bone& bone, bool start, bool end, const Color3& color);
 
-        GL::Buffer _buffers[4];
         GL::Mesh _cylinder{NoCreate};
         GL::Mesh _sphere{NoCreate};
 
@@ -84,35 +82,9 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
        To reduce latency and fully utlize the ~115 fps hand tracking, disable vsync. */
     setSwapInterval(1);
 
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    {
-        /* Setup cylinder mesh */
-        const Trade::MeshData3D cylinder = Primitives::cylinderSolid(2, 16, 0.5f);
-        _buffers[0].setData(MeshTools::interleave(cylinder.positions(0), cylinder.normals(0)), GL::BufferUsage::StaticDraw);
-
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cylinder.indices());
-        _buffers[1].setData(indexData, GL::BufferUsage::StaticDraw);
-
-        _cylinder = GL::Mesh{cylinder.primitive()};
-        _cylinder.setCount(cylinder.indices().size())
-                 .addVertexBuffer(_buffers[0], 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-                 .setIndexBuffer(_buffers[1], 0, indexType, indexStart, indexEnd);
-    }
-    {
-        /* Setup sphere mesh */
-        const Trade::MeshData3D sphere = Primitives::uvSphereSolid(16, 16);
-        _buffers[2].setData(MeshTools::interleave(sphere.positions(0), sphere.normals(0)), GL::BufferUsage::StaticDraw);
-
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(sphere.indices());
-        _buffers[3].setData(indexData, GL::BufferUsage::StaticDraw);
-
-        _sphere = GL::Mesh{sphere.primitive()};
-        _sphere.setCount(sphere.indices().size())
-               .addVertexBuffer(_buffers[2], 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-               .setIndexBuffer(_buffers[3], 0, indexType, indexStart, indexEnd);
-    }
+    /* Setup cylinder and sphere meshes */
+    _cylinder = MeshTools::compile(Primitives::cylinderSolid(2, 16, 0.5f));
+    _sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 16));
 
     /* Setup shader */
     _shader.setSpecularColor(Color3(1.0f))

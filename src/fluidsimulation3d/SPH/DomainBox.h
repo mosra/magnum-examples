@@ -5,7 +5,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
@@ -63,7 +63,7 @@ class DomainBox {
         }
 
         Vector3i getCellIndex(const Vector3& ppos) {
-            Vector3i cellIdx{Math::NoInit};
+            Vector3i cellIdx{NoInit};
             for(std::size_t i = 0; i != 3; ++i) {
                 cellIdx[i] = Int((ppos[i] - _lowerGridBound[i]) * _invCellLength);
             }

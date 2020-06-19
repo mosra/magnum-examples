@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2018 — ShaddyAQN <ShaddyAQN@gmail.com>
         2018 — Jonathan Hale <squareys@googlemail.com>
@@ -68,7 +68,7 @@ class ImGuiExample: public Platform::Application {
     private:
         ImGuiIntegration::Context _imgui{NoCreate};
 
-        bool _showTestWindow = true;
+        bool _showDemoWindow = true;
         bool _showAnotherWindow = false;
         Color4 _clearColor = 0x72909aff_rgbaf;
         Float _floatValue = 0.0f;
@@ -133,7 +133,7 @@ void ImGuiExample::drawEvent() {
         if(ImGui::ColorEdit3("Clear Color", _clearColor.data()))
             GL::Renderer::setClearColor(_clearColor);
         if(ImGui::Button("Test Window"))
-            _showTestWindow ^= true;
+            _showDemoWindow ^= true;
         if(ImGui::Button("Another Window"))
             _showAnotherWindow ^= true;
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
@@ -148,11 +148,11 @@ void ImGuiExample::drawEvent() {
         ImGui::End();
     }
 
-    /* 3. Show the ImGui test window. Most of the sample code is in
-       ImGui::ShowTestWindow() */
-    if(_showTestWindow) {
+    /* 3. Show the ImGui demo window. Most of the sample code is in
+       ImGui::ShowDemoWindow() */
+    if(_showDemoWindow) {
         ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-        ImGui::ShowTestWindow();
+        ImGui::ShowDemoWindow();
     }
 
     /* Update application cursor */

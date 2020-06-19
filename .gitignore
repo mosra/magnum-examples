@@ -4,7 +4,7 @@ build*/
 pkg
 *.kdev4
 *~
-*.pkg.tar.xz
+*.pkg.tar.zst
 CMakeLists.txt.user*
 
 # Android-specific stuff

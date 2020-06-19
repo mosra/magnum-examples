@@ -3,7 +3,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -35,6 +35,8 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED)
 
 include(CMakeDependentOption)
+option(WITH_ARCBALL_EXAMPLE "Build ArcBall Camera example" OFF)
+option(WITH_ANIMATED_GIF_EXAMPLE "Build Animated Gif example" OFF)
 option(WITH_AREALIGHTS_EXAMPLE "Build Area Lights example (requires the Ui library and some TTF font plugin)" OFF)
 option(WITH_AUDIO_EXAMPLE "Build Audio example (requires the Audio library and the StbVorbisAudioImporter plugin)" OFF)
 option(WITH_BOX2D_EXAMPLE "Build Box2D integration example" OFF)
@@ -50,6 +52,7 @@ cmake_dependent_option(WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "
 option(WITH_OVR_EXAMPLE "Build OVR example" OFF)
 option(WITH_PICKING_EXAMPLE "Build Picking example" OFF)
 option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
+option(WITH_RAYTRACING_EXAMPLE "Build Ray Tracing example" OFF)
 option(WITH_SHADOWS_EXAMPLE "Build Shadow Mapping example" OFF)
 option(WITH_TEXT_EXAMPLE "Build Text example (requires some TTF font plugin)" OFF)
 option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires some TGA importer plugin)" OFF)

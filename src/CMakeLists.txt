@@ -3,7 +3,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #       2019 — Jonathan Hale <squareys@googlemail.com>
 #
@@ -28,7 +28,8 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-# On MSVC remove /W3, as we are replacing it with /W4
+# On MSVC remove /W3, as we are replacing it with /W4. Could be removed as of
+# 3.15 with this: https://cmake.org/cmake/help/latest/policy/CMP0092.html
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
@@ -37,6 +38,14 @@ endif()
 # values to ANSI functions
 if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
+endif()
+
+if(WITH_ANIMATED_GIF_EXAMPLE)
+    add_subdirectory(animated-gif)
+endif()
+
+if(WITH_ARCBALL_EXAMPLE)
+    add_subdirectory(arcball)
 endif()
 
 if(WITH_AREALIGHTS_EXAMPLE)
@@ -97,6 +106,10 @@ endif()
 
 if(WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
+endif()
+
+if(WITH_RAYTRACING_EXAMPLE)
+    add_subdirectory(raytracing)
 endif()
 
 if(WITH_SHADOWS_EXAMPLE)

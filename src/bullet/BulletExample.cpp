@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2013 — Jan Dupal <dupal.j@gmail.com>
         2019 — Max Schwarz <max.schwarz@online.de>
@@ -30,6 +30,7 @@
 */
 
 #include <btBulletDynamicsCommon.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Magnum/Timeline.h>
@@ -55,7 +56,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -63,6 +64,12 @@ using namespace Math::Literals;
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+
+struct InstanceData {
+    Matrix4 transformationMatrix;
+    Matrix3x3 normalMatrix;
+    Color3 color;
+};
 
 class BulletExample: public Platform::Application {
     public:
@@ -75,8 +82,10 @@ class BulletExample: public Platform::Application {
         void mousePressEvent(MouseEvent& event) override;
 
         GL::Mesh _box{NoCreate}, _sphere{NoCreate};
+        GL::Buffer _boxInstanceBuffer{NoCreate}, _sphereInstanceBuffer{NoCreate};
         Shaders::Phong _shader{NoCreate};
         BulletIntegration::DebugDraw _debugDraw{NoCreate};
+        Containers::Array<InstanceData> _boxInstanceData, _sphereInstanceData;
 
         btDbvtBroadphase _bBroadphase;
         btDefaultCollisionConfiguration _bCollisionConfig;
@@ -103,20 +112,17 @@ class BulletExample: public Platform::Application {
 
 class ColoredDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit ColoredDrawable(Object3D& object, Shaders::Phong& shader, GL::Mesh& mesh, const Color4& color, const Matrix4& primitiveTransformation, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh), _color{color}, _primitiveTransformation{primitiveTransformation} {}
+        explicit ColoredDrawable(Object3D& object, Containers::Array<InstanceData>& instanceData, const Color3& color, const Matrix4& primitiveTransformation, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _instanceData(instanceData), _color{color}, _primitiveTransformation{primitiveTransformation} {}
 
     private:
-        void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
-            _shader.setDiffuseColor(_color)
-                .setTransformationMatrix(transformation*_primitiveTransformation)
-                .setProjectionMatrix(camera.projectionMatrix())
-                .setNormalMatrix(transformation.normalMatrix());
-            _mesh.draw(_shader);
+        void draw(const Matrix4& transformation, SceneGraph::Camera3D&) override {
+            const Matrix4 t = transformation*_primitiveTransformation;
+            arrayAppend(_instanceData, Containers::InPlaceInit,
+                t, t.normalMatrix(), _color);
         }
 
-        Shaders::Phong& _shader;
-        GL::Mesh& _mesh;
-        Color4 _color;
+        Containers::Array<InstanceData>& _instanceData;
+        Color3 _color;
         Matrix4 _primitiveTransformation;
 };
 
@@ -180,15 +186,27 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f))
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
-    /* Drawing setup */
-    _box = MeshTools::compile(Primitives::cubeSolid());
-    _sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
-    _shader = Shaders::Phong{};
+    /* Create an instanced shader */
+    _shader = Shaders::Phong{
+        Shaders::Phong::Flag::VertexColor|
+        Shaders::Phong::Flag::InstancedTransformation};
     _shader.setAmbientColor(0x111111_rgbf)
            .setSpecularColor(0x330000_rgbf)
            .setLightPosition({10.0f, 15.0f, 5.0f});
-    _debugDraw = BulletIntegration::DebugDraw{};
-    _debugDraw.setMode(BulletIntegration::DebugDraw::Mode::DrawWireframe);
+
+    /* Box and sphere mesh, with an (initially empty) instance buffer */
+    _box = MeshTools::compile(Primitives::cubeSolid());
+    _sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+    _boxInstanceBuffer = GL::Buffer{};
+    _sphereInstanceBuffer = GL::Buffer{};
+    _box.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,
+        Shaders::Phong::TransformationMatrix{},
+        Shaders::Phong::NormalMatrix{},
+        Shaders::Phong::Color3{});
+    _sphere.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
+        Shaders::Phong::TransformationMatrix{},
+        Shaders::Phong::NormalMatrix{},
+        Shaders::Phong::Color3{});
 
     /* Setup the renderer so we can draw the debug lines on top */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -197,12 +215,14 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     GL::Renderer::setPolygonOffset(2.0f, 0.5f);
 
     /* Bullet setup */
+    _debugDraw = BulletIntegration::DebugDraw{};
+    _debugDraw.setMode(BulletIntegration::DebugDraw::Mode::DrawWireframe);
     _bWorld.setGravity({0.0f, -10.0f, 0.0f});
     _bWorld.setDebugDrawer(&_debugDraw);
 
     /* Create the ground */
     auto* ground = new RigidBody{&_scene, 0.0f, &_bGroundShape, _bWorld};
-    new ColoredDrawable{*ground, _shader, _box, 0xffffff_rgbf,
+    new ColoredDrawable{*ground, _boxInstanceData, 0xffffff_rgbf,
         Matrix4::scaling({4.0f, 0.5f, 4.0f}), _drawables};
 
     /* Create boxes with random colors */
@@ -213,7 +233,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
                 auto* o = new RigidBody{&_scene, 1.0f, &_bBoxShape, _bWorld};
                 o->translate({i - 2.0f, j + 4.0f, k - 2.0f});
                 o->syncPose();
-                new ColoredDrawable{*o, _shader, _box,
+                new ColoredDrawable{*o, _boxInstanceData,
                     Color3::fromHsv({hue += 137.5_degf, 0.75f, 0.9f}),
                     Matrix4::scaling(Vector3{0.5f}), _drawables};
             }
@@ -248,8 +268,25 @@ void BulletExample::drawEvent() {
     /* Step bullet simulation */
     _bWorld.stepSimulation(_timeline.previousFrameDuration(), 5);
 
-    /* Draw the cubes */
-    if(_drawCubes) _camera->draw(_drawables);
+    if(_drawCubes) {
+        /* Populate instance data with transformations and colors */
+        arrayResize(_boxInstanceData, 0);
+        arrayResize(_sphereInstanceData, 0);
+        _camera->draw(_drawables);
+
+        _shader.setProjectionMatrix(_camera->projectionMatrix());
+
+        /* Upload instance data to the GPU (orphaning the previous buffer
+           contents) and draw all cubes in one call, and all spheres (if any)
+           in another call */
+        _boxInstanceBuffer.setData(_boxInstanceData, GL::BufferUsage::DynamicDraw);
+        _box.setInstanceCount(_boxInstanceData.size());
+        _shader.draw(_box);
+
+        _sphereInstanceBuffer.setData(_sphereInstanceData, GL::BufferUsage::DynamicDraw);
+        _sphere.setInstanceCount(_sphereInstanceData.size());
+        _shader.draw(_sphere);
+    }
 
     /* Debug draw. If drawing on top of cubes, avoid flickering by setting
        depth function to <= instead of just <. */
@@ -304,7 +341,11 @@ void BulletExample::keyPressEvent(KeyEvent& event) {
 void BulletExample::mousePressEvent(MouseEvent& event) {
     /* Shoot an object on click */
     if(event.button() == MouseEvent::Button::Left) {
-        const Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2{event.position()}/Vector2{GL::defaultFramebuffer.viewport().size()} - Vector2{0.5f})* _camera->projectionSize();
+        /* First scale the position from being relative to window size to being
+           relative to framebuffer size as those two can be different on HiDPI
+           systems */
+        const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
+        const Vector2 clickPoint = Vector2::yScale(-1.0f)*(Vector2{position}/Vector2{framebufferSize()} - Vector2{0.5f})*_camera->projectionSize();
         const Vector3 direction = (_cameraObject->absoluteTransformation().rotationScaling()*Vector3{clickPoint, -1.0f}).normalized();
 
         auto* object = new RigidBody{
@@ -318,7 +359,8 @@ void BulletExample::mousePressEvent(MouseEvent& event) {
         object->syncPose();
 
         /* Create either a box or a sphere */
-        new ColoredDrawable{*object, _shader, _shootBox ? _box : _sphere,
+        new ColoredDrawable{*object,
+            _shootBox ? _boxInstanceData : _sphereInstanceData,
             _shootBox ? 0x880000_rgbf : 0x220000_rgbf,
             Matrix4::scaling(Vector3{_shootBox ? 0.5f : 0.25f}), _drawables};
 

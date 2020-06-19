@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -33,6 +33,8 @@ namespace Magnum {
     Python examples
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaro)) --- the
     @ref examples-shadows example
+-   **Brandon Pomeroy** ([\@pomeroyb](https://github.com/pomeroyb)) --- updates
+    to the @ref examples-picking example
 -   **Davide Bacchet** ([\@dbacchet](https://github.com/dbacchet)) --- HiDPI
     fixes to the @ref examples-picking example
 -   **[\@denesik](https://github.com/denesik)** --- original
@@ -58,6 +60,8 @@ namespace Magnum {
     bugreports, buildsystem fixes
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
     Gentoo ebuild
+-   **Marco Melorio** ([\@Melix19](https://github.com/Melix19)) --- various
+    fixes
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- memory leak plugs
     in the @ref examples-bullet example
 -   **Michal Mikula** --- the @ref examples-box2d example
@@ -67,8 +71,8 @@ namespace Magnum {
     package updates, a PPA repository for stable versions,
     @ref examples-cubemap improvements
 -   **Nghia Truong** ([\@ttnghia](https://github.com/ttnghia) --- the
-    @ref examples-fluidsimulation2d and @ref examples-fluidsimulation3d
-    examples
+    @ref examples-fluidsimulation2d, @ref examples-fluidsimulation3d,
+    @ref examples-arcball and @ref examples-raytracing examples
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example

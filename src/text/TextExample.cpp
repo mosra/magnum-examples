@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -161,15 +161,15 @@ void TextExample::drawEvent() {
         .setColor(0x2f83cc_rgbf)
         .setOutlineColor(0xdcdcdc_rgbf)
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/ _transformationRotatingText.uniformScaling());
-    _rotatingText.draw(_shader);
+        .setSmoothness(0.025f/ _transformationRotatingText.uniformScaling())
+        .draw(_rotatingText);
 
     _shader
         .setTransformationProjectionMatrix(_transformationProjectionDynamicText)
         .setColor(0xffffff_rgbf)
         .setOutlineRange(0.5f, 1.0f)
-        .setSmoothness(0.075f);
-    _dynamicText->mesh().draw(_shader);
+        .setSmoothness(0.075f)
+        .draw(_dynamicText->mesh());
 
     swapBuffers();
 }

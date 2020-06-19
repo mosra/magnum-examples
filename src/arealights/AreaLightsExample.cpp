@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2017 — Jonathan Hale <squareys@googlemail.com>, based on "Real-Time
             Polygonal-Light Shading with Linearly Transformed Cosines", by Eric
@@ -58,7 +58,7 @@
 #include <Magnum/Text/Alignment.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/Ui/Anchor.h>
 #include <Magnum/Ui/Button.h>
 #include <Magnum/Ui/Label.h>
@@ -506,7 +506,7 @@ void AreaLightsExample::drawEvent() {
         if(i == 0)
             GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
-        _plane.draw(_areaLightShader);
+        _areaLightShader.draw(_plane);
 
         if(i == 0)
             GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
@@ -517,13 +517,15 @@ void AreaLightsExample::drawEvent() {
        Draw twice for two-sided lights. */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     for(std::size_t i: {0, 1, 2}) {
-        _flatShader.setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
-            .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]);
-        _plane.draw(_flatShader);
+        _flatShader
+            .setColor(_lightColor[i]*_lightIntensity[i]*1.25f)
+            .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i])
+            .draw(_plane);
 
         if(_lightTwoSided[i]) {
-            _flatShader.setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]*Matrix4::scaling(Vector3::xScale(-1.0f)));
-            _plane.draw(_flatShader);
+            _flatShader
+                .setTransformationProjectionMatrix(_projection*_view*_lightTransform[i]*Matrix4::scaling(Vector3::xScale(-1.0f)))
+                .draw(_plane);
         }
     }
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);

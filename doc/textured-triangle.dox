@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-textured-triangle Textured triangle
+/** @page examples-textured-triangle Textured Triangle
 @brief Importing image data, texturing and custom shaders.
 
 @tableofcontents
@@ -245,7 +245,7 @@ CMake in any way.
     add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
     # So the TgaImporter gets built implicitly
-    add_custom_target(plugins ALL DEPENDS Magnum::TgaImporter)
+    add_dependencies(magnum-textured-triangle Magnum::TgaImporter)
     @endcode
 @par
     If you're using a Magnum package, @ref Trade::TgaImporter "TgaImporter" is
@@ -318,7 +318,7 @@ and also shows how to open files passed via command-line arguments.
     # git clone https://github.com/mosra/magnum-plugins.git
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
-    add_custom_target(plugins ALL DEPENDS
+    add_dependencies(magnum-textured-triangle
         Magnum::AnyImageImporter
         MagnumPlugins::StbImageImporter)
     @endcode

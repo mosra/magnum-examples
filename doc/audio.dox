@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,6 +60,9 @@ documentation for license information.
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/audio).
+This example depends on the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter"
+plugin which is not a part of the core Magnum repository, see their
+documentation for usage instructions.
 
 -   @ref audio/AudioExample.cpp "AudioExample.cpp"
 -   @ref audio/CMakeLists.txt "CMakeLists.txt"

@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -43,6 +43,8 @@ triangle offscreen, exporting it to a PNG file using the
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle-vulkan).
+This example depends on the @ref Vk library that's not enabled by default in
+most cases, see its documentation for usage instructions.
 
 -   @ref triangle-vulkan/CMakeLists.txt "CMakeLists.txt"
 -   @ref triangle-vulkan/main.cpp "main.cpp"

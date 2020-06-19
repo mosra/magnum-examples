@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
             /* Render here */
             GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
-            mesh.draw(shader);
+            shader.draw(mesh);
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);

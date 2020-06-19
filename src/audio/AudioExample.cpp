@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2015, 2017 — Jonathan Hale <squareys@googlemail.com>
 
@@ -57,7 +57,7 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/DualQuaternionTransformation.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -148,9 +148,10 @@ AudioExample::AudioExample(const Arguments& arguments):
 
         private:
             void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
-                _shader.setColor(_color)
-                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-                _mesh.draw(_shader);
+                _shader
+                    .setColor(_color)
+                    .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                    .draw(_mesh);
             }
 
             Color4 _color;

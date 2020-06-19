@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,13 +56,12 @@ license information.
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/leapmotion).
-Note that the CMake code uses `FindLeap.cmake`, which you can find in the
-[modules/](https://github.com/mosra/magnum-examples/tree/master/modules)
-directory.
+This example depends on the [LeapMotion SDK](https://leapmotion.com/) which you
+need to install separately; additionally you need to put [FindLeap.cmake](https://github.com/mosra/magnum-examples/blob/master/modules/FindLeap.cmake)
+into your `modules/` directory.
 
 -   @ref leapmotion/CMakeLists.txt "CMakeLists.txt"
 -   @ref leapmotion/LeapMotionExample.cpp "LeapMotionExample.cpp"
-
 
 @example leapmotion/CMakeLists.txt @m_examplenavigation{examples-leapmotion,leapmotion/} @m_footernavigation
 @example leapmotion/LeapMotionExample.cpp @m_examplenavigation{examples-leapmotion,leapmotion/} @m_footernavigation

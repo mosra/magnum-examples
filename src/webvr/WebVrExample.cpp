@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2017, 2018 — Jonathan Hale <squareys@googlemail.com>
 
@@ -38,12 +38,11 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/Math/Range.h>
-#include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Interleave.h>
+#include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/EmscriptenApplication.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include <emscripten.h>
 #include <emscripten/vr.h>
@@ -65,7 +64,6 @@ class WebVrExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& e) override;
 
-        GL::Buffer _indexBuffer, _vertexBuffer;
         GL::Mesh _mesh;
         Shaders::Phong _shader;
 
@@ -117,21 +115,7 @@ WebVrExample::WebVrExample(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* Setup cube mesh */
-    const Trade::MeshData3D cube = Primitives::cubeSolid();
-    _vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), GL::BufferUsage::StaticDraw);
-
-    Containers::Array<char> indexData;
-    MeshIndexType indexType;
-    UnsignedInt indexStart, indexEnd;
-    std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
-
-    _indexBuffer.setTargetHint(GL::Buffer::TargetHint::ElementArray);
-    _indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
-
-    _mesh.setPrimitive(cube.primitive())
-        .setCount(cube.indices().size())
-        .addVertexBuffer(_vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-        .setIndexBuffer(_indexBuffer, 0, indexType, indexStart, indexEnd);
+    _mesh = MeshTools::compile(Primitives::cubeSolid());
 
     /* Setup scene */
     _cubeModelMatrices[0] = Matrix4::translation({ 0.0f,  0.0f, -3.0f})*Matrix4::rotationY(45.0_degf);

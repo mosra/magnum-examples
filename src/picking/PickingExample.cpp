@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -27,11 +27,11 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Image.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Framebuffer.h>
@@ -39,7 +39,6 @@
 #include <Magnum/GL/Renderbuffer.h>
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
-#include <Magnum/GL/Shader.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/GL/Version.h>
@@ -53,12 +52,12 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Plane.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Generic.h>
+#include <Magnum/Shaders/Phong.h>
 
 namespace Magnum { namespace Examples {
 
@@ -67,94 +66,9 @@ using namespace Magnum::Math::Literals;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class PhongIdShader: public GL::AbstractShaderProgram {
-    public:
-        /* Not actually used, just for documentation purposes --- but attribute
-           locations in the vertex shader source have to match these in order
-           to make MeshTools::compile() work */
-        typedef Shaders::Generic3D::Position Position;
-        typedef Shaders::Generic3D::Normal Normal;
-
-        enum: UnsignedInt {
-            ColorOutput = 0,
-            ObjectIdOutput = 1
-        };
-
-        explicit PhongIdShader();
-
-        PhongIdShader& setObjectId(UnsignedInt id) {
-            setUniform(_objectIdUniform, id);
-            return *this;
-        }
-
-        PhongIdShader& setLightPosition(const Vector3& position) {
-            setUniform(_lightPositionUniform, position);
-            return *this;
-        }
-
-        PhongIdShader& setAmbientColor(const Color3& color) {
-            setUniform(_ambientColorUniform, color);
-            return *this;
-        }
-
-        PhongIdShader& setColor(const Color3& color) {
-            setUniform(_colorUniform, color);
-            return *this;
-        }
-
-        PhongIdShader& setTransformationMatrix(const Matrix4& matrix) {
-            setUniform(_transformationMatrixUniform, matrix);
-            return *this;
-        }
-
-        PhongIdShader& setNormalMatrix(const Matrix3x3& matrix) {
-            setUniform(_normalMatrixUniform, matrix);
-            return *this;
-        }
-
-        PhongIdShader& setProjectionMatrix(const Matrix4& matrix) {
-            setUniform(_projectionMatrixUniform, matrix);
-            return *this;
-        }
-
-    private:
-        Int _objectIdUniform,
-            _lightPositionUniform,
-            _ambientColorUniform,
-            _colorUniform,
-            _transformationMatrixUniform,
-            _normalMatrixUniform,
-            _projectionMatrixUniform;
-};
-
-PhongIdShader::PhongIdShader() {
-    Utility::Resource rs("picking-data");
-
-    #ifndef MAGNUM_TARGET_GLES
-    GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex},
-        frag{GL::Version::GL330, GL::Shader::Type::Fragment};
-    #else
-    GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex},
-        frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
-    #endif
-    vert.addSource(rs.get("PhongId.vert"));
-    frag.addSource(rs.get("PhongId.frag"));
-    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vert, frag}));
-    attachShaders({vert, frag});
-    CORRADE_INTERNAL_ASSERT(link());
-
-    _objectIdUniform = uniformLocation("objectId");
-    _lightPositionUniform = uniformLocation("light");
-    _ambientColorUniform = uniformLocation("ambientColor");
-    _colorUniform = uniformLocation("color");
-    _transformationMatrixUniform = uniformLocation("transformationMatrix");
-    _projectionMatrixUniform = uniformLocation("projectionMatrix");
-    _normalMatrixUniform = uniformLocation("normalMatrix");
-}
-
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedByte id, PhongIdShader& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
+        explicit PickableObject(UnsignedInt id, Shaders::Phong& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -164,16 +78,16 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
                 .setNormalMatrix(transformationMatrix.normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix())
                 .setAmbientColor(_selected ? _color*0.3f : Color3{})
-                .setColor(_color*(_selected ? 2.0f : 1.0f))
+                .setDiffuseColor(_color*(_selected ? 2.0f : 1.0f))
                 /* relative to the camera */
                 .setLightPosition({13.0f, 2.0f, 5.0f})
-                .setObjectId(_id);
-            _mesh.draw(_shader);
+                .setObjectId(_id)
+                .draw(_mesh);
         }
 
-        UnsignedByte _id;
+        UnsignedInt _id;
         bool _selected;
-        PhongIdShader& _shader;
+        Shaders::Phong& _shader;
         Color3 _color;
         GL::Mesh& _mesh;
 };
@@ -194,7 +108,7 @@ class PickingExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
 
-        PhongIdShader _shader;
+        Shaders::Phong _shader{Shaders::Phong::Flag::ObjectId};
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };
@@ -227,8 +141,8 @@ PickingExample::PickingExample(const Arguments& arguments):
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
                .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
                .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, _depth)
-               .mapForDraw({{PhongIdShader::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                            {PhongIdShader::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
+               .mapForDraw({{Shaders::Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                            {Shaders::Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
     CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     /* Set up meshes */
@@ -332,7 +246,7 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
-    UnsignedByte id = Containers::arrayCast<UnsignedByte>(data.data())[0];
+    UnsignedInt id = data.pixels<UnsignedInt>()[0][0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);
 

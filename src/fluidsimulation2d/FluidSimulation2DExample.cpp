@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
@@ -50,7 +50,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Timeline.h>
-#include <Magnum/Trade/MeshData2D.h>
+#include <Magnum/Trade/MeshData.h>
 
 #include "DrawableObjects/ParticleGroup2D.h"
 #include "DrawableObjects/WireframeObject2D.h"
@@ -481,12 +481,17 @@ void FluidSimulation2DExample::resetSimulation() {
     _numEmission = 0;
 }
 
-Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2i& winPos) {
+Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2i& windowPosition) {
+    /* First scale the position from being relative to window size to being
+       relative to framebuffer size as those two can be different on HiDPI
+       systems */
+    const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
+
     /* Compute inverted model view projection matrix */
     const Matrix3 invViewProjMat = (_camera->projectionMatrix()*_camera->cameraMatrix()).inverted();
 
     /* Compute the world coordinate from window coordinate */
-    const Vector2i flippedPos = Vector2i(winPos.x(), framebufferSize().y() - winPos.y());
+    const Vector2i flippedPos = Vector2i(position.x(), framebufferSize().y() - position.y());
     const Vector2 ndcPos = Vector2(flippedPos) / Vector2(framebufferSize())*Vector2{2.0f} - Vector2{1.0f};
     return invViewProjMat.transformPoint(ndcPos);
 }

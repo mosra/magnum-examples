@@ -5,7 +5,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
@@ -49,9 +49,10 @@ class FlatShadeObject2D: public SceneGraph::Drawable2D {
         void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
             if(!_bEnabled) return;
 
-            _shader.setColor(_color)
-                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation);
-            _mesh.draw(_shader);
+            _shader
+                .setColor(_color)
+                .setTransformationProjectionMatrix(camera.projectionMatrix()*transformation)
+                .draw(_mesh);
         }
 
         FlatShadeObject2D& setColor(const Color3& color) {

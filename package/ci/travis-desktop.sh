@@ -6,6 +6,7 @@ git clone --depth 1 git://github.com/mosra/corrade.git
 cd corrade
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
@@ -21,6 +22,7 @@ git clone --depth 1 git://github.com/mosra/magnum.git
 cd magnum
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO=ON \
@@ -43,6 +45,7 @@ git clone --depth 1 git://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DIMGUI_DIR=$HOME/imgui \
     -DCMAKE_BUILD_TYPE=Release \
@@ -54,11 +57,12 @@ cmake .. \
 ninja install
 cd ../..
 
-# Crosscompile Magnum Extras
+# Magnum Extras
 git clone --depth 1 git://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_UI=ON \
@@ -68,9 +72,12 @@ cd ../..
 
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DIMGUI_DIR=$HOME/imgui \
+    -DWITH_ANIMATED_GIF_EXAMPLE=ON \
+    -DWITH_ARCBALL_EXAMPLE=ON \
     -DWITH_AREALIGHTS_EXAMPLE=ON \
     -DWITH_AUDIO_EXAMPLE=ON \
     -DWITH_BOX2D_EXAMPLE=$WITH_BOX2D \
@@ -85,6 +92,7 @@ cmake .. \
     -DWITH_OVR_EXAMPLE=OFF \
     -DWITH_PICKING_EXAMPLE=ON \
     -DWITH_PRIMITIVES_EXAMPLE=ON \
+    -DWITH_RAYTRACING_EXAMPLE=ON \
     -DWITH_SHADOWS_EXAMPLE=ON \
     -DWITH_TEXT_EXAMPLE=ON \
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \

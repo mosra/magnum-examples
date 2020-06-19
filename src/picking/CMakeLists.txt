@@ -3,7 +3,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -53,11 +53,7 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(Picking_RESOURCES resources.conf)
-
-add_executable(magnum-picking WIN32
-    PickingExample.cpp
-    ${Picking_RESOURCES})
+add_executable(magnum-picking WIN32 PickingExample.cpp)
 target_link_libraries(magnum-picking PRIVATE
     Corrade::Main
     Magnum::Application

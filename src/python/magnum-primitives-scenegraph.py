@@ -5,7 +5,7 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
 #           Vladimír Vondruš <mosra@centrum.cz>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -53,7 +53,7 @@ class CubeDrawable(scenegraph.Drawable3D):
         self._shader.transformation_matrix = transformation_matrix
         self._shader.normal_matrix = transformation_matrix.rotation_scaling()
         self._shader.projection_matrix = camera.projection_matrix
-        self._mesh.draw(self._shader)
+        self._shader.draw(self._mesh)
 
 class PrimitivesSceneGraphExample(Application):
     def __init__(self):

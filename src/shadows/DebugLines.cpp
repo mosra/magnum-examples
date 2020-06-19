@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
         2016 — Bill Robinson <airbaggins@gmail.com>
 
@@ -54,8 +54,9 @@ void DebugLines::draw(const Matrix4& transformationProjectionMatrix) {
         GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
         _buffer.setData(_lines, GL::BufferUsage::StreamDraw);
         _mesh.setCount(_lines.size());
-        _shader.setTransformationProjectionMatrix(transformationProjectionMatrix);
-        _mesh.draw(_shader);
+        _shader
+            .setTransformationProjectionMatrix(transformationProjectionMatrix)
+            .draw(_mesh);
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     }
 }

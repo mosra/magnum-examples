@@ -1,10 +1,13 @@
+#ifndef Magnum_Examples_RayTracing_RndGenerators_h
+#define Magnum_Examples_RayTracing_RndGenerators_h
 /*
     This file is part of Magnum.
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
+        2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
 
@@ -27,33 +30,35 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-uniform highp mat4 transformationMatrix;
-uniform highp mat4 projectionMatrix;
-uniform mediump mat3 normalMatrix;
-uniform highp vec3 light;
+#include <cstdlib>
+#include <Magnum/Magnum.h>
+#include <Magnum/Math/Vector2.h>
+#include <Magnum/Math/Vector3.h>
 
-/* Matches PhongIdShader::Position and PhongIdShader::Normal definitions */
-layout(location = 0) in highp vec4 position;
-layout(location = 2) in mediump vec3 normal;
+namespace Magnum { namespace Examples { namespace Rnd {
 
-out mediump vec3 transformedNormal;
-out highp vec3 lightDirection;
-out highp vec3 cameraDirection;
-
-void main() {
-    /* Transformed vertex position */
-    highp vec4 transformedPosition4 = transformationMatrix*position;
-    highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
-
-    /* Transformed normal vector */
-    transformedNormal = normalMatrix*normal;
-
-    /* Direction to the light */
-    lightDirection = normalize(light - transformedPosition);
-
-    /* Direction to the camera */
-    cameraDirection = -transformedPosition;
-
-    /* Transform the position */
-    gl_Position = projectionMatrix*transformedPosition4;
+inline Float rand01() {
+    return rand() / Float(Float(RAND_MAX) + 1.0f);
 }
+
+inline Vector2 rndInDisk() {
+    Vector2 p;
+
+    do p = 2.0f*Vector2{rand01(), rand01()} - Vector2{1.0f, 1.0f};
+    while(Math::dot(p, p) >= 1.0f);
+
+    return p;
+}
+
+inline Vector3 randomInSphere() {
+    Vector3 p;
+
+    do p = 2.0f*Vector3{rand01(), rand01(), rand01()} - Vector3{1.0f, 1.0f, 1.0f};
+    while(Math::dot(p, p) >= 1.0f);
+
+    return p;
+}
+
+}}}
+
+#endif

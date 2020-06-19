@@ -1,8 +1,8 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @page examples-cubemap Cube map
+/** @page examples-cubemap Cube Map
 @brief Demonstrates usage of cube map textures and texture blending.
 
 @m_footernavigation
@@ -83,6 +83,10 @@ The sample images provided in this example are work of Emil Persson, aka Humus
 
 Full source code is linked below and together with assets available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/cubemap).
+This example depends on either the @ref Trade::JpegImporter "JpegImporter",
+@ref Trade::StbImageImporter "StbImageImporter" or any other plugin providing
+JPEG loading. These are not a part of the core Magnum repository, see their
+documentation for usage instructions.
 
 -   @ref cubemap/CMakeLists.txt "CMakeLists.txt"
 -   @ref cubemap/CubeMap.cpp "CubeMap.cpp"

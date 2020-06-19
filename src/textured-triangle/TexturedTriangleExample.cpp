@@ -3,7 +3,7 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 —
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
             Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
@@ -125,9 +125,10 @@ void TexturedTriangleExample::drawEvent() {
 
     using namespace Math::Literals;
 
-    _shader.setColor(0xffb2b2_rgbf)
-        .bindTexture(_texture);
-    _mesh.draw(_shader);
+    _shader
+        .setColor(0xffb2b2_rgbf)
+        .bindTexture(_texture)
+        .draw(_mesh);
 
     swapBuffers();
 }
