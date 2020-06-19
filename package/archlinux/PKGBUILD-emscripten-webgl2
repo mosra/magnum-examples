@@ -30,7 +30,7 @@ build() {
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
         -DIMGUI_DIR=/opt/imgui \
         -DWITH_ANIMATED_GIF_EXAMPLE=OFF \
-        -DWITH_ARCBALL_EXAMPLE=OFF \
+        -DWITH_ARCBALL_EXAMPLE=ON \
         -DWITH_AREALIGHTS_EXAMPLE=ON \
         -DWITH_AUDIO_EXAMPLE=ON \
         -DWITH_BOX2D_EXAMPLE=ON \

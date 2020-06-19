@@ -40,7 +40,14 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
+#if defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+#include <Magnum/MeshTools/Duplicate.h>
+#endif
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -125,7 +132,12 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
 
     /* Setup a cube with vertex ID and wireframe visualized */
     {
-        const Trade::MeshData cube = Primitives::cubeSolid();
+        Trade::MeshData cube = Primitives::cubeSolid();
+        /* On platforms that don't have a GS we need to make it nonindexed
+           for wireframe rendering */
+        #if defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        cube = MeshTools::duplicate(cube);
+        #endif
         _mesh = MeshTools::compile(cube);
 
         const auto map = DebugTools::ColorMap::turbo();
@@ -167,9 +179,11 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             windowSize(), framebufferSize());
     }
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Loop at 60 Hz max */
     setSwapInterval(1);
     setMinimalLoopPeriod(16);
+    #endif
 }
 
 void ArcBallExample::drawEvent() {
@@ -216,9 +230,11 @@ void ArcBallExample::keyPressEvent(KeyEvent& event) {
 }
 
 void ArcBallExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_TRUE);
+    #endif
 
     _arcballCamera->initTransformation(event.position());
 
@@ -227,9 +243,11 @@ void ArcBallExample::mousePressEvent(MouseEvent& event) {
 }
 
 void ArcBallExample::mouseReleaseEvent(MouseEvent&) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_FALSE);
+    #endif
 }
 
 void ArcBallExample::mouseMoveEvent(MouseMoveEvent& event) {

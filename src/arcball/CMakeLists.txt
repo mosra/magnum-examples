@@ -44,8 +44,12 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     SceneGraph
-    Shaders
-    Sdl2Application)
+    Shaders)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -63,7 +67,33 @@ target_link_libraries(magnum-arcball PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders)
 
-install(TARGETS magnum-arcball DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
+if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-arcball POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-arcball>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/arcball.html
+            $<TARGET_FILE_DIR:magnum-arcball>/magnum-arcball.html)
+
+    install(FILES arcball.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arcball RENAME index.html)
+    install(TARGETS magnum-arcball DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arcball)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arcball)
+    install(FILES
+        $<TARGET_FILE_DIR:magnum-arcball>/magnum-arcball.js.mem
+        $<TARGET_FILE_DIR:magnum-arcball>/magnum-arcball.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/arcball OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-arcball DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-arcball)
