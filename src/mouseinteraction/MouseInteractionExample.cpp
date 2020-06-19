@@ -301,7 +301,7 @@ Float MouseInteractionExample::depthAt(const Vector2i& windowPosition) {
     _reinterpretShader.bindDepthTexture(_depth);
     GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::setScissor(area);
-    _fullscreenTriangle.draw(_reinterpretShader);
+    _reinterpretShader.draw(_fullscreenTriangle);
     GL::Renderer::disable(GL::Renderer::Feature::ScissorTest);
 
     Image2D image = _reinterpretFramebuffer.read(area, {PixelFormat::RGBA8Unorm});
