@@ -118,11 +118,11 @@ using namespace Math::Literals;
 
 OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application{arguments, NoCreate} {
     Utility::Arguments args;
-    args.addOption('s', "spheres", "20")
+    args.addOption('s', "spheres", "2000")
             .setHelp("spheres", "number of spheres to simulate", "N")
-        .addOption('r', "sphere-radius", "0.1")
+        .addOption('r', "sphere-radius", "0.0333")
             .setHelp("sphere-radius", "sphere radius", "R")
-        .addOption('v', "sphere-velocity", "1.0")
+        .addOption('v', "sphere-velocity", "0.05")
             .setHelp("sphere-velocity", "sphere velocity", "V")
         .addOption("benchmark", "0")
             .setHelp("benchmark", "run the benchmark to compare collision detection time", "ITERATIONS")
