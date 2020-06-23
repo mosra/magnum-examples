@@ -126,14 +126,14 @@ using namespace Math::Literals;
 
 OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application{arguments, NoCreate} {
     Utility::Arguments args;
-    args.addOption("num-spheres", "20")
-        .setHelp("num-spheres", "number of spheres to simulate", "SPHERES")
-        .addOption("sphere-radius", "0.1")
-        .setHelp("sphere-radius", "radius of the spheres", "RADIUS")
-        .addOption("sphere-velocity", "1.0")
-        .setHelp("sphere-velocity", "velocity magnitude of the spheres", "VELOCITY")
+    args.addOption('s', "spheres", "20")
+            .setHelp("spheres", "number of spheres to simulate", "N")
+        .addOption('r', "sphere-radius", "0.1")
+            .setHelp("sphere-radius", "sphere radius", "R")
+        .addOption('v', "sphere-velocity", "1.0")
+            .setHelp("sphere-velocity", "sphere velocity", "V")
         .addOption("benchmark", "0")
-        .setHelp("benchmark", "run the benchmark to compare collision detection time", "BENCHMARK")
+            .setHelp("benchmark", "run the benchmark to compare collision detection time", "ITERATIONS")
         .parse(arguments.argc, arguments.argv);
     _sphereRadius = args.value<Float>("sphere-radius");
 
@@ -172,7 +172,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
     /* Setup points (render as spheres) */
     {
-        const UnsignedInt numSpheres = args.value<UnsignedInt>("num-spheres");
+        const UnsignedInt numSpheres = args.value<UnsignedInt>("spheres");
         arrayResize(_spherePositions, Containers::NoInit, numSpheres);
         arrayResize(_sphereVelocities, Containers::NoInit, numSpheres);
         arrayResize(_sphereColors, Containers::NoInit, numSpheres);
