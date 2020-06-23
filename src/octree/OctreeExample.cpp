@@ -282,7 +282,7 @@ void OctreeExample::drawEvent() {
     }
 
     /* Update camera before drawing instances */
-    _arcballCamera->updateTransformation();
+    const bool moving = _arcballCamera->updateTransformation();
 
     drawSpheres();
     drawTreeNodeBoundingBoxes();
@@ -291,8 +291,9 @@ void OctreeExample::drawEvent() {
     _profiler.printStatistics(10);
 
     swapBuffers();
-    /* Run next frame immediately */
-    redraw();
+
+    /* If the camera is moving or the animation is running, redraw immediately */
+    if(moving || _animation) redraw();
 }
 
 void OctreeExample::collisionDetectionAndHandlingBruteForce() {
@@ -452,6 +453,7 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
     } else return;
 
     event.setAccepted();
+    redraw();
 }
 
 void OctreeExample::mousePressEvent(MouseEvent& event) {
