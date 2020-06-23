@@ -180,6 +180,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
             const Vector3 tmpVel = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
             _spherePositions[i] = tmpPos*2.0f - Vector3{1.0f};
+            _spherePositions[i].y() *= 0.5f;
             _sphereVelocities[i] = (tmpVel*2.0f - Vector3{1.0f}).resized(_sphereVelocity);
 
             /* Fill in the instance data. Most of this stays the same, except
