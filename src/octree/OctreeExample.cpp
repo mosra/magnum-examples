@@ -195,7 +195,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             Shaders::Phong::Flag::VertexColor|
             Shaders::Phong::Flag::InstancedTransformation};
         _sphereInstanceBuffer = GL::Buffer{};
-        _sphereMesh = MeshTools::compile(Primitives::icosphereSolid(3));
+        _sphereMesh = MeshTools::compile(Primitives::icosphereSolid(2));
         _sphereMesh.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
             Shaders::Phong::TransformationMatrix{},
             Shaders::Phong::NormalMatrix{},
