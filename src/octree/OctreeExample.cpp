@@ -88,7 +88,7 @@ class OctreeExample: public Platform::Application {
         /* Points data as spheres with size */
         Containers::Array<Vector3> _spherePositions;
         Containers::Array<Vector3> _sphereVelocities;
-        Float _sphereRadius;
+        Float _sphereRadius, _sphereVelocity;
         bool _animation = true;
         bool _collisionDetectionByOctree = true;
 
@@ -127,7 +127,9 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         .addOption("benchmark", "0")
             .setHelp("benchmark", "run the benchmark to compare collision detection time", "ITERATIONS")
         .parse(arguments.argc, arguments.argv);
+
     _sphereRadius = args.value<Float>("sphere-radius");
+    _sphereVelocity = args.value<Float>("sphere-velocity");
 
     /* Setup window and parameters */
     {
@@ -174,12 +176,11 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         _sphereInstanceData = Containers::Array<SphereInstanceData>{Containers::NoInit,
             numSpheres};
 
-        const Float velocityMag = args.value<Float>("sphere-velocity");
         for(std::size_t i = 0; i < numSpheres; ++i) {
             const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
             const Vector3 tmpVel = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
             _spherePositions[i] = tmpPos*2.0f - Vector3{1.0f};
-            _sphereVelocities[i] = (tmpVel*2.0f - Vector3{1.0f}).normalized()*velocityMag;
+            _sphereVelocities[i] = (tmpVel*2.0f - Vector3{1.0f}).resized(_sphereVelocity);
 
             /* Fill in the instance data. Most of this stays the same, except
                for the translation */
@@ -307,8 +308,8 @@ void OctreeExample::collisionDetectionAndHandlingBruteForce() {
                 const Float dpq = pospq.length();
                 if(dpq < 2.0f*_sphereRadius) {
                     const Vector3 vNormal = vp * pospq / (dpq * dpq);
-                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).normalized();
-                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).normalized();
+                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).resized(_sphereVelocity);
+                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).resized(_sphereVelocity);
                 }
             }
         }
@@ -348,8 +349,8 @@ void OctreeExample::checkCollisionWithSubTree(const OctreeNode& node,
                 const Float dpq = pospq.length();
                 if(dpq < 2.0f*_sphereRadius) {
                     const Vector3 vNormal = vp*pospq/(dpq*dpq);
-                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).normalized();
-                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).normalized();
+                    _sphereVelocities[i] = (_sphereVelocities[i] - vNormal).resized(_sphereVelocity);
+                    _sphereVelocities[j] = (_sphereVelocities[j] + vNormal).resized(_sphereVelocity);
                 }
             }
         }
