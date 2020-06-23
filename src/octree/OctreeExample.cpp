@@ -41,19 +41,14 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Icosphere.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include "LooseOctree.h"
-#include "../arcball/ArcBallCamera.h"
+#include "../arcball/ArcBall.h"
 
 namespace Magnum { namespace Examples {
-
-using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
-using Scene3D  = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
 
 struct SphereInstanceData {
     Matrix4 transformationMatrix;
@@ -87,10 +82,8 @@ class OctreeExample: public Platform::Application {
         void drawSpheres();
         void drawTreeNodeBoundingBoxes();
 
-        /* Scene and drawable group must be constructed before camera and other
-           drawble objects */
-        Scene3D _scene;
-        Containers::Pointer<ArcBallCamera> _arcballCamera;
+        Containers::Optional<ArcBall> _arcballCamera;
+        Matrix4 _projectionMatrix;
 
         /* Points data as spheres with size */
         Containers::Array<Vector3> _spherePositions;
@@ -161,13 +154,15 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
     /* Setup camera */
     {
-        /* Configure camera */
         const Vector3 eye = Vector3::zAxis(5.0f);
         const Vector3 viewCenter;
         const Vector3 up = Vector3::yAxis();
         const Deg fov = 45.0_degf;
-        _arcballCamera.emplace(_scene, eye, viewCenter, up, fov, windowSize(), framebufferSize());
+        _arcballCamera.emplace(eye, viewCenter, up, fov, windowSize());
         _arcballCamera->setLagging(0.85f);
+
+        _projectionMatrix = Matrix4::perspectiveProjection(fov,
+            Vector2{framebufferSize()}.aspectRatio(), 0.01f, 100.0f);
     }
 
     /* Setup points (render as spheres) */
@@ -277,7 +272,7 @@ void OctreeExample::drawEvent() {
     }
 
     /* Update camera before drawing instances */
-    _arcballCamera->update();
+    _arcballCamera->updateTransformation();
 
     drawSpheres();
     drawTreeNodeBoundingBoxes();
@@ -379,8 +374,9 @@ void OctreeExample::drawSpheres() {
     }
 
     _sphereInstanceBuffer.setData(_sphereInstanceData, GL::BufferUsage::DynamicDraw);
-    _sphereShader.setProjectionMatrix(_arcballCamera->camera().projectionMatrix());
-    _sphereShader.draw(_sphereMesh);
+    _sphereShader
+        .setProjectionMatrix(_projectionMatrix)
+        .draw(_sphereMesh);
 }
 
 void OctreeExample::drawTreeNodeBoundingBoxes() {
@@ -413,13 +409,15 @@ void OctreeExample::drawTreeNodeBoundingBoxes() {
 
     _boxInstanceBuffer.setData(_boxInstanceData, GL::BufferUsage::DynamicDraw);
     _boxMesh.setInstanceCount(_boxInstanceData.size());
-    _boxShader.setTransformationProjectionMatrix(_arcballCamera->camera().projectionMatrix());
-    _boxShader.draw(_boxMesh);
+    _boxShader.setTransformationProjectionMatrix(_projectionMatrix)
+        .draw(_boxMesh);
 }
 
 void OctreeExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
-    _arcballCamera->reshape(event.windowSize(), event.framebufferSize());
+    _arcballCamera->reshape(event.windowSize());
+
+    _projectionMatrix = Matrix4::perspectiveProjection(_arcballCamera->fov(), Vector2{event.framebufferSize()}.aspectRatio(), 0.01f, 100.0f);
 }
 
 void OctreeExample::keyPressEvent(KeyEvent& event) {

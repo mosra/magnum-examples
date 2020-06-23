@@ -43,7 +43,6 @@ find_package(Magnum REQUIRED
     GL
     MeshTools
     Primitives
-    SceneGraph
     Shaders
     Sdl2Application)
 
@@ -62,7 +61,6 @@ target_link_libraries(magnum-octree PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::SceneGraph
     Magnum::Shaders)
 
 install(TARGETS magnum-octree DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
