@@ -128,13 +128,13 @@ void OctreeNode::removeEmptyDescendants() {
     }
 }
 
-void OctreeNode::keepPoint(OctreePoint* const point) {
-    point->nodePtr() = this;
-    point->isValid() = true;
-    arrayAppend(_nodePoints, point);
+void OctreeNode::keepPoint(OctreePoint& point) {
+    point.nodePtr() = this;
+    point.isValid() = true;
+    arrayAppend(_nodePoints, &point);
 }
 
-void OctreeNode::insertPoint(OctreePoint* const point) {
+void OctreeNode::insertPoint(OctreePoint& point) {
     if(_depth == _maxDepth) {
         keepPoint(point);
         return;
@@ -144,7 +144,7 @@ void OctreeNode::insertPoint(OctreePoint* const point) {
     split();
 
     /* Compute the index of the child node that contains this point */
-    const Vector3 ppos = point->position();
+    const Vector3 ppos = point.position();
     std::size_t childIdx = 0;
     for(std::size_t dim = 0; dim < 3; ++dim)
         if(_center[dim] < ppos[dim]) childIdx |= (1ull << dim);
@@ -247,7 +247,7 @@ void LooseOctree::rebuild() {
 
 void LooseOctree::populatePoints() {
     for(OctreePoint& point: _octreePoints)
-        _rootNode.insertPoint(&point);
+        _rootNode.insertPoint(point);
 }
 
 void LooseOctree::incrementalUpdate() {
@@ -300,7 +300,7 @@ void LooseOctree::removeInvalidPointsFromNodes() {
 
 void LooseOctree::reinsertInvalidPointsToNodes() {
     for(OctreePoint& point: _octreePoints)
-        if(!point.isValid()) _rootNode.insertPoint(&point);
+        if(!point.isValid()) _rootNode.insertPoint(point);
 }
 
 OctreeNodeBlock* LooseOctree::requestChildrenFromPool() {

@@ -116,10 +116,10 @@ class OctreeNode {
 
         /* Keep the point at this node as cannot pass it down further to any
            child node */
-        void keepPoint(OctreePoint* const point);
+        void keepPoint(OctreePoint& point);
 
         /* Insert a point point into the subtree in a top-down manner */
-        void insertPoint(OctreePoint* const point);
+        void insertPoint(OctreePoint& point);
 
         /* Check if given point is contained in the node boundary (bounding
            box) */
