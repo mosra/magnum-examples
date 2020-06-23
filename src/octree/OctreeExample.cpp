@@ -28,7 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <chrono>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Utility/Arguments.h>
@@ -124,8 +123,6 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             .setHelp("sphere-radius", "sphere radius", "R")
         .addOption('v', "sphere-velocity", "0.05")
             .setHelp("sphere-velocity", "sphere velocity", "V")
-        .addOption("benchmark", "0")
-            .setHelp("benchmark", "run the benchmark to compare collision detection time", "ITERATIONS")
         .parse(arguments.argc, arguments.argv);
 
     _sphereRadius = args.value<Float>("sphere-radius");
@@ -211,14 +208,10 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
            radius */
         _octree.emplace(Vector3{0}, 1.0f, Math::max(_sphereRadius, 0.1f));
 
-        std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
         _octree->setPoints(_spherePositions);
         _octree->build();
-        std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-        Float elapsed = std::chrono::duration<Float, std::milli>(endTime - startTime).count();
-        Debug{} << "Build Octree:" << elapsed << "ms";
-        Debug{} << "Allocated nodes:" << _octree->numAllocatedNodes();
-        Debug{} << "Max number of points per node:" << _octree->maxNumPointInNodes();
+        Debug{} << "  Allocated nodes:" << _octree->numAllocatedNodes();
+        Debug{} << "  Max number of points per node:" << _octree->maxNumPointInNodes();
 
         /* Disable profiler by default */
         _profiler.disable();
@@ -234,32 +227,6 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         _boxMesh.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,
             Shaders::Flat3D::TransformationMatrix{},
             Shaders::Flat3D::Color3{});
-    }
-
-    /* Run benchmark */
-    if(args.value<std::size_t>("benchmark")) {
-        const std::size_t numTest = args.value<std::size_t>("benchmark");
-        Debug{} << "Running collision detection benchmark for"
-            << _spherePositions.size() << "spheres," << numTest << "iterations";
-
-        std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-        for(size_t i = 0; i < numTest; ++i)
-            collisionDetectionAndHandlingBruteForce();
-
-        std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-        Float elapsed1 = std::chrono::duration<Float, std::milli>(endTime - startTime).count();
-        Debug{} << "Brute force collision detection:" << elapsed1/Float(numTest) << "ms";
-
-        startTime = std::chrono::high_resolution_clock::now();
-        for(size_t i = 0; i < numTest; ++i)
-            collisionDetectionAndHandlingUsingOctree();
-
-        endTime = std::chrono::high_resolution_clock::now();
-        Float elapsed2 = std::chrono::duration<Float, std::milli>(endTime - startTime).count();
-        Debug{} << "Collision detection using Octree:" << elapsed2/Float(numTest) << "ms";
-
-        Debug{} << "Speedup:" << elapsed1/elapsed2;
-        Debug{} << "  (speedup varies depending on number of spheres)";
     }
 
     Debug{} << "Collision detection using octree";
