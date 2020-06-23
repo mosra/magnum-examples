@@ -84,6 +84,9 @@ class ArcBall {
         /* Zoom the camera (positive delta = zoom in, negative = zoom out) */
         void zoom(Float delta);
 
+        /* Field of view */
+        Deg fov() const { return _fov; }
+
         /* Get the camera's view transformation as a qual quaternion */
         const DualQuaternion& view() const { return _view; }
 
