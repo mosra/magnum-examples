@@ -106,7 +106,7 @@ class OctreeExample: public Platform::Application {
         /* Profiling */
         DebugTools::GLFrameProfiler _profiler{
             DebugTools::GLFrameProfiler::Value::FrameTime|
-            DebugTools::GLFrameProfiler::Value::CpuDuration, 60};
+            DebugTools::GLFrameProfiler::Value::CpuDuration, 180};
 
         /* Spheres rendering */
         GL::Mesh _sphereMesh{NoCreate};
@@ -280,7 +280,7 @@ void OctreeExample::drawEvent() {
     drawTreeNodeBoundingBoxes();
 
     _profiler.endFrame();
-    _profiler.printStatistics(60);
+    _profiler.printStatistics(10);
 
     swapBuffers();
     /* Run next frame immediately */
