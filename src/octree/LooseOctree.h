@@ -32,6 +32,7 @@
 
 #include <unordered_set>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Range.h>
 #include <Magnum/Math/Vector3.h>
@@ -44,8 +45,7 @@ struct OctreeNodeBlock;
 
 class OctreePoint {
     public:
-        explicit OctreePoint() = default;
-        explicit OctreePoint(Containers::Array<Vector3>* points, std::size_t idx): _points{points}, _idx{idx} {}
+        explicit OctreePoint(Containers::Array<Vector3>& points, std::size_t idx): _points{points}, _idx{idx} {}
 
         std::size_t idx() const { return _idx; }
         Vector3 position() const { return (*_points)[_idx]; }
@@ -54,7 +54,7 @@ class OctreePoint {
 
     private:
         /* the original point set */
-        const Containers::Array<Vector3>* _points;
+        Containers::Reference<const Containers::Array<Vector3>> _points;
 
         /* index of this point in the original point set */
         std::size_t _idx;

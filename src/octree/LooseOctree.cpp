@@ -181,7 +181,7 @@ void LooseOctree::clearPoints() {
     _rootNode.removePointFromSubTree();
 
     /* Clear the main point data array */
-    arrayResize(_octreePoints, 0);
+    arrayResize(_octreePoints, Containers::NoInit, 0);
 }
 
 void LooseOctree::setPoints(Containers::Array<Vector3>& points) {
@@ -192,7 +192,7 @@ void LooseOctree::setPoints(Containers::Array<Vector3>& points) {
 
     arrayResize(_octreePoints, Containers::NoInit, nPoints);
     for(std::size_t idx = 0; idx < nPoints; ++idx)
-        _octreePoints[idx] = OctreePoint(&points, idx);
+        _octreePoints[idx] = OctreePoint{points, idx};
 }
 
 std::size_t LooseOctree::maxNumPointInNodes() const {
