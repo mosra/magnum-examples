@@ -278,7 +278,7 @@ void LooseOctree::checkValidity() {
                 }
             }
 
-        } else point.isValid() = (pNode != rootNodePtr) ? true : false;
+        } else point.isValid() = pNode != rootNodePtr;
     }
 }
 
