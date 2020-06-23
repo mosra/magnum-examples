@@ -49,6 +49,8 @@ namespace Magnum {
     [mosra/magnum-examples#76](https://github.com/mosra/magnum-examples/pull/76))
 -   New @ref examples-animated-gif example (see
     [mosra/magnum-examples#80](https://github.com/mosra/magnum-examples/pull/80))
+-   New @ref examples-octree example (see
+    [mosra/magnum-examples#86](https://github.com/mosra/magnum-examples/pull/86))
 
 @subsection changelog-examples-latest-changes Changes and improvements
 

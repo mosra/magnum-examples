@@ -27,21 +27,46 @@
 namespace Magnum {
 
 /** @page examples-octree Octree
-@brief Octree example
+@brief Loose octree for accelerating collision detection.
 @m_since_latest_{examples}
 
 @m_footernavigation
 
 @image html octree.png width=400px
 
-This is a simple, single-threaded implementation of loose octree which is commonplace in computer graphics.
-In this example, octree is used for collision detection. In practice, other physics engines such as [Bullet](https://doc.magnum.graphics/magnum/examples-bullet.html) have much more efficient data structures for collision detection and is recommended.
+This is a simple, single-threaded implementation of a
+[loose octree](https://anteru.net/blog/2008/loose-octrees/) which is
+commonplace in computer graphics. In this example, octree is used for collision
+detection.
 
 @section examples-octree-controls Controls
 
--   @m_class{m-label m-default} **B** toggles show/hide tree node bounding boxes
--   @m_class{m-label m-default} **R** resets the camera to its original position
--   @m_class{m-label m-default} **Space** Toggles pause/resume particle simulation
+-   @m_class{m-label m-default} **mouse drag** rotates the camera
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse
+    drag** pans the camera
+-   @m_class{m-label m-default} **mouse wheel** zooms in/out
+-   @m_class{m-label m-default} **R** resets the camera to its original
+    transformation
+-   @m_class{m-label m-default} **O** switches between a brute force and octree
+    collision detection
+-   @m_class{m-label m-default} **B** shows/hides tree node bounding boxes
+-   @m_class{m-label m-default} **P** toggles frame profiling to the console
+    using @ref DebugTools::FrameProfiler
+-   @m_class{m-label m-default} **Space** pauses/resumes particle simulation
+
+Additionally, various options can be set via command line:
+
+-   `-s`, `--spheres N` --- number of spheres to simulate (default: 2000)
+-   `-r`, `--sphere-radius R` --- sphere radius (default: 0.0333)
+-   `-v`, `--sphere-velocity V` ---  sphere velocity (default: 0.05)
+
+With the default setting, the octree collision detection is about twice as fast
+than the brute force method. In order to better see the octree visualization,
+run the example for example with the following parameters:
+
+@code{.sh}
+./magnum-octree -s 20 -r 0.1 -v 1.0
+@endcode
 
 @section examples-octree-credits Credits
 
@@ -51,7 +76,8 @@ This example was originally contributed by [Nghia Truong](https://github.com/ttn
 
 Full source code is linked below and also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/octree).
-This example depends on the @ref ArcBall example for camera navigation.
+This example depends on the @ref examples-arcball example for camera
+navigation.
 
 -   @ref octree/LooseOctree.cpp "LooseOctree.cpp"
 -   @ref octree/LooseOctree.h "LooseOctree.h"
