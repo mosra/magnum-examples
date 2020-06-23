@@ -84,12 +84,13 @@ void OctreeNode::split() {
             newCenter[1] += (childIdx & 2) ? childHalfWidth : -childHalfWidth;
             newCenter[2] += (childIdx & 4) ? childHalfWidth : -childHalfWidth;
 
-            OctreeNode* const pChildNode = &_children->_nodes[childIdx];
-            pChildNode->~OctreeNode(); /* call destructor to release resource */
+            OctreeNode* const childNode = &_children->_nodes[childIdx];
+            childNode->~OctreeNode(); /* call destructor to release resource */
 
             /* Placement new: re-use existing memory block, call constructor to
                re-initialize data */
-            new(pChildNode) OctreeNode(_tree, this, newCenter, childHalfWidth, _depth + 1u);
+            new(childNode) OctreeNode{_tree, this, newCenter, childHalfWidth,
+                _depth + 1};
         }
 
         /* Must explicitly mark as non-leaf node, and must do this after all
@@ -157,7 +158,8 @@ LooseOctree::~LooseOctree() {
     clear();
 
     /* Deallocate memory pool */
-    CORRADE_ASSERT(_numAllocatedNodes == (_freeNodeBlocks.size() + _activeNodeBlocks.size())*8 + 1u,
+    CORRADE_ASSERT(_numAllocatedNodes ==
+        (_freeNodeBlocks.size() + _activeNodeBlocks.size())*8 + 1,
         "Internal data corrupted, maybe all nodes were not returned from the tree", );
 
     for(OctreeNodeBlock* nodeBlock: _freeNodeBlocks)

@@ -45,7 +45,8 @@ struct OctreeNodeBlock;
 
 class OctreePoint {
     public:
-        explicit OctreePoint(Containers::Array<Vector3>& points, std::size_t idx): _points{points}, _idx{idx} {}
+        explicit OctreePoint(Containers::Array<Vector3>& points, std::size_t idx):
+            _points{points}, _idx{idx} {}
 
         std::size_t idx() const { return _idx; }
         Vector3 position() const { return (*_points)[_idx]; }

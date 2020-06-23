@@ -170,12 +170,14 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             numSpheres};
         _sphereVelocities = Containers::Array<Vector3>{Containers::NoInit,
             numSpheres};
-        _sphereInstanceData = Containers::Array<SphereInstanceData>{Containers::NoInit,
-            numSpheres};
+        _sphereInstanceData = Containers::Array<SphereInstanceData>{
+            Containers::NoInit, numSpheres};
 
         for(std::size_t i = 0; i < numSpheres; ++i) {
-            const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
-            const Vector3 tmpVel = Vector3(std::rand(), std::rand(), std::rand())/Float(RAND_MAX);
+            const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/
+                Float(RAND_MAX);
+            const Vector3 tmpVel = Vector3(std::rand(), std::rand(), std::rand())/
+                Float(RAND_MAX);
             _spherePositions[i] = tmpPos*2.0f - Vector3{1.0f};
             _spherePositions[i].y() *= 0.5f;
             _sphereVelocities[i] = (tmpVel*2.0f - Vector3{1.0f}).resized(_sphereVelocity);
@@ -391,7 +393,8 @@ void OctreeExample::viewportEvent(ViewportEvent& event) {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
     _arcballCamera->reshape(event.windowSize());
 
-    _projectionMatrix = Matrix4::perspectiveProjection(_arcballCamera->fov(), Vector2{event.framebufferSize()}.aspectRatio(), 0.01f, 100.0f);
+    _projectionMatrix = Matrix4::perspectiveProjection(_arcballCamera->fov(),
+        Vector2{event.framebufferSize()}.aspectRatio(), 0.01f, 100.0f);
 }
 
 void OctreeExample::keyPressEvent(KeyEvent& event) {
