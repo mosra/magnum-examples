@@ -269,8 +269,11 @@ void OctreeExample::drawEvent() {
             collisionDetectionAndHandlingUsingOctree();
         else
             collisionDetectionAndHandlingBruteForce();
+
         movePoints();
-        _octree->update();
+
+        if(_collisionDetectionByOctree)
+            _octree->update();
     }
 
     /* Update camera before drawing instances */
