@@ -428,6 +428,9 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
             Debug{} << "Collision detection using octree";
         else
             Debug{} << "Collision detection using brute force";
+        /* Reset the profiler to avoid measurements of the two methods mixed
+           together */
+        if(_profiler.isEnabled()) _profiler.enable();
 
     } else if(event.key() == KeyEvent::Key::P) {
         if(_profiler.isEnabled()) _profiler.disable();
