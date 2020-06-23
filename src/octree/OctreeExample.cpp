@@ -83,8 +83,7 @@ class OctreeExample: public Platform::Application {
         void collisionDetectionAndHandlingBruteForce();
         void collisionDetectionAndHandlingUsingOctree();
         void checkCollisionWithSubTree(const OctreeNode& node, std::size_t i,
-            const Vector3& ppos, const Vector3& pvel, const Vector3& lower,
-            const Vector3& upper);
+            const Vector3& ppos, const Vector3& pvel, const Range3D& bounds);
         void drawSpheres();
         void drawTreeNodeBoundingBoxes();
 
@@ -313,24 +312,21 @@ void OctreeExample::collisionDetectionAndHandlingBruteForce() {
 void OctreeExample::collisionDetectionAndHandlingUsingOctree() {
     const OctreeNode& rootNode = _octree->rootNode();
     for(std::size_t i = 0; i < _spherePositions.size(); ++i) {
-        const Vector3& ppos  = _spherePositions[i];
-        const Vector3& pvel  = _sphereVelocities[i];
-        const Vector3 lower = ppos - Vector3{_sphereRadius};
-        const Vector3 upper = ppos + Vector3{_sphereRadius};
-        checkCollisionWithSubTree(rootNode, i, ppos, pvel, lower, upper);
+        checkCollisionWithSubTree(rootNode, i,
+            _spherePositions[i], _sphereVelocities[i],
+            Range3D::fromCenter(_spherePositions[i], Vector3{_sphereRadius}));
     }
 }
 
 void OctreeExample::checkCollisionWithSubTree(const OctreeNode& node,
-    std::size_t i, const Vector3& ppos, const Vector3& pvel,
-    const Vector3& lower, const Vector3& upper)
+    std::size_t i, const Vector3& ppos, const Vector3& pvel, const Range3D& bounds)
 {
-    if(!node.looselyOverlaps(lower, upper)) return;
+    if(!node.looselyOverlaps(bounds)) return;
 
     if(!node.isLeaf()) {
         for(std::size_t childIdx = 0; childIdx < 8; ++childIdx) {
             const OctreeNode& child = node.childNode(childIdx);
-            checkCollisionWithSubTree(child, i, ppos, pvel, lower, upper);
+            checkCollisionWithSubTree(child, i, ppos, pvel, bounds);
         }
     }
 

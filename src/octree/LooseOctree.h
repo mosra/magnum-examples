@@ -135,14 +135,14 @@ class OctreeNode {
 
         /* Check if given bound is contained in the node loose boundary (which
            is 2x bigger than the bounding box) */
-        bool looselyContains(const Vector3& lower, const Vector3& upper) const {
-            return (lower > _boundsExtended.min()).all() && (upper < _boundsExtended.max()).all();
+        bool looselyContains(const Range3D& bounds) const {
+            return _boundsExtended.contains(bounds);
         }
 
         /* Check if the given bound is overlapped with the node loose boundary
            (which is 2X bigger than the bounding box) */
-        bool looselyOverlaps(const Vector3& lower, const Vector3& upper) const {
-            return (upper > _boundsExtended.min()).all() && (lower < _boundsExtended.max()).all();
+        bool looselyOverlaps(const Range3D& bounds) const {
+            return Math::intersects(bounds, _boundsExtended);
         }
 
     private:
