@@ -72,7 +72,8 @@ namespace Magnum {
     @ref examples-cubemap improvements
 -   **Nghia Truong** ([\@ttnghia](https://github.com/ttnghia) --- the
     @ref examples-fluidsimulation2d, @ref examples-fluidsimulation3d,
-    @ref examples-arcball and @ref examples-raytracing examples
+    @ref examples-arcball, @ref examples-raytracing and @ref examples-octree
+    examples
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example

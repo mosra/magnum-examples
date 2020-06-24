@@ -171,9 +171,9 @@ The following consist of documented source code only:
 @m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html imgui.png
-@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-imgui
+@image html octree.png
+@subpage examples-octree @m_class{m-label m-primary}
+\n @copybrief examples-octree
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv
@@ -196,42 +196,42 @@ The following consist of documented source code only:
 @parblock
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html imgui.png
+@subpage examples-imgui @m_class{m-label m-primary} **ui** @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-imgui
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html animated-gif.png
 @subpage examples-animated-gif @m_class{m-label m-warning} **animation**
 \n @copybrief examples-animated-gif
 @m_enddiv
+
+@m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html motionblur.png
 @subpage examples-motionblur \n @copybrief examples-motionblur
 @m_enddiv
 
-@m_div{m-clearfix-s} @m_enddiv
+@m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html cubemap.jpg
 @subpage examples-cubemap \n @copybrief examples-cubemap
 @m_enddiv
 
-@m_div{m-clearfix-l m-show-m} @m_enddiv
+@m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html shadows2.png
 @subpage examples-shadows \n @copybrief examples-shadows
 @m_enddiv
 
-@m_div{m-clearfix-s} @m_enddiv
-
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
 @image html picking.png
 @subpage examples-picking @m_class{m-label m-default m-flat} **live web demo**
 \n @copybrief examples-picking
-@m_enddiv
-
-@m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html text.png
-@subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
-@copybrief examples-text
 @m_enddiv
 
 @endparblock
@@ -240,7 +240,13 @@ The following consist of documented source code only:
 
 @parblock
 
-@m_div{m-col-m-4 m-col-s-6 m-push-s-3 m-push-m-4 m-text-center}
+@m_div{m-col-m-4 m-col-s-6 m-push-m-2 m-text-center}
+@image html text.png
+@subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
+@copybrief examples-text
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-s-6 m-push-m-2 m-text-center}
 @image html triangle-vulkan.png
 @subpage examples-triangle-vulkan @m_class{m-label m-success} **vulkan**
 \n @copybrief examples-triangle-vulkan
