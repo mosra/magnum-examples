@@ -43,8 +43,12 @@ find_package(Magnum REQUIRED
     GL
     MeshTools
     Primitives
-    Shaders
-    Sdl2Application)
+    Shaders)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -63,7 +67,33 @@ target_link_libraries(magnum-octree PRIVATE
     Magnum::Primitives
     Magnum::Shaders)
 
-install(TARGETS magnum-octree DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+# For Emscripten copy the boilerplate next to the executable so it can be run
+# directly from the build dir; provide an install target as well
+if(CORRADE_TARGET_EMSCRIPTEN)
+    add_custom_command(TARGET magnum-octree POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            $<TARGET_FILE_DIR:magnum-octree>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/octree.html
+            $<TARGET_FILE_DIR:magnum-octree>/magnum-octree.html)
+
+    install(FILES octree.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/octree RENAME index.html)
+    install(TARGETS magnum-octree DESTINATION ${MAGNUM_DEPLOY_PREFIX}/octree)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/octree)
+    install(FILES
+        $<TARGET_FILE_DIR:magnum-octree>/magnum-octree.js.mem
+        $<TARGET_FILE_DIR:magnum-octree>/magnum-octree.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/octree OPTIONAL)
+
+# Installation for desktop
+else()
+    install(TARGETS magnum-octree DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-octree)

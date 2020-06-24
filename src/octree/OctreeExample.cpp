@@ -38,7 +38,11 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Magnum/Platform/EmscriptenApplication.h>
+#else
 #include <Magnum/Platform/Sdl2Application.h>
+#endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Shaders/Flat.h>
@@ -146,9 +150,11 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
         GL::Renderer::enable(GL::Renderer::Feature::PolygonOffsetFill);
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* Loop at 60 Hz max */
         setSwapInterval(1);
         setMinimalLoopPeriod(16);
+        #endif
     }
 
     /* Setup camera */
@@ -428,18 +434,22 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
 }
 
 void OctreeExample::mousePressEvent(MouseEvent& event) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_TRUE);
+    #endif
     _arcballCamera->initTransformation(event.position());
     event.setAccepted();
     redraw(); /* camera has changed, redraw! */
 }
 
 void OctreeExample::mouseReleaseEvent(MouseEvent&) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
     SDL_CaptureMouse(SDL_FALSE);
+    #endif
 }
 
 void OctreeExample::mouseMoveEvent(MouseMoveEvent& event) {
