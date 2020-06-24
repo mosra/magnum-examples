@@ -84,6 +84,11 @@ of the core Magnum repository, see its documentation for usage instructions.
 -   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.h "Shaders/ParticleSphereShader.h"
 -   @ref fluidsimulation2d/Shaders/ParticleSphereShader2D.vert "Shaders/ParticleSphereShader2D.vert"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/fluidsimulation2d)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example fluidsimulation2d/CMakeLists.txt @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
 @example fluidsimulation2d/DataStructures/Array2X.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
 @example fluidsimulation2d/DataStructures/MathHelpers.h @m_examplenavigation{examples-fluidsimulation2d,fluidsimulation2d/} @m_footernavigation
