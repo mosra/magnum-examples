@@ -28,6 +28,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Utility/Arguments.h>
@@ -145,7 +146,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
         GL::Renderer::enable(GL::Renderer::Feature::PolygonOffsetFill);
 
-        /* Start the timer, loop at 60 Hz max */
+        /* Loop at 60 Hz max */
         setSwapInterval(1);
         setMinimalLoopPeriod(16);
     }
