@@ -353,6 +353,7 @@ void OctreeExample::drawSpheres() {
     _sphereShader
         .setProjectionMatrix(_projectionMatrix)
         .setTransformationMatrix(_arcballCamera->viewMatrix())
+        .setNormalMatrix(_arcballCamera->viewMatrix().normalMatrix())
         .draw(_sphereMesh);
 }
 
