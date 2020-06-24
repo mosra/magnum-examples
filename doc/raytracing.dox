@@ -77,6 +77,11 @@ Full source code is linked below and also available in the
 -   @ref raytracing/RayTracingExample.cpp "RayTracingExample.cpp"
 -   @ref raytracing/RndGenerators.h "RndGenerators.h"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/raytracing)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example raytracing/Camera.h @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
 @example raytracing/CMakeLists.txt @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation
 @example raytracing/Materials.h @m_examplenavigation{examples-raytracing,raytracing/} @m_footernavigation

@@ -84,6 +84,11 @@ navigation.
 -   @ref octree/OctreeExample.cpp "OctreeExample.cpp"
 -   @ref octree/CMakeLists.txt "CMakeLists.txt"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/octree)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example octree/LooseOctree.cpp @m_examplenavigation{examples-octree,octree/} @m_footernavigation
 @example octree/LooseOctree.h @m_examplenavigation{examples-octree,octree/} @m_footernavigation
 @example octree/OctreeExample.cpp @m_examplenavigation{examples-octree,octree/} @m_footernavigation

@@ -86,6 +86,11 @@ of the core Magnum repository, see its documentation for usage instructions.
 -   @ref fluidsimulation3d/TaskScheduler.h "TaskScheduler.h"
 -   @ref fluidsimulation3d/ThreadPool.h "ThreadPool.h"
 
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/fluidsimulation3d)
+contains additional patches for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
 @example fluidsimulation3d/CMakeLists.txt @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
 @example fluidsimulation3d/DrawableObjects/FlatShadeObject.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
 @example fluidsimulation3d/DrawableObjects/ParticleGroup.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
