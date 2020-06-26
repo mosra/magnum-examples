@@ -30,9 +30,14 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2019.10
+@anchor changelog-examples-latest
 
-@subsection changelog-examples-latest-new New features
+@section changelog-examples-2020-06 2020.06
+
+Released 2020-06-27, tagged as
+[v2020.06](https://github.com/mosra/magnum-examples/releases/tag/v2020.06).
+
+@subsection changelog-examples-2020-06-new New features
 
 -   New @ref examples-fluidsimulation2d example (see
     [mosra/magnum-examples#71](https://github.com/mosra/magnum-examples/pull/71))
@@ -52,7 +57,7 @@ namespace Magnum {
 -   New @ref examples-octree example (see
     [mosra/magnum-examples#86](https://github.com/mosra/magnum-examples/pull/86))
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2020-06-changes Changes and improvements
 
 -   The @ref examples-imgui "ImGui example" now lets ImGui update the
     application cursor (see [mosra/magnum-integration#56](https://github.com/mosra/magnum-integration/pull/56))
@@ -66,12 +71,12 @@ namespace Magnum {
 -   The @ref examples-box2d and @ref examples-bullet examples are now using
     instanced rendering to draw the whole scene in a single draw call.
 
-@subsection changelog-examples-latest-buildsystem Build system
+@subsection changelog-examples-2020-06-buildsystem Build system
 
 -   The library again compiles and tests cleanly with @ref CORRADE_NO_ASSERT
     enabled, and this setup is verified on the CI to avoid further regressions
 
-@subsection changelog-examples-latest-bugfixes Bug fixes
+@subsection changelog-examples-2020-06-bugfixes Bug fixes
 
 -   The @ref examples-picking and @ref examples-bullet examples weren't
     properly handling mouse events on HiDPI systems that have different window
