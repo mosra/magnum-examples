@@ -27,7 +27,7 @@
 namespace Magnum {
 /** @page examples-fluidsimulation2d 2D Fluid Simulation
 @brief 2D fluid simulation using the APIC method.
-@m_since_latest_{examples}
+@m_since_{examples,2020,06}
 
 @m_footernavigation
 
