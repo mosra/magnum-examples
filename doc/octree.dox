@@ -28,7 +28,7 @@ namespace Magnum {
 
 /** @page examples-octree Octree
 @brief Loose octree for accelerating collision detection.
-@m_since_latest_{examples}
+@m_since_{examples,2020,06}
 
 @m_footernavigation
 

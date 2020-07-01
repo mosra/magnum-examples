@@ -26,7 +26,7 @@
 namespace Magnum {
 /** @page examples-animated-gif Animated GIF
 @brief Playing back an animated GIF. On the GPU or in a terminal.
-@m_since_latest_{examples}
+@m_since_{examples,2020,06}
 
 @m_footernavigation
 

@@ -27,7 +27,7 @@
 namespace Magnum {
 /** @page examples-raytracing Ray Tracing
 @brief Simple iterative ray tracing
-@m_since_latest_{examples}
+@m_since_{examples,2020,06}
 
 @m_footernavigation
 

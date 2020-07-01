@@ -30,9 +30,14 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@section changelog-examples-latest Changes since 2019.10
+@anchor changelog-examples-latest
 
-@subsection changelog-examples-latest-new New features
+@section changelog-examples-2020-06 2020.06
+
+Released 2020-06-27, tagged as
+[v2020.06](https://github.com/mosra/magnum-examples/releases/tag/v2020.06).
+
+@subsection changelog-examples-2020-06-new New features
 
 -   New @ref examples-fluidsimulation2d example (see
     [mosra/magnum-examples#71](https://github.com/mosra/magnum-examples/pull/71))
@@ -52,7 +57,7 @@ namespace Magnum {
 -   New @ref examples-octree example (see
     [mosra/magnum-examples#86](https://github.com/mosra/magnum-examples/pull/86))
 
-@subsection changelog-examples-latest-changes Changes and improvements
+@subsection changelog-examples-2020-06-changes Changes and improvements
 
 -   The @ref examples-imgui "ImGui example" now lets ImGui update the
     application cursor (see [mosra/magnum-integration#56](https://github.com/mosra/magnum-integration/pull/56))
@@ -66,12 +71,12 @@ namespace Magnum {
 -   The @ref examples-box2d and @ref examples-bullet examples are now using
     instanced rendering to draw the whole scene in a single draw call.
 
-@subsection changelog-examples-latest-buildsystem Build system
+@subsection changelog-examples-2020-06-buildsystem Build system
 
 -   The library again compiles and tests cleanly with @ref CORRADE_NO_ASSERT
     enabled, and this setup is verified on the CI to avoid further regressions
 
-@subsection changelog-examples-latest-bugfixes Bug fixes
+@subsection changelog-examples-2020-06-bugfixes Bug fixes
 
 -   The @ref examples-picking and @ref examples-bullet examples weren't
     properly handling mouse events on HiDPI systems that have different window
@@ -188,149 +193,6 @@ Released 2018-10-23, tagged as
 
 -   Extended the @ref examples-primitives example with info about handling of
     generic mesh data (see [mosra/magnum-examples#48](https://github.com/mosra/magnum-examples/pull/48))
-
-@section changelog-examples-2018-04 2018.04
-
-Released 2018-05-01, tagged as
-[v2018.04](https://github.com/mosra/magnum-examples/releases/tag/v2018.04).
-
-@subsection changelog-examples-2018-04-dependencies Dependency changes
-
--   Building for Android now requires CMake 3.7 with builtin Android
-    crosscompilation support, the old toolchains were removed. Only the Clang
-    and libc++ toolchain is now supported, support for GCC and libstdc++ was
-    dropped, as it was still missing some important C++11 functionality. See
-    @ref building-cross-android for more information.
-
-@subsection changelog-examples-2018-04-new New features
-
--   New @ref examples-leapmotion example showcasing hand tracking
-    (see [mosra/magnum-examples#40](https://github.com/mosra/magnum-examples/pull/40))
--   New @ref examples-triangle-sokol example showcasing use of Magnum with
-    custom renderers
-
-@subsection changelog-examples-2018-04-changes Changes and improvements
-
--   Simplified the @ref examples-ovr example to a single file with minimal
-    dependencies (see [mosra/magnum-examples#39](https://github.com/mosra/magnum-examples/pull/39))
-
-@subsection changelog-examples-2018-04-buildsystem Build system
-
--   It's now possible to build particular examples as if they would be a
-    project root. See @ref building-examples-features and
-    [mosra/magnum#241](https://github.com/mosra/magnum/issues/241) for more information.
--   Homebrew macOS packages were updated to install the stable version by
-    default
--   Fixed the Debian package to not include a revision. While just a warning on
-    Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
-
-@subsection changelog-examples-2018-04-bugfixes Bug fixes
-
--   The @ref examples-webvr example was fixed to work on Android phones
-    (see [mosra/magnum-examples#38](https://github.com/mosra/magnum-examples/pull/38))
-
-@section changelog-examples-2018-02 2018.02
-
-Released 2018-02-15, tagged as
-[v2018.02](https://github.com/mosra/magnum-examples/releases/tag/v2018.02). See
-the [release announcement](https://blog.magnum.graphics/announcements/2018.02/)
-for a high-level overview.
-
-@subsection changelog-examples-2018-02-dependencies Dependency changes
-
--   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
--   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
--   Bumped minimal CMake version to 2.8.12
--   Removed support for macOS 10.8 and older
--   Dropped the `compatibility` branch and all support for MSVC 2013 and GCC <
-    4.7
-
-@subsection changelog-examples-2018-02-new New features
-
--   MSVC 2015 and MSVC 2017 support in `master` branch
--   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
--   Windows Phone/Store support via ANGLE
--   iOS support
--   WebAssembly support when building for Emscripten
--   WebGL 2.0 support
--   New examples:
-    -   @ref examples-arealights example showing a basic Area Lights
-        implementation (see
-        [mosra/magnum-examples#31](https://github.com/mosra/magnum-examples/pull/31))
-    -   @ref examples-audio example showing usage of the @ref Audio library and
-        integration with @ref SceneGraph (see
-        [mosra/magnum-examples#14](https://github.com/mosra/magnum-examples/pull/14),
-        [mosra/magnum-examples#18](https://github.com/mosra/magnum-examples/pull/18),
-        [mosra/magnum-examples#21](https://github.com/mosra/magnum-examples/pull/21),
-        [mosra/magnum-examples#32](https://github.com/mosra/magnum-examples/pull/32))
-    -   @ref examples-ovr example showing integration with Oculus VR using
-        @ref OvrIntegration (see
-        [mosra/magnum-examples#10](https://github.com/mosra/magnum-examples/pull/10),
-        [mosra/magnum-examples#11](https://github.com/mosra/magnum-examples/pull/11),
-        [mosra/magnum-examples#13](https://github.com/mosra/magnum-examples/pull/13),
-        [mosra/magnum-examples#15](https://github.com/mosra/magnum-examples/pull/15),
-        [mosra/magnum-examples#16](https://github.com/mosra/magnum-examples/pull/16),
-        [mosra/magnum-examples#19](https://github.com/mosra/magnum-examples/pull/19),
-        [mosra/magnum-examples#22](https://github.com/mosra/magnum-examples/pull/22),
-        [mosra/magnum-examples#26](https://github.com/mosra/magnum-examples/pull/26))
-    -   @ref examples-picking example showing object picking using mouse cursor
-        and `Framebuffer` readout (see
-        [mosra/magnum-examples#12](https://github.com/mosra/magnum-examples/issues/12),
-        [mosra/magnum-examples#17](https://github.com/mosra/magnum-examples/issues/17))
-    -   @ref examples-shadows example implementing cascaded shadow mapping (see
-        [mosra/magnum-examples#24](https://github.com/mosra/magnum-examples/pull/24))
-    -   @ref examples-triangle-plain-glfw example showing integration into
-        custom platform toolkits
-    -   @ref examples-webvr example showing basic usage of WebVR (see
-        [mosra/magnum-examples#33](https://github.com/mosra/magnum-examples/pull/33),
-        [mosra/magnum-examples#36](https://github.com/mosra/magnum-examples/pull/36))
--   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch
-    contains a subset of the examples ported to mobile devices and HTML5
-
-@subsection changelog-examples-2018-02-changes Changes and improvements
-
--   Relicensed all examples from MIT to public domain / UNLICENSE to allow
-    their unencumered use in derived projects
--   Removed now obsolete `framebuffer` example, superseded by the
-    @ref examples-picking example
--   The @ref examples-motionblur example now uses VSync and
-    minimal frame time to avoid being a CPU hog
-
-@subsection changelog-examples-2018-02-buildsystem Build system
-
--   Continuous testing for Linux, macOS, Windows MSVC, Windows MinGW, Windows RT,
-    iOS, Android and Emscripten on [Travis CI](https://travis-ci.org/mosra/magnum-examples)
-    and [AppVeyor CI](https://ci.appveyor.com/project/mosra/magnum-examples), with code
-    coverage on [coveralls.io](https://coveralls.io/github/mosra/magnum-examples);
-    replacing the unmaintained and outdated Jenkins configuration
--   Support for CMake subprojects. You can now clone Magnum Plugins into a
-    subdirectory in your project and add it using @cmake add_subdirectory() @ce.
-    The @cmake find_package() @ce command will then use the CMake subproject
-    instead of looking for it in system-wide locations.
--   CMake targets are now organized in folders for better development
-    experience in IDEs such as Visual Studio or Xcode
--   Added a @ref building-examples-packages-brew "Homebrew package"
--   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
--   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
-    up initial CMake run
-
-@subsection changelog-examples-2018-02-bugfixes Bug fixes
-
--   Fixed depth issues in the @ref examples-viewer example when running with
-    16bit depth buffer ([possibly related Firefox bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1202387),
-    see [mosra/magnum-examples#34](https://github.com/mosra/magnum-examples/issues/34))
--   Fixed Greek text in the @ref examples-text example (see
-    [mosra/magnum-examples#35](https://github.com/mosra/magnum-examples/pull/35))
-
-@subsection changelog-examples-2018-02-documentation Documentation
-
--   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
-    related massive updates of *everything*
--   All examples, even the ones without a tutorial, have now their dedicated
-    documentation page with a screenshot, source listing and possibly a link
-    to the live web version
--   The @ref building-examples documentation now prefers package installation
-    instead of manual build
 
 Changelogs for previous versions are available in
 @ref changelog-examples-old "Archived example changelogs".

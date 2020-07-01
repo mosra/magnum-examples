@@ -28,7 +28,7 @@ namespace Magnum {
 
 /** @page examples-arcball ArcBall Camera
 @brief Intuitive camera control with smooth navigation.
-@m_since_latest_{examples}
+@m_since{2020,06}_{examples}
 
 @m_footernavigation
 
