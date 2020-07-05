@@ -31,13 +31,15 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html raytracing.png width=400px
+
 Implementation of a simple CPU ray tracer adapted from Peter Shirley's
 book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 The current implementation runs on single thread and performs iterative
 rendering to refine the result. Typically, a high quality image can be achieved
 after around 100 iterations.
 
-@image html raytracing.png width=400px
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/raytracing/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-raytracing-controls Controls
 

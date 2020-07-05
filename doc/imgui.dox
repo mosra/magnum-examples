@@ -30,10 +30,10 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html imgui.png width=400px
+
 Shows the Dear ImGui demo and two example windows which demonstrate rendering
 of immediate-mode GUI using the @ref ImGuiIntegration library.
-
-@image html imgui.png width=400px
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/imgui/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 

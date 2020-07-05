@@ -39,6 +39,8 @@ with a smooth navigation feature. Using arcball, the camera control is more
 accurate and consistent. See also the @ref examples-mouseinteraction example
 for an alternative approach.
 
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/arcball/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
+
 @section examples-arcball-controls Controls
 
 -   @m_class{m-label m-default} **mouse drag** rotates the camera

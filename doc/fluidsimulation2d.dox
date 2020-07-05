@@ -31,11 +31,13 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html fluidsimulation2d.png width=400px
+
 A 2D fluid simulation using the APIC ([Affine Particle-in-Cell](https://dl.acm.org/citation.cfm?id=2766996))
 method. Compared to @ref examples-fluidsimulation3d, the simulation is running
 in a single thread.
 
-@image html fluidsimulation2d.png width=400px
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/fluidsimulation2d/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
 
 @section examples-fluidsimulation2d-controls Controls
 
