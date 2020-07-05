@@ -144,7 +144,7 @@ void RayTracingExample::renderAndUpdateBlockPixels() {
 
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
     const auto newBufferSize = event.framebufferSize();
-    GL::defaultFramebuffer.setViewport({ {}, newBufferSize });
+    GL::defaultFramebuffer.setViewport({{}, newBufferSize});
     _arcballCamera->reshape(windowSize());
     _rayTracer->resizeBuffers(newBufferSize);
     resizeBuffers(newBufferSize);
