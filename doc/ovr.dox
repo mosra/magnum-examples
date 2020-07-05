@@ -32,7 +32,7 @@ namespace Magnum {
 
 @image html ovr.png
 
-Note that there is also a @ref examples-webvr "WebVR example" and a
+Note that there is also a @ref examples-webxr "WebXR example" and a
 @ref examples-leapmotion "Leap Motion example".
 
 @section examples-ovr-usage Usage

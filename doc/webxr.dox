@@ -44,8 +44,7 @@ and search for WebXR. Works on Android as well.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/webxr/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
-Note that there is also a @ref examples-webvr "WebVR example", a
-@ref examples-ovr "Oculus VR example" and a
+Note that there is also a @ref examples-ovr "Oculus VR example" and a
 @ref examples-leapmotion "Leap Motion example".
 
 @section examples-webxr-controls Controls

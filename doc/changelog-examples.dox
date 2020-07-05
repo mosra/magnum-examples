@@ -35,6 +35,8 @@ namespace Magnum {
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Fixed the @ref examples-webxr example to look correctly on HiDPI
+-   The WebVR example was obsoleted by the @ref examples-webxr example and is
+    now removed
 
 @section changelog-examples-2020-06 2020.06
 
