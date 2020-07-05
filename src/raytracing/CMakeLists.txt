@@ -38,7 +38,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Corrade REQUIRED Main)
-find_package(Magnum REQUIRED GL)
+find_package(Magnum REQUIRED GL MeshTools Primitives Shaders)
 if(CORRADE_TARGET_EMSCRIPTEN)
     find_package(Magnum REQUIRED EmscriptenApplication)
 else()
@@ -57,7 +57,10 @@ target_link_libraries(magnum-raytracing PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::GL
-    Magnum::Magnum)
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders)
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well

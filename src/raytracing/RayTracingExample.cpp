@@ -31,13 +31,17 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Magnum/ImageView.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
-#include <Magnum/ImageView.h>
-#include <Magnum/PixelFormat.h>
+#include <Magnum/Primitives/Square.h>
+#include <Magnum/MeshTools/Compile.h>
+#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Trade/MeshData.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
 #else
@@ -70,7 +74,8 @@ class RayTracingExample: public Platform::Application {
 
         Containers::Pointer<ArcBall> _arcballCamera;
         GL::Texture2D _texture{NoCreate};
-        GL::Framebuffer _framebuffer{NoCreate};
+        Shaders::Flat2D _shader{NoCreate};
+        GL::Mesh _square{NoCreate};
 
         Containers::Pointer<RayTracer> _rayTracer;
         bool _depthOfField = false;
@@ -110,6 +115,16 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
         resizeBuffers(framebufferSize());
     }
 
+    /* Set up a full-screen square to render. Usually we would just blit the
+       texture to the default framebuffer, but framebuffer blit is not on WebGL
+       1 and it seems silly to require WebGL 2 for something that's mostly
+       software rendering. OTOH this adds a dependency on four new libs
+       (MeshTools, Primitives, Shaders and Trade) which isn't exactly ideal
+       either. */
+    _shader = Shaders::Flat2D{Shaders::Flat2D::Flag::Textured};
+    _square = MeshTools::compile(
+        Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Loop frame as fast as possible */
     setSwapInterval(0);
@@ -134,6 +149,8 @@ void RayTracingExample::drawEvent() {
 }
 
 void RayTracingExample::renderAndUpdateBlockPixels() {
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+
     /* Update window title with current iteration index */
     if(_rayTracer->currentBlock() == Vector2i{}) setWindowTitle(
         Utility::formatString("Magnum Ray Tracing Example (iteration {})",
@@ -143,8 +160,9 @@ void RayTracingExample::renderAndUpdateBlockPixels() {
     const auto& pixels = _rayTracer->renderedBuffer();
     _texture.setSubImage(0, {},
         ImageView2D(PixelFormat::RGBA8Unorm, framebufferSize(), pixels));
-    GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
-        _framebuffer.viewport(), GL::FramebufferBlit::Color);
+    _shader
+        .bindTexture(_texture)
+        .draw(_square);
 }
 
 void RayTracingExample::viewportEvent(ViewportEvent& event) {
@@ -235,10 +253,13 @@ void RayTracingExample::resizeBuffers(const Vector2i& bufferSize) {
     _texture.setMagnificationFilter(GL::SamplerFilter::Linear)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
-        .setStorage(1, GL::TextureFormat::RGBA8, bufferSize);
-
-    _framebuffer = GL::Framebuffer(GL::defaultFramebuffer.viewport());
-    _framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, _texture, 0);
+        .setStorage(1,
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            GL::TextureFormat::RGBA8,
+            #else
+            GL::TextureFormat::RGBA,
+            #endif
+            bufferSize);
 }
 
 void RayTracingExample::updateRayTracerCamera() {
