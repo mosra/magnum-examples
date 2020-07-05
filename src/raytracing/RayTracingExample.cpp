@@ -83,6 +83,7 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
             .setHelp("max-samples", "max samples per pixel", "COUNT")
         .addOption("max-ray-depth", "16")
             .setHelp("max-ray-depth", "max ray depth", "DEPTH")
+        .addSkippedPrefix("magnum")
         .parse(arguments.argc, arguments.argv);
 
     /* Delayed context creation so the command-line help is displayed w/o

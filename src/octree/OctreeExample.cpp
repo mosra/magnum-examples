@@ -124,6 +124,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             .setHelp("sphere-radius", "sphere radius", "R")
         .addOption('v', "sphere-velocity", "0.05")
             .setHelp("sphere-velocity", "sphere velocity", "V")
+        .addSkippedPrefix("magnum")
         .parse(arguments.argc, arguments.argv);
 
     _sphereRadius = args.value<Float>("sphere-radius");
