@@ -244,7 +244,7 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     [GLEW](http://glew.sourceforge.net/).
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
--   `WITH_WEBVR_EXAMPLE` --- Build the @ref examples-webvr "WebVR" example.
+-   `WITH_WEBXR_EXAMPLE` --- Build the @ref examples-webxr "WebXR" example.
     Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 
 Some examples accept additional options:

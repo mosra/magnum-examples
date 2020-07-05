@@ -51,8 +51,7 @@ namespace Magnum {
     fixes
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the
     @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
-    @ref examples-webvr, @ref examples-leapmotion, @ref examples-imgui and
-    @ref examples-webxr
+    @ref examples-leapmotion, @ref examples-imgui, WebVR and @ref examples-webxr
     examples, porting to @ref Platform::EmscriptenApplication
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
     --- the @ref examples-dart example

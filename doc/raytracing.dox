@@ -26,18 +26,20 @@
 
 namespace Magnum {
 /** @page examples-raytracing Ray Tracing
-@brief Simple iterative ray tracing
+@brief Simple iterative CPU ray tracing
 @m_since_{examples,2020,06}
 
 @m_footernavigation
 
-This is an implementation of a simple ray tracer adapted from Peter Shirley's
+@image html raytracing.png width=400px
+
+Implementation of a simple CPU ray tracer adapted from Peter Shirley's
 book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 The current implementation runs on single thread and performs iterative
 rendering to refine the result. Typically, a high quality image can be achieved
 after around 100 iterations.
 
-@image html raytracing.png width=400px
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/raytracing/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-raytracing-controls Controls
 
@@ -45,11 +47,13 @@ after around 100 iterations.
 -   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse
     drag** pans the camera
 -   @m_class{m-label m-default} **mouse wheel** zooms in/out
--   @m_class{m-label m-default} **R** reset the camera to its original transformation
--   @m_class{m-label m-default} **D** toggle Depth-of-Field
--   @m_class{m-label m-default} **M** toggle marking the next render block by a different color
+-   @m_class{m-label m-default} **R** resets the camera to its original
+    transformation
+-   @m_class{m-label m-default} **D** toggles Depth-of-Field
+-   @m_class{m-label m-default} **M** toggles marking the next rendered block
+    by a different color
 -   @m_class{m-label m-default} **N** generate a new random scene
--   @m_class{m-label m-default} **Space** pause/resume rendering
+-   @m_class{m-label m-default} **Space** pauses/resumes rendering
 
 Additionally, various options can be set via command line:
 

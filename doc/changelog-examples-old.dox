@@ -67,8 +67,7 @@ Released 2018-05-01, tagged as
 
 @subsection changelog-examples-2018-04-bugfixes Bug fixes
 
--   The @ref examples-webvr example was fixed to work on Android phones
-    (see [mosra/magnum-examples#38](https://github.com/mosra/magnum-examples/pull/38))
+-   The WebVR example was fixed to work on Android phones (see [mosra/magnum-examples#38](https://github.com/mosra/magnum-examples/pull/38))
 
 @section changelog-examples-2018-02 2018.02
 
@@ -122,7 +121,7 @@ for a high-level overview.
         [mosra/magnum-examples#24](https://github.com/mosra/magnum-examples/pull/24))
     -   @ref examples-triangle-plain-glfw example showing integration into
         custom platform toolkits
-    -   @ref examples-webvr example showing basic usage of WebVR (see
+    -   WebVR example showing basic usage of WebVR (see
         [mosra/magnum-examples#33](https://github.com/mosra/magnum-examples/pull/33),
         [mosra/magnum-examples#36](https://github.com/mosra/magnum-examples/pull/36))
 -   A new [ports](https://github.com/mosra/magnum-examples/tree/ports) branch

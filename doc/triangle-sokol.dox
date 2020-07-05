@@ -82,26 +82,26 @@ And then rendering the scene in the draw event:
     library, released under the @m_class{m-label m-success} **zlib license**
     ([license text](https://github.com/floooh/sokol/blob/master/LICENSE),
     [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
-    Attribution is appreciated but not required. In addition, it uses the
-    [GLEW](http://glew.sourceforge.net/) library, licensed under
-    @m_class{m-label m-success} **BSD 3-clause**
-    ([license text](http://glew.sourceforge.net/glew.txt),
-    [choosealicense.com](https://choosealicense.com/licenses/bsd-3-clause/)),
-    the @m_class{m-label m-success} **Mesa 3D License**
-    ([license text](http://glew.sourceforge.net/mesa.txt),
-    [choosealicense.com](https://choosealicense.com/licenses/mit/))
-    and the @m_class{m-label m-success} **Khronos License**
-    ([license text](http://glew.sourceforge.net/khronos.txt),
+    Attribution is appreciated but not required. In addition, the library uses
+    code generated using
+    [flextGL](https://github.com/mosra/flextgl), copyright © 2011--2018 Thomas
+    Weber, licensed under @m_class{m-label m-success} **MIT**
+    ([license text](https://github.com/mosra/flextgl/blog/master/LICENSE),
     [choosealicense.com](https://choosealicense.com/licenses/mit/)). It
     requires attribution for public use.
 
 @section examples-triangle-sokol-source Source
 
 Full source code is linked below and together with assets also available in the
-[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree-sokol/master/src/text).
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree-sokol/master/src/triangle-sokol).
 
 -   @ref triangle-sokol/CMakeLists.txt "CMakeLists.txt"
 -   @ref triangle-sokol/TriangleSokolExample.cpp "TriangleSokolExample.cpp"
+-   [flextGL.h](https://github.com/mosra/magnum-examples/blob/master/src/triangle-sokol/flextGL.h)
+-   [flextGL.cpp](https://github.com/mosra/magnum-examples/blob/master/src/triangle-sokol/flextGL.cpp)
+-   [KHR/khrplatform.h](https://github.com/mosra/magnum-examples/blob/master/src/triangle-sokol/KHR/khrplatform.h)
+-   [sokol_gfx.h](https://github.com/mosra/magnum-examples/blob/master/src/triangle-sokol/sokol_gfx.h)
+-   [sokol.cpp](https://github.com/mosra/magnum-examples/blob/master/src/triangle-sokol/sokol.cpp)
 
 @example triangle-sokol/TriangleSokolExample.cpp @m_examplenavigation{examples-triangle-sokol,triangle-sokol/} @m_footernavigation
 @example triangle-sokol/CMakeLists.txt @m_examplenavigation{examples-triangle-sokol,triangle-sokol/} @m_footernavigation

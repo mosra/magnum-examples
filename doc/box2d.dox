@@ -30,11 +30,11 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html box2d.png
+
 Builds a pyramid out of cubes and allows you to expand or destroy it by adding
 more. Uses the @ref SceneGraph library directly with Box2D and renders
-everything in a single draw call using instanced @ref Shaders::Flag.
-
-@image html box2d.png
+everything in a single draw call using instanced @ref Shaders::Flat.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/box2d/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 

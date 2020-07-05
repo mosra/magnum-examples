@@ -49,6 +49,9 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 # The library_webxr.js and webxr.h files are bundled from
 # https://github.com/VhiteRabbit/emscripten-webxr/tree/e101ce7cfc3c92962a65771f43c2d61775edd348
 
+# Closure Compiler chokes on the JS file, disable it for this example
+string(REPLACE "--closure 1" "" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+
 add_executable(magnum-webxr WebXrExample.cpp)
 target_link_libraries(magnum-webxr PRIVATE
     Magnum::Application

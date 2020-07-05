@@ -30,11 +30,11 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html mouseinteraction.png
+
 Provides rotation, panning and zooming controls that are relative to depth at
 mouse cursor for more convenient interaction with complex scenes. See also the
 @ref examples-arcball example for an alternative approach.
-
-@image html mouseinteraction.png
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/mouseinteraction/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
 

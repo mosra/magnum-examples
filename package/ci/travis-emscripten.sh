@@ -213,7 +213,6 @@ cmake .. \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
     -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
     -DWITH_VIEWER_EXAMPLE=ON \
-    -DWITH_WEBVR_EXAMPLE=ON \
     -DWITH_WEBXR_EXAMPLE=ON \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)

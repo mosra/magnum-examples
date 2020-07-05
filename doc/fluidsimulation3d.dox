@@ -31,12 +31,14 @@ namespace Magnum {
 
 @m_footernavigation
 
+@image html fluidsimulation3d.png width=400px
+
 A basic implementation of SPH ([Smoothed-Particle Hydrodynamics](https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics))
 solver. In order to run in real time, accuracy has been heavily sacrificed for
-performance. See also @ref examples-fluidsimulation2d, which runs just realtime
+performance. See also @ref examples-fluidsimulation2d, which runs real-time
 just in a single thread.
 
-@image html fluidsimulation3d.png width=400px
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/fluidsimulation3d/">@m_div{m-big} Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL 2 @m_enddiv </a> @m_enddiv
 
 @section examples-fluidsimulation3d-controls Controls
 

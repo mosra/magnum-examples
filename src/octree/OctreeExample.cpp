@@ -128,6 +128,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             .setHelp("sphere-radius", "sphere radius", "R")
         .addOption('v', "sphere-velocity", "0.05")
             .setHelp("sphere-velocity", "sphere velocity", "V")
+        .addSkippedPrefix("magnum")
         .parse(arguments.argc, arguments.argv);
 
     _sphereRadius = args.value<Float>("sphere-radius");
@@ -148,7 +149,6 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
         GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-        GL::Renderer::enable(GL::Renderer::Feature::PolygonOffsetFill);
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* Loop at 60 Hz max */
