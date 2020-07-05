@@ -94,7 +94,8 @@ template<class T> class Array2X {
         }
 
         template<class IntType> void resize(IntType nx, IntType ny, const T& value) {
-            _size = { static_cast<std::size_t>(nx), static_cast<std::size_t>(ny) };
+            _size[0] = std::size_t(nx);
+            _size[1] = std::size_t(ny);
             _data.resize(_size[0] * _size[1], value);
         }
 
