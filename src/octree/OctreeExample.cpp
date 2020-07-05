@@ -145,7 +145,6 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
         GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
         GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-        GL::Renderer::enable(GL::Renderer::Feature::PolygonOffsetFill);
 
         /* Loop at 60 Hz max */
         setSwapInterval(1);
