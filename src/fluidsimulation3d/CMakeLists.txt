@@ -110,6 +110,9 @@ endif()
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
+    # Needs a bit more memory than the other examples
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ALLOW_MEMORY_GROWTH=1")
+
     add_custom_command(TARGET magnum-fluidsimulation3d POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
