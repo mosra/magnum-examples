@@ -96,7 +96,7 @@ class WebXrExample: public Platform::Application {
 
 WebXrExample::WebXrExample(const Arguments& arguments):
     Platform::Application(arguments,
-        Configuration{}.setSize({640, 320}),
+        Configuration{},
         GLConfiguration{}.setSampleCount(4))
 {
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
@@ -166,7 +166,7 @@ void WebXrExample::drawEvent() {
         _projectionMatrices[0] = Matrix4::perspectiveProjection(90.0_degf,
             Vector2(windowSize()).aspectRatio(), 0.01f, 100.0f);
         _viewMatrices[0] = Matrix4{};
-        _viewports[0] = Range2Di{{}, windowSize()};
+        _viewports[0] = Range2Di{{}, framebufferSize()};
 
         /* Set some default transformation for the controllers so that they don't
            block view */

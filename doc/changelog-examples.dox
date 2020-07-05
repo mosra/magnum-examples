@@ -30,7 +30,11 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@anchor changelog-examples-latest
+@section changelog-examples-latest Changes since 2020.06
+
+@subsection changelog-examples-latest-changes Changes and improvements
+
+-   Fixed the @ref examples-webxr example to look correctly on HiDPI
 
 @section changelog-examples-2020-06 2020.06
 
