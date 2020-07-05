@@ -34,10 +34,9 @@ namespace Magnum {
 
 @image html octree.png width=400px
 
-This is a simple, single-threaded implementation of a
-[loose octree](https://anteru.net/blog/2008/loose-octrees/) which is
-commonplace in computer graphics. In this example, octree is used for collision
-detection.
+Simple, single-threaded implementation of a [loose octree](https://anteru.net/blog/2008/loose-octrees/)
+which is commonplace in computer graphics. In this example, octree is used for
+collision detection.
 
 @section examples-octree-controls Controls
 

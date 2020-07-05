@@ -32,7 +32,7 @@ namespace Magnum {
 
 Builds a pyramid out of cubes and allows you to expand or destroy it by adding
 more. Uses the @ref SceneGraph library directly with Box2D and renders
-everything in a single draw call using instanced @ref Shaders::Flag.
+everything in a single draw call using instanced @ref Shaders::Flat.
 
 @image html box2d.png
 
