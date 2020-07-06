@@ -38,6 +38,7 @@ A Finite Element Method simulation using the technique proposed in the paper [Qu
 With a L-BFGS updates, the method can accelerate the simulation significantly, producing a real-time frame rate even for relatively large tetrahedral meshes.
 This example is heavily adopted from the [source code provided by the paper authors](https://github.com/ltt1598/Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials).
 
+After the simulation started, wind force will be added after 10 seconds. The wind parameters, along with other simulation parameters, can be changed at run time.
 
 @section examples-femsimulation-controls Controls
 
