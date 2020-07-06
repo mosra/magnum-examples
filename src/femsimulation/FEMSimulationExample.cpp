@@ -95,7 +95,7 @@ private:
     /* Simulation */
     Containers::Pointer<Simulator> _simulator;
     Containers::Pointer<TetMesh>   _mesh;
-    std::string                    _status { "Status: Paused" };
+    std::string                    _status { "Simulation paused" };
     Timer _timer;
     bool  _pause { true };
 
@@ -491,7 +491,7 @@ void FEMSimulationExample::showMenu() {
     if((_pause && ImGui::Button("Resume Simulation"))
        || (!_pause && ImGui::Button("Pause Simulation"))) {
         _pause ^= true;
-        if(_pause) { _status = "Status: Paused"; }
+        if(_pause) { _status = "Simulation paused"; }
     }
     ImGui::PopItemWidth();
 }
