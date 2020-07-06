@@ -1,0 +1,102 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
+    2020 — Nghia Truong <nghiatruong.vn@gmail.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-femsimulation Finite Element Method Simulation
+@brief Finite Element Method Simulation example.
+@m_since_{examples,2020,06}
+
+@m_footernavigation
+
+@image html femsimulation1.png width=400px
+@image html femsimulation2.png width=400px
+
+A Finite Element Method simulation using the technique proposed in the paper [Quasi-Newton Methods for Real-Time Simulation of Hyperelastic Materials](https://dl.acm.org/doi/10.1145/2990496).
+With a L-BFGS updates, the method can accelerate the simulation significantly, producing a real-time frame rate even for relatively large tetrahedral meshes.
+This example is heavily adopted from the [source code provided by the paper authors](https://github.com/ltt1598/Quasi-Newton-Methods-for-Real-time-Simulation-of-Hyperelastic-Materials).
+
+
+@section examples-femsimulation-controls Controls
+
+-   @m_class{m-label m-default} **mouse drag** rotates the view
+-   @m_class{m-label m-warning} **Shift** @m_class{m-label m-default} **mouse drag**
+    pans the view
+-   @m_class{m-label m-default} **H** shows / hides the overlay menu
+-   @m_class{m-label m-default} **S** toggle smooth camera navigation
+-   @m_class{m-label m-default} **R** resets the camera view
+-   @m_class{m-label m-default} **Space** starts/pauses the simulation
+-   @m_class{m-label m-default} **F5** resets the simulation
+
+@section examples-femsimulation-credits Credits
+
+This example was originally contributed by [Nghia Truong](https://github.com/ttnghia).
+
+@m_class{m-block m-success}
+
+@thirdparty This example makes use of the [Adobe Source Sans Pro](https://github.com/adobe-fonts/source-sans-pro)
+    font, licensed under @m_class{m-label m-success} **OFL 1.1**
+    ([license text](https://github.com/adobe-fonts/source-sans-pro/blob/release/LICENSE.txt),
+    [choosealicense.com](https://choosealicense.com/licenses/ofl-1.1/)).
+    Attribution is required for public use.
+
+@section examples-femsimulation-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/femsimulation).
+This example depends on the @ref examples-arcball example for camera
+navigation and @ref examples-fluidsimulation3d for wireframe grid rendering.
+In addition, it also requires the @ref ImGuiIntegration and Eigen libraries which are not parts
+of the core Magnum repository, see its documentation for usage instructions.
+
+-   @ref femsimulation/CMakeLists.txt "CMakeLists.txt"
+-   @ref femsimulation/Data/longbar.mesh "Data/longbar.mesh"
+-   @ref femsimulation/Data/squirrel.mesh "Data/squirrel.mesh"
+-   @ref femsimulation/FEMSimulationExample.cpp "FEMSimulationExample.cpp"
+-   @ref femsimulation/resources.conf "resources.conf"
+-   @ref femsimulation/Simulation/Constraints.cpp "Simulation/Constraints.cpp"
+-   @ref femsimulation/Simulation/Constraints.h "Simulation/Constraints.h"
+-   @ref femsimulation/Simulation/MathDefinitions.h "Simulation/MathDefinitions.h"
+-   @ref femsimulation/Simulation/Simulator.cpp "Simulation/Simulator.cpp"
+-   @ref femsimulation/Simulation/Simulator.h "Simulation/Simulator.h"
+-   @ref femsimulation/Simulation/TetMesh.cpp "Simulation/TetMesh.cpp"
+-   @ref femsimulation/Simulation/TetMesh.h "Simulation/TetMesh.h"
+
+
+@example femsimulation/CMakeLists.txt @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Data/longbar.mesh @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Data/squirrel.mesh @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/FEMSimulationExample.cpp @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/resources.conf @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/Constraints.cpp @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/Constraints.h @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/MathDefinitions.h @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/Simulator.cpp @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/Simulator.h @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/TetMesh.cpp @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+@example femsimulation/Simulation/TetMesh.h @m_examplenavigation{examples-femsimulation,femsimulation/} @m_footernavigation
+
+*/
+}

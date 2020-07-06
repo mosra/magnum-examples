@@ -212,6 +212,8 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     not available in OpenGL ES.
 -   `WITH_DART_EXAMPLE` --- Build the @ref examples-dart example. Requires
     the @ref DartIntegration library.
+-   `WITH_FEMSIMULATION_EXAMPLE` -- Build the @ref examples-femsimulation
+    example.
 -   `WITH_FLUIDSIMULATION3D_EXAMPLE` -- Build the @ref examples-fluidsimulation3d
     example.
 -   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
