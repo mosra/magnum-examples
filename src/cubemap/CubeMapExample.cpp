@@ -100,7 +100,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
         .setTitle("Magnum Cube Map Example")
         .setWindowFlags(Configuration::WindowFlag::Resizable
             #ifdef CORRADE_TARGET_IOS
-            |Configuration::WindowFlag::Borderless|Configuration::WindowFlag::AllowHighDpi
+            |Configuration::WindowFlag::Borderless
             #endif
         ));
 
