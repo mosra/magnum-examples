@@ -39,11 +39,12 @@
 #
 
 # Library
-find_library(BOX2D_LIBRARY NAMES Box2D)
+find_library(BOX2D_LIBRARY NAMES Box2D box2d)
 
 # Include dir
 find_path(BOX2D_INCLUDE_DIR
-    NAMES Box2D/Box2D.h)
+    NAMES Box2D/Box2D.h
+          box2d/box2d.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Box2D DEFAULT_MSG
