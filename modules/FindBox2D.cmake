@@ -39,11 +39,18 @@
 #
 
 # Library
-find_library(BOX2D_LIBRARY NAMES Box2D)
+find_library(BOX2D_LIBRARY
+    NAMES
+        box2d
+        # CamelCase naming used before Box2D 2.4
+        Box2D)
 
 # Include dir
 find_path(BOX2D_INCLUDE_DIR
-    NAMES Box2D/Box2D.h)
+    NAMES
+        box2d/box2d.h
+        # CamelCase naming used before Box2D 2.4
+        Box2D/Box2D.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Box2D DEFAULT_MSG

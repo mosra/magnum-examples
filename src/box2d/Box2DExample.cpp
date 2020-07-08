@@ -28,7 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Box2D/Box2D.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/Context.h>
@@ -46,6 +45,19 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Trade/MeshData.h>
+
+/* Box2D 2.3 (from 2014) uses mixed case, 2.4 (from 2020) uses lowercase */
+#ifdef __has_include
+#if __has_include(<box2d/box2d.h>)
+#include <box2d/box2d.h>
+#else
+#include <Box2D/Box2D.h>
+#endif
+/* If the compiler doesn't have __has_include, assume it's extremely old, and
+   thus an extremely old Box2D is more likely as well */
+#else
+#include <Box2D/Box2D.h>
+#endif
 
 namespace Magnum { namespace Examples {
 
