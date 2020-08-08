@@ -120,6 +120,10 @@ if(WITH_SHADOWS_EXAMPLE)
     add_subdirectory(shadows)
 endif()
 
+if(WITH_SSAO_EXAMPLE)
+    add_subdirectory(ssao)
+endif()
+
 if(WITH_TEXT_EXAMPLE)
     add_subdirectory(text)
 endif()
