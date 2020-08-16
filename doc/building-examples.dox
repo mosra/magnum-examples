@@ -88,7 +88,7 @@ makepkg -fp PKGBUILD # or any other PKGBUILD file
 Once built, install the package using `pacman`:
 
 @code{.sh}
-sudo pacman -U magnum-examples-*.pkg.tar.xz
+sudo pacman -U magnum-examples-*.pkg.tar.zst
 @endcode
 
 Edit the PKGBUILDs if you want to pass additional flags to CMake or
