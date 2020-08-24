@@ -170,7 +170,7 @@ SsaoExample::SsaoExample(const Arguments& arguments) :
     {
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
-        conf.setTitle("Magnum SSAOApply Example")
+        conf.setTitle("Magnum SSAO Example")
             .setSize(conf.size(), dpiScaling)
             .setWindowFlags(Configuration::WindowFlag::Resizable);
         GLConfiguration glConf;
