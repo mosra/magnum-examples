@@ -5,23 +5,23 @@ environment:
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-gl-msvc2015
+    APPVEYOR_JOB_NAME: windows-msvc2015
+    ENABLE_VULKAN: OFF
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-gl-msvc2017
+    APPVEYOR_JOB_NAME: windows-msvc2017
+    ENABLE_VULKAN: OFF
   - TARGET: desktop
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: windows-gl-msvc2019
-  - TARGET: desktop-vulkan
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: windows-vulkan-msvc2019
+    APPVEYOR_JOB_NAME: windows-msvc2019
+    ENABLE_VULKAN: ON
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-gl-mingw
+    APPVEYOR_JOB_NAME: windows-mingw
+    ENABLE_VULKAN: ON
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
@@ -88,14 +88,14 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.26.0_public_minimal.zip appveyor DownloadFile https://ci.magnum.graphics/ovr_sdk_win_1.26.0_public_minimal.zip
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.26.0_public_minimal.zip -o%APPVEYOR_BUILD_FOLDER%\deps
 
+# Vulkan loader
+- IF "%ENABLE_VULKAN%" == "ON" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\vulkan-loader-1.2.153-windows-2019.zip appveyor DownloadFile https://ci.magnum.graphics/vulkan-loader-1.2.153-windows-2019.zip
+- IF "%ENABLE_VULKAN%" == "ON" 7z x vulkan-loader-1.2.153-windows-2019.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
-# Vulkan needs to be in a separate build, because in the future it'll need
-# C++14 and building it together with C++11 code would harm verifiability of
-# C++11 compatibility.
-- IF "%TARGET%" == "desktop-vulkan" call package\ci\appveyor-desktop-vulkan.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:

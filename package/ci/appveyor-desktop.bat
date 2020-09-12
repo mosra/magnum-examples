@@ -57,6 +57,7 @@ cmake .. ^
     -DWITH_TRADE=ON ^
     -DWITH_SDL2APPLICATION=ON ^
     -DWITH_WGLCONTEXT=ON ^
+    -DWITH_VK=%ENABLE_VULKAN% ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -123,6 +124,7 @@ cmake .. ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON ^
     -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF ^
+    -DWITH_TRIANGLE_VULKAN_EXAMPLE=%ENABLE_VULKAN% ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
