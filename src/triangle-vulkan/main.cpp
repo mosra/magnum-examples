@@ -37,106 +37,47 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
-#include <MagnumExternal/Vulkan/flextVk.h>
+#include <Magnum/Vk/CommandBuffer.h>
+#include <Magnum/Vk/CommandPool.h>
+#include <Magnum/Vk/Device.h>
+#include <Magnum/Vk/DeviceProperties.h>
+#include <Magnum/Vk/Instance.h>
+#include <Magnum/Vk/Memory.h>
+#include <Magnum/Vk/Queue.h>
+#include <Magnum/Vk/Result.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
-#define MAGNUM_VK_ASSERT_OUTPUT(call) \
-    do { \
-        VkResult result = call; \
-        if(result != VK_SUCCESS) Debug{} << result; \
-        CORRADE_INTERNAL_ASSERT(result == VK_SUCCESS); \
-    } while(false)
-
-#define MAGNUM_VK_ASSERT_OUTPUT_INCOMPLETE(call) \
-    do { \
-        VkResult result = call; \
-        if(result != VK_SUCCESS && result != VK_INCOMPLETE) Debug{} << result; \
-        CORRADE_INTERNAL_ASSERT(result == VK_SUCCESS || result == VK_INCOMPLETE); \
-    } while(false)
-
+using namespace Corrade::Containers::Literals;
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
-int main() {
-    /* Create an instance, load function pointers */
-    VkInstance instance;
-    {
-        VkInstanceCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateInstance(&info, nullptr, &instance));
-    }
-    flextVkInitInstance(instance, &flextVkInstance);
+int main(int argc, char** argv) {
+    /* Create an instance */
+    Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
+        .setApplicationInfo("Magnum Vulkan Triangle Example"_s, {})};
 
-    /* Hardcoded memory type index (yes, I'm cheating) */
-    constexpr UnsignedInt MemoryTypeIndex = 0;
+    /* Device queue properties */
+    Vk::DeviceProperties deviceProperties = Vk::pickDevice(instance);
+    const UnsignedInt graphicsQueueFamily =
+        deviceProperties.pickQueueFamily(Vk::QueueFlag::Graphics);
 
-    /* Create a device */
-    VkPhysicalDevice physicalDevice;
-    {
-        UnsignedInt count = 1;
-        MAGNUM_VK_ASSERT_OUTPUT_INCOMPLETE(vkEnumeratePhysicalDevices(instance, &count, &physicalDevice));
-        CORRADE_INTERNAL_ASSERT(count == 1);
-    } {
-        VkPhysicalDeviceProperties properties;
-        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        Debug{} << "Using" << properties.deviceName;
-        CORRADE_INTERNAL_ASSERT(properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ||
-                                properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU ||
-                                properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU);
-    } {
-        VkQueueFamilyProperties properties;
-        UnsignedInt count = 1;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, &properties);
-        CORRADE_INTERNAL_ASSERT(count == 1);
-        CORRADE_INTERNAL_ASSERT(properties.queueFlags & VK_QUEUE_GRAPHICS_BIT);
-    } {
-        VkPhysicalDeviceMemoryProperties properties{};
-        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &properties);
-        CORRADE_INTERNAL_ASSERT(properties.memoryTypeCount >= 1);
-        CORRADE_INTERNAL_ASSERT(properties.memoryHeapCount >= 1);
-        CORRADE_INTERNAL_ASSERT(properties.memoryTypes[MemoryTypeIndex].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-        CORRADE_INTERNAL_ASSERT(properties.memoryTypes[MemoryTypeIndex].heapIndex == 0);
-    }
-    VkDevice device;
-    {
-        const Float zero = 0.0f;
-
-        VkDeviceQueueCreateInfo queueInfo{};
-        queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueInfo.queueFamilyIndex = 0; /* The first family from above */
-        queueInfo.queueCount = 1;
-        queueInfo.pQueuePriorities = &zero;
-
-        VkDeviceCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        info.queueCreateInfoCount = 1;
-        info.pQueueCreateInfos = &queueInfo;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateDevice(physicalDevice, &info, nullptr, &device));
-    }
-
-    flextVkInitDevice(device, &flextVkDevice, vkGetDeviceProcAddr);
-
-    /* Create a queue */
-    VkQueue queue;
-    vkGetDeviceQueue(device, 0, 0, &queue);
+    /* Create a device with a graphics queue */
+    Vk::Queue queue{NoCreate};
+    Vk::Device device{instance, Vk::DeviceCreateInfo{deviceProperties}
+        .addQueues(graphicsQueueFamily, {0.0f}, {queue})};
 
     /* Allocate a command buffer */
-    VkCommandPool commandPool;
-    {
-        VkCommandPoolCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        info.queueFamilyIndex = 0;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateCommandPool(device, &info, nullptr, &commandPool));
-    }
-    VkCommandBuffer commandBuffer;
-    {
-        VkCommandBufferAllocateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        info.commandPool = commandPool;
-        info.commandBufferCount = 1;
-        MAGNUM_VK_ASSERT_OUTPUT(vkAllocateCommandBuffers(device, &info, &commandBuffer));
-    }
+    Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
+        graphicsQueueFamily,
+        Vk::CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
+    Vk::CommandBuffer commandBuffer = commandPool.allocate();
+
+    /* Hardcoded memory type index */
+    const UnsignedInt memoryTypeIndex =
+        deviceProperties.pickMemory(Vk::MemoryFlag::HostVisible);
+
+    instance.populateGlobalFunctionPointers();
+    device.populateGlobalFunctionPointers();
 
     /* Render pass */
     VkRenderPass renderPass;
@@ -163,7 +104,7 @@ int main() {
         info.pAttachments = &color;
         info.subpassCount = 1;
         info.pSubpasses = &render;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateRenderPass(device, &info, nullptr, &renderPass));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateRenderPass(device, &info, nullptr, &renderPass));
     }
 
     /* Framebuffer image */
@@ -180,7 +121,7 @@ int main() {
         info.tiling = VK_IMAGE_TILING_LINEAR;
         info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateImage(device, &info, nullptr, &image));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateImage(device, &info, nullptr, &image));
     }
     VkDeviceMemory imageMemory;
     {
@@ -191,9 +132,9 @@ int main() {
         VkMemoryAllocateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         info.allocationSize = requirements.size;
-        info.memoryTypeIndex = MemoryTypeIndex; /* Assuming the type from above */
-        MAGNUM_VK_ASSERT_OUTPUT(vkAllocateMemory(device, &info, nullptr, &imageMemory));
-        MAGNUM_VK_ASSERT_OUTPUT(vkBindImageMemory(device, image, imageMemory, 0));
+        info.memoryTypeIndex = memoryTypeIndex; /* Assuming the type from above */
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkAllocateMemory(device, &info, nullptr, &imageMemory));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBindImageMemory(device, image, imageMemory, 0));
     }
     VkImageView color;
     {
@@ -207,7 +148,7 @@ int main() {
         info.subresourceRange.levelCount = 1;
         info.subresourceRange.baseArrayLayer = 0;
         info.subresourceRange.layerCount = 1;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateImageView(device, &info, nullptr, &color));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateImageView(device, &info, nullptr, &color));
     }
 
     /* Vertex buffer */
@@ -217,7 +158,7 @@ int main() {
         info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         info.size = 3*2*4*4; /* Three vertices, each is four-element pos & color */
         info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateBuffer(device, &info, nullptr, &buffer));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateBuffer(device, &info, nullptr, &buffer));
     }
     VkDeviceMemory bufferMemory;
     {
@@ -228,13 +169,13 @@ int main() {
         VkMemoryAllocateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         info.allocationSize = requirements.size;
-        info.memoryTypeIndex = MemoryTypeIndex; /* Assuming the type from above */
-        MAGNUM_VK_ASSERT_OUTPUT(vkAllocateMemory(device, &info, nullptr, &bufferMemory));
-        MAGNUM_VK_ASSERT_OUTPUT(vkBindBufferMemory(device, buffer, bufferMemory, 0));
+        info.memoryTypeIndex = memoryTypeIndex; /* Assuming the type from above */
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkAllocateMemory(device, &info, nullptr, &bufferMemory));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBindBufferMemory(device, buffer, bufferMemory, 0));
 
         /* Fill the data */
         void* data;
-        MAGNUM_VK_ASSERT_OUTPUT(vkMapMemory(device, bufferMemory, 0, VK_WHOLE_SIZE, 0, &data));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkMapMemory(device, bufferMemory, 0, VK_WHOLE_SIZE, 0, &data));
         auto view = Containers::arrayCast<Vector4>(Containers::arrayView(static_cast<char*>(data), 3*2*4*4));
         view[0] = {-0.5f, -0.5f, 0.0f, 1.0f}; /* Left vertex, red color */
         view[1] = 0xff0000ff_srgbaf;
@@ -256,7 +197,7 @@ int main() {
         info.width = 800;
         info.height = 600;
         info.layers = 1;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateFramebuffer(device, &info, nullptr, &framebuffer));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateFramebuffer(device, &info, nullptr, &framebuffer));
     }
 
     /* Create the shader */
@@ -323,7 +264,7 @@ int main() {
         info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         info.codeSize = code.size(); /* thanks Vulkan for accepting byte sizes */
         info.pCode = reinterpret_cast<const UnsignedInt*>(code.data());
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateShaderModule(device, &info, nullptr, &shader));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateShaderModule(device, &info, nullptr, &shader));
     }
 
     /* Pipeline layout */
@@ -333,7 +274,7 @@ int main() {
         info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         info.setLayoutCount = 0;
         info.pushConstantRangeCount = 0;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
     }
 
     /* Create a graphics pipeline */
@@ -420,14 +361,14 @@ int main() {
         info.layout = pipelineLayout;
         info.renderPass = renderPass;
         info.subpass = 0;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateGraphicsPipelines(device, nullptr, 1, &info, nullptr, &pipeline));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &info, nullptr, &pipeline));
     }
 
     /* Begin recording */
     {
         VkCommandBufferBeginInfo info{};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        MAGNUM_VK_ASSERT_OUTPUT(vkBeginCommandBuffer(commandBuffer, &info));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBeginCommandBuffer(commandBuffer, &info));
     }
 
     /* Convert the image to the proper layout */
@@ -477,32 +418,33 @@ int main() {
     vkCmdEndRenderPass(commandBuffer);
 
     /* End recording */
-    MAGNUM_VK_ASSERT_OUTPUT(vkEndCommandBuffer(commandBuffer));
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEndCommandBuffer(commandBuffer));
 
     /* Fence to wait on command buffer completeness */
     VkFence fence;
     {
         VkFenceCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        MAGNUM_VK_ASSERT_OUTPUT(vkCreateFence(device, &info, nullptr, &fence));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateFence(device, &info, nullptr, &fence));
     }
 
     /* Submit the command buffer */
     {
+        const VkCommandBuffer handle = commandBuffer.handle();
         VkSubmitInfo info{};
         info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         info.commandBufferCount = 1;
-        info.pCommandBuffers = &commandBuffer;
-        MAGNUM_VK_ASSERT_OUTPUT(vkQueueSubmit(queue, 1, &info, fence));
+        info.pCommandBuffers = &handle;
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkQueueSubmit(queue, 1, &info, fence));
     }
 
     /* Wait until done, 1 second max */
-    MAGNUM_VK_ASSERT_OUTPUT(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
 
     /* Read the image back */
     {
         void* data;
-        MAGNUM_VK_ASSERT_OUTPUT(vkMapMemory(device, imageMemory, 0, VK_WHOLE_SIZE, 0, &data));
+        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkMapMemory(device, imageMemory, 0, VK_WHOLE_SIZE, 0, &data));
 
         ImageView2D image{PixelFormat::RGBA8Unorm, {800, 600}, Containers::arrayView(static_cast<char*>(data), 800*600*4)};
         PluginManager::Manager<Trade::AbstractImageConverter> manager;
@@ -526,8 +468,4 @@ int main() {
     vkFreeMemory(device, imageMemory, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     vkDestroyFence(device, fence, nullptr);
-    vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
-    vkDestroyCommandPool(device, commandPool, nullptr);
-    vkDestroyDevice(device, nullptr);
-    vkDestroyInstance(instance, nullptr);
 }
