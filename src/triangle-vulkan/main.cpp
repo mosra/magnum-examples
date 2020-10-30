@@ -27,17 +27,18 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <MagnumExternal/Vulkan/flextVk.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
-
-#include "spirv.h"
 
 #define MAGNUM_VK_ASSERT_OUTPUT(call) \
     do { \
@@ -261,73 +262,67 @@ int main() {
     /* Create the shader */
     VkShaderModule shader;
     {
-        auto o = [](UnsignedShort length, UnsignedShort opcode) {
-            return UnsignedInt(length << 16 | opcode);
-        };
-        auto s = [](const char(&s)[5]) {
-            return UnsignedInt(s[3] << 24 | s[2] << 16 | s[1] << 8 | s[0]);
-        };
-        const UnsignedInt code[]{
-            /* I am the generator, I have 66 IDs max, instruction schema is 0 */
-            SpvMagicNumber, SpvVersion, 0, 66, 0,
+        PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+        Containers::Pointer<ShaderTools::AbstractConverter> compiler = manager.loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter");
+        CORRADE_INTERNAL_ASSERT(compiler);
 
-            o(2, SpvOpCapability), SpvCapabilityShader,
-            o(3, SpvOpMemoryModel), SpvAddressingModelLogical, SpvMemoryModelGLSL450,
+        using namespace Containers::Literals;
 
-            /* Function %1 is vertex shader and has %12, %13 as input and %15, %16 as output */
-            o(8, SpvOpEntryPoint), SpvExecutionModelVertex, 1, s("ver\0"), 12, 13, 15, 16,
+        const Containers::Array<char> code = compiler->convertDataToData({}, R"(
+               OpCapability Shader
+               OpMemoryModel Logical GLSL450
 
-            /* Function %2 is fragment shader and has %5 as input and %6 as output */
-            o(6, SpvOpEntryPoint), SpvExecutionModelFragment, 2, s("fra\0"), 5, 6,
+; Function %1 is vertex shader and has %12, %13 as input and %15, %16 as output
+               OpEntryPoint Vertex %1 "ver" %12 %13 %gl_Position %16
+; Function %2 is fragment shader and has %5 as input and %6 as output
+               OpEntryPoint Fragment %2 "fra" %5 %6
 
-            /* Input/output layouts */
-            o(4, SpvOpDecorate), 12, SpvDecorationLocation, 0, /* in position = 0 */
-            o(4, SpvOpDecorate), 13, SpvDecorationLocation, 1, /* in color = 1 */
-            o(4, SpvOpDecorate), 15, SpvDecorationBuiltIn, SpvBuiltInPosition, /* out position = gl_Position */
-            o(4, SpvOpDecorate), 16, SpvDecorationLocation, 0, /* out color = 0 */
-            o(4, SpvOpDecorate), 5, SpvDecorationLocation, 0, /* in color = 0 */
-            o(4, SpvOpDecorate), 6, SpvDecorationLocation, 0, /* out color = 0 */
+; Input/output layouts
+               OpDecorate %12 Location 0
+               OpDecorate %13 Location 1
+               OpDecorate %gl_Position BuiltIn Position
+               OpDecorate %16 Location 0
+               OpDecorate %5 Location 0
+               OpDecorate %6 Location 0
 
-            /* Types */
-            o(2, SpvOpTypeVoid), 7,                 /* %7 = void */
-            o(3, SpvOpTypeFunction), 8, 7,          /* %8 = void () */
-            o(3, SpvOpTypeFloat), 9, 32,            /* %9 = float */
-            o(4, SpvOpTypeVector), 10, 9, 4,        /* %10 = vec4 */
+; Types
+       %void = OpTypeVoid
+          %8 = OpTypeFunction %void
+      %float = OpTypeFloat 32
+    %v4float = OpTypeVector %float 4
+%_ptr_Input_v4float = OpTypePointer Input %v4float
+         %12 = OpVariable %_ptr_Input_v4float Input
+         %13 = OpVariable %_ptr_Input_v4float Input
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%gl_Position = OpVariable %_ptr_Output_v4float Output
+         %16 = OpVariable %_ptr_Output_v4float Output
+          %5 = OpVariable %_ptr_Input_v4float Input
+          %6 = OpVariable %_ptr_Output_v4float Output
 
-            o(4, SpvOpTypePointer), 11, SpvStorageClassInput, 10, /* %11 = in vec4* */
-            o(4, SpvOpVariable), 11, 12, SpvStorageClassInput, /* %12 = in position */
-            o(4, SpvOpVariable), 11, 13, SpvStorageClassInput, /* %13 = in color */
+; %1 = void ver()
+          %1 = OpFunction %void None %8
+         %33 = OpLabel
+         %30 = OpLoad %v4float %12
+         %31 = OpLoad %v4float %13
+               OpStore %gl_Position %30
+               OpStore %16 %31
+               OpReturn
+               OpFunctionEnd
 
-            o(4, SpvOpTypePointer), 14, SpvStorageClassOutput, 10, /* %14 = out vec4* */
-            o(4, SpvOpVariable), 14, 15, SpvStorageClassOutput, /* %15 = out position */
-            o(4, SpvOpVariable), 14, 16, SpvStorageClassOutput, /* %16 = out color */
-
-            o(4, SpvOpVariable), 11, 5, SpvStorageClassInput, /* %5 = frag in color */
-            o(4, SpvOpVariable), 14, 6, SpvStorageClassOutput, /* %6 = frag out color */
-
-            /* %1 = void ver() */
-            o(5, SpvOpFunction), 7, 1, SpvFunctionControlMaskNone, 8,
-            o(2, SpvOpLabel), 33,
-            o(4, SpvOpLoad), 10, 30, 12,    /* %30 = load position as vec4 */
-            o(4, SpvOpLoad), 10, 31, 13,    /* %31 = load color as vec4 */
-            o(3, SpvOpStore), 15, 30,       /* store position from %30 */
-            o(3, SpvOpStore), 16, 31,       /* store color from %31 */
-            o(1, SpvOpReturn),
-            o(1, SpvOpFunctionEnd),
-
-            /* %2 = void fra() */
-            o(5, SpvOpFunction), 7, 2, SpvFunctionControlMaskNone, 8,
-            o(2, SpvOpLabel), 34,
-            o(4, SpvOpLoad), 10, 32, 5,     /* %32 = load color as vec4 */
-            o(3, SpvOpStore), 6, 32,        /* store color from %32 */
-            o(1, SpvOpReturn),
-            o(1, SpvOpFunctionEnd)
-        };
+; %2 = void fra()
+          %2 = OpFunction %void None %8
+         %34 = OpLabel
+         %32 = OpLoad %v4float %5
+               OpStore %6 %32
+               OpReturn
+               OpFunctionEnd
+)"_s);
+        CORRADE_INTERNAL_ASSERT(code);
 
         VkShaderModuleCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        info.codeSize = sizeof(code);
-        info.pCode = code;
+        info.codeSize = code.size(); /* thanks Vulkan for accepting byte sizes */
+        info.pCode = reinterpret_cast<const UnsignedInt*>(code.data());
         MAGNUM_VK_ASSERT_OUTPUT(vkCreateShaderModule(device, &info, nullptr, &shader));
     }
 

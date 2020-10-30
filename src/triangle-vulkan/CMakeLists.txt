@@ -37,7 +37,7 @@ if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 find_package(Corrade REQUIRED Main)
-find_package(Magnum REQUIRED Trade Vk)
+find_package(Magnum REQUIRED ShaderTools Trade Vk)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -45,6 +45,7 @@ add_executable(magnum-triangle-vulkan WIN32 main.cpp)
 target_link_libraries(magnum-triangle-vulkan PRIVATE
     Corrade::Main
     Magnum::Trade
+    Magnum::ShaderTools
     Magnum::Vk)
 
 install(TARGETS magnum-triangle-vulkan DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

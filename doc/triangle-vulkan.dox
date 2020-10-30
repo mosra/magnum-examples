@@ -35,16 +35,17 @@ This example has equivalent output to the OpenGL @ref examples-triangle "Triangl
 example, but uses Vulkan instead. Showcases how to use Magnum builtin
 [flextGL](https://github.com/mosra/flextgl)-generated headers to load Vulkan
 function pointers, create the Vulkan instance, create the device, do the
-initial setup, handcraft a SPIR-V shader bytecode and render a basic rainbow
-triangle offscreen, exporting it to a PNG file using the
+initial setup, assemble a SPIR-V shader bytecode using the
+@ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter" plugin and
+render a basic rainbow triangle offscreen, exporting it to a PNG file using the
 @ref Trade::AbstractImageConverter APIs.
 
 @section examples-triangle-vulkan-source Source
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle-vulkan).
-This example depends on the @ref Vk library that's not enabled by default in
-most cases, see its documentation for usage instructions.
+This example depends on @ref ShaderTools and the @ref Vk library that's not
+enabled by default in most cases, see its documentation for usage instructions.
 
 -   @ref triangle-vulkan/CMakeLists.txt "CMakeLists.txt"
 -   @ref triangle-vulkan/main.cpp "main.cpp"
