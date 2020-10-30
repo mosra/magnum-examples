@@ -64,6 +64,7 @@
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
 #  Shaders                      - Shaders library
+#  ShaderTools                  - ShaderTools library
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
 #  Trade                        - Trade library
@@ -95,6 +96,7 @@
 #  fontconverter                - magnum-fontconverter executable
 #  imageconverter               - magnum-imageconverter executable
 #  sceneconverterter            - magnum-sceneconverter executable
+#  shaderconverterter           - magnum-shaderconverter executable
 #  gl-info                      - magnum-gl-info executable
 #  al-info                      - magnum-al-info executable
 #
@@ -164,6 +166,10 @@
 #   installation directory
 #  MAGNUM_PLUGINS_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Plugin library
 #   installation directory
+#  MAGNUM_PLUGINS_SHADERCONVERTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Shader
+#   converter plugin binary installation directory
+#  MAGNUM_PLUGINS_SHADERCONVERTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Shader
+#   converter plugin library installation directory
 #  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Font plugin binary
 #   installation directory
 #  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Font plugin
@@ -224,7 +230,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
-    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font)$")
+    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
         set(_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES PluginManager)
     endif()
 
@@ -355,8 +361,8 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENT_LIST
-    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Text
-    TextureTools Trade Vk
+    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders ShaderTools
+    Text TextureTools Trade Vk
     AndroidApplication EmscriptenApplication GlfwApplication GlxApplication
     Sdl2Application XEglApplication WindowlessCglApplication
     WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication
@@ -368,8 +374,8 @@ set(_MAGNUM_PLUGIN_COMPONENT_LIST
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
     TgaImageConverter TgaImporter WavAudioImporter)
 set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
-    distancefieldconverter fontconverter imageconverter sceneconverter gl-info
-    al-info)
+    distancefieldconverter fontconverter imageconverter sceneconverter
+    shaderconverter gl-info al-info)
 
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )
@@ -470,6 +476,8 @@ set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
 foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
     if(_component MATCHES ".+AudioImporter")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Audio)
+    elseif(_component MATCHES ".+ShaderConverter")
+        list(APPEND _MAGNUM_${_component}_DEPENDENCIES ShaderTools)
     elseif(_component MATCHES ".+(Importer|ImageConverter|SceneConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
@@ -548,6 +556,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # convert *AudioImporter.h to *Importer.h
                 string(REPLACE "AudioImporter" "Importer" _MAGNUM_${_COMPONENT}_HEADER_NAME "${_component}")
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_MAGNUM_${_COMPONENT}_HEADER_NAME}.h)
+
+            # ShaderConverter plugin specific name suffixes
+            elseif(_component MATCHES ".+ShaderConverter$")
+                set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX shaderconverters)
 
             # Importer plugin specific name suffixes
             elseif(_component MATCHES ".+Importer$")
@@ -862,6 +874,12 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
 
         # No special setup for SceneGraph library
+
+        # ShaderTools library
+        elseif(_component STREQUAL ShaderTools)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
+
         # No special setup for Shaders library
 
         # Text library
@@ -880,7 +898,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Vk library
         elseif(_component STREQUAL Vk)
-            set(Vulkan_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumExternal/Vulkan)
             find_package(Vulkan REQUIRED)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)
@@ -1117,6 +1134,10 @@ set(MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum-
 set(MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
 set(MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum)
 set(MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/shaderconverters)
 set(MAGNUM_PLUGINS_FONT_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONT_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONT_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/fonts)
