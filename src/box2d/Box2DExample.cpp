@@ -52,11 +52,13 @@
 #include <box2d/box2d.h>
 #else
 #include <Box2D/Box2D.h>
+#define IT_IS_THE_OLD_BOX2D
 #endif
 /* If the compiler doesn't have __has_include, assume it's extremely old, and
    thus an extremely old Box2D is more likely as well */
 #else
 #include <Box2D/Box2D.h>
+#define IT_IS_THE_OLD_BOX2D
 #endif
 
 namespace Magnum { namespace Examples {
@@ -123,7 +125,13 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
     fixture.shape = &shape;
     body->CreateFixture(&fixture);
 
+    #ifndef IT_IS_THE_OLD_BOX2D
+    /* Why keep things simple if there's an awful and backwards-incompatible
+       way, eh? https://github.com/erincatto/box2d/pull/658 */
+    body->GetUserData().pointer = reinterpret_cast<std::uintptr_t>(&object);
+    #else
     body->SetUserData(&object);
+    #endif
     object.setScaling(halfSize);
 
     return body;
@@ -212,10 +220,17 @@ void Box2DExample::drawEvent() {
 
     /* Step the world and update all object positions */
     _world->Step(1.0f/60.0f, 6, 2);
-    for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext())
+    for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()) {
+        #ifndef IT_IS_THE_OLD_BOX2D
+        /* Why keep things simple if there's an awful backwards-incompatible
+           way, eh? https://github.com/erincatto/box2d/pull/658 */
+        (*reinterpret_cast<Object2D*>(body->GetUserData().pointer))
+        #else
         (*static_cast<Object2D*>(body->GetUserData()))
+        #endif
             .setTranslation({body->GetPosition().x, body->GetPosition().y})
             .setRotation(Complex::rotation(Rad(body->GetAngle())));
+    }
 
     /* Populate instance data with transformations and colors */
     arrayResize(_instanceData, 0);
