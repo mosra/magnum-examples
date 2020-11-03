@@ -29,6 +29,8 @@ namespace Magnum {
 
 @section credits-contributors-examples Magnum Examples
 
+-   **Alan Jefferson** ([\@alanjfs](https://github.com/alanjfs)) --- updates to
+    @ref examples-box2d to work with latest Box2D 2.4
 -   **Alex Forrence** ([\@aforren1](https://github.com/aforren1)) --- fixes to
     Python examples
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaro)) --- the

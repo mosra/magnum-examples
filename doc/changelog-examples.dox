@@ -38,6 +38,12 @@ namespace Magnum {
 -   The WebVR example was obsoleted by the @ref examples-webxr example and is
     now removed
 
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   Updated the @ref examples-box2d example to work with latest Box2D 2.4 (see
+    [mosra/magnum-examples#90](https://github.com/mosra/magnum-examples/pull/90)
+    and [mosra/magnum-examples#92](https://github.com/mosra/magnum-examples/issues/92))
+
 @section changelog-examples-2020-06 2020.06
 
 Released 2020-06-27, tagged as
