@@ -186,7 +186,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         Shaders::Phong::Flag::InstancedTransformation};
     _shader.setAmbientColor(0x111111_rgbf)
            .setSpecularColor(0x330000_rgbf)
-           .setLightPosition({10.0f, 15.0f, 5.0f});
+           .setLightPositions({{10.0f, 15.0f, 5.0f, 0.0f}});
 
     /* Box and sphere mesh, with an (initially empty) instance buffer */
     _box = MeshTools::compile(Primitives::cubeSolid());

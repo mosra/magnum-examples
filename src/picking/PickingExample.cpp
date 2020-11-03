@@ -76,7 +76,7 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
                 .setAmbientColor(_selected ? _color*0.3f : Color3{})
                 .setDiffuseColor(_color*(_selected ? 2.0f : 1.0f))
                 /* relative to the camera */
-                .setLightPosition({13.0f, 2.0f, 5.0f})
+                .setLightPositions({{13.0f, 2.0f, 5.0f, 0.0f}})
                 .setObjectId(_id)
                 .draw(_mesh);
         }

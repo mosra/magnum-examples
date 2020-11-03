@@ -98,8 +98,7 @@ void PrimitivesExample::drawEvent() {
     GL::defaultFramebuffer.clear(
         GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-    _shader.setLightPosition({7.0f, 5.0f, 2.5f})
-        .setLightColor(Color3{1.0f})
+    _shader.setLightPositions({{7.0f, 5.0f, 2.5f, 0.0f}})
         .setDiffuseColor(_color)
         .setAmbientColor(Color3::fromHsv({_color.hue(), 1.0f, 0.3f}))
         .setTransformationMatrix(_transformation)

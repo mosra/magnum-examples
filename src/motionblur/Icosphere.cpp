@@ -43,7 +43,7 @@ void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& 
     shader->setDiffuseColor(color)
         .setSpecularColor(Color3(1.0f))
         .setShininess(20)
-        .setLightPosition({3.0f, -3.0f, 3.0f})
+        .setLightPositions({{3.0f, -3.0f, 3.0f, 0.0f}})
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())

@@ -611,8 +611,10 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .setDiffuseColor(_materials[i].diffuseColor)
                 .setSpecularColor(_materials[i].specularColor)
                 .setShininess(_materials[i].shininess)
-                .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
-                .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
+                .setLightPositions({
+                    {camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}), 0.0f},
+                    {camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}), 0.0f}
+                })
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix())
@@ -623,8 +625,10 @@ void DrawableObject::draw(const Matrix4& transformationMatrix, SceneGraph::Camer
                 .bindDiffuseTexture(*_textures[i])
                 .setSpecularColor(_materials[i].specularColor)
                 .setShininess(_materials[i].shininess)
-                .setLightPosition(0, camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}))
-                .setLightPosition(1, camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}))
+                .setLightPositions({
+                    {camera.cameraMatrix().transformPoint({0.0f, 2.0f, 3.0f}), 0.0f},
+                    {camera.cameraMatrix().transformPoint({0.0f, -2.0f, 3.0f}), 0.0f}
+                })
                 .setTransformationMatrix(transformationMatrix*scalingMatrix)
                 .setNormalMatrix((transformationMatrix*scalingMatrix).normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix())
