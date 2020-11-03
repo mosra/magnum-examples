@@ -61,7 +61,8 @@ target_link_libraries(magnum-bullet PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders
     Magnum::Trade
-    MagnumIntegration::Bullet)
+    MagnumIntegration::Bullet
+    Bullet::Dynamics)
 
 install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
