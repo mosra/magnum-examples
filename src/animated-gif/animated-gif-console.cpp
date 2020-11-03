@@ -65,7 +65,9 @@ int main(int argc, char** argv) {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     if(!image) return 3;
 
+    #ifndef CORRADE_NO_ASSERT
     const Vector2i imageSize = image->size();
+    #endif
     const std::ptrdiff_t skip = (image->size().x() + 39)/40;
     Debug{} << Debug::color << Debug::packed
         << image->pixels<Color4ub>().every({skip, skip}).flipped<0>();
