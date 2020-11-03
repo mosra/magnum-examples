@@ -206,8 +206,8 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         Debug{} << "Importing material" << i << importer->materialName(i);
 
-        Containers::Pointer<Trade::AbstractMaterialData> materialData = importer->material(i);
-        if(!materialData || materialData->type() != Trade::MaterialType::Phong) {
+        Containers::Optional<Trade::MaterialData> materialData = importer->material(i);
+        if(!materialData || !(materialData->types() & Trade::MaterialType::Phong)) {
             Warning{} << "Cannot load material, skipping";
             continue;
         }
@@ -272,7 +272,7 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Containers::Arr
 
         /* Textured material. If the texture failed to load, again just use a
            default colored material. */
-        } else if(materials[materialId]->flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
+        } else if(materials[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture)) {
             Containers::Optional<GL::Texture2D>& texture = _textures[materials[materialId]->diffuseTexture()];
             if(texture)
                 new TexturedDrawable{*object, _texturedShader, *_meshes[objectData->instance()], *texture, _drawables};

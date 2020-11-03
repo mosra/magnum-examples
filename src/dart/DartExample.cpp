@@ -423,7 +423,7 @@ void DartExample::drawEvent() {
         for(std::size_t i = 0; i < object.drawData().meshes.size(); ++i) {
             bool isColor = true;
             GL::Texture2D* texture = nullptr;
-            if(object.drawData().materials[i].flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
+            if(object.drawData().materials[i].hasAttribute(Trade::MaterialAttribute::DiffuseTexture)) {
                 Containers::Optional<GL::Texture2D>& entry = object.drawData().textures[object.drawData().materials[i].diffuseTexture()];
                 if(entry) {
                     texture = &*entry;
