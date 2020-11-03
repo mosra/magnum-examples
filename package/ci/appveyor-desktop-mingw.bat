@@ -7,7 +7,6 @@ IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\2.86.1.zip appveyor DownloadFile https://gi
 7z x 2.86.1.zip || exit /b
 cd bullet3-2.86.1 || exit /b
 mkdir build && cd build || exit /b
-rem CMake's Find module is not able to find Debug versions of the libraries
 cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DCMAKE_BUILD_TYPE=Release ^
