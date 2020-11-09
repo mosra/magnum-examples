@@ -157,7 +157,6 @@ material parameters and draw the mesh.
 @until }
 @until }
 @until }
-@until }
 
 @section examples-primitives-events Mouse event handling
 
