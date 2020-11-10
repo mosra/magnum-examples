@@ -41,6 +41,7 @@
 #include <Magnum/Vk/CommandPool.h>
 #include <Magnum/Vk/Device.h>
 #include <Magnum/Vk/DeviceProperties.h>
+#include <Magnum/Vk/Image.h>
 #include <Magnum/Vk/Instance.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
@@ -107,35 +108,16 @@ int main(int argc, char** argv) {
         MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateRenderPass(device, &info, nullptr, &renderPass));
     }
 
-    /* Framebuffer image */
-    VkImage image;
+    /* Framebuffer image. Allocate with linear tiling as we want to download it
+       later. */
+    Vk::Image image{NoCreate};
     {
-        VkImageCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-        info.imageType = VK_IMAGE_TYPE_2D;
-        info.format = VK_FORMAT_R8G8B8A8_SRGB;
-        info.extent = {800, 600, 1};
-        info.mipLevels = 1;
-        info.arrayLayers = 1;
-        info.samples = VK_SAMPLE_COUNT_1_BIT;
-        info.tiling = VK_IMAGE_TILING_LINEAR;
-        info.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-        info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateImage(device, &info, nullptr, &image));
+        Vk::ImageCreateInfo2D info{Vk::ImageUsage::ColorAttachment,
+        VK_FORMAT_R8G8B8A8_SRGB, {800, 600}, 1};
+        info->tiling = VK_IMAGE_TILING_LINEAR;
+        image = Vk::Image{device, info, Vk::MemoryFlag::HostVisible};
     }
-    VkDeviceMemory imageMemory;
-    {
-        VkMemoryRequirements requirements;
-        vkGetImageMemoryRequirements(device, image, &requirements);
-        CORRADE_INTERNAL_ASSERT(requirements.size == 800*600*4);
 
-        VkMemoryAllocateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        info.allocationSize = requirements.size;
-        info.memoryTypeIndex = memoryTypeIndex; /* Assuming the type from above */
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkAllocateMemory(device, &info, nullptr, &imageMemory));
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBindImageMemory(device, image, imageMemory, 0));
-    }
     VkImageView color;
     {
         VkImageViewCreateInfo info{};
@@ -443,17 +425,13 @@ int main(int argc, char** argv) {
 
     /* Read the image back */
     {
-        void* data;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkMapMemory(device, imageMemory, 0, VK_WHOLE_SIZE, 0, &data));
-
-        ImageView2D image{PixelFormat::RGBA8Unorm, {800, 600}, Containers::arrayView(static_cast<char*>(data), 800*600*4)};
         PluginManager::Manager<Trade::AbstractImageConverter> manager;
         auto converter = manager.loadAndInstantiate("AnyImageConverter");
         CORRADE_INTERNAL_ASSERT(converter);
-        converter->exportToFile(image, "image.png");
+        converter->exportToFile(ImageView2D{
+            PixelFormat::RGBA8Unorm, {800, 600},
+            image.dedicatedMemory().mapRead()}, "image.png");
         Debug{} << "Saved an image to image.png";
-
-        vkUnmapMemory(device, imageMemory);
     }
 
     /* Clean up */
@@ -464,8 +442,6 @@ int main(int argc, char** argv) {
     vkDestroyBuffer(device, buffer, nullptr);
     vkFreeMemory(device, bufferMemory, nullptr);
     vkDestroyImageView(device, color, nullptr);
-    vkDestroyImage(device, image, nullptr);
-    vkFreeMemory(device, imageMemory, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     vkDestroyFence(device, fence, nullptr);
 }
