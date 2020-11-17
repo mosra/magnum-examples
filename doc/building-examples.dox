@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page building-examples Downloading and building examples
 @brief Guide how to download and build examples for the Magnum engine.
 
+@m_keyword{Building examples,,}
+
 @tableofcontents
 @m_footernavigation
 
