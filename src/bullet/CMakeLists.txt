@@ -47,6 +47,7 @@ find_package(Magnum REQUIRED
     Shaders
     Trade)
 find_package(MagnumIntegration REQUIRED Bullet)
+find_package(Bullet REQUIRED Dynamics)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
