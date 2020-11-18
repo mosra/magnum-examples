@@ -38,6 +38,7 @@
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Vk/Assert.h>
+#include <Magnum/Vk/Buffer.h>
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPool.h>
 #include <Magnum/Vk/Device.h>
@@ -67,10 +68,6 @@ int main(int argc, char** argv) {
         device.properties().pickQueueFamily(Vk::QueueFlag::Graphics),
         Vk::CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
     Vk::CommandBuffer commandBuffer = commandPool.allocate();
-
-    /* Hardcoded memory type index */
-    const UnsignedInt memoryTypeIndex =
-        deviceProperties.pickMemory(Vk::MemoryFlag::HostVisible);
 
     instance.populateGlobalFunctionPointers();
     device.populateGlobalFunctionPointers();
@@ -129,38 +126,21 @@ int main(int argc, char** argv) {
     }
 
     /* Vertex buffer */
-    VkBuffer buffer;
+    Vk::Buffer buffer{device, Vk::BufferCreateInfo{
+            Vk::BufferUsage::VertexBuffer,
+            3*2*4*4 /* Three vertices, each is four-element pos & color */
+        }, Vk::MemoryFlag::HostVisible};
     {
-        VkBufferCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        info.size = 3*2*4*4; /* Three vertices, each is four-element pos & color */
-        info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateBuffer(device, &info, nullptr, &buffer));
-    }
-    VkDeviceMemory bufferMemory;
-    {
-        VkMemoryRequirements requirements;
-        vkGetBufferMemoryRequirements(device, buffer, &requirements);
-        CORRADE_INTERNAL_ASSERT(requirements.size == 3*2*4*4);
-
-        VkMemoryAllocateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        info.allocationSize = requirements.size;
-        info.memoryTypeIndex = memoryTypeIndex; /* Assuming the type from above */
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkAllocateMemory(device, &info, nullptr, &bufferMemory));
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkBindBufferMemory(device, buffer, bufferMemory, 0));
-
         /* Fill the data */
-        void* data;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkMapMemory(device, bufferMemory, 0, VK_WHOLE_SIZE, 0, &data));
-        auto view = Containers::arrayCast<Vector4>(Containers::arrayView(static_cast<char*>(data), 3*2*4*4));
+        /** @todo arrayCast for an array rvalue */
+        Containers::Array<char, Vk::MemoryMapDeleter> data = buffer.dedicatedMemory().map();
+        auto view = Containers::arrayCast<Vector4>(data);
         view[0] = {-0.5f, -0.5f, 0.0f, 1.0f}; /* Left vertex, red color */
         view[1] = 0xff0000ff_srgbaf;
         view[2] = { 0.5f, -0.5f, 0.0f, 1.0f}; /* Right vertex, green color */
         view[3] = 0x00ff00ff_srgbaf;
         view[4] = { 0.0f,  0.5f, 0.0f, 1.0f}; /* Top vertex, blue color */
         view[5] = 0x0000ffff_srgbaf;
-        vkUnmapMemory(device, bufferMemory);
     }
 
     /* Framebuffer */
@@ -385,7 +365,8 @@ int main(int argc, char** argv) {
     /* Bind the vertex buffer */
     {
         const VkDeviceSize offset = 0;
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &buffer, &offset);
+        const VkBuffer handle = buffer.handle();
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &handle, &offset);
     }
 
     /* Draw the triangle */
@@ -434,8 +415,6 @@ int main(int argc, char** argv) {
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyShaderModule(device, shader, nullptr);
     vkDestroyFramebuffer(device, framebuffer, nullptr);
-    vkDestroyBuffer(device, buffer, nullptr);
-    vkFreeMemory(device, bufferMemory, nullptr);
     vkDestroyImageView(device, color, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
     vkDestroyFence(device, fence, nullptr);
