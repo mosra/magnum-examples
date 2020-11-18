@@ -57,19 +57,14 @@ int main(int argc, char** argv) {
     Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
         .setApplicationInfo("Magnum Vulkan Triangle Example"_s, {})};
 
-    /* Device queue properties */
-    Vk::DeviceProperties deviceProperties = Vk::pickDevice(instance);
-    const UnsignedInt graphicsQueueFamily =
-        deviceProperties.pickQueueFamily(Vk::QueueFlag::Graphics);
-
     /* Create a device with a graphics queue */
     Vk::Queue queue{NoCreate};
-    Vk::Device device{instance, Vk::DeviceCreateInfo{deviceProperties}
-        .addQueues(graphicsQueueFamily, {0.0f}, {queue})};
+    Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
+        .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})};
 
     /* Allocate a command buffer */
     Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
-        graphicsQueueFamily,
+        device.properties().pickQueueFamily(Vk::QueueFlag::Graphics),
         Vk::CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
     Vk::CommandBuffer commandBuffer = commandPool.allocate();
 
