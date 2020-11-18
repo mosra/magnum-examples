@@ -37,6 +37,7 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
+#include <Magnum/Vk/Assert.h>
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPool.h>
 #include <Magnum/Vk/Device.h>
@@ -45,7 +46,6 @@
 #include <Magnum/Vk/Instance.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
-#include <Magnum/Vk/Result.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
 using namespace Corrade::Containers::Literals;
@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
         info.pAttachments = &color;
         info.subpassCount = 1;
         info.pSubpasses = &render;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateRenderPass(device, &info, nullptr, &renderPass));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateRenderPass(device, &info, nullptr, &renderPass));
     }
 
     /* Framebuffer image. Allocate with linear tiling as we want to download it
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
         info.subresourceRange.levelCount = 1;
         info.subresourceRange.baseArrayLayer = 0;
         info.subresourceRange.layerCount = 1;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateImageView(device, &info, nullptr, &color));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateImageView(device, &info, nullptr, &color));
     }
 
     /* Vertex buffer */
@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         info.size = 3*2*4*4; /* Three vertices, each is four-element pos & color */
         info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateBuffer(device, &info, nullptr, &buffer));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateBuffer(device, &info, nullptr, &buffer));
     }
     VkDeviceMemory bufferMemory;
     {
@@ -152,8 +152,8 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         info.allocationSize = requirements.size;
         info.memoryTypeIndex = memoryTypeIndex; /* Assuming the type from above */
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkAllocateMemory(device, &info, nullptr, &bufferMemory));
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBindBufferMemory(device, buffer, bufferMemory, 0));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkAllocateMemory(device, &info, nullptr, &bufferMemory));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkBindBufferMemory(device, buffer, bufferMemory, 0));
 
         /* Fill the data */
         void* data;
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
         info.width = 800;
         info.height = 600;
         info.layers = 1;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateFramebuffer(device, &info, nullptr, &framebuffer));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateFramebuffer(device, &info, nullptr, &framebuffer));
     }
 
     /* Create the shader */
@@ -246,7 +246,7 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         info.codeSize = code.size(); /* thanks Vulkan for accepting byte sizes */
         info.pCode = reinterpret_cast<const UnsignedInt*>(code.data());
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateShaderModule(device, &info, nullptr, &shader));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateShaderModule(device, &info, nullptr, &shader));
     }
 
     /* Pipeline layout */
@@ -256,7 +256,7 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         info.setLayoutCount = 0;
         info.pushConstantRangeCount = 0;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
     }
 
     /* Create a graphics pipeline */
@@ -343,14 +343,14 @@ int main(int argc, char** argv) {
         info.layout = pipelineLayout;
         info.renderPass = renderPass;
         info.subpass = 0;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &info, nullptr, &pipeline));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, nullptr, 1, &info, nullptr, &pipeline));
     }
 
     /* Begin recording */
     {
         VkCommandBufferBeginInfo info{};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkBeginCommandBuffer(commandBuffer, &info));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &info));
     }
 
     /* Convert the image to the proper layout */
@@ -400,14 +400,14 @@ int main(int argc, char** argv) {
     vkCmdEndRenderPass(commandBuffer);
 
     /* End recording */
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEndCommandBuffer(commandBuffer));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEndCommandBuffer(commandBuffer));
 
     /* Fence to wait on command buffer completeness */
     VkFence fence;
     {
         VkFenceCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateFence(device, &info, nullptr, &fence));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateFence(device, &info, nullptr, &fence));
     }
 
     /* Submit the command buffer */
@@ -417,11 +417,11 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         info.commandBufferCount = 1;
         info.pCommandBuffers = &handle;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkQueueSubmit(queue, 1, &info, fence));
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkQueueSubmit(queue, 1, &info, fence));
     }
 
     /* Wait until done, 1 second max */
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
 
     /* Read the image back */
     {
