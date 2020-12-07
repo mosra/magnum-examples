@@ -47,6 +47,7 @@
 #include <Magnum/Vk/Instance.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
+#include <Magnum/Vk/Shader.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
 using namespace Corrade::Containers::Literals;
@@ -158,15 +159,7 @@ int main(int argc, char** argv) {
     }
 
     /* Create the shader */
-    VkShaderModule shader;
-    {
-        PluginManager::Manager<ShaderTools::AbstractConverter> manager;
-        Containers::Pointer<ShaderTools::AbstractConverter> compiler = manager.loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter");
-        CORRADE_INTERNAL_ASSERT(compiler);
-
-        using namespace Containers::Literals;
-
-        const Containers::Array<char> code = compiler->convertDataToData({}, R"(
+    constexpr Containers::StringView assembly = R"(
                OpCapability Shader
                OpMemoryModel Logical GLSL450
 
@@ -214,15 +207,11 @@ int main(int argc, char** argv) {
                OpStore %6 %32
                OpReturn
                OpFunctionEnd
-)"_s);
-        CORRADE_INTERNAL_ASSERT(code);
-
-        VkShaderModuleCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        info.codeSize = code.size(); /* thanks Vulkan for accepting byte sizes */
-        info.pCode = reinterpret_cast<const UnsignedInt*>(code.data());
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateShaderModule(device, &info, nullptr, &shader));
-    }
+)"_s;
+    Vk::Shader shader{device, Vk::ShaderCreateInfo{
+        CORRADE_INTERNAL_ASSERT_EXPRESSION(CORRADE_INTERNAL_ASSERT_EXPRESSION(
+            PluginManager::Manager<ShaderTools::AbstractConverter>{}.loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
+        )->convertDataToData({}, assembly))}};
 
     /* Pipeline layout */
     VkPipelineLayout pipelineLayout;
@@ -413,7 +402,6 @@ int main(int argc, char** argv) {
     /* Clean up */
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyShaderModule(device, shader, nullptr);
     vkDestroyFramebuffer(device, framebuffer, nullptr);
     vkDestroyImageView(device, color, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);
