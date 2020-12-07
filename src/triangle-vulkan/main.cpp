@@ -47,6 +47,7 @@
 #include <Magnum/Vk/Instance.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
+#include <Magnum/Vk/RenderPass.h>
 #include <Magnum/Vk/Shader.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
@@ -74,32 +75,14 @@ int main(int argc, char** argv) {
     device.populateGlobalFunctionPointers();
 
     /* Render pass */
-    VkRenderPass renderPass;
-    {
-        VkAttachmentDescription color{};
-        color.format = VK_FORMAT_R8G8B8A8_SRGB;
-        color.samples = VK_SAMPLE_COUNT_1_BIT;
-        color.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        color.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        color.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        color.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkAttachmentReference colorRef{};
-        colorRef.attachment = 0; /* color output from the shader */
-        colorRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-        VkSubpassDescription render{};
-        render.colorAttachmentCount = 1;
-        render.pColorAttachments = &colorRef;
-
-        VkRenderPassCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        info.attachmentCount = 1;
-        info.pAttachments = &color;
-        info.subpassCount = 1;
-        info.pSubpasses = &render;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateRenderPass(device, &info, nullptr, &renderPass));
-    }
+    Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
+        .setAttachments({
+            {VK_FORMAT_R8G8B8A8_SRGB, Vk::AttachmentLoadOperation::Clear, {}}
+        })
+        .addSubpass(Vk::SubpassDescription{}
+            .setColorAttachments({0})
+        )
+    };
 
     /* Framebuffer image. Allocate with linear tiling as we want to download it
        later. */
@@ -323,7 +306,7 @@ int main(int argc, char** argv) {
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.image = image;
@@ -402,6 +385,5 @@ int main(int argc, char** argv) {
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyFramebuffer(device, framebuffer, nullptr);
     vkDestroyImageView(device, color, nullptr);
-    vkDestroyRenderPass(device, renderPass, nullptr);
     vkDestroyFence(device, fence, nullptr);
 }
