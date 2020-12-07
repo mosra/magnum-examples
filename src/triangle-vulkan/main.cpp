@@ -389,15 +389,13 @@ int main(int argc, char** argv) {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
 
     /* Read the image back */
-    {
-        PluginManager::Manager<Trade::AbstractImageConverter> manager;
-        auto converter = manager.loadAndInstantiate("AnyImageConverter");
-        CORRADE_INTERNAL_ASSERT(converter);
-        converter->exportToFile(ImageView2D{
-            PixelFormat::RGBA8Unorm, {800, 600},
-            image.dedicatedMemory().mapRead()}, "image.png");
-        Debug{} << "Saved an image to image.png";
-    }
+    CORRADE_INTERNAL_ASSERT_EXPRESSION(
+        PluginManager::Manager<Trade::AbstractImageConverter>{}
+            .loadAndInstantiate("AnyImageConverter")
+    )->exportToFile(ImageView2D{
+        PixelFormat::RGBA8Unorm, {800, 600},
+        image.dedicatedMemory().mapRead()}, "image.png");
+    Debug{} << "Saved an image to image.png";
 
     /* Clean up */
     vkDestroyPipeline(device, pipeline, nullptr);
