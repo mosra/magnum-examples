@@ -183,7 +183,7 @@ void WebXrExample::drawEvent() {
     for(int eye = 0; eye < viewCount; ++eye) {
         GL::defaultFramebuffer.setViewport(_viewports[eye]);
 
-        _shader.setLightPosition(_viewMatrices[eye].transformPoint(lightPos))
+        _shader.setLightPositions({_viewMatrices[eye]*Vector4{lightPos, 0.0f}})
                .setProjectionMatrix(_projectionMatrices[eye]);
 
         /* Draw cubes */
