@@ -38,17 +38,17 @@
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Vk/Assert.h>
-#include <Magnum/Vk/Buffer.h>
+#include <Magnum/Vk/BufferCreateInfo.h>
 #include <Magnum/Vk/CommandBuffer.h>
-#include <Magnum/Vk/CommandPool.h>
-#include <Magnum/Vk/Device.h>
+#include <Magnum/Vk/CommandPoolCreateInfo.h>
+#include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
-#include <Magnum/Vk/Image.h>
-#include <Magnum/Vk/Instance.h>
+#include <Magnum/Vk/ImageCreateInfo.h>
+#include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
-#include <Magnum/Vk/RenderPass.h>
-#include <Magnum/Vk/Shader.h>
+#include <Magnum/Vk/RenderPassCreateInfo.h>
+#include <Magnum/Vk/ShaderCreateInfo.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
 using namespace Corrade::Containers::Literals;
