@@ -326,7 +326,7 @@ int main(int argc, char** argv) {
     /* Bind the vertex buffer */
     {
         const VkDeviceSize offset = 0;
-        const VkBuffer handle = buffer.handle();
+        const VkBuffer handle = buffer;
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, &handle, &offset);
     }
 
@@ -349,10 +349,10 @@ int main(int argc, char** argv) {
 
     /* Submit the command buffer */
     {
-        const VkCommandBuffer handle = commandBuffer.handle();
         VkSubmitInfo info{};
         info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         info.commandBufferCount = 1;
+        const VkCommandBuffer handle = commandBuffer;
         info.pCommandBuffers = &handle;
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkQueueSubmit(queue, 1, &info, fence));
     }
