@@ -44,6 +44,7 @@
 #include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
 #include <Magnum/Vk/ImageCreateInfo.h>
+#include <Magnum/Vk/ImageViewCreateInfo.h>
 #include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Queue.h>
@@ -94,20 +95,7 @@ int main(int argc, char** argv) {
         image = Vk::Image{device, info, Vk::MemoryFlag::HostVisible};
     }
 
-    VkImageView color;
-    {
-        VkImageViewCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        info.image = image;
-        info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        info.format = VK_FORMAT_R8G8B8A8_SRGB;
-        info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        info.subresourceRange.baseMipLevel = 0;
-        info.subresourceRange.levelCount = 1;
-        info.subresourceRange.baseArrayLayer = 0;
-        info.subresourceRange.layerCount = 1;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateImageView(device, &info, nullptr, &color));
-    }
+    Vk::ImageView color{device, Vk::ImageViewCreateInfo2D{image}};
 
     /* Vertex buffer */
     Vk::Buffer buffer{device, Vk::BufferCreateInfo{
@@ -134,7 +122,8 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         info.renderPass = renderPass;
         info.attachmentCount = 1;
-        info.pAttachments = &color;
+        const VkImageView handle = color;
+        info.pAttachments = &handle;
         info.width = 800;
         info.height = 600;
         info.layers = 1;
@@ -384,6 +373,5 @@ int main(int argc, char** argv) {
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyFramebuffer(device, framebuffer, nullptr);
-    vkDestroyImageView(device, color, nullptr);
     vkDestroyFence(device, fence, nullptr);
 }
