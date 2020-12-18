@@ -43,6 +43,7 @@
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
 #include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
+#include <Magnum/Vk/Fence.h>
 #include <Magnum/Vk/FramebufferCreateInfo.h>
 #include <Magnum/Vk/ImageCreateInfo.h>
 #include <Magnum/Vk/ImageViewCreateInfo.h>
@@ -331,12 +332,7 @@ int main(int argc, char** argv) {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEndCommandBuffer(commandBuffer));
 
     /* Fence to wait on command buffer completeness */
-    VkFence fence;
-    {
-        VkFenceCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateFence(device, &info, nullptr, &fence));
-    }
+    Vk::Fence fence{device};
 
     /* Submit the command buffer */
     {
@@ -348,8 +344,8 @@ int main(int argc, char** argv) {
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkQueueSubmit(queue, 1, &info, fence));
     }
 
-    /* Wait until done, 1 second max */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkWaitForFences(device, 1, &fence, true, 1000000000ull));
+    /* Wait until done */
+    fence.wait();
 
     /* Read the image back */
     CORRADE_INTERNAL_ASSERT_EXPRESSION(
@@ -363,5 +359,4 @@ int main(int argc, char** argv) {
     /* Clean up */
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyFence(device, fence, nullptr);
 }
