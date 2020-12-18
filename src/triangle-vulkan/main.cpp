@@ -43,6 +43,7 @@
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
 #include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
+#include <Magnum/Vk/FramebufferCreateInfo.h>
 #include <Magnum/Vk/ImageCreateInfo.h>
 #include <Magnum/Vk/ImageViewCreateInfo.h>
 #include <Magnum/Vk/InstanceCreateInfo.h>
@@ -116,19 +117,9 @@ int main(int argc, char** argv) {
     }
 
     /* Framebuffer */
-    VkFramebuffer framebuffer;
-    {
-        VkFramebufferCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        info.renderPass = renderPass;
-        info.attachmentCount = 1;
-        const VkImageView handle = color;
-        info.pAttachments = &handle;
-        info.width = 800;
-        info.height = 600;
-        info.layers = 1;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateFramebuffer(device, &info, nullptr, &framebuffer));
-    }
+    Vk::Framebuffer framebuffer{device, Vk::FramebufferCreateInfo{renderPass, {
+        color
+    }, {800, 600}}};
 
     /* Create the shader */
     constexpr Containers::StringView assembly = R"(
@@ -372,6 +363,5 @@ int main(int argc, char** argv) {
     /* Clean up */
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyFramebuffer(device, framebuffer, nullptr);
     vkDestroyFence(device, fence, nullptr);
 }
