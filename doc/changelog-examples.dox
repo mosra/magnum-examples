@@ -44,6 +44,12 @@ namespace Magnum {
     [mosra/magnum-examples#90](https://github.com/mosra/magnum-examples/pull/90)
     and [mosra/magnum-examples#92](https://github.com/mosra/magnum-examples/issues/92))
 
+@subsection changelog-extras-latest-documentation Documentation
+
+-   Updated license link for Source Sans Pro used by the
+    @ref examples-fluidsimulation2d, @ref examples-fluidsimulation3d,
+    @ref examples-imgui and @ref examples-text examples (see [mosra/magnum-examples#95](https://github.com/mosra/magnum-examples/pull/95))
+
 @section changelog-examples-2020-06 2020.06
 
 Released 2020-06-27, tagged as
