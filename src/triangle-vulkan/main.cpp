@@ -275,11 +275,7 @@ int main(int argc, char** argv) {
     }
 
     /* Begin recording */
-    {
-        VkCommandBufferBeginInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkBeginCommandBuffer(commandBuffer, &info));
-    }
+    commandBuffer.begin();
 
     /* Convert the image to the proper layout */
     {
@@ -329,7 +325,7 @@ int main(int argc, char** argv) {
     vkCmdEndRenderPass(commandBuffer);
 
     /* End recording */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEndCommandBuffer(commandBuffer));
+    commandBuffer.end();
 
     /* Fence to wait on command buffer completeness */
     Vk::Fence fence{device};
