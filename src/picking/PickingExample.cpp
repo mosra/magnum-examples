@@ -176,12 +176,11 @@ void PickingExample::drawEvent() {
         .bind();
     _camera->draw(_drawables);
 
-    /* Bind the main buffer back */
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
-        .bind();
+    /* Clear the main buffer. Even though it seems unnecessary, if this is not
+       done, it can cause flicker on some drivers. */
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* Blit color to window framebuffer */
-    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
     GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
         {{}, _framebuffer.viewport().size()}, GL::FramebufferBlit::Color);
 
@@ -222,11 +221,13 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
-    /* Read object ID at given click position */
+    /* Read object ID at given click position, and then switch to the color
+       attachment again so drawEvent() blits correct buffer */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize(fbPosition, {1, 1}),
         {PixelFormat::R32UI});
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
