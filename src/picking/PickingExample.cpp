@@ -182,7 +182,7 @@ void PickingExample::drawEvent() {
 
     /* Blit color to window framebuffer */
     GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
-        {{}, _framebuffer.viewport().size()}, GL::FramebufferBlit::Color);
+        _framebuffer.viewport(), GL::FramebufferBlit::Color);
 
     swapBuffers();
 }
