@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
         device.properties().pickQueueFamily(Vk::QueueFlag::Graphics),
         Vk::CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
-    Vk::CommandBuffer commandBuffer = commandPool.allocate();
+    Vk::CommandBuffer cmd = commandPool.allocate();
 
     instance.populateGlobalFunctionPointers();
     device.populateGlobalFunctionPointers();
@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
     }
 
     /* Begin recording */
-    commandBuffer.begin();
+    cmd.begin();
 
     /* Convert the image to the proper layout */
     {
@@ -292,40 +292,29 @@ int main(int argc, char** argv) {
         barrier.subresourceRange.levelCount = 1;
         barrier.subresourceRange.baseArrayLayer = 0;
         barrier.subresourceRange.layerCount = 1;
-        vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
-    /* Begin a render pass, set up clear color */
-    {
-        VkRenderPassBeginInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        info.renderPass = renderPass;
-        info.framebuffer = framebuffer;
-        info.renderArea = VkRect2D{{}, {800, 600}};
-        info.clearValueCount = 1;
-        const Color4 color = 0x1f1f1f_srgbf;
-        info.pClearValues = reinterpret_cast<const VkClearValue*>(&color);
-        vkCmdBeginRenderPass(commandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-    }
+    /* Begin a render pass */
+    cmd.beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
+           .clearColor(0, 0x1f1f1f_srgbf));
 
     /* Bind the pipeline */
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
     /* Bind the vertex buffer */
     {
         const VkDeviceSize offset = 0;
         const VkBuffer handle = buffer;
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &handle, &offset);
+        vkCmdBindVertexBuffers(cmd, 0, 1, &handle, &offset);
     }
 
     /* Draw the triangle */
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
-    /* End a render pass */
-    vkCmdEndRenderPass(commandBuffer);
+    vkCmdDraw(cmd, 3, 1, 0, 0);
 
     /* End recording */
-    commandBuffer.end();
+    cmd.endRenderPass()
+       .end();
 
     /* Fence to wait on command buffer completeness */
     Vk::Fence fence{device};
@@ -335,7 +324,7 @@ int main(int argc, char** argv) {
         VkSubmitInfo info{};
         info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         info.commandBufferCount = 1;
-        const VkCommandBuffer handle = commandBuffer;
+        const VkCommandBuffer handle = cmd;
         info.pCommandBuffers = &handle;
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkQueueSubmit(queue, 1, &info, fence));
     }
