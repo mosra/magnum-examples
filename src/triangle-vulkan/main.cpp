@@ -70,11 +70,9 @@ int main(int argc, char** argv) {
 
     /* Allocate a command buffer */
     Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
-        device.properties().pickQueueFamily(Vk::QueueFlag::Graphics),
-        Vk::CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
+        device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)}};
     Vk::CommandBuffer cmd = commandPool.allocate();
 
-    instance.populateGlobalFunctionPointers();
     device.populateGlobalFunctionPointers();
 
     /* Render pass */
