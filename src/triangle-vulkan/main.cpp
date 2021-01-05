@@ -314,20 +314,9 @@ int main(int argc, char** argv) {
     cmd.endRenderPass()
        .end();
 
-    /* Fence to wait on command buffer completeness */
+    /* Submit the command buffer and wait until done */
     Vk::Fence fence{device};
-
-    /* Submit the command buffer */
-    {
-        VkSubmitInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        info.commandBufferCount = 1;
-        const VkCommandBuffer handle = cmd;
-        info.pCommandBuffers = &handle;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkQueueSubmit(queue, 1, &info, fence));
-    }
-
-    /* Wait until done */
+    queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
     fence.wait();
 
     /* Read the image back */
