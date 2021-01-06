@@ -33,8 +33,10 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Magnum.h>
+#include <Magnum/Mesh.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
+#include <Magnum/VertexFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Range.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
@@ -51,6 +53,7 @@
 #include <Magnum/Vk/ImageViewCreateInfo.h>
 #include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
+#include <Magnum/Vk/MeshLayout.h>
 #include <Magnum/Vk/Pipeline.h>
 #include <Magnum/Vk/PipelineLayoutCreateInfo.h>
 #include <Magnum/Vk/Queue.h>
@@ -213,33 +216,16 @@ int main(int argc, char** argv) {
     /* Pipeline layout */
     Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
 
+    constexpr UnsignedInt VertexBufferBinding = 0;
+
     /* Create a graphics pipeline */
     VkPipeline pipeline;
     {
-        VkVertexInputBindingDescription binding{};
-        binding.binding = 0;
-        binding.stride = 2*4*4;
-
-        VkVertexInputAttributeDescription attributes[2]{};
-        attributes[0].location = 0; /* position attribute */
-        attributes[0].binding = binding.binding;
-        attributes[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-        attributes[0].offset = 0;
-        attributes[1].location = 1; /* color attribute */
-        attributes[1].binding = binding.binding;
-        attributes[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-        attributes[1].offset = 4*4;
-
-        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 1;
-        vertexInputInfo.pVertexBindingDescriptions = &binding;
-        vertexInputInfo.vertexAttributeDescriptionCount = 2;
-        vertexInputInfo.pVertexAttributeDescriptions = attributes;
-
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
-        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
+        meshLayout
+            .addBinding(VertexBufferBinding, 2*4*4)
+            .addAttribute(0, VertexBufferBinding, VertexFormat::Vector4, 0)
+            .addAttribute(1, VertexBufferBinding, VertexFormat::Vector4, 4*4);
 
         VkViewport viewport{};
         viewport.width = 800.0f;
@@ -288,8 +274,8 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         info.stageCount = 2;
         info.pStages = stages;
-        info.pVertexInputState = &vertexInputInfo;
-        info.pInputAssemblyState = &inputAssemblyInfo;
+        info.pVertexInputState = meshLayout;
+        info.pInputAssemblyState = meshLayout;
         info.pViewportState = &viewportInfo;
         info.pRasterizationState = &rasterizationInfo;
         info.pMultisampleState = &multisampleInfo;
@@ -316,7 +302,7 @@ int main(int argc, char** argv) {
     {
         const VkDeviceSize offset = 0;
         const VkBuffer handle = buffer;
-        vkCmdBindVertexBuffers(cmd, 0, 1, &handle, &offset);
+        vkCmdBindVertexBuffers(cmd, VertexBufferBinding, 1, &handle, &offset);
     }
 
     /* Draw the triangle */
