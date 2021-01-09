@@ -223,10 +223,18 @@ foreach(_library ${_BULLET_LIBRARIES})
                 IMPORTED_LOCATION_DEBUG ${Bullet_${_library}_LIBRARY_DEBUG})
         endif()
 
-        # Everything depends on LinearMath, so put the include dir there
+        # Everything depends on LinearMath, so put the include dir as well as
+        # compile definitions (such as BT_USE_DOUBLE_PRECISION) there
         if(_library STREQUAL LinearMath)
             set_property(TARGET Bullet::${_library} APPEND PROPERTY
                 INTERFACE_INCLUDE_DIRECTORIES ${Bullet_INCLUDE_DIR})
+            # BULLET_DEFINITIONS gets defined by BulletConfig from the
+            # find_package() we did at first. That's also the only useful
+            # thing from it, the rest we can find by hand as well.
+            if(BULLET_DEFINITIONS)
+                set_property(TARGET Bullet::${_library} APPEND PROPERTY
+                    INTERFACE_COMPILE_OPTIONS "${BULLET_DEFINITIONS}")
+            endif()
 
         # Collision depends on LinearMath
         elseif(_library STREQUAL Collision)
