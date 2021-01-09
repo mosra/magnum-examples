@@ -45,7 +45,7 @@ Importing image data, texturing and custom shaders. Fully equivalent to
 
 Importing mesh data, 3D transformations and input handling. Equivalent to
 :dox:`the C++ version <examples-primitives>` except that it uses
-`meshtools.compile()` instead of interleaving the data by hand --- the
+:ref:`meshtools.compile()` instead of interleaving the data by hand --- the
 low-level :dox:`MeshTools` APIs are not exposed yet.
 
 .. include:: ../../src/python/magnum-primitives.py
