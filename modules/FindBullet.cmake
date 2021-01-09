@@ -106,33 +106,44 @@ if(TARGET BulletCollision)
                 INTERFACE_LINK_LIBRARIES Bullet${_library})
         endif()
     endforeach()
-    # Why, Bullet, why?
+
+    # Bullet3Common doesn't have an INTERFACE_INCLUDE_DIRECTORIES property as
+    # bullet only uses include_directories(), not the target_*() variant. This
+    # means that linking to any of the targets will not drag along any include
+    # directory, which we have to fix -- and since everything depends on
+    # LinearMath, we can add it just for that target.
+    #
+    # In case of a CMake subproject, we derive the include directory from the
+    # target SOURCE_DIR.
+    #
+    # In case of Vcpkg, SOURCE_DIR is likely meaningless, but because the Vcpkg
+    # package uses a patched config file, we can use BULLET_INCLUDE_DIR.
+    if(BULLET_INCLUDE_DIR)
+        set(_BULLET_INTERFACE_INCLUDE_DIRECTORIES ${BULLET_INCLUDE_DIR})
+    else()
+        get_target_property(_BULLET_INTERFACE_INCLUDE_DIRECTORIES BulletCollision SOURCE_DIR)
+        get_filename_component(_BULLET_INTERFACE_INCLUDE_DIRECTORIES ${_BULLET_INTERFACE_INCLUDE_DIRECTORIES} DIRECTORY)
+    endif()
+
+    # Compile definitions, which is basically just USE_DOUBLE_PRECISION. If
+    # Bullet was found externally, this is contained in the BULLET_DEFINITIONS
+    # variable (which might be empty). If the variable isn't defined, it means
+    # we have a Bullet subproject. OF COURSE this isn't propagated in
+    # INTERFACE_COMPILE_DEFINITIONS, we can't expect any modicum of usability
+    # there, so we have to fetch that from the CMake option instead.
+    if(NOT DEFINED BULLET_DEFINITIONS AND USE_DOUBLE_PRECISION)
+        set(BULLET_DEFINITIONS "-DBT_USE_DOUBLE_PRECISION")
+    endif()
+
+    # Why, Bullet, why this library has to have such a different name?
     if(NOT TARGET Bullet::LinearMath)
         # Aliases of (global) targets [..] CMake 3.11 [...], as above
         add_library(Bullet::LinearMath INTERFACE IMPORTED)
         set_target_properties(Bullet::LinearMath PROPERTIES
-            INTERFACE_LINK_LIBRARIES LinearMath)
-
-        # Bullet3Common doesn't have an INTERFACE_INCLUDE_DIRECTORIES property
-        # as bullet only uses include_directories(), not the target_*()
-        # variant. This means that linking to any of the targets will not drag
-        # along any include directory, which we have to fix -- and since
-        # everything depends on LinearMath, we can add it just for that target.
-        #
-        # In case of a CMake subproject, we derive the include directory from
-        # the target SOURCE_DIR.
-        #
-        # In case of Vcpkg, SOURCE_DIR is likely meaningless, but because the
-        # Vcpkg package uses a patched config file, we can use
-        # BULLET_INCLUDE_DIR instead.
-        if(BULLET_INCLUDE_DIR)
-            set(_BULLET_INTERFACE_INCLUDE_DIRECTORIES ${BULLET_INCLUDE_DIR})
-        else()
-            get_target_property(_BULLET_INTERFACE_INCLUDE_DIRECTORIES BulletCollision SOURCE_DIR)
-            get_filename_component(_BULLET_INTERFACE_INCLUDE_DIRECTORIES ${_BULLET_INTERFACE_INCLUDE_DIRECTORIES} DIRECTORY)
-        endif()
-        set_target_properties(Bullet::LinearMath PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES ${_BULLET_INTERFACE_INCLUDE_DIRECTORIES})
+            INTERFACE_LINK_LIBRARIES LinearMath
+            INTERFACE_INCLUDE_DIRECTORIES ${_BULLET_INTERFACE_INCLUDE_DIRECTORIES}
+            # This might define BT_USE_DOUBLE_PRECISION, or not
+            INTERFACE_COMPILE_OPTIONS "${BULLET_DEFINITIONS}")
     endif()
 
     # Just to make FPHSA print some meaningful location, nothing else. Luckily
