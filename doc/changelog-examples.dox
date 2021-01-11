@@ -43,6 +43,10 @@ namespace Magnum {
 -   Updated the @ref examples-box2d example to work with latest Box2D 2.4 (see
     [mosra/magnum-examples#90](https://github.com/mosra/magnum-examples/pull/90)
     and [mosra/magnum-examples#92](https://github.com/mosra/magnum-examples/issues/92))
+-   Linux, Emscripten and macOS builds were migrated from Travis to Circle CI
+-   The Homebrew package now uses `std_cmake_args` instead of hardcoded build
+    type and install prefix, which resolves certain build issues (see
+    [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
 
 @subsection changelog-examples-latest-documentation Documentation
 

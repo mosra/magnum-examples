@@ -51,6 +51,8 @@ namespace Magnum {
     @ref examples-bullet example
 -   **Janick Martinez Esturo** ([\@ph03](https://github.com/ph03)) --- build
     fixes
+-   **John Laxson** ([\@jlaxson](https://github.com/jlaxson)) --- Homebrew
+    package improvements
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the
     @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
     @ref examples-leapmotion, @ref examples-imgui, WebVR and @ref examples-webxr
