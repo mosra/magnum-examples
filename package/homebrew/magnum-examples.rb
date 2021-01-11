@@ -25,8 +25,7 @@ class MagnumExamples < Formula
       # https://github.com/Homebrew/homebrew-core/pull/4482 and nothing
       # happened with https://github.com/erincatto/Box2D/issues/431 yet
       system "cmake",
-        "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_INSTALL_PREFIX=#{prefix}",
+      *std_cmake_args,
         "-DWITH_ANIMATED_GIF_EXAMPLE=ON",
         "-DWITH_ARCBALL_EXAMPLE=ON",
         "-DWITH_AREALIGHTS_EXAMPLE=ON",
