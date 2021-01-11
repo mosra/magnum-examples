@@ -204,7 +204,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -1049,7 +1049,7 @@ endif()
 # For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
 # useful info about the failed components.
 if(NOT CMAKE_VERSION VERSION_LESS 3.16)
-    set(_MAGNUM_REASON_FAILURE_MESSAGE)
+    set(_MAGNUM_REASON_FAILURE_MESSAGE )
     # Go only through the originally specified find_package() components, not
     # the dependencies added by us afterwards
     foreach(_component ${_MAGNUM_ORIGINAL_FIND_COMPONENTS})
