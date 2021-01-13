@@ -5,6 +5,7 @@
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
              — Vladimír Vondruš <mosra@centrum.cz>
+        2021 — Pablo Escobar <mail@rvrs.in>
 
     This is free and unencumbered software released into the public domain.
 
@@ -78,10 +79,17 @@ int main(int argc, char** argv) {
     /* Render pass */
     Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
         .setAttachments({
-            {PixelFormat::RGBA8Srgb, Vk::AttachmentLoadOperation::Clear, {}}
+            Vk::AttachmentDescription{PixelFormat::RGBA8Srgb,
+                Vk::AttachmentLoadOperation::Clear,
+                Vk::AttachmentStoreOperation::Store,
+                Vk::ImageLayout::Undefined,
+                Vk::ImageLayout::ColorAttachment
+            }
         })
         .addSubpass(Vk::SubpassDescription{}
-            .setColorAttachments({0})
+            .setColorAttachments({
+                Vk::AttachmentReference{0, Vk::ImageLayout::ColorAttachment}
+            })
         )
     };
 
@@ -275,25 +283,8 @@ int main(int argc, char** argv) {
     /* Begin recording */
     cmd.begin();
 
-    /* Convert the image to the proper layout */
-    {
-        VkImageMemoryBarrier barrier{};
-        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        barrier.image = image;
-        barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        barrier.subresourceRange.baseMipLevel = 0;
-        barrier.subresourceRange.levelCount = 1;
-        barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = 1;
-        vkCmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
-    }
-
-    /* Begin a render pass */
+    /* Begin a render pass. Converts the framebuffer attachment from Undefined
+       to ColorAttachment layout and clears it. */
     cmd.beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
            .clearColor(0, 0x1f1f1f_srgbf));
 

@@ -80,6 +80,8 @@ namespace Magnum {
     @ref examples-arcball, @ref examples-raytracing and @ref examples-octree
     examples
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- bugfixes
+-   **Pablo Escobar** ([\@pezcode](https://github.com/pezcode)) --- fixes to
+    the @ref examples-triangle-vulkan example
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example
 -   **[\@scturtle](https://github.com/scturtle)** --- the
