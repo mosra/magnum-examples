@@ -137,6 +137,7 @@ int main(int argc, char** argv) {
                OpEntryPoint Vertex %1 "ver" %12 %13 %gl_Position %16
 ; Function %2 is fragment shader and has %5 as input and %6 as output
                OpEntryPoint Fragment %2 "fra" %5 %6
+               OpExecutionMode %2 OriginUpperLeft
 
 ; Input/output layouts
                OpDecorate %12 Location 0
