@@ -107,9 +107,9 @@ int main(int argc, char** argv) {
 
     /* Vertex buffer */
     Vk::Buffer buffer{device, Vk::BufferCreateInfo{
-            Vk::BufferUsage::VertexBuffer,
-            3*2*4*4 /* Three vertices, each is four-element pos & color */
-        }, Vk::MemoryFlag::HostVisible};
+        Vk::BufferUsage::VertexBuffer,
+        3*2*4*4 /* Three vertices, each is four-element pos & color */
+    }, Vk::MemoryFlag::HostVisible};
     {
         /* Fill the data */
         /** @todo arrayCast for an array rvalue */
@@ -287,7 +287,8 @@ int main(int argc, char** argv) {
     /* Begin a render pass. Converts the framebuffer attachment from Undefined
        to ColorAttachment layout and clears it. */
     cmd.beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
-           .clearColor(0, 0x1f1f1f_srgbf));
+           .clearColor(0, 0x1f1f1f_srgbf)
+       );
 
     /* Bind the pipeline */
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
