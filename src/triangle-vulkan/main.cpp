@@ -322,14 +322,18 @@ int main(int argc, char** argv) {
     /* End render pass */
     cmd.endRenderPass();
 
-    /* Copy the image to a host-visible buffer */
+    /* Copy the image to a host-visible buffer. After that ensure the memory
+       is available in time for the host read. */
     Vk::Buffer pixels{device, Vk::BufferCreateInfo{
         Vk::BufferUsage::TransferDestination,
         800*600*4
     }, Vk::MemoryFlag::HostVisible};
     cmd.copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
-        Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
-    }});
+            Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
+        }})
+       .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::Host, {
+           {Vk::Access::TransferWrite, Vk::Access::HostRead, pixels}
+        });
 
     /* End recording */
     cmd.end();
