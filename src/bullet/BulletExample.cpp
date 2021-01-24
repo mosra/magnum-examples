@@ -55,7 +55,7 @@
 #include <Magnum/Trade/MeshData.h>
 
 #ifdef BT_USE_DOUBLE_PRECISION
-#error sorry, this example doesn't support Bullet with double precision enabled
+#error sorry, this example does not support Bullet with double precision enabled
 #endif
 
 namespace Magnum { namespace Examples {
