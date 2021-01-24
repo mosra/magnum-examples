@@ -36,6 +36,7 @@
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/Range.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Vk/Assert.h>
@@ -50,6 +51,7 @@
 #include <Magnum/Vk/ImageViewCreateInfo.h>
 #include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
+#include <Magnum/Vk/Pipeline.h>
 #include <Magnum/Vk/Queue.h>
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 #include <Magnum/Vk/ShaderCreateInfo.h>
@@ -76,14 +78,17 @@ int main(int argc, char** argv) {
 
     device.populateGlobalFunctionPointers();
 
-    /* Render pass */
+    /* Render pass. We'll want to transfer the image back to the host though a
+       buffer once done, so additionally set up a corresponding final image
+       layout and a dependency that performs the layout transition before we
+       execute the copy command. */
     Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
         .setAttachments({
             Vk::AttachmentDescription{PixelFormat::RGBA8Srgb,
                 Vk::AttachmentLoadOperation::Clear,
                 Vk::AttachmentStoreOperation::Store,
                 Vk::ImageLayout::Undefined,
-                Vk::ImageLayout::ColorAttachment
+                Vk::ImageLayout::TransferSource
             }
         })
         .addSubpass(Vk::SubpassDescription{}
@@ -91,17 +96,28 @@ int main(int argc, char** argv) {
                 Vk::AttachmentReference{0, Vk::ImageLayout::ColorAttachment}
             })
         )
+        .setDependencies({
+            Vk::SubpassDependency{
+                /* An operation external to the render pass depends on the
+                   first subpass */
+                0, Vk::SubpassDependency::External,
+                /* where transfer gets executed only after color output is
+                   done */
+                Vk::PipelineStage::ColorAttachmentOutput,
+                Vk::PipelineStage::Transfer,
+                /* and color data written are available for the transfer to
+                   read */
+                Vk::Access::ColorAttachmentWrite,
+                Vk::Access::TransferRead}
+        })
     };
 
-    /* Framebuffer image. Allocate with linear tiling as we want to download it
-       later. */
-    Vk::Image image{NoCreate};
-    {
-        Vk::ImageCreateInfo2D info{Vk::ImageUsage::ColorAttachment,
-            PixelFormat::RGBA8Srgb, {800, 600}, 1};
-        info->tiling = VK_IMAGE_TILING_LINEAR;
-        image = Vk::Image{device, info, Vk::MemoryFlag::HostVisible};
-    }
+    /* Framebuffer image. It doesn't need to be host-visible, however we'll
+       copy it to the host through a buffer so enable corresponding usage. */
+    Vk::Image image{device, Vk::ImageCreateInfo2D{
+        Vk::ImageUsage::ColorAttachment|Vk::ImageUsage::TransferSource,
+        PixelFormat::RGBA8Srgb, {800, 600}, 1
+    }, Vk::MemoryFlag::DeviceLocal};
 
     Vk::ImageView color{device, Vk::ImageViewCreateInfo2D{image}};
 
@@ -303,22 +319,33 @@ int main(int argc, char** argv) {
     /* Draw the triangle */
     vkCmdDraw(cmd, 3, 1, 0, 0);
 
+    /* End render pass */
+    cmd.endRenderPass();
+
+    /* Copy the image to a host-visible buffer */
+    Vk::Buffer pixels{device, Vk::BufferCreateInfo{
+        Vk::BufferUsage::TransferDestination,
+        800*600*4
+    }, Vk::MemoryFlag::HostVisible};
+    cmd.copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
+        Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
+    }});
+
     /* End recording */
-    cmd.endRenderPass()
-       .end();
+    cmd.end();
 
     /* Submit the command buffer and wait until done */
     Vk::Fence fence{device};
     queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
     fence.wait();
 
-    /* Read the image back */
+    /* Read the image back from the buffer */
     CORRADE_INTERNAL_ASSERT_EXPRESSION(
         PluginManager::Manager<Trade::AbstractImageConverter>{}
             .loadAndInstantiate("AnyImageConverter")
     )->exportToFile(ImageView2D{
         PixelFormat::RGBA8Unorm, {800, 600},
-        image.dedicatedMemory().mapRead()}, "image.png");
+        pixels.dedicatedMemory().mapRead()}, "image.png");
     Debug{} << "Saved an image to image.png";
 
     /* Clean up */
