@@ -344,9 +344,7 @@ int main(int argc, char** argv) {
     cmd.end();
 
     /* Submit the command buffer and wait until done */
-    Vk::Fence fence{device};
-    queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
-    fence.wait();
+    queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
     /* Read the image back from the buffer */
     CORRADE_INTERNAL_ASSERT_EXPRESSION(
