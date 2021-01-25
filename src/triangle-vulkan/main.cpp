@@ -64,16 +64,19 @@ using namespace Magnum::Math::Literals;
 int main(int argc, char** argv) {
     /* Create an instance */
     Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
-        .setApplicationInfo("Magnum Vulkan Triangle Example"_s, {})};
+        .setApplicationInfo("Magnum Vulkan Triangle Example"_s, {})
+    };
 
     /* Create a device with a graphics queue */
     Vk::Queue queue{NoCreate};
     Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
-        .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})};
+        .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})
+    };
 
     /* Allocate a command buffer */
     Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
-        device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)}};
+        device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
+    }};
     Vk::CommandBuffer cmd = commandPool.allocate();
 
     device.populateGlobalFunctionPointers();
@@ -108,7 +111,8 @@ int main(int argc, char** argv) {
                 /* and color data written are available for the transfer to
                    read */
                 Vk::Access::ColorAttachmentWrite,
-                Vk::Access::TransferRead}
+                Vk::Access::TransferRead
+            }
         })
     };
 
@@ -197,7 +201,8 @@ int main(int argc, char** argv) {
 )"_s;
     Vk::Shader shader{device, Vk::ShaderCreateInfo{
         CORRADE_INTERNAL_ASSERT_EXPRESSION(CORRADE_INTERNAL_ASSERT_EXPRESSION(
-            PluginManager::Manager<ShaderTools::AbstractConverter>{}.loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
+            PluginManager::Manager<ShaderTools::AbstractConverter>{}
+                .loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
         )->convertDataToData({}, assembly))}};
 
     /* Pipeline layout */
@@ -304,7 +309,7 @@ int main(int argc, char** argv) {
        to ColorAttachment layout and clears it. */
     cmd.beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
            .clearColor(0, 0x1f1f1f_srgbf)
-       );
+        );
 
     /* Bind the pipeline */
     vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -349,7 +354,8 @@ int main(int argc, char** argv) {
             .loadAndInstantiate("AnyImageConverter")
     )->exportToFile(ImageView2D{
         PixelFormat::RGBA8Unorm, {800, 600},
-        pixels.dedicatedMemory().mapRead()}, "image.png");
+        pixels.dedicatedMemory().mapRead()
+    }, "image.png");
     Debug{} << "Saved an image to image.png";
 
     /* Clean up */
