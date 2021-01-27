@@ -52,6 +52,7 @@
 #include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
 #include <Magnum/Vk/Pipeline.h>
+#include <Magnum/Vk/PipelineLayoutCreateInfo.h>
 #include <Magnum/Vk/Queue.h>
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 #include <Magnum/Vk/ShaderCreateInfo.h>
@@ -206,14 +207,7 @@ int main(int argc, char** argv) {
         )->convertDataToData({}, assembly))}};
 
     /* Pipeline layout */
-    VkPipelineLayout pipelineLayout;
-    {
-        VkPipelineLayoutCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        info.setLayoutCount = 0;
-        info.pushConstantRangeCount = 0;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreatePipelineLayout(device, &info, nullptr, &pipelineLayout));
-    }
+    Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
 
     /* Create a graphics pipeline */
     VkPipeline pipeline;
@@ -358,5 +352,4 @@ int main(int argc, char** argv) {
 
     /* Clean up */
     vkDestroyPipeline(device, pipeline, nullptr);
-    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 }
