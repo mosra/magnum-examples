@@ -124,8 +124,6 @@ int main(int argc, char** argv) {
         PixelFormat::RGBA8Srgb, {800, 600}, 1
     }, Vk::MemoryFlag::DeviceLocal};
 
-    Vk::ImageView color{device, Vk::ImageViewCreateInfo2D{image}};
-
     /* Vertex buffer */
     Vk::Buffer buffer{device, Vk::BufferCreateInfo{
         Vk::BufferUsage::VertexBuffer,
@@ -144,7 +142,13 @@ int main(int argc, char** argv) {
         view[5] = 0x0000ffff_srgbaf;
     }
 
+    /* Buffer to which the rendered image gets linearized */
+    Vk::Buffer pixels{device, Vk::BufferCreateInfo{
+        Vk::BufferUsage::TransferDestination, 800*600*4
+    }, Vk::MemoryFlag::HostVisible};
+
     /* Framebuffer */
+    Vk::ImageView color{device, Vk::ImageViewCreateInfo2D{image}};
     Vk::Framebuffer framebuffer{device, Vk::FramebufferCreateInfo{renderPass, {
         color
     }, {800, 600}}};
@@ -323,10 +327,6 @@ int main(int argc, char** argv) {
 
     /* Copy the image to a host-visible buffer. After that ensure the memory
        is available in time for the host read. */
-    Vk::Buffer pixels{device, Vk::BufferCreateInfo{
-        Vk::BufferUsage::TransferDestination,
-        800*600*4
-    }, Vk::MemoryFlag::HostVisible};
     cmd.copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
             Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
         }})
