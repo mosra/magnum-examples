@@ -57,8 +57,10 @@
 #include <Magnum/Vk/Pipeline.h>
 #include <Magnum/Vk/PipelineLayoutCreateInfo.h>
 #include <Magnum/Vk/Queue.h>
+#include <Magnum/Vk/RasterizationPipelineCreateInfo.h>
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 #include <Magnum/Vk/ShaderCreateInfo.h>
+#include <Magnum/Vk/ShaderSet.h>
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
 using namespace Corrade::Containers::Literals;
@@ -213,78 +215,23 @@ int main(int argc, char** argv) {
                 .loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
         )->convertDataToData({}, assembly))}};
 
-    /* Pipeline layout */
-    Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
-
     constexpr UnsignedInt VertexBufferBinding = 0;
 
     /* Create a graphics pipeline */
-    VkPipeline pipeline;
-    {
-        Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
-        meshLayout
-            .addBinding(VertexBufferBinding, 2*4*4)
-            .addAttribute(0, VertexBufferBinding, VertexFormat::Vector4, 0)
-            .addAttribute(1, VertexBufferBinding, VertexFormat::Vector4, 4*4);
-
-        VkViewport viewport{};
-        viewport.width = 800.0f;
-        viewport.height = 600.0f;
-        viewport.maxDepth = 1.0f;
-
-        VkRect2D scissor{{}, {800, 600}};
-
-        VkPipelineViewportStateCreateInfo viewportInfo{};
-        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = &viewport;
-        viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &scissor;
-
-        VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
-        rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizationInfo.lineWidth = 1.0f;
-        /* the zero-filled defaults are good enough apparently */
-
-        VkPipelineMultisampleStateCreateInfo multisampleInfo{};
-        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-
-        VkPipelineColorBlendAttachmentState blend{};
-        blend.colorWriteMask = VK_COLOR_COMPONENT_R_BIT|
-                               VK_COLOR_COMPONENT_G_BIT|
-                               VK_COLOR_COMPONENT_B_BIT|
-                               VK_COLOR_COMPONENT_A_BIT;
-        VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
-        colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlendInfo.attachmentCount = 1;
-        colorBlendInfo.pAttachments = &blend;
-
-        VkPipelineShaderStageCreateInfo stages[2]{};
-        stages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        stages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-        stages[0].module = shader;
-        stages[0].pName = "ver";
-        stages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        stages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        stages[1].module = shader;
-        stages[1].pName = "fra";
-
-        VkGraphicsPipelineCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        info.stageCount = 2;
-        info.pStages = stages;
-        info.pVertexInputState = meshLayout;
-        info.pInputAssemblyState = meshLayout;
-        info.pViewportState = &viewportInfo;
-        info.pRasterizationState = &rasterizationInfo;
-        info.pMultisampleState = &multisampleInfo;
-        info.pColorBlendState = &colorBlendInfo;
-        info.layout = pipelineLayout;
-        info.renderPass = renderPass;
-        info.subpass = 0;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateGraphicsPipelines(device, nullptr, 1, &info, nullptr, &pipeline));
-    }
+    Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(VertexBufferBinding, 2*4*4)
+        .addAttribute(0, VertexBufferBinding, VertexFormat::Vector4, 0)
+        .addAttribute(1, VertexBufferBinding, VertexFormat::Vector4, 4*4);
+    Vk::ShaderSet shaderSet;
+    shaderSet
+        .addShader(Vk::ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(Vk::ShaderStage::Fragment, shader, "fra"_s);
+    Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
+    Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {800.0f, 600.0f}})
+    };
 
     /* Begin recording */
     cmd.begin();
@@ -335,7 +282,4 @@ int main(int argc, char** argv) {
         pixels.dedicatedMemory().mapRead()
     }, "image.png");
     Debug{} << "Saved an image to image.png";
-
-    /* Clean up */
-    vkDestroyPipeline(device, pipeline, nullptr);
 }
