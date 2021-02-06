@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
         );
 
     /* Bind the pipeline */
-    vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    cmd.bindPipeline(pipeline);
 
     /* Bind the vertex buffer */
     {
