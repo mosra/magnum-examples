@@ -53,7 +53,7 @@
 #include <Magnum/Vk/ImageViewCreateInfo.h>
 #include <Magnum/Vk/InstanceCreateInfo.h>
 #include <Magnum/Vk/Memory.h>
-#include <Magnum/Vk/MeshLayout.h>
+#include <Magnum/Vk/Mesh.h>
 #include <Magnum/Vk/Pipeline.h>
 #include <Magnum/Vk/PipelineLayoutCreateInfo.h>
 #include <Magnum/Vk/Queue.h>
@@ -61,7 +61,6 @@
 #include <Magnum/Vk/RenderPassCreateInfo.h>
 #include <Magnum/Vk/ShaderCreateInfo.h>
 #include <Magnum/Vk/ShaderSet.h>
-#include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
 using namespace Corrade::Containers::Literals;
 using namespace Magnum;
@@ -84,8 +83,6 @@ int main(int argc, char** argv) {
         device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
     }};
     Vk::CommandBuffer cmd = commandPool.allocate();
-
-    device.populateGlobalFunctionPointers();
 
     /* Render pass. We'll want to transfer the image back to the host though a
        buffer once done, so additionally set up a corresponding final image
@@ -129,13 +126,18 @@ int main(int argc, char** argv) {
         PixelFormat::RGBA8Srgb, {800, 600}, 1
     }, Vk::MemoryFlag::DeviceLocal};
 
-    /* Vertex buffer */
-    Vk::Buffer buffer{device, Vk::BufferCreateInfo{
-        Vk::BufferUsage::VertexBuffer,
-        3*2*4*4 /* Three vertices, each is four-element pos & color */
-    }, Vk::MemoryFlag::HostVisible};
+    /* Create the triangle mesh */
+    Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles}
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4)
+    };
     {
-        /* Fill the data */
+        Vk::Buffer buffer{device, Vk::BufferCreateInfo{
+            Vk::BufferUsage::VertexBuffer,
+            3*2*4*4 /* Three vertices, each is four-element pos & color */
+        }, Vk::MemoryFlag::HostVisible};
+
         /** @todo arrayCast for an array rvalue */
         Containers::Array<char, Vk::MemoryMapDeleter> data = buffer.dedicatedMemory().map();
         auto view = Containers::arrayCast<Vector4>(data);
@@ -145,6 +147,9 @@ int main(int argc, char** argv) {
         view[3] = 0x00ff00ff_srgbaf;
         view[4] = { 0.0f,  0.5f, 0.0f, 1.0f}; /* Top vertex, blue color */
         view[5] = 0x0000ffff_srgbaf;
+
+        mesh.addVertexBuffer(0, std::move(buffer), 0)
+            .setCount(3);
     }
 
     /* Buffer to which the rendered image gets linearized */
@@ -215,60 +220,35 @@ int main(int argc, char** argv) {
                 .loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
         )->convertDataToData({}, assembly))}};
 
-    constexpr UnsignedInt VertexBufferBinding = 0;
-
     /* Create a graphics pipeline */
-    Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
-    meshLayout
-        .addBinding(VertexBufferBinding, 2*4*4)
-        .addAttribute(0, VertexBufferBinding, VertexFormat::Vector4, 0)
-        .addAttribute(1, VertexBufferBinding, VertexFormat::Vector4, 4*4);
     Vk::ShaderSet shaderSet;
     shaderSet
         .addShader(Vk::ShaderStage::Vertex, shader, "ver"_s)
         .addShader(Vk::ShaderStage::Fragment, shader, "fra"_s);
     Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
-    Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{
-            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+    Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{shaderSet, mesh.layout(), pipelineLayout, renderPass, 0, 1}
         .setViewport({{}, {800.0f, 600.0f}})
     };
 
-    /* Begin recording */
-    cmd.begin();
-
-    /* Begin a render pass. Converts the framebuffer attachment from Undefined
-       to ColorAttachment layout and clears it. */
-    cmd.beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
+    /* Record the command buffer:
+        - render pass being converts the framebuffer attachment from Undefined
+          to ColorAttachment and clears it
+        - the pipeline barrier is needed in order to make the image data copied
+          to the buffer visible in time for the host read happening below */
+    cmd.begin()
+       .beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
            .clearColor(0, 0x1f1f1f_srgbf)
-        );
-
-    /* Bind the pipeline */
-    cmd.bindPipeline(pipeline);
-
-    /* Bind the vertex buffer */
-    {
-        const VkDeviceSize offset = 0;
-        const VkBuffer handle = buffer;
-        vkCmdBindVertexBuffers(cmd, VertexBufferBinding, 1, &handle, &offset);
-    }
-
-    /* Draw the triangle */
-    vkCmdDraw(cmd, 3, 1, 0, 0);
-
-    /* End render pass */
-    cmd.endRenderPass();
-
-    /* Copy the image to a host-visible buffer. After that ensure the memory
-       is available in time for the host read. */
-    cmd.copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
+        )
+       .bindPipeline(pipeline)
+       .draw(mesh)
+       .endRenderPass()
+       .copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
             Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
         }})
        .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::Host, {
-           {Vk::Access::TransferWrite, Vk::Access::HostRead, pixels}
-        });
-
-    /* End recording */
-    cmd.end();
+            {Vk::Access::TransferWrite, Vk::Access::HostRead, pixels}
+        })
+       .end();
 
     /* Submit the command buffer and wait until done */
     queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}).wait();
