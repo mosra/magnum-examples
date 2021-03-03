@@ -244,6 +244,10 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
     @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
     [GLEW](http://glew.sourceforge.net/).
+-   `WITH_TRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-triangle-vulkan "Vulkan Triangle"
+    example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
+    the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
+    plugin and some `PngImageConverter` plugin implementation.
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 -   `WITH_WEBXR_EXAMPLE` --- Build the @ref examples-webxr "WebXR" example.
