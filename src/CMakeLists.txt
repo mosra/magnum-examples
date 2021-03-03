@@ -128,6 +128,10 @@ if(WITH_TEXTUREDTRIANGLE_EXAMPLE)
     add_subdirectory(textured-triangle)
 endif()
 
+if(WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE)
+    add_subdirectory(textured-triangle-vulkan)
+endif()
+
 if(WITH_TRIANGLE_EXAMPLE)
     add_subdirectory(triangle)
 endif()

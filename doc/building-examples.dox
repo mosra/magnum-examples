@@ -236,6 +236,11 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build the @ref examples-textured-triangle
     example. Requires some TGA importer plugin such as
     @ref Trade::TgaImporter "TgaImporter", not available in OpenGL ES.
+-   `WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-textured-triangle-vulkan "Vulkan Textured Triangle"
+    example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
+    the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
+    plugin and some `PngImporter` and `PngImageConverter` plugin
+    implementation.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build the @ref examples-triangle "Triangle"
     example. Enabled by default.
 -   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
