@@ -168,49 +168,43 @@ int main(int argc, char** argv) {
                OpCapability Shader
                OpMemoryModel Logical GLSL450
 
-; Function %1 is vertex shader and has %12, %13 as input and %15, %16 as output
-               OpEntryPoint Vertex %1 "ver" %12 %13 %gl_Position %16
-; Function %2 is fragment shader and has %5 as input and %6 as output
-               OpEntryPoint Fragment %2 "fra" %5 %6
-               OpExecutionMode %2 OriginUpperLeft
+               OpEntryPoint Vertex %ver "ver" %position %color %gl_Position %interpolatedColorOut
+               OpEntryPoint Fragment %fra "fra" %interpolatedColorIn %fragmentColor
+               OpExecutionMode %fra OriginUpperLeft
 
-; Input/output layouts
-               OpDecorate %12 Location 0
-               OpDecorate %13 Location 1
+               OpDecorate %position Location 0
+               OpDecorate %color Location 1
                OpDecorate %gl_Position BuiltIn Position
-               OpDecorate %16 Location 0
-               OpDecorate %5 Location 0
-               OpDecorate %6 Location 0
+               OpDecorate %interpolatedColorOut Location 0
+               OpDecorate %interpolatedColorIn Location 0
+               OpDecorate %fragmentColor Location 0
 
-; Types
        %void = OpTypeVoid
-          %8 = OpTypeFunction %void
+    %fn_void = OpTypeFunction %void
       %float = OpTypeFloat 32
-    %v4float = OpTypeVector %float 4
-%_ptr_Input_v4float = OpTypePointer Input %v4float
-         %12 = OpVariable %_ptr_Input_v4float Input
-         %13 = OpVariable %_ptr_Input_v4float Input
-%_ptr_Output_v4float = OpTypePointer Output %v4float
-%gl_Position = OpVariable %_ptr_Output_v4float Output
-         %16 = OpVariable %_ptr_Output_v4float Output
-          %5 = OpVariable %_ptr_Input_v4float Input
-          %6 = OpVariable %_ptr_Output_v4float Output
+       %vec4 = OpTypeVector %float 4
+%ptr_in_vec4 = OpTypePointer Input %vec4
+   %position = OpVariable %ptr_in_vec4 Input
+      %color = OpVariable %ptr_in_vec4 Input
+%ptr_out_vec4 = OpTypePointer Output %vec4
+%gl_Position = OpVariable %ptr_out_vec4 Output
+%interpolatedColorOut = OpVariable %ptr_out_vec4 Output
+%interpolatedColorIn = OpVariable %ptr_in_vec4 Input
+%fragmentColor = OpVariable %ptr_out_vec4 Output
 
-; %1 = void ver()
-          %1 = OpFunction %void None %8
-         %33 = OpLabel
-         %30 = OpLoad %v4float %12
-         %31 = OpLoad %v4float %13
-               OpStore %gl_Position %30
-               OpStore %16 %31
+        %ver = OpFunction %void None %fn_void
+       %ver_ = OpLabel
+          %1 = OpLoad %vec4 %position
+          %2 = OpLoad %vec4 %color
+               OpStore %gl_Position %1
+               OpStore %interpolatedColorOut %2
                OpReturn
                OpFunctionEnd
 
-; %2 = void fra()
-          %2 = OpFunction %void None %8
-         %34 = OpLabel
-         %32 = OpLoad %v4float %5
-               OpStore %6 %32
+        %fra = OpFunction %void None %fn_void
+       %fra_ = OpLabel
+          %3 = OpLoad %vec4 %interpolatedColorIn
+               OpStore %fragmentColor %3
                OpReturn
                OpFunctionEnd
 )"_s;
