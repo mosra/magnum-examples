@@ -71,10 +71,11 @@ RAII principle will take care of destroying it at a right time. We'll pass the
 `argc` and `argv` parameters to it --- it's completely optional and we could
 use the default @ref Platform::GLContext::GLContext() constructor instead, but
 this allows us to control Magnum renderer behavior on particular hardware from
-command-line. All Magnum options are prefixed with `--magnum-` to avoid
+the command line. All Magnum options are prefixed with `--magnum-` to avoid
 conflicts with other application arguments and even if we wouldn't propagate
-them, it's still possible to set the options from environment. See
-@ref GL-Context-command-line for more information.
+them, it's still possible to set the options from the environment or via
+@ref GL::Context::Configuration. See @ref GL-Context-usage for more
+information.
 
 @note
     The @ref Platform::GLContext is just managing a state tracker for the
