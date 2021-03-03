@@ -32,6 +32,13 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2020.06
 
+@subsection changelog-examples-latest-new New features
+
+-   The @ref examples-triangle-vulkan is now written fully using the new
+    @ref Vk and @ref ShaderTools libraries, with no raw Vulkan code left
+-   New @ref examples-textured-triangle-vulkan, mirroring the OpenGL
+    @ref examples-textured-triangle with Vulkan APIs
+
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Fixed the @ref examples-webxr example to look correctly on HiDPI
