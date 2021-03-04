@@ -29,8 +29,14 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Configuration.h>
+#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Resource.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/Mesh.h>
@@ -41,6 +47,8 @@
 #include <Magnum/Math/Range.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
+#include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
 #include <Magnum/Vk/Assert.h>
 #include <Magnum/Vk/BufferCreateInfo.h>
 #include <Magnum/Vk/CommandBuffer.h>
@@ -69,7 +77,7 @@ using namespace Magnum::Math::Literals;
 int main(int argc, char** argv) {
     /* Create an instance */
     Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
-        .setApplicationInfo("Magnum Vulkan Triangle Example"_s, {})
+        .setApplicationInfo("Magnum Vulkan Textured Triangle Example"_s, {})
     };
 
     /* Create a device with a graphics queue */
@@ -128,34 +136,67 @@ int main(int argc, char** argv) {
 
     /* Create the triangle mesh */
     Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles}
-        .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, VertexFormat::Vector4, 4*4)
+        .addBinding(0, (2 + 2)*4)
+        .addAttribute(0, 0, VertexFormat::Vector2, 0)
+        .addAttribute(1, 0, VertexFormat::Vector2, 2*4)
     };
     {
         Vk::Buffer buffer{device, Vk::BufferCreateInfo{
             Vk::BufferUsage::VertexBuffer,
-            3*2*4*4 /* Three vertices, each is four-element pos & color */
+            3*(2 + 2)*4 /* Three vertices, each is pos & texture coordinate */
         }, Vk::MemoryFlag::HostVisible};
 
         /** @todo arrayCast for an array rvalue */
         Containers::Array<char, Vk::MemoryMapDeleter> data = buffer.dedicatedMemory().map();
-        auto view = Containers::arrayCast<Vector4>(data);
-        view[0] = {-0.5f, -0.5f, 0.0f, 1.0f}; /* Left vertex, red color */
-        view[1] = 0xff0000ff_srgbaf;
-        view[2] = { 0.5f, -0.5f, 0.0f, 1.0f}; /* Right vertex, green color */
-        view[3] = 0x00ff00ff_srgbaf;
-        view[4] = { 0.0f,  0.5f, 0.0f, 1.0f}; /* Top vertex, blue color */
-        view[5] = 0x0000ffff_srgbaf;
+        auto view = Containers::arrayCast<std::pair<Vector2, Vector2>>(data);
+        view[0] = {{-0.5f, -0.5f}, {0.0f, 0.0f}}; /* Left */
+        view[1] = {{ 0.5f, -0.5f}, {1.0f, 0.0f}}; /* Right */
+        view[2] = {{ 0.0f,  0.5f}, {0.5f, 1.0f}}; /* Top */
 
         mesh.addVertexBuffer(0, std::move(buffer), 0)
             .setCount(3);
     }
 
-    /* Buffer to which the rendered image gets linearized */
-    Vk::Buffer pixels{device, Vk::BufferCreateInfo{
-        Vk::BufferUsage::TransferDestination, 800*600*4
+    /* Load TGA importer plugin. Explicitly use StbImageImporter because that
+       one is the only that can do RGB -> RGBA expansion right now. */
+    PluginManager::Manager<Trade::AbstractImporter> manager;
+    Containers::Pointer<Trade::AbstractImporter> importer =
+        manager.loadAndInstantiate("StbImageImporter");
+    if(!importer) return 1;
+
+    /* Load the texture. Force expansion to RGBA because that's what Vulkan
+       wants. */
+    const Utility::Resource rs{"textured-triangle-data"};
+    if(!importer->openData(rs.getRaw("stone.tga"))) return 2;
+    importer->configuration().setValue("forceChannelCount", 4);
+    Containers::Optional<Trade::ImageData2D> data = importer->image2D(0);
+    CORRADE_INTERNAL_ASSERT(data);
+    CORRADE_INTERNAL_ASSERT(data->format() == PixelFormat::RGBA8Unorm);
+
+    /* A scratch buffer user for texture upload as well as a download of the
+       final rendered image */
+    Vk::Buffer scratch{device, Vk::BufferCreateInfo{
+        Vk::BufferUsage::TransferSource|Vk::BufferUsage::TransferDestination, Math::max<std::size_t>(800*600*4, data->data().size())
     }, Vk::MemoryFlag::HostVisible};
+    Utility::copy(data->data(), scratch.dedicatedMemory().map().prefix(data->data().size()));
+
+    /* Texture image. Gets copied from the buffer later. */
+    Vk::Image textureImage{device, Vk::ImageCreateInfo2D{
+        Vk::ImageUsage::TransferDestination|Vk::ImageUsage::Sampled,
+        PixelFormat::RGBA8Srgb, data->size(), 1
+    }, Vk::MemoryFlag::HostVisible};
+
+    /* Texture view */
+    Vk::ImageView textureView{device, Vk::ImageViewCreateInfo2D{textureImage}};
+
+    /* Uniform buffer. A single color. */
+    Vk::Buffer uniformBuffer{device, Vk::BufferCreateInfo{
+        Vk::BufferUsage::UniformBuffer, 4*4
+    }, Vk::MemoryFlag::HostVisible};
+    {
+        Containers::Array<char, Vk::MemoryMapDeleter> data = uniformBuffer.dedicatedMemory().map();
+        Containers::arrayCast<Color4>(data)[0] = 0xffb2b2_srgbf;
+    }
 
     /* Framebuffer */
     Vk::ImageView color{device, Vk::ImageViewCreateInfo2D{image}};
@@ -163,48 +204,92 @@ int main(int argc, char** argv) {
         color
     }, {800, 600}}};
 
+    /* Sampler */
+    VkSampler sampler;
+    {
+        VkSamplerCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        info.minFilter = VK_FILTER_LINEAR;
+        info.magFilter = VK_FILTER_LINEAR;
+        info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        info.minLod = -1000.0f;
+        info.maxLod = 1000.0f;
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateSampler(device, &info, nullptr, &sampler));
+    }
+
     /* Create the shader */
     constexpr Containers::StringView assembly = R"(
                OpCapability Shader
                OpMemoryModel Logical GLSL450
 
-               OpEntryPoint Vertex %ver "ver" %position %color %gl_Position %interpolatedColorOut
-               OpEntryPoint Fragment %fra "fra" %interpolatedColorIn %fragmentColor
+               OpEntryPoint Vertex %ver "ver" %position %textureCoordinates %gl_Position %interpolatedTextureCoordinatesOut
+               OpEntryPoint Fragment %fra "fra" %interpolatedTextureCoordinatesIn %fragmentColor
                OpExecutionMode %fra OriginUpperLeft
 
                OpDecorate %position Location 0
-               OpDecorate %color Location 1
+               OpDecorate %textureCoordinates Location 1
                OpDecorate %gl_Position BuiltIn Position
-               OpDecorate %interpolatedColorOut Location 0
-               OpDecorate %interpolatedColorIn Location 0
+               OpDecorate %interpolatedTextureCoordinatesOut Location 0
+               OpDecorate %interpolatedTextureCoordinatesIn Location 0
                OpDecorate %fragmentColor Location 0
+
+               OpDecorate %textureData DescriptorSet 0
+               OpDecorate %textureData Binding 0
+
+               OpDecorate %colorBlock Block
+               OpMemberDecorate %colorBlock 0 Offset 0
+               OpDecorate %color DescriptorSet 0
+               OpDecorate %color Binding 1
 
        %void = OpTypeVoid
     %fn_void = OpTypeFunction %void
       %float = OpTypeFloat 32
+       %vec2 = OpTypeVector %float 2
        %vec4 = OpTypeVector %float 4
+%ptr_in_vec2 = OpTypePointer Input %vec2
 %ptr_in_vec4 = OpTypePointer Input %vec4
    %position = OpVariable %ptr_in_vec4 Input
-      %color = OpVariable %ptr_in_vec4 Input
+%textureCoordinates = OpVariable %ptr_in_vec2 Input
+%ptr_out_vec2 = OpTypePointer Output %vec2
 %ptr_out_vec4 = OpTypePointer Output %vec4
 %gl_Position = OpVariable %ptr_out_vec4 Output
-%interpolatedColorOut = OpVariable %ptr_out_vec4 Output
-%interpolatedColorIn = OpVariable %ptr_in_vec4 Input
+%interpolatedTextureCoordinatesOut = OpVariable %ptr_out_vec2 Output
+%interpolatedTextureCoordinatesIn = OpVariable %ptr_in_vec2 Input
 %fragmentColor = OpVariable %ptr_out_vec4 Output
+
+; type, dimensions, depth, arrayed, multisampled, sampled, format
+    %image2D = OpTypeImage %float 2D 0 0 0 1 Unknown
+  %texture2D = OpTypeSampledImage %image2D
+%ptr_uniform_texture2D = OpTypePointer UniformConstant %texture2D
+%textureData = OpVariable %ptr_uniform_texture2D UniformConstant
+
+        %int = OpTypeInt 32 1
+    %c_zeroi = OpConstant %int 0
+%ptr_uniform_vec4 = OpTypePointer Uniform %vec4
+ %colorBlock = OpTypeStruct %vec4
+%ptr_uniform_colorBlock = OpTypePointer Uniform %colorBlock
+      %color = OpVariable %ptr_uniform_colorBlock Uniform
 
         %ver = OpFunction %void None %fn_void
        %ver_ = OpLabel
           %1 = OpLoad %vec4 %position
-          %2 = OpLoad %vec4 %color
+          %2 = OpLoad %vec2 %textureCoordinates
                OpStore %gl_Position %1
-               OpStore %interpolatedColorOut %2
+               OpStore %interpolatedTextureCoordinatesOut %2
                OpReturn
                OpFunctionEnd
 
         %fra = OpFunction %void None %fn_void
        %fra_ = OpLabel
-          %3 = OpLoad %vec4 %interpolatedColorIn
-               OpStore %fragmentColor %3
+          %3 = OpLoad %vec2 %interpolatedTextureCoordinatesIn
+          %4 = OpAccessChain %ptr_uniform_vec4 %color %c_zeroi
+          %5 = OpLoad %vec4 %4
+          %6 = OpLoad %texture2D %textureData
+          %7 = OpImageSampleImplicitLod %vec4 %6 %3
+          %8 = OpFMul %vec4 %5 %7
+               OpStore %fragmentColor %8
                OpReturn
                OpFunctionEnd
 )"_s;
@@ -214,33 +299,127 @@ int main(int argc, char** argv) {
                 .loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
         )->convertDataToData({}, assembly))}};
 
+    /* Descriptor set layout, matching the shader above */
+    VkDescriptorSetLayout descriptorSetLayout;
+    {
+        VkDescriptorSetLayoutBinding bindings[2]{};
+        bindings[0].binding = 0;
+        bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        bindings[0].descriptorCount = 1;
+        bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        bindings[0].pImmutableSamplers = &sampler;
+
+        bindings[1].binding = 1;
+        bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        bindings[1].descriptorCount = 1;
+        bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        VkDescriptorSetLayoutCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        info.bindingCount = 2;
+        info.pBindings = bindings;
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateDescriptorSetLayout(device, &info, nullptr, &descriptorSetLayout));
+    }
+
+    VkDescriptorPool descriptorPool;
+    {
+        VkDescriptorPoolSize sizes[2]{};
+        sizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        sizes[0].descriptorCount = 1;
+        sizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        sizes[1].descriptorCount = 1;
+
+        VkDescriptorPoolCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        info.maxSets = 1;
+        info.poolSizeCount = 2;
+        info.pPoolSizes = sizes;
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateDescriptorPool(device, &info, nullptr, &descriptorPool));
+    }
+
+    VkDescriptorSet descriptorSet;
+    {
+        VkDescriptorSetAllocateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        info.descriptorPool = descriptorPool;
+        info.descriptorSetCount = 1;
+        info.pSetLayouts = &descriptorSetLayout;
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateDescriptorSets(device, &info, &descriptorSet));
+
+        VkDescriptorImageInfo textureInfo{};
+        textureInfo.sampler = sampler;
+        textureInfo.imageView = textureView;
+        textureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkDescriptorBufferInfo uniformBufferInfo{};
+        uniformBufferInfo.buffer = uniformBuffer;
+        uniformBufferInfo.range = VK_WHOLE_SIZE;
+
+        VkWriteDescriptorSet writes[2]{};
+        writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writes[0].dstSet = descriptorSet;
+        writes[0].dstBinding = 0;
+        writes[0].descriptorCount = 1;
+        writes[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        writes[0].pImageInfo = &textureInfo;
+        writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writes[1].dstSet = descriptorSet;
+        writes[1].dstBinding = 1;
+        writes[1].descriptorCount = 1;
+        writes[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writes[1].pBufferInfo = &uniformBufferInfo;
+        device->UpdateDescriptorSets(device, 2, writes, 0, nullptr);
+    }
+
+    Vk::PipelineLayout pipelineLayout{NoCreate};
+    {
+        Vk::PipelineLayoutCreateInfo info;
+        info->setLayoutCount = 1;
+        info->pSetLayouts = &descriptorSetLayout;
+        pipelineLayout = Vk::PipelineLayout{device, info};
+    }
+
     /* Create a graphics pipeline */
     Vk::ShaderSet shaderSet;
     shaderSet
         .addShader(Vk::ShaderStage::Vertex, shader, "ver"_s)
         .addShader(Vk::ShaderStage::Fragment, shader, "fra"_s);
-    Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{}};
     Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{shaderSet, mesh.layout(), pipelineLayout, renderPass, 0, 1}
         .setViewport({{}, {800.0f, 600.0f}})
     };
 
     /* Record the command buffer:
-        - render pass being converts the framebuffer attachment from Undefined
+        - upload the texture to device-local memory, wrapped in barriers for
+          ensuring correct layout transfer
+        - render pass begin converts the framebuffer attachment from Undefined
           to ColorAttachment and clears it
-        - the pipeline barrier is needed in order to make the image data copied
-          to the buffer visible in time for the host read happening below */
+        - the pipeline barrier after is needed in order to make the image data
+          copied to the buffer visible in time for the host read happening
+          below */
     cmd.begin()
+       .pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
+           {Vk::Accesses{}, Vk::Access::TransferWrite, Vk::ImageLayout::Undefined, Vk::ImageLayout::TransferDestination, textureImage}
+        })
+       .copyBufferToImage({scratch, textureImage, Vk::ImageLayout::TransferDestination, {
+           Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, data->size()}}
+        }})
+       .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::FragmentShader, {
+           {Vk::Access::TransferWrite, Vk::Access::ShaderRead, Vk::ImageLayout::TransferDestination, Vk::ImageLayout::ShaderReadOnly, textureImage}
+        })
        .beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
            .clearColor(0, 0x1f1f1f_srgbf)
         )
-       .bindPipeline(pipeline)
-       .draw(mesh)
+       .bindPipeline(pipeline);
+
+    device->CmdBindDescriptorSets(cmd, VkPipelineBindPoint(pipeline.bindPoint()), pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+
+    cmd.draw(mesh)
        .endRenderPass()
-       .copyImageToBuffer({image, Vk::ImageLayout::TransferSource, pixels, {
+       .copyImageToBuffer({image, Vk::ImageLayout::TransferSource, scratch, {
             Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {800, 600}}}
         }})
        .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::Host, {
-            {Vk::Access::TransferWrite, Vk::Access::HostRead, pixels}
+            {Vk::Access::TransferWrite, Vk::Access::HostRead, scratch}
         })
        .end();
 
@@ -253,7 +432,13 @@ int main(int argc, char** argv) {
             .loadAndInstantiate("AnyImageConverter")
     )->exportToFile(ImageView2D{
         PixelFormat::RGBA8Unorm, {800, 600},
-        pixels.dedicatedMemory().mapRead()
+        scratch.dedicatedMemory().mapRead()
     }, "image.png");
     Debug{} << "Saved an image to image.png";
+
+    /* Clean up */
+    /* Descriptor sets are freed with their pool */
+    device->DestroyDescriptorPool(device, descriptorPool, nullptr);
+    device->DestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+    device->DestroySampler(device, sampler, nullptr);
 }

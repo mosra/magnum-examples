@@ -41,7 +41,10 @@ find_package(Magnum REQUIRED ShaderTools Trade Vk)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-add_executable(magnum-textured-triangle-vulkan WIN32 main.cpp)
+corrade_add_resource(TexturedTriangleVulkan_RESOURCES resources.conf)
+
+add_executable(magnum-textured-triangle-vulkan WIN32 main.cpp
+    ${TexturedTriangleVulkan_RESOURCES})
 target_link_libraries(magnum-textured-triangle-vulkan PRIVATE
     Corrade::Main
     Magnum::Trade
