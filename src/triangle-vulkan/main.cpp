@@ -41,7 +41,6 @@
 #include <Magnum/Math/Range.h>
 #include <Magnum/ShaderTools/AbstractConverter.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
-#include <Magnum/Vk/Assert.h>
 #include <Magnum/Vk/BufferCreateInfo.h>
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
@@ -225,7 +224,7 @@ int main(int argc, char** argv) {
     };
 
     /* Record the command buffer:
-        - render pass being converts the framebuffer attachment from Undefined
+        - render pass begin converts the framebuffer attachment from Undefined
           to ColorAttachment and clears it
         - the pipeline barrier is needed in order to make the image data copied
           to the buffer visible in time for the host read happening below */
