@@ -72,6 +72,10 @@ cmake .. \
 ninja install
 cd ../..
 
+# Disabling the sokol_gfx example as it only works with Magnum compiled with
+# TARGET_GL disabled -- otherwise the flextGL headers conflict between the two.
+# It's a problem since Application classes started including GL/Context.h to
+# inherit from GLContext::Configuration.
 mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
@@ -102,7 +106,7 @@ cmake .. \
     -DWITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
-    -DWITH_TRIANGLE_SOKOL_EXAMPLE=ON \
+    -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
     -DWITH_TRIANGLE_VULKAN_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
