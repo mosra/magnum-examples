@@ -42,6 +42,7 @@
 #include <Magnum/Mesh.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
+#include <Magnum/Sampler.h>
 #include <Magnum/VertexFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Range.h>
@@ -67,6 +68,7 @@
 #include <Magnum/Vk/Queue.h>
 #include <Magnum/Vk/RasterizationPipelineCreateInfo.h>
 #include <Magnum/Vk/RenderPassCreateInfo.h>
+#include <Magnum/Vk/SamplerCreateInfo.h>
 #include <Magnum/Vk/ShaderCreateInfo.h>
 #include <Magnum/Vk/ShaderSet.h>
 
@@ -205,19 +207,11 @@ int main(int argc, char** argv) {
     }, {800, 600}}};
 
     /* Sampler */
-    VkSampler sampler;
-    {
-        VkSamplerCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        info.minFilter = VK_FILTER_LINEAR;
-        info.magFilter = VK_FILTER_LINEAR;
-        info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-        info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-        info.minLod = -1000.0f;
-        info.maxLod = 1000.0f;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateSampler(device, &info, nullptr, &sampler));
-    }
+    Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}
+        .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
+        .setMagnificationFilter(SamplerFilter::Linear)
+        .setWrapping(SamplerWrapping::ClampToEdge)
+    };
 
     /* Create the shader */
     constexpr Containers::StringView assembly = R"(
@@ -307,7 +301,8 @@ int main(int argc, char** argv) {
         bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         bindings[0].descriptorCount = 1;
         bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        bindings[0].pImmutableSamplers = &sampler;
+        const VkSampler handle = sampler;
+        bindings[0].pImmutableSamplers = &handle; /* ew */
 
         bindings[1].binding = 1;
         bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -440,5 +435,4 @@ int main(int argc, char** argv) {
     /* Descriptor sets are freed with their pool */
     device->DestroyDescriptorPool(device, descriptorPool, nullptr);
     device->DestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-    device->DestroySampler(device, sampler, nullptr);
 }
