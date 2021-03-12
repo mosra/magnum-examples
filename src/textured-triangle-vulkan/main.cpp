@@ -54,6 +54,7 @@
 #include <Magnum/Vk/BufferCreateInfo.h>
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
+#include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
 #include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
 #include <Magnum/Vk/Fence.h>
@@ -294,27 +295,10 @@ int main(int argc, char** argv) {
         )->convertDataToData({}, assembly))}};
 
     /* Descriptor set layout, matching the shader above */
-    VkDescriptorSetLayout descriptorSetLayout;
-    {
-        VkDescriptorSetLayoutBinding bindings[2]{};
-        bindings[0].binding = 0;
-        bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        bindings[0].descriptorCount = 1;
-        bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        const VkSampler handle = sampler;
-        bindings[0].pImmutableSamplers = &handle; /* ew */
-
-        bindings[1].binding = 1;
-        bindings[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        bindings[1].descriptorCount = 1;
-        bindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-        VkDescriptorSetLayoutCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        info.bindingCount = 2;
-        info.pBindings = bindings;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateDescriptorSetLayout(device, &info, nullptr, &descriptorSetLayout));
-    }
+    Vk::DescriptorSetLayout descriptorSetLayout{device, Vk::DescriptorSetLayoutCreateInfo{{
+        {{0, Vk::DescriptorType::CombinedImageSampler, {sampler}}},
+        {{1, Vk::DescriptorType::UniformBuffer}}
+    }}};
 
     VkDescriptorPool descriptorPool;
     {
@@ -338,7 +322,8 @@ int main(int argc, char** argv) {
         info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         info.descriptorPool = descriptorPool;
         info.descriptorSetCount = 1;
-        info.pSetLayouts = &descriptorSetLayout;
+        const VkDescriptorSetLayout handle = descriptorSetLayout;
+        info.pSetLayouts = &handle; /* ew */
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateDescriptorSets(device, &info, &descriptorSet));
 
         VkDescriptorImageInfo textureInfo{};
@@ -369,7 +354,8 @@ int main(int argc, char** argv) {
     {
         Vk::PipelineLayoutCreateInfo info;
         info->setLayoutCount = 1;
-        info->pSetLayouts = &descriptorSetLayout;
+        const VkDescriptorSetLayout handle = descriptorSetLayout;
+        info->pSetLayouts = &handle; /* ew */
         pipelineLayout = Vk::PipelineLayout{device, info};
     }
 
@@ -433,5 +419,4 @@ int main(int argc, char** argv) {
     /* Clean up */
     /* Descriptor sets are freed with their pool */
     device->DestroyDescriptorPool(device, descriptorPool, nullptr);
-    device->DestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 }
