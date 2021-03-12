@@ -342,7 +342,6 @@ int main(int argc, char** argv) {
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateDescriptorSets(device, &info, &descriptorSet));
 
         VkDescriptorImageInfo textureInfo{};
-        textureInfo.sampler = sampler;
         textureInfo.imageView = textureView;
         textureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
