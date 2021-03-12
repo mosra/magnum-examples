@@ -350,14 +350,9 @@ int main(int argc, char** argv) {
         device->UpdateDescriptorSets(device, 2, writes, 0, nullptr);
     }
 
-    Vk::PipelineLayout pipelineLayout{NoCreate};
-    {
-        Vk::PipelineLayoutCreateInfo info;
-        info->setLayoutCount = 1;
-        const VkDescriptorSetLayout handle = descriptorSetLayout;
-        info->pSetLayouts = &handle; /* ew */
-        pipelineLayout = Vk::PipelineLayout{device, info};
-    }
+    Vk::PipelineLayout pipelineLayout{device, Vk::PipelineLayoutCreateInfo{
+        descriptorSetLayout
+    }};
 
     /* Create a graphics pipeline */
     Vk::ShaderSet shaderSet;
