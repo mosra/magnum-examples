@@ -55,6 +55,7 @@
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
 #include <Magnum/Vk/DescriptorPoolCreateInfo.h>
+#include <Magnum/Vk/DescriptorSet.h>
 #include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
 #include <Magnum/Vk/DescriptorType.h>
 #include <Magnum/Vk/DeviceCreateInfo.h>
@@ -307,16 +308,8 @@ int main(int argc, char** argv) {
         {Vk::DescriptorType::UniformBuffer, 1}
     }}};
 
-    VkDescriptorSet descriptorSet;
+    Vk::DescriptorSet descriptorSet = descriptorPool.allocate(descriptorSetLayout);
     {
-        VkDescriptorSetAllocateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        info.descriptorPool = descriptorPool;
-        info.descriptorSetCount = 1;
-        const VkDescriptorSetLayout handle = descriptorSetLayout;
-        info.pSetLayouts = &handle; /* ew */
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateDescriptorSets(device, &info, &descriptorSet));
-
         VkDescriptorImageInfo textureInfo{};
         textureInfo.imageView = textureView;
         textureInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -377,7 +370,10 @@ int main(int argc, char** argv) {
         )
        .bindPipeline(pipeline);
 
-    device->CmdBindDescriptorSets(cmd, VkPipelineBindPoint(pipeline.bindPoint()), pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+    {
+        const VkDescriptorSet handle = descriptorSet; /* ew */
+        device->CmdBindDescriptorSets(cmd, VkPipelineBindPoint(pipeline.bindPoint()), pipelineLayout, 0, 1, &handle, 0, nullptr);
+    }
 
     cmd.draw(mesh)
        .endRenderPass()
