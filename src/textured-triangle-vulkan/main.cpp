@@ -54,7 +54,9 @@
 #include <Magnum/Vk/BufferCreateInfo.h>
 #include <Magnum/Vk/CommandBuffer.h>
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
+#include <Magnum/Vk/DescriptorPoolCreateInfo.h>
 #include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
+#include <Magnum/Vk/DescriptorType.h>
 #include <Magnum/Vk/DeviceCreateInfo.h>
 #include <Magnum/Vk/DeviceProperties.h>
 #include <Magnum/Vk/Fence.h>
@@ -300,21 +302,10 @@ int main(int argc, char** argv) {
         {{1, Vk::DescriptorType::UniformBuffer}}
     }}};
 
-    VkDescriptorPool descriptorPool;
-    {
-        VkDescriptorPoolSize sizes[2]{};
-        sizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        sizes[0].descriptorCount = 1;
-        sizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        sizes[1].descriptorCount = 1;
-
-        VkDescriptorPoolCreateInfo info{};
-        info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        info.maxSets = 1;
-        info.poolSizeCount = 2;
-        info.pPoolSizes = sizes;
-        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateDescriptorPool(device, &info, nullptr, &descriptorPool));
-    }
+    Vk::DescriptorPool descriptorPool{device, Vk::DescriptorPoolCreateInfo{1, {
+        {Vk::DescriptorType::CombinedImageSampler, 1},
+        {Vk::DescriptorType::UniformBuffer, 1}
+    }}};
 
     VkDescriptorSet descriptorSet;
     {
@@ -410,8 +401,4 @@ int main(int argc, char** argv) {
         scratch.dedicatedMemory().mapRead()
     }, "image.png");
     Debug{} << "Saved an image to image.png";
-
-    /* Clean up */
-    /* Descriptor sets are freed with their pool */
-    device->DestroyDescriptorPool(device, descriptorPool, nullptr);
 }
