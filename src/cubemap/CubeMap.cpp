@@ -32,6 +32,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/String.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/GL/Buffer.h>
@@ -75,33 +76,52 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& pre
 
         Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
 
-        /* Configure texture storage using size of first image */
-        importer->openFile(Utility::Directory::join(prefix, "+x.jpg"));
-        Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
-        CORRADE_INTERNAL_ASSERT(image);
-        Vector2i size = image->size();
-        cubeMap->setStorage(Math::log2(size.min())+1, GL::TextureFormat::RGB8, size)
-            .setSubImage(GL::CubeMapCoordinate::PositiveX, 0, {}, *image);
+        /* If this is already a file, maybe it's a cubemap file already? */
+        if(Utility::Directory::exists(prefix) && !Utility::Directory::isDirectory(prefix)) {
+            /** @todo clean up once there's ImageFlag::CubeMap and all that */
+            if(!importer->openFile(prefix))
+                Fatal{} << "Cannot open" << prefix;
+            if(!importer->image3DCount())
+                Fatal{} << "No 3D images in" << prefix;
+            Containers::Optional<Trade::ImageData3D> image;
+            if(!(image = importer->image3D(0)) || image->size().z() != 6)
+                Fatal{} << "Cannot open the image as a cube map";
 
-        importer->openFile(Utility::Directory::join(prefix, "-x.jpg"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeX, 0, {}, *image);
+            const Vector2i size = image->size().xy();
+            (*cubeMap)
+                .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->format()), size)
+                .setSubImage(0, {}, *image);
 
-        importer->openFile(Utility::Directory::join(prefix, "+y.jpg"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveY, 0, {}, *image);
+        /* Otherwise open six different files */
+        } else {
+            /* Configure texture storage using size of first image */
+            importer->openFile(Utility::Directory::join(prefix, "+x.jpg"));
+            Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+            CORRADE_INTERNAL_ASSERT(image);
+            Vector2i size = image->size();
+            cubeMap->setStorage(Math::log2(size.min())+1, GL::TextureFormat::RGB8, size)
+                .setSubImage(GL::CubeMapCoordinate::PositiveX, 0, {}, *image);
 
-        importer->openFile(Utility::Directory::join(prefix, "-y.jpg"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeY, 0, {}, *image);
+            importer->openFile(Utility::Directory::join(prefix, "-x.jpg"));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
+            cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeX, 0, {}, *image);
 
-        importer->openFile(Utility::Directory::join(prefix, "+z.jpg"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveZ, 0, {}, *image);
+            importer->openFile(Utility::Directory::join(prefix, "+y.jpg"));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
+            cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveY, 0, {}, *image);
 
-        importer->openFile(Utility::Directory::join(prefix, "-z.jpg"));
-        CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
-        cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeZ, 0, {}, *image);
+            importer->openFile(Utility::Directory::join(prefix, "-y.jpg"));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
+            cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeY, 0, {}, *image);
+
+            importer->openFile(Utility::Directory::join(prefix, "+z.jpg"));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
+            cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveZ, 0, {}, *image);
+
+            importer->openFile(Utility::Directory::join(prefix, "-z.jpg"));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
+            cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeZ, 0, {}, *image);
+        }
 
         cubeMap->generateMipmap();
 

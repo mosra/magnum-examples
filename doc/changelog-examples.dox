@@ -44,6 +44,8 @@ namespace Magnum {
 -   Fixed the @ref examples-webxr example to look correctly on HiDPI
 -   The WebVR example was obsoleted by the @ref examples-webxr example and is
     now removed
+-   The @ref examples-cubemap example can now load combined cube map files
+    such as EXR
 
 @subsection changelog-examples-latest-buildsystem Build system
 
