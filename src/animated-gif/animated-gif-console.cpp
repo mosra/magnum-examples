@@ -32,6 +32,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/System.h>
 #include <Magnum/Math/Color.h>
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate(args.value("importer"));
+    importer->configuration().setValue("forceChannelCount", 4);
     if(!importer || !importer->openFile(args.value("file")))
         return 2;
 
