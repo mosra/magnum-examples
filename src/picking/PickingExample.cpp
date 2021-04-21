@@ -53,7 +53,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 
 namespace Magnum { namespace Examples {
 
@@ -64,7 +64,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedInt id, Shaders::Phong& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
+        explicit PickableObject(UnsignedInt id, Shaders::PhongGL& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -83,7 +83,7 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
 
         UnsignedInt _id;
         bool _selected;
-        Shaders::Phong& _shader;
+        Shaders::PhongGL& _shader;
         Color3 _color;
         GL::Mesh& _mesh;
 };
@@ -103,7 +103,7 @@ class PickingExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
 
-        Shaders::Phong _shader{Shaders::Phong::Flag::ObjectId};
+        Shaders::PhongGL _shader{Shaders::PhongGL::Flag::ObjectId};
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };
@@ -129,8 +129,8 @@ PickingExample::PickingExample(const Arguments& arguments): Platform::Applicatio
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
                .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
                .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, _depth)
-               .mapForDraw({{Shaders::Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                            {Shaders::Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
+               .mapForDraw({{Shaders::PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                            {Shaders::PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
     CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     /* Set up meshes */

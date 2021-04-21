@@ -45,7 +45,7 @@
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Square.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
@@ -63,9 +63,9 @@ class AnimatedGifExample: public Platform::Application {
         void tickEvent() override;
 
         GL::Mesh _mesh{NoCreate};
-        Shaders::Flat2D _shader{
-            Shaders::Flat2D::Flag::Textured|
-            Shaders::Flat2D::Flag::TextureTransformation};
+        Shaders::FlatGL2D _shader{
+            Shaders::FlatGL2D::Flag::Textured|
+            Shaders::FlatGL2D::Flag::TextureTransformation};
         GL::Texture2D _texture;
         Vector2i _gridSize, _imageSize;
 

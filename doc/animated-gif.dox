@@ -34,7 +34,7 @@ namespace Magnum {
 
 Makes use of @ref Trade::StbImageImporter "StbImageImporter"'s animated GIF
 support, the @ref Animation library, and texture transform in
-@ref Shaders::Flat to load and play back a short GIF animation. Additionally,
+@ref Shaders::FlatGL to load and play back a short GIF animation. Additionally,
 there's a console version of the same, rendering the animation into a
 compatible terminal using @ref Utility-Debug-modifiers-colors "Debug's color output"
 capabilities.

@@ -34,7 +34,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Functions.h>
-#include <Magnum/Shaders/Generic.h>
+#include <Magnum/Shaders/GenericGL.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/Trade/MeshData.h>
 
@@ -46,7 +46,7 @@ ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleR
     _points(points),
     _particleRadius(particleRadius),
     _meshParticles(GL::MeshPrimitive::Points) {
-    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::Generic3D::Position{});
+    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::GenericGL3D::Position{});
     _particleShader.reset(new ParticleSphereShader);
 }
 

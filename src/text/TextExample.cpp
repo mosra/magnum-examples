@@ -37,7 +37,7 @@
 #include <Magnum/Math/Complex.h>
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
 #include <Magnum/Text/Renderer.h>
@@ -64,7 +64,7 @@ class TextExample: public Platform::Application {
         GL::Mesh _rotatingText{NoCreate};
         GL::Buffer _vertices, _indices;
         Containers::Pointer<Text::Renderer2D> _dynamicText;
-        Shaders::DistanceFieldVector2D _shader;
+        Shaders::DistanceFieldVectorGL2D _shader;
 
         Matrix3 _transformationRotatingText,
             _projectionRotatingText,

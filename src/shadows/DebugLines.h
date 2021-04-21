@@ -35,7 +35,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/SceneGraph/SceneGraph.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 
 namespace Magnum { namespace Examples {
 
@@ -68,7 +68,7 @@ class DebugLines {
         std::vector<Point> _lines;
         GL::Buffer _buffer;
         GL::Mesh _mesh;
-        Shaders::VertexColor3D _shader;
+        Shaders::VertexColorGL3D _shader;
 };
 
 }}

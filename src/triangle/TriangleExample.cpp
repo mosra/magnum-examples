@@ -32,7 +32,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 
 namespace Magnum { namespace Examples {
 
@@ -44,7 +44,7 @@ class TriangleExample: public Platform::Application {
         void drawEvent() override;
 
         GL::Mesh _mesh;
-        Shaders::VertexColor2D _shader;
+        Shaders::VertexColorGL2D _shader;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -67,8 +67,8 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 
     _mesh.setCount(3)
          .addVertexBuffer(std::move(buffer), 0,
-            Shaders::VertexColor2D::Position{},
-            Shaders::VertexColor2D::Color3{});
+            Shaders::VertexColorGL2D::Position{},
+            Shaders::VertexColorGL2D::Color3{});
 }
 
 void TriangleExample::drawEvent() {

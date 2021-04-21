@@ -37,7 +37,7 @@
 #include <Magnum/MeshTools/CompressIndices.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
@@ -55,7 +55,7 @@ class PrimitivesExample: public Platform::Application {
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
         GL::Mesh _mesh;
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 
         Matrix4 _transformation, _projection;
         Color3 _color;
@@ -81,8 +81,8 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments):
 
     _mesh.setPrimitive(cube.primitive())
         .setCount(cube.indexCount())
-        .addVertexBuffer(std::move(vertices), 0, Shaders::Phong::Position{},
-                                                 Shaders::Phong::Normal{})
+        .addVertexBuffer(std::move(vertices), 0, Shaders::PhongGL::Position{},
+                                                 Shaders::PhongGL::Normal{})
         .setIndexBuffer(std::move(indices), 0, compressed.second);
 
     _transformation =

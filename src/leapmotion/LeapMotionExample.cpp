@@ -40,7 +40,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include <Leap.h>
@@ -60,7 +60,7 @@ class LeapMotionExample: public Platform::Application {
         GL::Mesh _cylinder{NoCreate};
         GL::Mesh _sphere{NoCreate};
 
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 
         const Matrix4 _projectionMatrix = Matrix4::perspectiveProjection(90.0_degf, 3.0f/2.0f, 0.01f, 25.0f);
         const Matrix4 _viewMatrix = Matrix4::translation({0.0f, -3.0f, -5.0f});

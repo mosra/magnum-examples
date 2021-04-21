@@ -44,7 +44,7 @@
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
@@ -67,7 +67,7 @@ class OvrExample: public Platform::Application {
         std::unique_ptr<OvrIntegration::Session> _session;
 
         GL::Mesh _mesh{NoCreate};
-        Shaders::Phong _shader{NoCreate};
+        Shaders::PhongGL _shader{NoCreate};
 
         enum: std::size_t { CubeCount = 4 };
         Matrix4 _cubeTransforms[CubeCount]{
@@ -144,7 +144,7 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
     _mesh = MeshTools::compile(Primitives::cubeSolid());
 
     /* Setup shader */
-    _shader = Shaders::Phong();
+    _shader = Shaders::PhongGL{};
     _shader.setShininess(20)
            .setLightPosition({3.0f, 3.0f, 3.0f});
 

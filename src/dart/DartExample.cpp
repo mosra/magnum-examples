@@ -61,7 +61,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.hpp>
 #include <Magnum/SceneGraph/SceneGraph.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 
 #include "configure.h"
@@ -139,7 +139,7 @@ dart::dynamics::SkeletonPtr createFloor() {
 
 using namespace Magnum::Math::Literals;
 
-typedef ResourceManager<GL::Buffer, GL::Mesh, Shaders::Phong> ViewerResourceManager;
+typedef ResourceManager<GL::Buffer, GL::Mesh, Shaders::PhongGL> ViewerResourceManager;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -178,8 +178,8 @@ class DrawableObject: public Object3D, SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Resource<Shaders::Phong> _colorShader;
-        Resource<Shaders::Phong> _textureShader;
+        Resource<Shaders::PhongGL> _colorShader;
+        Resource<Shaders::PhongGL> _textureShader;
         std::vector<Containers::Reference<GL::Mesh>> _meshes;
         std::vector<MaterialData> _materials;
         std::vector<bool> _isSoftBody;
@@ -380,8 +380,8 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     _dartWorld.reset(new DartIntegration::World{*dartObj, *_world});
 
     /* Phong shader instances */
-    _resourceManager.set("color", new Shaders::Phong{{}, 2});
-    _resourceManager.set("texture", new Shaders::Phong(Shaders::Phong::Flag::DiffuseTexture, 2));
+    _resourceManager.set("color", new Shaders::PhongGL{{}, 2});
+    _resourceManager.set("texture", new Shaders::PhongGL{Shaders::PhongGL::Flag::DiffuseTexture, 2});
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
@@ -587,8 +587,8 @@ void DartExample::updateManipulator() {
 DrawableObject::DrawableObject(ViewerResourceManager& resourceManager, std::vector<Containers::Reference<GL::Mesh>>&& meshes, std::vector<MaterialData>&& materials,
 Object3D* parent, SceneGraph::DrawableGroup3D* group):
     Object3D{parent}, SceneGraph::Drawable3D{*this, group},
-    _colorShader{resourceManager.get<Shaders::Phong>("color")},
-    _textureShader{resourceManager.get<Shaders::Phong>("texture")},
+    _colorShader{resourceManager.get<Shaders::PhongGL>("color")},
+    _textureShader{resourceManager.get<Shaders::PhongGL>("texture")},
     _meshes{std::move(meshes)},
     _materials{std::move(materials)}
 {

@@ -50,7 +50,7 @@
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Text/Alignment.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
@@ -279,7 +279,7 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
 
         /* Shaders */
         AreaLightShader _areaLightShader{NoCreate};
-        Shaders::Flat3D _flatShader{NoCreate};
+        Shaders::FlatGL3D _flatShader{NoCreate};
 
         /* Look Up Textures for arealights shader */
         GL::Texture2D _ltcAmp{NoCreate};
@@ -338,7 +338,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _vertices.setData(LightVertices, GL::BufferUsage::StaticDraw);
     _plane = GL::Mesh{};
     _plane.setPrimitive(GL::MeshPrimitive::TriangleFan)
-        .addVertexBuffer(_vertices, 0, Shaders::Generic3D::Position{}, Shaders::Generic3D::Normal{})
+        .addVertexBuffer(_vertices, 0, Shaders::GenericGL3D::Position{}, Shaders::GenericGL3D::Normal{})
         .setCount(Containers::arraySize(LightVertices));
 
     /* Setup project and floor plane tranformation matrix */
@@ -379,7 +379,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Compile shaders */
     _areaLightShader = AreaLightShader{};
-    _flatShader = Shaders::Flat3D{};
+    _flatShader = Shaders::FlatGL3D{};
 
     /* Create the UI */
     _ui.emplace(Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");

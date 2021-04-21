@@ -95,7 +95,7 @@ Released 2020-06-27, tagged as
 -   Fixed the @ref examples-picking to not limit object count to 256 (see
     [mosra/magnum-examples#79](https://github.com/mosra/magnum-examples/pull/79))
 -   Ported the @ref examples-picking to use the new builtin Object ID support
-    in @ref Shaders::Phong instead of a custom shader (see
+    in @cpp Shaders::Phong @ce instead of a custom shader (see
     [mosra/magnum-examples#81](https://github.com/mosra/magnum-examples/pull/81))
 -   The @ref examples-box2d and @ref examples-bullet examples are now using
     instanced rendering to draw the whole scene in a single draw call.

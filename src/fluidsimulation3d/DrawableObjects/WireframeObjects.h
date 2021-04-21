@@ -35,7 +35,7 @@
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Grid.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/Trade/MeshData.h>
@@ -51,7 +51,7 @@ class WireframeObject {
     public:
         explicit WireframeObject(Scene3D* const scene, SceneGraph::DrawableGroup3D* const drawableGroup) {
             _obj3D.reset(new Object3D{scene});
-            _flatShader = Shaders::Flat3D{};
+            _flatShader = Shaders::FlatGL3D{};
             _drawableObj.reset(new FlatShadeObject{*_obj3D, _flatShader, Color3{0.75f}, _mesh, drawableGroup});
         }
 
@@ -70,7 +70,7 @@ class WireframeObject {
 
     protected:
         GL::Mesh _mesh{NoCreate};
-        Shaders::Flat3D _flatShader{NoCreate};
+        Shaders::FlatGL3D _flatShader{NoCreate};
         Containers::Pointer<Object3D> _obj3D;
         Containers::Pointer<FlatShadeObject> _drawableObj;
 };

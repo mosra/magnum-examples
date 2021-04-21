@@ -38,7 +38,7 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Capsule.h>
 #include <Magnum/Primitives/Plane.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/AbstractObject.h>

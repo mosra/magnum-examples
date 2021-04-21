@@ -44,7 +44,7 @@
 #include <Magnum/Platform/EmscriptenApplication.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include <emscripten.h>
@@ -86,7 +86,7 @@ class WebXrExample: public Platform::Application {
             {0.0f, 0.0f, 1.0f},
             {1.0f, 0.0f, 0.0f}};
 
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
         Matrix4 _projectionMatrices[2];
         Matrix4 _viewMatrices[2];
         Range2Di _viewports[2];

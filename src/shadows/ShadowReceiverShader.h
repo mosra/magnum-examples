@@ -31,15 +31,15 @@
 */
 
 #include <Magnum/GL/AbstractShaderProgram.h>
-#include <Magnum/Shaders/Generic.h>
+#include <Magnum/Shaders/GenericGL.h>
 
 namespace Magnum { namespace Examples {
 
 /** @brief Shader that can synthesize shadows on an object */
 class ShadowReceiverShader: public GL::AbstractShaderProgram {
     public:
-        typedef Shaders::Generic3D::Position Position;
-        typedef Shaders::Generic3D::Normal Normal;
+        typedef Shaders::GenericGL3D::Position Position;
+        typedef Shaders::GenericGL3D::Normal Normal;
 
         explicit ShadowReceiverShader(NoCreateT): GL::AbstractShaderProgram{NoCreate} {}
 

@@ -47,7 +47,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/Cylinder.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
@@ -70,7 +70,7 @@ class AudioExample: public Platform::Application {
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 
-        Shaders::Flat3D _shader{NoCreate};
+        Shaders::FlatGL3D _shader{NoCreate};
 
         /* Audio context and buffer */
         Audio::Context _context;
@@ -134,11 +134,11 @@ AudioExample::AudioExample(const Arguments& arguments):
 
     /* Set up rendering and a simple debug drawable. Takes ownership of passed
        mesh and draws it with given color. */
-    _shader = Shaders::Flat3D{};
+    _shader = Shaders::FlatGL3D{};
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     class WireframeDrawable: public SceneGraph::Drawable3D {
         public:
-            explicit WireframeDrawable(Object3D& object, const Color4& color, Shaders::Flat3D& shader, GL::Mesh&& mesh, SceneGraph::DrawableGroup3D* drawables): SceneGraph::Drawable3D{object, drawables}, _color{color}, _shader(shader), _mesh{std::move(mesh)} {}
+            explicit WireframeDrawable(Object3D& object, const Color4& color, Shaders::FlatGL3D& shader, GL::Mesh&& mesh, SceneGraph::DrawableGroup3D* drawables): SceneGraph::Drawable3D{object, drawables}, _color{color}, _shader(shader), _mesh{std::move(mesh)} {}
 
         private:
             void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
@@ -149,7 +149,7 @@ AudioExample::AudioExample(const Arguments& arguments):
             }
 
             Color4 _color;
-            Shaders::Flat3D& _shader;
+            Shaders::FlatGL3D& _shader;
             GL::Mesh _mesh;
     };
 

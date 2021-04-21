@@ -46,7 +46,7 @@ existing OpenGL context and window surface provided by a third-party library.
     an OpenGL context, GLFW was chosen because it has a very clear and simple
     API.
 
-We need to have @ref GL::Buffer, @ref GL::Mesh and @ref Shaders::VertexColor
+We need to have @ref GL::Buffer, @ref GL::Mesh and @ref Shaders::VertexColorGL
 included to populate, set up and render our triangle and
 @ref GL::DefaultFramebuffer to properly clear the framebuffer before rendering.
 The @ref Platform::GLContext class will take care of hooking into provided

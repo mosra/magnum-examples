@@ -40,8 +40,8 @@ namespace Magnum { namespace Examples {
 
 DebugLines::DebugLines(): _mesh{GL::MeshPrimitive::Lines} {
     _mesh.addVertexBuffer(_buffer, 0,
-        Shaders::VertexColor3D::Position{},
-        Shaders::VertexColor3D::Color3{});
+        Shaders::VertexColorGL3D::Position{},
+        Shaders::VertexColorGL3D::Color3{});
 }
 
 void DebugLines::reset() {

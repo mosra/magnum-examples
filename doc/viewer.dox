@@ -208,7 +208,7 @@ textured, the mesh might or might not be indexed etc., the mesh creation
 procedure can get fairly long-winded. There is a convenience
 @ref MeshTools::compile() function which examines the data, adds all available
 vertex attributes to the buffer (normals, texture coordinates...), packs the
-indices (if any) and then configures the mesh for the @ref Shaders::Generic
+indices (if any) and then configures the mesh for the @ref Shaders::GenericGL
 shader, from which all other stock shaders are derived. This function is useful
 for exactly this case of importing general meshes --- but the lower-level way
 involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices() as

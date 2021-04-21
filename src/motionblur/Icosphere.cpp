@@ -31,11 +31,11 @@
 
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 
 namespace Magnum { namespace Examples {
 
-Icosphere::Icosphere(GL::Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(mesh), shader(shader), color(color) {
+Icosphere::Icosphere(GL::Mesh* mesh, Shaders::PhongGL* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(mesh), shader(shader), color(color) {
     scale(Vector3(0.1f));
 }
 

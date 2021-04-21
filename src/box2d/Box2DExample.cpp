@@ -43,7 +43,7 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 /* Box2D 2.3 (from 2014) uses mixed case, 2.4 (from 2020) uses lowercase */
@@ -85,7 +85,7 @@ class Box2DExample: public Platform::Application {
 
         GL::Mesh _mesh{NoCreate};
         GL::Buffer _instanceBuffer{NoCreate};
-        Shaders::Flat2D _shader{NoCreate};
+        Shaders::FlatGL2D _shader{NoCreate};
         Containers::Array<InstanceData> _instanceData;
 
         Scene2D _scene;
@@ -169,16 +169,16 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     _world.emplace(b2Vec2{0.0f, -9.81f});
 
     /* Create an instanced shader */
-    _shader = Shaders::Flat2D{
-        Shaders::Flat2D::Flag::VertexColor|
-        Shaders::Flat2D::Flag::InstancedTransformation};
+    _shader = Shaders::FlatGL2D{
+        Shaders::FlatGL2D::Flag::VertexColor|
+        Shaders::FlatGL2D::Flag::InstancedTransformation};
 
     /* Box mesh with an (initially empty) instance buffer */
     _mesh = MeshTools::compile(Primitives::squareSolid());
     _instanceBuffer = GL::Buffer{};
     _mesh.addVertexBufferInstanced(_instanceBuffer, 1, 0,
-        Shaders::Flat2D::TransformationMatrix{},
-        Shaders::Flat2D::Color3{});
+        Shaders::FlatGL2D::TransformationMatrix{},
+        Shaders::FlatGL2D::Color3{});
 
     /* Create the ground */
     auto ground = new Object2D{&_scene};

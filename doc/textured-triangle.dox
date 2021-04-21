@@ -127,10 +127,11 @@ with color we specified in the uniform:
 @par Builtin textured shader
     While the main purpose of this example is to show how to create custom
     shaders, please note that there's a builtin equivalent of the above shader
-    as well --- @ref Shaders::Flat2D. Pass @ref Shaders::Flat2D::Flag::Textured
-    to its constructor to get a textured version. It also contains setters for
-    passing transformation matrices, those were omitted from the code above to
-    keep the example short and simple.
+    as well --- @ref Shaders::FlatGL2D. Pass
+    @ref Shaders::FlatGL2D::Flag::Textured to its constructor to get a textured
+    version. It also contains setters for passing transformation matrices,
+    those were omitted from the code above to keep the example short and
+    simple.
 
 @section examples-textured-triangle-setup Setting up the mesh and texture
 

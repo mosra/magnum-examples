@@ -36,7 +36,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include "MotionBlurCamera.h"
@@ -57,7 +57,7 @@ class MotionBlurExample: public Platform::Application {
         Object3D* cameraObject;
         MotionBlurCamera* camera;
         GL::Mesh mesh;
-        Shaders::Phong shader;
+        Shaders::PhongGL shader;
         Object3D* spheres[3];
 };
 

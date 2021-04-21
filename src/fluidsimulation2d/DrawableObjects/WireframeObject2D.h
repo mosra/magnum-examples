@@ -34,7 +34,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/MatrixTransformation2D.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 
 #include "DrawableObjects/FlatShadeObject2D.h"
 
@@ -47,7 +47,7 @@ class WireframeObject2D {
         explicit WireframeObject2D(Scene2D* const scene, SceneGraph::DrawableGroup2D* const drawableGroup, GL::Mesh&& mesh) :
             _mesh(std::move(mesh)) {
             _obj2D.reset(new Object2D{ scene });
-            _flatShader = Shaders::Flat2D{};
+            _flatShader = Shaders::FlatGL2D{};
             _drawableObj.reset(new FlatShadeObject2D{ *_obj2D, _flatShader, Color3{ 1.0f }, _mesh, drawableGroup });
         }
 
@@ -68,7 +68,7 @@ class WireframeObject2D {
 
     protected:
         GL::Mesh _mesh{NoCreate};
-        Shaders::Flat2D _flatShader{NoCreate};
+        Shaders::FlatGL2D _flatShader{NoCreate};
         Containers::Pointer<Object2D> _obj2D;
         Containers::Pointer<FlatShadeObject2D> _drawableObj;
 };
