@@ -312,6 +312,7 @@ option(MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE "Build 3D Fluid Simulation example 
 option(MAGNUM_WITH_IMGUI_EXAMPLE "Build ImGui example" OFF)
 option(MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE "Build Mouse Interaction example" OFF)
 cmake_dependent_option(MAGNUM_WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+cmake_dependent_option(MAGNUM_WITH_MULTIDRAW_EXAMPLE "Build Multi Draw example" OFF "NOT MAGNUM_TARGET_GLES2" OFF)
 option(MAGNUM_WITH_OCTREE_EXAMPLE "Build Octree example" OFF)
 option(MAGNUM_WITH_PICKING_EXAMPLE "Build Picking example" OFF)
 option(MAGNUM_WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)

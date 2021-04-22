@@ -1,0 +1,106 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-multidraw Multi Draw
+@brief Various approaches for reducing CPU and GPU overhead.
+
+@m_since_latest_{examples}
+@m_keywords{MultiDraw}
+
+@m_footernavigation
+
+@image html multidraw.png width=400px
+
+This example displays a scene, allowing to pick between various alternative
+drawing approaches. See the example source linked below for full description of
+all options.
+
+@section examples-multidraw-usage Usage
+
+Pass a path to a glTF file or @ref file-formats "any other supported scene format"
+to the application to load it. Use the UI to toggle various options.
+
+Controls:
+
+-   @m_class{m-label m-default} **pointer drag** rotates the scene around
+-   @m_class{m-label m-default} **scroll** or
+    @m_class{m-label m-primary} **pinch** zooms in/out
+
+By default the application starts with @ref SceneGraph rendering and a profiler
+enabled, you can use various command-line options to change this, which might
+be useful for example when recording profiling traces.
+
+@code{.sh}
+magnum-multidraw [--magnum-...] [-h|--help] [-I|--importer IMPORTER]
+    [--draw-type TYPE] [--staging-buffers] [--shader-storage-buffers]
+    [--no-profile] [--] file
+@endcode
+
+Arguments:
+
+-   `file` --- file to load
+-   `-h`, `--help` --- display this help message and exit
+-   `-I`, `--importer IMPORTER` --- importer plugin to use (default:
+    @relativeref{Trade,AnySceneImporter})
+-   `--draw-type TYPE` --- pick a concrete draw type on startup (default:
+    `SceneGraph`)
+-   `--staging-buffers` --- use staging uniform buffers
+-   `--shader-storage-buffers` --- use SSBOs instead of UBOs
+-   `--no-profile` --- `don't enable profiler on startup`
+-   `--magnum-...` --- engine-specific options (see
+    @ref GL-Context-usage-command-line for details)
+
+The `-I` / `--importer` option can be also used to pass a path to an importer
+plugin binary, for example to load a custom format not known to Magnum
+otherwise.
+
+The `--draw-type` option accepts one of the following values: `SceneGraph`,
+`TrivialLoop`, `DeduplicatedLoop`, `DeduplicatedLoopMeshViews`, `UboPerDraw`,
+`UboBindOffset`, `UboDrawOffset`, `MultiDraw`.
+
+@section examples-multidraw-source Source
+
+Full source code is linked below and also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/multidraw).
+
+-   @ref multidraw/CMakeLists.txt "CMakeLists.txt"
+-   @ref multidraw/MultiDrawExample.cpp "MultiDrawExample.cpp"
+
+The example can also build on Emscripten, in which case it embeds a glTF file
+for simplicity. Edit the `resources.conf` file and point it to an actual
+heavyweight `*.glb` file to make it useful.
+
+-   @ref multidraw/multidraw.html "multidraw.html"
+-   @ref multidraw/resources.conf "resources.conf"
+
+@example multidraw/CMakeLists.txt @m_examplenavigation{examples-multidraw,multidraw/} @m_footernavigation
+@example multidraw/multidraw.html @m_examplenavigation{examples-multidraw,multidraw/} @m_footernavigation
+@example multidraw/MultiDrawExample.cpp @m_examplenavigation{examples-multidraw,multidraw/} @m_footernavigation
+@example multidraw/resources.conf @m_examplenavigation{examples-multidraw,multidraw/} @m_footernavigation
+
+*/
+}

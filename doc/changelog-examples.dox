@@ -43,6 +43,8 @@ namespace Magnum {
 
 @subsection changelog-examples-latest-new New features
 
+-   New @ref examples-multidraw example, showing a gallery of various drawing
+    approaches
 -   The @ref examples-triangle-vulkan is now written fully using the new
     @ref Vk and @ref ShaderTools libraries, with no raw Vulkan code left
 -   New @ref examples-textured-triangle-vulkan, mirroring the OpenGL

@@ -115,6 +115,12 @@ The following consist of documented source code only:
 
 @m_div{m-clearfix-s} @m_enddiv
 
+@m_div{m-col-m-4 m-col-s-6 m-text-center}
+@image html multidraw.png
+@subpage examples-multidraw @m_class{m-label m-primary} **ui** \n
+@copybrief examples-multidraw
+@m_enddiv
+
 @m_div{m-clearfix-l m-show-m} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
