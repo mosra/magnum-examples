@@ -101,6 +101,10 @@ if(MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE)
     add_subdirectory(mouseinteraction)
 endif()
 
+if(MAGNUM_WITH_MULTIDRAW_EXAMPLE)
+    add_subdirectory(multidraw)
+endif()
+
 if(MAGNUM_WITH_OCTREE_EXAMPLE)
     add_subdirectory(octree)
 endif()
