@@ -96,6 +96,10 @@ if(WITH_MOUSEINTERACTION_EXAMPLE)
     add_subdirectory(mouseinteraction)
 endif()
 
+if(WITH_MULTIDRAW_EXAMPLE)
+    add_subdirectory(multidraw)
+endif()
+
 if(WITH_OCTREE_EXAMPLE)
     add_subdirectory(octree)
 endif()
