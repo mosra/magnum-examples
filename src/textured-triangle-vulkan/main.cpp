@@ -392,7 +392,7 @@ int main(int argc, char** argv) {
     CORRADE_INTERNAL_ASSERT_EXPRESSION(
         PluginManager::Manager<Trade::AbstractImageConverter>{}
             .loadAndInstantiate("AnyImageConverter")
-    )->exportToFile(ImageView2D{
+    )->convertToFile(ImageView2D{
         PixelFormat::RGBA8Unorm, {800, 600},
         scratch.dedicatedMemory().mapRead()
     }, "image.png");
