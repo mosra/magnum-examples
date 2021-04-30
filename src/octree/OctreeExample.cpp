@@ -167,12 +167,9 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
     /* Setup points (render as spheres) */
     {
         const UnsignedInt numSpheres = args.value<UnsignedInt>("spheres");
-        _spherePositions = Containers::Array<Vector3>{Containers::NoInit,
-            numSpheres};
-        _sphereVelocities = Containers::Array<Vector3>{Containers::NoInit,
-            numSpheres};
-        _sphereInstanceData = Containers::Array<SphereInstanceData>{
-            Containers::NoInit, numSpheres};
+        _spherePositions = Containers::Array<Vector3>{NoInit, numSpheres};
+        _sphereVelocities = Containers::Array<Vector3>{NoInit, numSpheres};
+        _sphereInstanceData = Containers::Array<SphereInstanceData>{NoInit, numSpheres};
 
         for(std::size_t i = 0; i < numSpheres; ++i) {
             const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/
@@ -361,7 +358,7 @@ void OctreeExample::drawTreeNodeBoundingBoxes() {
     arrayResize(_boxInstanceData, 0);
 
     /* Always draw the root node */
-    arrayAppend(_boxInstanceData, Containers::InPlaceInit,
+    arrayAppend(_boxInstanceData, InPlaceInit,
         _arcballCamera->viewMatrix()*
         Matrix4::translation(_octree->center())*
         Matrix4::scaling(Vector3{_octree->halfWidth()}), 0x00ffff_rgbf);
@@ -378,8 +375,7 @@ void OctreeExample::drawTreeNodeBoundingBoxes() {
                     const Matrix4 t = _arcballCamera->viewMatrix() *
                         Matrix4::translation(pNode.center())*
                         Matrix4::scaling(Vector3{pNode.halfWidth()});
-                    arrayAppend(_boxInstanceData, Containers::InPlaceInit, t,
-                        0x197f99_rgbf);
+                    arrayAppend(_boxInstanceData, InPlaceInit, t, 0x197f99_rgbf);
                 }
             }
         }

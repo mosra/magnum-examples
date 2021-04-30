@@ -244,7 +244,7 @@ void ShadowsExample::drawEvent() {
     GL::Renderer::setClearColor({0.1f, 0.1f, 0.4f, 1.0f});
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-    Containers::Array<Matrix4> shadowMatrices{Containers::NoInit, _shadowLight.layerCount()};
+    Containers::Array<Matrix4> shadowMatrices{NoInit, _shadowLight.layerCount()};
     for(std::size_t layerIndex = 0; layerIndex != _shadowLight.layerCount(); ++layerIndex)
         shadowMatrices[layerIndex] = _shadowLight.layerMatrix(layerIndex);
 

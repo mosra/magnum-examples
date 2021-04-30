@@ -60,7 +60,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
-    Containers::Array<UnsignedByte> texture{Containers::ValueInit, textureSize};
+    Containers::Array<UnsignedByte> texture{ValueInit, textureSize};
     framebuffer.setData(PixelFormat::RGB8Unorm, size, texture, GL::BufferUsage::DynamicDraw);
 
     for(Int i = 0; i != FrameCount; ++i)

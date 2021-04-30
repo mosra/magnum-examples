@@ -101,8 +101,7 @@ class BoxDrawable: public SceneGraph::Drawable2D {
 
     private:
         void draw(const Matrix3& transformation, SceneGraph::Camera2D&) override {
-            arrayAppend(_instanceData, Containers::InPlaceInit,
-                transformation, _color);
+            arrayAppend(_instanceData, InPlaceInit, transformation, _color);
         }
 
         Containers::Array<InstanceData>& _instanceData;

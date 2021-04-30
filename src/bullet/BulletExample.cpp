@@ -116,8 +116,7 @@ class ColoredDrawable: public SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformation, SceneGraph::Camera3D&) override {
             const Matrix4 t = transformation*_primitiveTransformation;
-            arrayAppend(_instanceData, Containers::InPlaceInit,
-                t, t.normalMatrix(), _color);
+            arrayAppend(_instanceData, InPlaceInit, t, t.normalMatrix(), _color);
         }
 
         Containers::Array<InstanceData>& _instanceData;
