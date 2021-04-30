@@ -96,9 +96,9 @@ class OctreeExample: public Platform::Application {
         Containers::Pointer<LooseOctree> _octree;
 
         /* Profiling */
-        DebugTools::GLFrameProfiler _profiler{
-            DebugTools::GLFrameProfiler::Value::FrameTime|
-            DebugTools::GLFrameProfiler::Value::CpuDuration, 180};
+        DebugTools::FrameProfilerGL _profiler{
+            DebugTools::FrameProfilerGL::Value::FrameTime|
+            DebugTools::FrameProfilerGL::Value::CpuDuration, 180};
 
         /* Spheres rendering */
         GL::Mesh _sphereMesh{NoCreate};
