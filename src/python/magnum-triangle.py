@@ -51,11 +51,11 @@ class TriangleExample(Application):
         self._mesh = gl.Mesh()
         self._mesh.count = 3
         self._mesh.add_vertex_buffer(buffer, 0, 5*4,
-            shaders.VertexColor2D.POSITION)
+            shaders.VertexColorGL2D.POSITION)
         self._mesh.add_vertex_buffer(buffer, 2*4, 5*4,
-            shaders.VertexColor2D.COLOR3)
+            shaders.VertexColorGL2D.COLOR3)
 
-        self._shader = shaders.VertexColor2D()
+        self._shader = shaders.VertexColorGL2D()
 
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR)

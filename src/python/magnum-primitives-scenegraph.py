@@ -36,7 +36,7 @@ from magnum.scenegraph.matrix import Scene3D, Object3D
 
 class CubeDrawable(scenegraph.Drawable3D):
     def __init__(self, object: Object3D, drawables: scenegraph.DrawableGroup3D,
-                 mesh: gl.Mesh, shader: shaders.Phong, color: Color4):
+                 mesh: gl.Mesh, shader: shaders.PhongGL, color: Color4):
         scenegraph.Drawable3D.__init__(self, object, drawables)
 
         self._mesh = mesh
@@ -45,7 +45,7 @@ class CubeDrawable(scenegraph.Drawable3D):
 
     def draw(self, transformation_matrix: Matrix4, camera: scenegraph.Camera3D):
         self._shader.light_positions = [
-            camera.camera_matrix.transform_point((7.0, 5.0, 2.5))
+            Vector4(camera.camera_matrix.transform_point((-3.0, 5.0, 10.0)), 0.0)
         ]
         self._shader.light_colors = [Color3(1.0)]
         self._shader.diffuse_color = self.color
@@ -80,7 +80,7 @@ class PrimitivesSceneGraphExample(Application):
         self._cube.rotate_y(Deg(40.0))
         self._cube.rotate_x(Deg(30.0))
         self._cube_drawable = CubeDrawable(self._cube, self._drawables,
-            meshtools.compile(primitives.cube_solid()), shaders.Phong(),
+            meshtools.compile(primitives.cube_solid()), shaders.PhongGL(),
             Color3.from_hsv(Deg(35.0), 1.0, 1.0))
 
         self._previous_mouse_position = Vector2i()

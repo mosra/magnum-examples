@@ -43,7 +43,7 @@ class PrimitivesExample(Application):
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)
 
         self._mesh = meshtools.compile(primitives.cube_solid())
-        self._shader = shaders.Phong()
+        self._shader = shaders.PhongGL()
 
         self._transformation = (
             Matrix4.rotation_x(Deg(30.0))@
@@ -59,7 +59,7 @@ class PrimitivesExample(Application):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR|
                                      gl.FramebufferClear.DEPTH)
 
-        self._shader.light_positions = [(7.0, 5.0, 2.5)]
+        self._shader.light_positions = [(7.0, 5.0, 2.5, 0.0)]
         self._shader.light_colors = [Color3(1.0)]
         self._shader.diffuse_color = self._color
         self._shader.ambient_color = Color3.from_hsv(self._color.hue(), 1.0, 0.3)

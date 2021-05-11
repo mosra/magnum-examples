@@ -38,7 +38,7 @@ from magnum.scenegraph.matrix import Scene3D, Object3D
 
 class ColoredDrawable(scenegraph.Drawable3D):
     def __init__(self, object: Object3D, drawables: scenegraph.DrawableGroup3D,
-                 mesh: gl.Mesh, shader: shaders.Phong, color: Color4):
+                 mesh: gl.Mesh, shader: shaders.PhongGL, color: Color4):
         scenegraph.Drawable3D.__init__(self, object, drawables)
 
         self._mesh = mesh
@@ -47,7 +47,7 @@ class ColoredDrawable(scenegraph.Drawable3D):
 
     def draw(self, transformation_matrix: Matrix4, camera: scenegraph.Camera3D):
         self._shader.light_positions = [
-            camera.camera_matrix.transform_point((-3.0, 10.0, 10.0))
+            Vector4(camera.camera_matrix.transform_point((-3.0, 10.0, 10.0)), 0.0)
         ]
         self._shader.diffuse_color = self._color
         self._shader.transformation_matrix = transformation_matrix
@@ -83,7 +83,7 @@ class ViewerExample(Application):
         # Setup renderer and shader defaults
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)
-        colored_shader = shaders.Phong()
+        colored_shader = shaders.PhongGL()
         colored_shader.ambient_color = Color3(0.06667)
         colored_shader.shininess = 80.0
 
