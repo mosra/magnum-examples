@@ -146,7 +146,7 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
     /* Setup shader */
     _shader = Shaders::PhongGL{};
     _shader.setShininess(20)
-           .setLightPosition({3.0f, 3.0f, 3.0f});
+           .setLightPositions({{3.0f, 3.0f, 3.0f, 0.0f}});
 
     /* Setup compositor layers */
     _layer = &_ovrContext.compositor().addLayerEyeFov();
@@ -197,8 +197,8 @@ void OvrExample::drawEvent() {
             _shader.setDiffuseColor(_cubeColors[cubeIndex])
                 .setTransformationMatrix(_cubeTransforms[cubeIndex])
                 .setNormalMatrix(_cubeTransforms[cubeIndex].normalMatrix())
-                .setProjectionMatrix(viewProjMatrix);
-            _mesh.draw(_shader);
+                .setProjectionMatrix(viewProjMatrix)
+                .draw(_mesh);
         }
 
         /* Commit changes and use next texture in chain */
