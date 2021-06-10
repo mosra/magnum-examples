@@ -276,13 +276,13 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
         Shaders::PhongGL::Flag::UniformBuffers,
         UnsignedInt(_direct.lights.size()),
         UnsignedInt(_direct.materials.size()),
-        UnsignedInt(_direct.draws.size())
+        Math::min<UnsignedInt>(1024, _direct.draws.size())
     };
     _shaderUniformBufferMultiDraw = Shaders::PhongGL{
         Shaders::PhongGL::Flag::UniformBuffers|Shaders::PhongGL::Flag::MultiDraw,
         UnsignedInt(_direct.lights.size()),
         UnsignedInt(_direct.materials.size()),
-        UnsignedInt(_direct.draws.size())
+        Math::min<UnsignedInt>(1024, _direct.draws.size())
     };
     _direct.projections[0].projectionMatrix = _projection;
     #ifndef MAGNUM_TARGET_GLES
