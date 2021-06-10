@@ -35,6 +35,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/DebugTools/FrameProfiler.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -42,6 +43,9 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/MeshView.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureArray.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Concatenate.h>
@@ -53,10 +57,12 @@
 #include <Magnum/Shaders/Generic.h>
 #include <Magnum/Shaders/Phong.h>
 #include <Magnum/Trade/AbstractImporter.h>
+#include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
 #include <Magnum/Trade/MeshObjectData3D.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 #include <Magnum/Trade/SceneData.h>
+#include <Magnum/Trade/TextureData.h>
 
 namespace Magnum { namespace Examples {
 
@@ -94,15 +100,21 @@ class MultiDrawExample: public Platform::Application {
 
         Vector3 positionOnSphere(const Vector2i& position) const;
 
-        void addObject(Trade::AbstractImporter& importer, UnsignedInt i);
+        void addObject(Trade::AbstractImporter& importer, UnsignedInt i, Containers::ArrayView<const Shaders::TextureTransformationUniform> diffuseTexturesForMaterials);
 
         Shaders::PhongGL
             _shader{{}, 2},
+            _texturedShader{Shaders::PhongGL::Flag::DiffuseTexture, 2},
             _shaderUniformBufferSingle{Shaders::PhongGL::Flag::UniformBuffers, 2},
+            _texturedShaderUniformBufferSingle{Shaders::PhongGL::Flag::UniformBuffers|Shaders::PhongGL::Flag::DiffuseTexture, 2},
             _shaderUniformBufferMultiple{NoCreate},
-            _shaderUniformBufferMultiDraw{NoCreate};
+            _shaderUniformBufferMultiDraw{NoCreate},
+            _texturedShaderUniformBufferMultiple{NoCreate},
+            _texturedShaderUniformBufferMultiDraw{NoCreate};
         Containers::Array<GL::Mesh> _meshes;
         GL::Mesh _combinedMesh;
+        Containers::Array<GL::Texture2D> _textures;
+        GL::Texture2DArray _combinedTexture{NoCreate};
         Containers::Optional<GL::MeshView> _emptyView;
         Containers::Array<GL::MeshView> _meshViews;
 
@@ -122,6 +134,7 @@ class MultiDrawExample: public Platform::Application {
             Containers::Array<Shaders::ProjectionUniform3D> projections;
             Containers::Array<Shaders::TransformationUniform3D> absoluteTransformations;
             Containers::Array<Shaders::PhongDrawUniform> draws;
+            Containers::Array<Shaders::TextureTransformationUniform> textureTransformations;
             Containers::Array<Shaders::PhongMaterialUniform> materials;
             Containers::Array<Shaders::PhongLightUniform> lights;
         } _direct;
@@ -157,6 +170,9 @@ class MultiDrawExample: public Platform::Application {
             GL::Buffer drawUniform[UniformMultiCount];
             GL::Buffer drawUniformStaging;
 
+            GL::Buffer textureTransformationUniform[UniformMultiCount];
+            GL::Buffer textureTransformationUniformStaging;
+
             GL::Buffer lightUniform[UniformMultiCount];
             GL::Buffer lightUniformStaging;
         } _uniformMulti;
@@ -189,6 +205,21 @@ class Drawable: public SceneGraph::Drawable3D {
         Float _shininess;
 };
 
+class TexturedDrawable: public SceneGraph::Drawable3D {
+    public:
+        explicit TexturedDrawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, GL::Texture2D& diffuseTexture, const Color4& ambient, const Color4& diffuse, const Color3& specular, Float shininess, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _diffuseTexture(diffuseTexture), _ambient{ambient}, _diffuse{diffuse}, _specular{specular}, _shininess{shininess} {}
+
+    private:
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
+
+        Shaders::PhongGL& _shader;
+        GL::Mesh& _mesh;
+        GL::Texture2D& _diffuseTexture;
+        Color4 _ambient, _diffuse;
+        Color3 _specular;
+        Float _shininess;
+};
+
 MultiDrawExample::MultiDrawExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("Magnum Multi Draw Example")}
@@ -216,9 +247,11 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
     Debug{} << "Material count:" << importer->materialCount();
     Debug{} << "Mesh count:" << importer->meshCount();
     Debug{} << "Object count:" << importer->object3DCount();
+    Debug{} << "Texture count:" << importer->textureCount();
 
     /* Load just the basic color info from all materials */
     _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, importer->materialCount()};
+    Containers::Array<Shaders::TextureTransformationUniform> diffuseTexturesForMaterials{DirectInit, importer->materialCount(), Shaders::TextureTransformationUniform{}.setLayer(-1)};
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         // TODO: fix the macro to correctly propagate &&
         const Containers::Optional<Trade::MaterialData> material = importer->material(i);
@@ -226,6 +259,10 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
         _direct.materials[i].ambientColor = phong.ambientColor();
         _direct.materials[i].diffuseColor = phong.diffuseColor();
         _direct.materials[i].specularColor = phong.specularColor();
+
+        if(phong.hasAttribute(Trade::MaterialAttribute::DiffuseTexture))
+            diffuseTexturesForMaterials[i].setLayer(phong.diffuseTexture())
+                .setTextureMatrix(phong.diffuseTextureMatrix());
     }
 
     /* Load all meshes */
@@ -245,6 +282,7 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
         meshOffsets[i + 1] = offset;
     }
     _combinedMesh = MeshTools::compile(MeshTools::concatenate(meshDataReferences));
+    Debug{} << "Combined mesh index count:" << _combinedMesh.count();
     _emptyView.emplace(_combinedMesh).setCount(0);
     for(UnsignedInt i = 0; i != _meshes.size(); ++i) {
         arrayAppend(_meshViews, GL::MeshView{_combinedMesh})
@@ -252,18 +290,53 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
             .setCount(meshOffsets[i + 1] - meshOffsets[i]);
     }
 
+    /* Load all textures */
+    _textures = Containers::Array<GL::Texture2D>{importer->textureCount()};
+    Containers::Array<UnsignedInt> textureToImageMapping{importer->textureCount()};
+    for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+        Trade::TextureData texture = *CORRADE_INTERNAL_ASSERT_EXPRESSION(importer->texture(i));
+
+        textureToImageMapping[i] = texture.image();
+
+        Trade::ImageData2D image = *CORRADE_INTERNAL_ASSERT_EXPRESSION(importer->image2D(texture.image()));
+        _textures[i]
+            .setMagnificationFilter(texture.magnificationFilter())
+            .setMinificationFilter(texture.magnificationFilter())
+            .setWrapping(texture.wrapping().xy())
+            .setStorage(Math::log2(image.size().max()) + 1, GL::textureFormat(image.format()), image.size())
+            .setSubImage(0, {}, image)
+            .generateMipmap();
+
+        /* Use properties of the first texture/image for the combined texture
+           size and sampler options */
+        if(!_combinedTexture.id()) {
+            Debug{} << image.size() << importer->textureCount();
+            _combinedTexture = GL::Texture2DArray{};
+            _combinedTexture
+                .setMagnificationFilter(texture.magnificationFilter())
+                .setMinificationFilter(texture.magnificationFilter())
+                .setWrapping(texture.wrapping().xy())
+                .setStorage(Math::log2(image.size().max()) + 1, GL::textureFormat(image.format()), {image.size(), Int(importer->textureCount())});
+        }
+
+        _combinedTexture.setSubImage(0, {0, 0, Int(i)}, ImageView2D{image});
+    }
+
+    _combinedTexture.generateMipmap();
+
     /* Load the scene. Has to be done recursively in order to have parents
        ordered before children. */
     _direct.transformations = Containers::Array<Matrix4>{NoInit, importer->object3DCount()};
     _direct.absoluteTransformations = Containers::Array<Shaders::TransformationUniform3D>{NoInit, importer->object3DCount() + 1};
     _direct.draws = Containers::Array<Shaders::PhongDrawUniform>{ValueInit, importer->object3DCount()};
+    _direct.textureTransformations = Containers::Array<Shaders::TextureTransformationUniform>{ValueInit, importer->object3DCount()};
     arrayReserve(_direct.parents, importer->object3DCount());
     _direct.meshes = Containers::Array<GL::Mesh*>{ValueInit, importer->object3DCount()};
     _direct.meshViews = Containers::Array<Containers::Reference<GL::MeshView>>{DirectInit, importer->object3DCount(), *_emptyView};
     const Trade::SceneData scene = *CORRADE_INTERNAL_ASSERT_EXPRESSION(importer->scene(importer->defaultScene()));
     for(const UnsignedInt objectId: scene.children3D()) {
         arrayAppend(_direct.parents, 0xffffffffu);
-        addObject(*importer, objectId);
+        addObject(*importer, objectId, diffuseTexturesForMaterials);
     }
 
     /* Projection, light setup. Just two lights right now. */
@@ -273,13 +346,13 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
     /* Set up a multi-draw shader and uniform storage based on the data count
        we have */
     _shaderUniformBufferMultiple = Shaders::PhongGL{
-        Shaders::PhongGL::Flag::UniformBuffers,
+        Shaders::PhongGL::Flag::UniformBuffers|Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::TextureArrays|Shaders::PhongGL::Flag::TextureTransformation,
         UnsignedInt(_direct.lights.size()),
         UnsignedInt(_direct.materials.size()),
         UnsignedInt(_direct.draws.size())
     };
     _shaderUniformBufferMultiDraw = Shaders::PhongGL{
-        Shaders::PhongGL::Flag::UniformBuffers|Shaders::PhongGL::Flag::MultiDraw,
+        Shaders::PhongGL::Flag::UniformBuffers|Shaders::PhongGL::Flag::MultiDraw|Shaders::PhongGL::Flag::DiffuseTexture|Shaders::PhongGL::Flag::TextureArrays|Shaders::PhongGL::Flag::TextureTransformation,
         UnsignedInt(_direct.lights.size()),
         UnsignedInt(_direct.materials.size()),
         UnsignedInt(_direct.draws.size())
@@ -292,10 +365,12 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
         for(std::size_t i = 0; i != UniformMultiCount; ++i) {
             _uniformMulti.transformationUniform[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
             _uniformMulti.drawUniform[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
+            _uniformMulti.textureTransformationUniform[i].setStorage(_direct.textureTransformations.size()*sizeof(Shaders::TextureTransformationUniform), {});
             _uniformMulti.lightUniform[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
         }
         _uniformMulti.transformationUniformStaging.setStorage(_direct.transformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
         _uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
+        _uniformMulti.textureTransformationUniformStaging.setStorage(_direct.textureTransformations.size()*sizeof(Shaders::TextureTransformationUniform), GL::Buffer::StorageFlag::DynamicStorage);
         _uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
     } else
     #endif
@@ -305,10 +380,12 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
         for(std::size_t i = 0; i != UniformMultiCount; ++i) {
             _uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)});
             _uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)});
+            _uniformMulti.textureTransformationUniform[i].setData({nullptr, _direct.textureTransformations.size()*sizeof(Shaders::TextureTransformationUniform)});
             _uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)});
         }
         _uniformMulti.transformationUniformStaging.setData({nullptr, _direct.transformations.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
         _uniformMulti.drawUniformStaging.setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
+        _uniformMulti.textureTransformationUniformStaging.setData({nullptr, _direct.textureTransformations.size()*sizeof(Shaders::TextureTransformationUniform)}, GL::BufferUsage::DynamicDraw);
         _uniformMulti.lightUniformStaging.setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
     }
 
@@ -338,13 +415,22 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
 
             parentPointers[i] = o;
 
-            if(_direct.meshes[i])
-                new Drawable{*o, _shader, *_direct.meshes[i],
+            if(_direct.meshes[i]) {
+                if(Int(diffuseTexturesForMaterials[_direct.draws[i].materialId].layer) != -1)
+                    new TexturedDrawable{*o, _texturedShader, *_direct.meshes[i],
+                        _textures[textureToImageMapping[diffuseTexturesForMaterials[_direct.draws[i].materialId].layer]],
+                        _direct.materials[_direct.draws[i].materialId].ambientColor,
+                        _direct.materials[_direct.draws[i].materialId].diffuseColor,
+                        _direct.materials[_direct.draws[i].materialId].specularColor.rgb(),
+                        _direct.materials[_direct.draws[i].materialId].shininess,
+                        _sceneGraph.drawables};
+                else new Drawable{*o, _shader, *_direct.meshes[i],
                     _direct.materials[_direct.draws[i].materialId].ambientColor,
                     _direct.materials[_direct.draws[i].materialId].diffuseColor,
                     _direct.materials[_direct.draws[i].materialId].specularColor.rgb(),
                     _direct.materials[_direct.draws[i].materialId].shininess,
                     _sceneGraph.drawables};
+            }
         }
     }
 
@@ -354,7 +440,7 @@ MultiDrawExample::MultiDrawExample(const Arguments& arguments):
     Debug{} << "Using a SceneGraph";
 }
 
-void MultiDrawExample::addObject(Trade::AbstractImporter& importer, UnsignedInt i) {
+void MultiDrawExample::addObject(Trade::AbstractImporter& importer, UnsignedInt i, Containers::ArrayView<const Shaders::TextureTransformationUniform> diffuseTexturesForMaterials) {
     Containers::Pointer<Trade::ObjectData3D> objectData = importer.object3D(i);
     CORRADE_INTERNAL_ASSERT(objectData);
 
@@ -371,12 +457,13 @@ void MultiDrawExample::addObject(Trade::AbstractImporter& importer, UnsignedInt 
         _direct.draws[orderedId].materialId = materialId;
         _direct.meshes[orderedId] = &_meshes[objectData->instance()];
         _direct.meshViews[orderedId] = _meshViews[objectData->instance()];
+        _direct.textureTransformations[orderedId] = diffuseTexturesForMaterials[materialId];
     }
 
     /* Recursively add children */
     for(std::size_t child: objectData->children()) {
         arrayAppend(_direct.parents, orderedId);
-        addObject(importer, child);
+        addObject(importer, child, diffuseTexturesForMaterials);
     }
 }
 
@@ -396,6 +483,26 @@ void Drawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& c
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
+        .draw(_mesh);
+}
+
+void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
+    _shader
+        .setAmbientColor(_ambient)
+        .setDiffuseColor(_diffuse)
+        .setSpecularColor(_specular)
+        .setShininess(_shininess)
+        .setLightPositions({
+            {-300.0f, 100.0f, 100.0f, 0.0f},
+            {300.0f, 100.0f, 100.0f, 0.0f}
+        })
+        .setLightColors({0xffffff_rgbf, 0xffffff_rgbf})
+        .setLightSpecularColors({0xffffff_rgbf, 0xffffff_rgbf})
+        .setLightRanges({Constants::inf(), Constants::inf()})
+        .setTransformationMatrix(transformationMatrix)
+        .setNormalMatrix(transformationMatrix.normalMatrix())
+        .setProjectionMatrix(camera.projectionMatrix())
+        .bindDiffuseTexture(_diffuseTexture)
         .draw(_mesh);
 }
 
@@ -540,6 +647,7 @@ void MultiDrawExample::drawEvent() {
                 _uniformMulti.lightUniformStaging.setSubData(0, _direct.lights);
                 _uniformMulti.transformationUniformStaging.setSubData(0, _direct.absoluteTransformations.suffix(1));
                 _uniformMulti.drawUniformStaging.setSubData(0, _direct.draws);
+                _uniformMulti.textureTransformationUniformStaging.setSubData(0, _direct.textureTransformations);
                 GL::Buffer::copy(
                     _uniformMulti.lightUniformStaging,
                     _uniformMulti.lightUniform[_uniformMultiFrameId],
@@ -552,12 +660,17 @@ void MultiDrawExample::drawEvent() {
                     _uniformMulti.drawUniformStaging,
                     _uniformMulti.drawUniform[_uniformMultiFrameId],
                     0, 0, _uniformMulti.drawUniformStaging.size());
+                GL::Buffer::copy(
+                    _uniformMulti.textureTransformationUniformStaging,
+                    _uniformMulti.textureTransformationUniform[_uniformMultiFrameId],
+                    0, 0, _uniformMulti.textureTransformationUniformStaging.size());
             } else
             #endif
             {
                 _uniformMulti.lightUniform[_uniformMultiFrameId].setSubData(0, _direct.lights);
                 _uniformMulti.transformationUniform[_uniformMultiFrameId].setSubData(0, _direct.absoluteTransformations.suffix(1));
                 _uniformMulti.drawUniform[_uniformMultiFrameId].setSubData(0, _direct.draws);
+                _uniformMulti.textureTransformationUniform[_uniformMultiFrameId].setSubData(0, _direct.textureTransformations);
             }
 
             ((_drawType == DrawType::UboUploadOnceSetOffset || _drawType == DrawType::UboUploadOnceSetOffsetMeshViews) ? _shaderUniformBufferMultiple : _shaderUniformBufferMultiDraw)
@@ -565,7 +678,9 @@ void MultiDrawExample::drawEvent() {
                 .bindMaterialBuffer(_uniformMulti.materialUniform)
                 .bindLightBuffer(_uniformMulti.lightUniform[_uniformMultiFrameId])
                 .bindTransformationBuffer(_uniformMulti.transformationUniform[_uniformMultiFrameId])
-                .bindDrawBuffer(_uniformMulti.drawUniform[_uniformMultiFrameId]);
+                .bindDrawBuffer(_uniformMulti.drawUniform[_uniformMultiFrameId])
+                .bindTextureTransformationBuffer(_uniformMulti.textureTransformationUniform[_uniformMultiFrameId])
+                .bindDiffuseTexture(_combinedTexture);
 
             if(_drawType == DrawType::UboUploadOnceSetOffset) for(std::size_t i = 0; i != objectCount; ++i) {
                 if(!_direct.meshes[i]) continue;
