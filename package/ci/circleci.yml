@@ -10,9 +10,15 @@ executors:
   ubuntu-16_04:
     docker:
     - image: ubuntu:xenial-20201014
-  xcode-10_3:
+  xcode-11_2:
+    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
+    # have to use 10.3 instead; since 2021-06-08 MoltenVK refuses to work on
+    # 10.14 so have to use 11.2 at least. Can't fake this with hand-installed
+    # vulkan-loader because that one is built on 10.15 and can't be used on
+    # older versions due to
+    # dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
     macos:
-      xcode: 10.3.0
+      xcode: 11.2.1
   emscripten:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -173,12 +179,7 @@ jobs:
         script: unix-desktop.sh
 
   macos:
-    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
-    # have to use 10.3 instead. Can't fake this with hand-installed
-    # vulkan-loader because that one is built on 10.15 and can't be used on
-    # older versions due to
-    # dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
-    executor: xcode-10_3
+    executor: xcode-11_2
     environment:
       PLATFORM_GL_API: CGL
     steps:
