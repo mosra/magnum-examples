@@ -31,6 +31,7 @@
 #include "ShadowLight.h"
 
 #include <algorithm>
+#include <limits>
 #include <Magnum/ImageView.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/PixelFormat.h>
