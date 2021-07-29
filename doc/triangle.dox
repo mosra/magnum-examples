@@ -55,10 +55,6 @@ various portability tricks in @ref platform.
 @skip class TriangleExample
 @until };
 
-@note All example code is written inside the @ref Magnum namespace (or as if
-    @cpp using namespace Magnum; @ce would be present) in order to avoid long
-    name prefixes.
-
 In the constructor we pass arguments to the application class. The
 @ref Platform::Sdl2Application::Configuration "Configuration" configuration is
 optional and allows us to set a window title and other things.
