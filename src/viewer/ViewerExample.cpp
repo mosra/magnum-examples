@@ -168,7 +168,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         Debug{} << "Importing texture" << i << importer->textureName(i);
 
         Containers::Optional<Trade::TextureData> textureData = importer->texture(i);
-        if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D) {
+        if(!textureData || textureData->type() != Trade::TextureType::Texture2D) {
             Warning{} << "Cannot load texture properties, skipping";
             continue;
         }
