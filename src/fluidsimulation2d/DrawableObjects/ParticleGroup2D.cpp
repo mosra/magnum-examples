@@ -43,7 +43,9 @@ namespace Magnum { namespace Examples {
 using namespace Math::Literals;
 
 ParticleGroup2D::ParticleGroup2D(const std::vector<Vector2>& points, Float particleRadius):
-    _points{points},
+    /* With {}, GCC 4.8 warns that "a temporary bound to '_points' only
+       persists until the constructor exits" (?!) */
+    _points(points),
     _particleRadius{particleRadius},
     _meshParticles{GL::MeshPrimitive::Points}
 {
