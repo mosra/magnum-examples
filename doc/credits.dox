@@ -45,6 +45,8 @@ namespace Magnum {
     fixes
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     original @ref examples-imgui example
+-   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
+    improvements to Debian package building experience
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- the
