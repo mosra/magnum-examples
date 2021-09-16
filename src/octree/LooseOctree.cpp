@@ -291,8 +291,7 @@ void LooseOctree::removeInvalidPointsFromNodes() {
             for(std::size_t i = 0, iend = pointList.size(); i < iend; ++i) {
                 OctreePoint* const point = pointList[i];
                 if(!point->isValid()) {
-                    pointList[i] = pointList[iend - 1];
-                    arrayResize(pointList, iend - 1);
+                    arrayRemove(pointList, i);
                     --iend;
                 }
             }
