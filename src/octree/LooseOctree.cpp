@@ -28,6 +28,9 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <algorithm>
+#include <iterator>
+
 #include "LooseOctree.h"
 
 #include <Corrade/Containers/GrowableArray.h>
@@ -203,6 +206,15 @@ std::size_t LooseOctree::maxNumPointInNodes() const {
     return count;
 }
 
+std::size_t LooseOctree::totalPointsInNodes() const {
+    std::size_t count = 0;
+    for (const OctreeNodeBlock* nodeBlock : _activeNodeBlocks)
+        for (std::size_t childIdx = 0; childIdx < 8; ++childIdx)
+            count += nodeBlock->_nodes[childIdx].pointCount();
+
+    return count;
+}
+
 void LooseOctree::build() {
     /* Compute max depth that the tree can reach */
     _maxDepth = 0;
@@ -288,13 +300,15 @@ void LooseOctree::removeInvalidPointsFromNodes() {
     for(OctreeNodeBlock* const pNodeBlock: _activeNodeBlocks) {
         for(std::size_t childIdx = 0; childIdx < 8; ++childIdx) {
             auto& pointList = pNodeBlock->_nodes[childIdx]._nodePoints;
-            for(std::size_t i = 0, iend = pointList.size(); i < iend; ++i) {
-                OctreePoint* const point = pointList[i];
-                if(!point->isValid()) {
-                    pointList[i] = pointList[iend - 1];
-                    arrayResize(pointList, iend - 1);
-                    --iend;
-                }
+            auto it = std::remove_if(pointList.begin(), pointList.end()
+                , [](OctreePoint* const p) { return !p->isValid(); });
+            if (it == pointList.end()) continue;
+            const std::size_t invalidCount = std::size_t(std::distance(it, pointList.end()));
+            if (invalidCount == pointList.size()) {
+                arrayResize(_octreePoints, NoInit, 0);
+            }
+            else {
+                arrayResize(pointList, NoInit, pointList.size() - invalidCount);
             }
         }
     }
