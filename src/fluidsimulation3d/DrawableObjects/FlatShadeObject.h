@@ -5,8 +5,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -32,7 +32,7 @@
 
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -43,7 +43,7 @@ using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
 
 class FlatShadeObject: public SceneGraph::Drawable3D {
     public:
-        explicit FlatShadeObject(Object3D& object, Shaders::Flat3D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup3D* const drawables): SceneGraph::Drawable3D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
+        explicit FlatShadeObject(Object3D& object, Shaders::FlatGL3D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup3D* const drawables): SceneGraph::Drawable3D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) override {
             _shader
@@ -55,7 +55,7 @@ class FlatShadeObject: public SceneGraph::Drawable3D {
         FlatShadeObject& setColor(const Color3& color) { _color = color; return *this; }
 
     private:
-        Shaders::Flat3D& _shader;
+        Shaders::FlatGL3D& _shader;
         Color3 _color;
         GL::Mesh& _mesh;
 };

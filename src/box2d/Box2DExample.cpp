@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2018 — Michal Mikula <miso.mikula@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -28,7 +28,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Box2D/Box2D.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/Context.h>
@@ -48,8 +47,23 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/MeshData.h>
+
+/* Box2D 2.3 (from 2014) uses mixed case, 2.4 (from 2020) uses lowercase */
+#ifdef __has_include
+#if __has_include(<box2d/box2d.h>)
+#include <box2d/box2d.h>
+#else
+#include <Box2D/Box2D.h>
+#define IT_IS_THE_OLD_BOX2D
+#endif
+/* If the compiler doesn't have __has_include, assume it's extremely old, and
+   thus an extremely old Box2D is more likely as well */
+#else
+#include <Box2D/Box2D.h>
+#define IT_IS_THE_OLD_BOX2D
+#endif
 
 namespace Magnum { namespace Examples {
 
@@ -76,7 +90,7 @@ class Box2DExample: public Platform::Application {
 
         GL::Mesh _mesh{NoCreate};
         GL::Buffer _instanceBuffer{NoCreate};
-        Shaders::Flat2D _shader{NoCreate};
+        Shaders::FlatGL2D _shader{NoCreate};
         Containers::Array<InstanceData> _instanceData;
 
         Scene2D _scene;
@@ -92,8 +106,7 @@ class BoxDrawable: public SceneGraph::Drawable2D {
 
     private:
         void draw(const Matrix3& transformation, SceneGraph::Camera2D&) override {
-            arrayAppend(_instanceData, Containers::InPlaceInit,
-                transformation, _color);
+            arrayAppend(_instanceData, InPlaceInit, transformation, _color);
         }
 
         Containers::Array<InstanceData>& _instanceData;
@@ -116,7 +129,13 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
     fixture.shape = &shape;
     body->CreateFixture(&fixture);
 
+    #ifndef IT_IS_THE_OLD_BOX2D
+    /* Why keep things simple if there's an awful and backwards-incompatible
+       way, eh? https://github.com/erincatto/box2d/pull/658 */
+    body->GetUserData().pointer = reinterpret_cast<std::uintptr_t>(&object);
+    #else
     body->SetUserData(&object);
+    #endif
     object.setScaling(halfSize);
 
     return body;
@@ -156,16 +175,16 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     _world.emplace(b2Vec2{0.0f, -9.81f});
 
     /* Create an instanced shader */
-    _shader = Shaders::Flat2D{
-        Shaders::Flat2D::Flag::VertexColor|
-        Shaders::Flat2D::Flag::InstancedTransformation};
+    _shader = Shaders::FlatGL2D{
+        Shaders::FlatGL2D::Flag::VertexColor|
+        Shaders::FlatGL2D::Flag::InstancedTransformation};
 
     /* Box mesh with an (initially empty) instance buffer */
     _mesh = MeshTools::compile(Primitives::squareSolid());
     _instanceBuffer = GL::Buffer{};
     _mesh.addVertexBufferInstanced(_instanceBuffer, 1, 0,
-        Shaders::Flat2D::TransformationMatrix{},
-        Shaders::Flat2D::Color3{});
+        Shaders::FlatGL2D::TransformationMatrix{},
+        Shaders::FlatGL2D::Color3{});
 
     /* Create the ground */
     auto ground = new Object2D{&_scene};
@@ -213,10 +232,17 @@ void Box2DExample::drawEvent() {
 
     /* Step the world and update all object positions */
     _world->Step(1.0f/60.0f, 6, 2);
-    for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext())
+    for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()) {
+        #ifndef IT_IS_THE_OLD_BOX2D
+        /* Why keep things simple if there's an awful backwards-incompatible
+           way, eh? https://github.com/erincatto/box2d/pull/658 */
+        (*reinterpret_cast<Object2D*>(body->GetUserData().pointer))
+        #else
         (*static_cast<Object2D*>(body->GetUserData()))
+        #endif
             .setTranslation({body->GetPosition().x, body->GetPosition().y})
             .setRotation(Complex::rotation(Rad(body->GetAngle())));
+    }
 
     /* Populate instance data with transformations and colors */
     arrayResize(_instanceData, 0);

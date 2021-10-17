@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,6 +26,8 @@
 namespace Magnum {
 /** @page building-examples Downloading and building examples
 @brief Guide how to download and build examples for the Magnum engine.
+
+@m_keyword{Building examples,,}
 
 @tableofcontents
 @m_footernavigation
@@ -88,7 +90,7 @@ makepkg -fp PKGBUILD # or any other PKGBUILD file
 Once built, install the package using `pacman`:
 
 @code{.sh}
-sudo pacman -U magnum-examples-*.pkg.tar.xz
+sudo pacman -U magnum-examples-*.pkg.tar.zst
 @endcode
 
 Edit the PKGBUILDs if you want to pass additional flags to CMake or
@@ -109,7 +111,7 @@ directory there and run `dpkg-buildpackage`:
 @code{.sh}
 git clone git://github.com/mosra/magnum-examples && cd magnum-examples
 ln -s package/debian .
-dpkg-buildpackage
+dpkg-buildpackage --no-sign
 @endcode
 
 This will compile binary and development packages, which will then appear in a
@@ -234,6 +236,11 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build the @ref examples-textured-triangle
     example. Requires some TGA importer plugin such as
     @ref Trade::TgaImporter "TgaImporter", not available in OpenGL ES.
+-   `WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-textured-triangle-vulkan "Vulkan Textured Triangle"
+    example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
+    the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
+    plugin and some `PngImporter` and `PngImageConverter` plugin
+    implementation.
 -   `WITH_TRIANGLE_EXAMPLE` --- Build the @ref examples-triangle "Triangle"
     example. Enabled by default.
 -   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
@@ -242,6 +249,10 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
     @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
     [GLEW](http://glew.sourceforge.net/).
+-   `WITH_TRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-triangle-vulkan "Vulkan Triangle"
+    example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
+    the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
+    plugin and some `PngImageConverter` plugin implementation.
 -   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
     Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
 -   `WITH_WEBXR_EXAMPLE` --- Build the @ref examples-webxr "WebXR" example.
@@ -275,11 +286,18 @@ in @ref building-doc.
 
 @section building-examples-ci Continuous Integration
 
+@subsection building-examples-ci-circleci CircleCI
+
+In `package/ci/` there is a `circle.yml` file with Linux GCC 4.8, macOS,
+Linux desktop GLES2/GLES3, Emscripten WebGL1/WebGL2, AddressSanitizer and
+ThreadSanitizer configuration. Online at
+https://circleci.com/gh/mosra/magnum-examples.
+
 @subsection building-examples-ci-travis Travis
 
-In `package/ci/` there is a `travis.yml` file with Linux GCC 4.8, macOS,
-Linux desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2 and
-Android GLES2/GLES3 configuration. Online at https://travis-ci.org/mosra/magnum-examples.
+In `package/ci/` there is a `travis.yml` file with iOS GLES2/GLES3 and
+Android GLES2/GLES3 configuration. Online at
+https://travis-ci.com/mosra/magnum-examples.
 
 @subsection building-examples-ci-appveyor AppVeyor
 

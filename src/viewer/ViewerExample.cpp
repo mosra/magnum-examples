@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -40,6 +40,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
@@ -52,7 +53,7 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
@@ -86,8 +87,8 @@ class ViewerExample: public Platform::Application {
 
         void addObject(Trade::AbstractImporter& importer, Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials, Object3D& parent, UnsignedInt i);
 
-        Shaders::Phong _coloredShader,
-            _texturedShader{Shaders::Phong::Flag::DiffuseTexture};
+        Shaders::PhongGL _coloredShader,
+            _texturedShader{Shaders::PhongGL::Flag::DiffuseTexture};
         Containers::Array<Containers::Optional<GL::Mesh>> _meshes;
         Containers::Array<Containers::Optional<GL::Texture2D>> _textures;
 
@@ -100,24 +101,24 @@ class ViewerExample: public Platform::Application {
 
 class ColoredDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit ColoredDrawable(Object3D& object, Shaders::Phong& shader, GL::Mesh& mesh, const Color4& color, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _color{color} {}
+        explicit ColoredDrawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, const Color4& color, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _color{color} {}
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Shaders::Phong& _shader;
+        Shaders::PhongGL& _shader;
         GL::Mesh& _mesh;
         Color4 _color;
 };
 
 class TexturedDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit TexturedDrawable(Object3D& object, Shaders::Phong& shader, GL::Mesh& mesh, GL::Texture2D& texture, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _texture(texture) {}
+        explicit TexturedDrawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, GL::Texture2D& texture, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _texture(texture) {}
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 
-        Shaders::Phong& _shader;
+        Shaders::PhongGL& _shader;
         GL::Mesh& _mesh;
         GL::Texture2D& _texture;
 };
@@ -171,7 +172,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         Debug{} << "Importing texture" << i << importer->textureName(i);
 
         Containers::Optional<Trade::TextureData> textureData = importer->texture(i);
-        if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D) {
+        if(!textureData || textureData->type() != Trade::TextureType::Texture2D) {
             Warning{} << "Cannot load texture properties, skipping";
             continue;
         }
@@ -217,8 +218,8 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         Debug{} << "Importing material" << i << importer->materialName(i);
 
-        Containers::Pointer<Trade::AbstractMaterialData> materialData = importer->material(i);
-        if(!materialData || materialData->type() != Trade::MaterialType::Phong) {
+        Containers::Optional<Trade::MaterialData> materialData = importer->material(i);
+        if(!materialData || !(materialData->types() & Trade::MaterialType::Phong)) {
             Warning{} << "Cannot load material, skipping";
             continue;
         }
@@ -283,7 +284,7 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Containers::Arr
 
         /* Textured material. If the texture failed to load, again just use a
            default colored material. */
-        } else if(materials[materialId]->flags() & Trade::PhongMaterialData::Flag::DiffuseTexture) {
+        } else if(materials[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture)) {
             Containers::Optional<GL::Texture2D>& texture = _textures[materials[materialId]->diffuseTexture()];
             if(texture)
                 new TexturedDrawable{*object, _texturedShader, *_meshes[objectData->instance()], *texture, _drawables};
@@ -304,7 +305,9 @@ void ViewerExample::addObject(Trade::AbstractImporter& importer, Containers::Arr
 void ColoredDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader
         .setDiffuseColor(_color)
-        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
+        .setLightPositions({
+            {camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}), 0.0f}
+        })
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
@@ -313,7 +316,9 @@ void ColoredDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Came
 
 void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
     _shader
-        .setLightPosition(camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}))
+        .setLightPositions({
+            {camera.cameraMatrix().transformPoint({-3.0f, 10.0f, 10.0f}), 0.0f}
+        })
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())

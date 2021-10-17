@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -54,7 +54,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/MeshVisualizer.h>
+#include <Magnum/Shaders/MeshVisualizerGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include "ArcBall.h"
@@ -86,14 +86,14 @@ class ArcBallExample: public Platform::Application {
         Containers::Optional<ArcBallCamera> _arcballCamera;
 
         /* Stuff for visualizing the cube */
-        Shaders::MeshVisualizer3D _shader{NoCreate};
+        Shaders::MeshVisualizerGL3D _shader{NoCreate};
         GL::Texture2D _colormap{NoCreate};
 };
 
 class VisualizationDrawable: public SceneGraph::Drawable3D {
     public:
         explicit VisualizationDrawable(Object3D& object,
-            Shaders::MeshVisualizer3D& shader, GL::Mesh& mesh,
+            Shaders::MeshVisualizerGL3D& shader, GL::Mesh& mesh,
             SceneGraph::DrawableGroup3D& drawables):
                 SceneGraph::Drawable3D{object, &drawables}, _shader(shader),
                 _mesh(mesh) {}
@@ -106,7 +106,7 @@ class VisualizationDrawable: public SceneGraph::Drawable3D {
         }
 
     private:
-        Shaders::MeshVisualizer3D& _shader;
+        Shaders::MeshVisualizerGL3D& _shader;
         GL::Mesh& _mesh;
 };
 
@@ -150,9 +150,9 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             .setStorage(1, GL::TextureFormat::RGB8, size)
             .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Unorm, size, map});
 
-        _shader = Shaders::MeshVisualizer3D{
-            Shaders::MeshVisualizer3D::Flag::Wireframe|
-            Shaders::MeshVisualizer3D::Flag::VertexId};
+        _shader = Shaders::MeshVisualizerGL3D{
+            Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+            Shaders::MeshVisualizerGL3D::Flag::VertexId};
         _shader
             .setViewportSize(Vector2{framebufferSize()})
             .setColor(0xffffff_rgbf)

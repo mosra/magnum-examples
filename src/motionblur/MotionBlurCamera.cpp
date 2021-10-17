@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -60,7 +60,7 @@ void MotionBlurCamera::setViewport(const Vector2i& size) {
 
     /* Initialize previous frames with black color */
     std::size_t textureSize = size.product()*framebuffer.pixelSize();
-    Containers::Array<UnsignedByte> texture{Containers::ValueInit, textureSize};
+    Containers::Array<UnsignedByte> texture{ValueInit, textureSize};
     framebuffer.setData(PixelFormat::RGB8Unorm, size, texture, GL::BufferUsage::DynamicDraw);
 
     for(Int i = 0; i != FrameCount; ++i)

@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -35,12 +35,13 @@
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
-#include <Magnum/Math/Vector3.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cylinder.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include <Leap.h>
@@ -60,7 +61,7 @@ class LeapMotionExample: public Platform::Application {
         GL::Mesh _cylinder{NoCreate};
         GL::Mesh _sphere{NoCreate};
 
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 
         const Matrix4 _projectionMatrix = Matrix4::perspectiveProjection(90.0_degf, 3.0f/2.0f, 0.01f, 25.0f);
         const Matrix4 _viewMatrix = Matrix4::translation({0.0f, -3.0f, -5.0f});
@@ -89,7 +90,7 @@ LeapMotionExample::LeapMotionExample(const Arguments& arguments):
     /* Setup shader */
     _shader.setSpecularColor(Color3(1.0f))
            .setShininess(20)
-           .setLightPosition({0.0f, 5.0f, 5.0f});
+           .setLightPositions({{0.0f, 5.0f, 5.0f, 0.0f}});
 }
 
 void LeapMotionExample::drawEvent() {
@@ -133,8 +134,8 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(boneCenter)*Matrix4::from(bone.basis().toArray4x4())*rotX*Matrix4::scaling({0.06f, boneLength, 0.06f});
         _shader.setDiffuseColor(Color3{1.0f, 1.0f, 1.0f})
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.normalMatrix());
-        _cylinder.draw(_shader);
+               .setNormalMatrix(transformation.normalMatrix())
+               .draw(_cylinder);
     }
 
     /* Draw sphere at start of the bone */
@@ -143,8 +144,8 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(prevJoint)*rotX*Matrix4::scaling(Vector3{0.08f});
         _shader.setDiffuseColor(color)
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.normalMatrix());
-        _sphere.draw(_shader);
+               .setNormalMatrix(transformation.normalMatrix())
+               .draw(_sphere);
     }
 
     /* Draw sphere at end of the bone */
@@ -153,8 +154,8 @@ void LeapMotionExample::drawBone(const Leap::Bone& bone, bool start, bool end, c
         const Matrix4 transformation = Matrix4::translation(nextJoint)*rotX*Matrix4::scaling(Vector3{0.08f});
         _shader.setDiffuseColor(color)
                .setTransformationMatrix(transformation)
-               .setNormalMatrix(transformation.normalMatrix());
-        _sphere.draw(_shader);
+               .setNormalMatrix(transformation.normalMatrix())
+               .draw(_sphere);
     }
 }
 

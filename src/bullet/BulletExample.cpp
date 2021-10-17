@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2013 — Jan Dupal <dupal.j@gmail.com>
         2019 — Max Schwarz <max.schwarz@online.de>
 
@@ -55,8 +55,12 @@
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
+
+#ifdef BT_USE_DOUBLE_PRECISION
+#error sorry, this example does not support Bullet with double precision enabled
+#endif
 
 namespace Magnum { namespace Examples {
 
@@ -83,7 +87,7 @@ class BulletExample: public Platform::Application {
 
         GL::Mesh _box{NoCreate}, _sphere{NoCreate};
         GL::Buffer _boxInstanceBuffer{NoCreate}, _sphereInstanceBuffer{NoCreate};
-        Shaders::Phong _shader{NoCreate};
+        Shaders::PhongGL _shader{NoCreate};
         BulletIntegration::DebugDraw _debugDraw{NoCreate};
         Containers::Array<InstanceData> _boxInstanceData, _sphereInstanceData;
 
@@ -117,8 +121,7 @@ class ColoredDrawable: public SceneGraph::Drawable3D {
     private:
         void draw(const Matrix4& transformation, SceneGraph::Camera3D&) override {
             const Matrix4 t = transformation*_primitiveTransformation;
-            arrayAppend(_instanceData, Containers::InPlaceInit,
-                t, t.normalMatrix(), _color);
+            arrayAppend(_instanceData, InPlaceInit, t, t.normalMatrix(), _color);
         }
 
         Containers::Array<InstanceData>& _instanceData;
@@ -187,12 +190,12 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Create an instanced shader */
-    _shader = Shaders::Phong{
-        Shaders::Phong::Flag::VertexColor|
-        Shaders::Phong::Flag::InstancedTransformation};
+    _shader = Shaders::PhongGL{
+        Shaders::PhongGL::Flag::VertexColor|
+        Shaders::PhongGL::Flag::InstancedTransformation};
     _shader.setAmbientColor(0x111111_rgbf)
            .setSpecularColor(0x330000_rgbf)
-           .setLightPosition({10.0f, 15.0f, 5.0f});
+           .setLightPositions({{10.0f, 15.0f, 5.0f, 0.0f}});
 
     /* Box and sphere mesh, with an (initially empty) instance buffer */
     _box = MeshTools::compile(Primitives::cubeSolid());
@@ -200,13 +203,13 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
     _boxInstanceBuffer = GL::Buffer{};
     _sphereInstanceBuffer = GL::Buffer{};
     _box.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,
-        Shaders::Phong::TransformationMatrix{},
-        Shaders::Phong::NormalMatrix{},
-        Shaders::Phong::Color3{});
+        Shaders::PhongGL::TransformationMatrix{},
+        Shaders::PhongGL::NormalMatrix{},
+        Shaders::PhongGL::Color3{});
     _sphere.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
-        Shaders::Phong::TransformationMatrix{},
-        Shaders::Phong::NormalMatrix{},
-        Shaders::Phong::Color3{});
+        Shaders::PhongGL::TransformationMatrix{},
+        Shaders::PhongGL::NormalMatrix{},
+        Shaders::PhongGL::Color3{});
 
     /* Setup the renderer so we can draw the debug lines on top */
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);

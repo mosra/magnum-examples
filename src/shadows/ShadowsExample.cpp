@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2016 — Bill Robinson <airbaggins@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -38,7 +38,7 @@
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Capsule.h>
 #include <Magnum/Primitives/Plane.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/AbstractObject.h>
@@ -244,7 +244,7 @@ void ShadowsExample::drawEvent() {
     GL::Renderer::setClearColor({0.1f, 0.1f, 0.4f, 1.0f});
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-    Containers::Array<Matrix4> shadowMatrices{Containers::NoInit, _shadowLight.layerCount()};
+    Containers::Array<Matrix4> shadowMatrices{NoInit, _shadowLight.layerCount()};
     for(std::size_t layerIndex = 0; layerIndex != _shadowLight.layerCount(); ++layerIndex)
         shadowMatrices[layerIndex] = _shadowLight.layerMatrix(layerIndex);
 

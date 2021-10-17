@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -43,7 +43,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
@@ -62,7 +62,7 @@ class PrimitivesExample: public Platform::Application {
         void mouseMoveEvent(MouseMoveEvent& event) override;
 
         GL::Mesh _mesh;
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
 
         Matrix4 _transformation, _projection;
         Color3 _color;
@@ -92,8 +92,8 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments):
 
     _mesh.setPrimitive(cube.primitive())
         .setCount(cube.indexCount())
-        .addVertexBuffer(std::move(vertices), 0, Shaders::Phong::Position{},
-                                                 Shaders::Phong::Normal{})
+        .addVertexBuffer(std::move(vertices), 0, Shaders::PhongGL::Position{},
+                                                 Shaders::PhongGL::Normal{})
         .setIndexBuffer(std::move(indices), 0, compressed.second);
 
     _transformation =
@@ -109,8 +109,7 @@ void PrimitivesExample::drawEvent() {
     GL::defaultFramebuffer.clear(
         GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-    _shader.setLightPosition({7.0f, 5.0f, 2.5f})
-        .setLightColor(Color3{1.0f})
+    _shader.setLightPositions({{1.4f, 1.0f, 0.75f, 0.0f}})
         .setDiffuseColor(_color)
         .setAmbientColor(Color3::fromHsv({_color.hue(), 1.0f, 0.3f}))
         .setTransformationMatrix(_transformation)

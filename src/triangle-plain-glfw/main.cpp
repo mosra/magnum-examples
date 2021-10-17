@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -32,7 +32,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/GLContext.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 #include <GLFW/glfw3.h>
 
 using namespace Magnum;
@@ -76,10 +76,10 @@ int main(int argc, char** argv) {
         mesh.setPrimitive(GL::MeshPrimitive::Triangles)
             .setCount(3)
             .addVertexBuffer(buffer, 0,
-                Shaders::VertexColor2D::Position{},
-                Shaders::VertexColor2D::Color3{});
+                Shaders::VertexColorGL2D::Position{},
+                Shaders::VertexColorGL2D::Color3{});
 
-        Shaders::VertexColor2D shader;
+        Shaders::VertexColorGL2D shader;
 
         /* Loop until the user closes the window */
         while(!glfwWindowShouldClose(window)) {

@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -44,7 +44,7 @@
 #include <Magnum/Platform/EmscriptenApplication.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/UVSphere.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include <emscripten.h>
@@ -86,7 +86,7 @@ class WebXrExample: public Platform::Application {
             {0.0f, 0.0f, 1.0f},
             {1.0f, 0.0f, 0.0f}};
 
-        Shaders::Phong _shader;
+        Shaders::PhongGL _shader;
         Matrix4 _projectionMatrices[2];
         Matrix4 _viewMatrices[2];
         Range2Di _viewports[2];
@@ -183,7 +183,7 @@ void WebXrExample::drawEvent() {
     for(int eye = 0; eye < viewCount; ++eye) {
         GL::defaultFramebuffer.setViewport(_viewports[eye]);
 
-        _shader.setLightPosition(_viewMatrices[eye].transformPoint(lightPos))
+        _shader.setLightPositions({_viewMatrices[eye]*Vector4{lightPos, 0.0f}})
                .setProjectionMatrix(_projectionMatrices[eye]);
 
         /* Draw cubes */

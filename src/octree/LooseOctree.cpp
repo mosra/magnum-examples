@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -183,13 +183,13 @@ void LooseOctree::clearPoints() {
     _rootNode.removePointFromSubTree();
 
     /* Clear the main point data array */
-    arrayResize(_octreePoints, Containers::NoInit, 0);
+    arrayResize(_octreePoints, NoInit, 0);
 }
 
 void LooseOctree::setPoints(Containers::Array<Vector3>& points) {
     clearPoints();
 
-    arrayResize(_octreePoints, Containers::NoInit, points.size());
+    arrayResize(_octreePoints, NoInit, points.size());
     for(std::size_t i = 0; i != points.size(); ++i)
         _octreePoints[i] = OctreePoint{points, i};
 }

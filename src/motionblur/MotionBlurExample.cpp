@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Winfried Baumann <winfried.baumann@tum.de>
 
     This is free and unencumbered software released into the public domain.
@@ -36,7 +36,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include "MotionBlurCamera.h"
@@ -57,7 +57,7 @@ class MotionBlurExample: public Platform::Application {
         Object3D* cameraObject;
         MotionBlurCamera* camera;
         GL::Mesh mesh;
-        Shaders::Phong shader;
+        Shaders::PhongGL shader;
         Object3D* spheres[3];
 };
 

@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2015, 2016, 2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -44,7 +44,7 @@
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 #include <Magnum/OvrIntegration/OvrIntegration.h>
 #include <Magnum/OvrIntegration/Context.h>
@@ -67,7 +67,7 @@ class OvrExample: public Platform::Application {
         std::unique_ptr<OvrIntegration::Session> _session;
 
         GL::Mesh _mesh{NoCreate};
-        Shaders::Phong _shader{NoCreate};
+        Shaders::PhongGL _shader{NoCreate};
 
         enum: std::size_t { CubeCount = 4 };
         Matrix4 _cubeTransforms[CubeCount]{
@@ -144,9 +144,9 @@ OvrExample::OvrExample(const Arguments& arguments): Platform::Application(argume
     _mesh = MeshTools::compile(Primitives::cubeSolid());
 
     /* Setup shader */
-    _shader = Shaders::Phong();
+    _shader = Shaders::PhongGL{};
     _shader.setShininess(20)
-           .setLightPosition({3.0f, 3.0f, 3.0f});
+           .setLightPositions({{3.0f, 3.0f, 3.0f, 0.0f}});
 
     /* Setup compositor layers */
     _layer = &_ovrContext.compositor().addLayerEyeFov();
@@ -197,8 +197,8 @@ void OvrExample::drawEvent() {
             _shader.setDiffuseColor(_cubeColors[cubeIndex])
                 .setTransformationMatrix(_cubeTransforms[cubeIndex])
                 .setNormalMatrix(_cubeTransforms[cubeIndex].normalMatrix())
-                .setProjectionMatrix(viewProjMatrix);
-            _mesh.draw(_shader);
+                .setProjectionMatrix(viewProjMatrix)
+                .draw(_mesh);
         }
 
         /* Commit changes and use next texture in chain */

@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -32,11 +32,39 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2020.06
 
+@subsection changelog-examples-latest-new New features
+
+-   The @ref examples-triangle-vulkan is now written fully using the new
+    @ref Vk and @ref ShaderTools libraries, with no raw Vulkan code left
+-   New @ref examples-textured-triangle-vulkan, mirroring the OpenGL
+    @ref examples-textured-triangle with Vulkan APIs
+
 @subsection changelog-examples-latest-changes Changes and improvements
 
 -   Fixed the @ref examples-webxr example to look correctly on HiDPI
 -   The WebVR example was obsoleted by the @ref examples-webxr example and is
     now removed
+-   The @ref examples-cubemap example can now load combined cube map files
+    such as EXR
+
+@subsection changelog-examples-latest-buildsystem Build system
+
+-   Updated the @ref examples-box2d example to work with latest Box2D 2.4 (see
+    [mosra/magnum-examples#90](https://github.com/mosra/magnum-examples/pull/90)
+    and [mosra/magnum-examples#92](https://github.com/mosra/magnum-examples/issues/92))
+-   Linux, Emscripten and macOS builds were migrated from Travis to Circle CI
+-   The Homebrew package now uses `std_cmake_args` instead of hardcoded build
+    type and install prefix, which resolves certain build issues (see
+    [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
+-   Updated Debian build instructions to pass `--no-sign` to
+    `dpkg-buildpackage`, avoiding a confusing error message that might lead
+    people to think the packaging failed (see [mosra/magnum-plugins#105](https://github.com/mosra/magnum-plugins/issues/105))
+
+@subsection changelog-examples-latest-documentation Documentation
+
+-   Updated license link for Source Sans Pro used by the
+    @ref examples-fluidsimulation2d, @ref examples-fluidsimulation3d,
+    @ref examples-imgui and @ref examples-text examples (see [mosra/magnum-examples#95](https://github.com/mosra/magnum-examples/pull/95))
 
 @section changelog-examples-2020-06 2020.06
 
@@ -72,7 +100,7 @@ Released 2020-06-27, tagged as
 -   Fixed the @ref examples-picking to not limit object count to 256 (see
     [mosra/magnum-examples#79](https://github.com/mosra/magnum-examples/pull/79))
 -   Ported the @ref examples-picking to use the new builtin Object ID support
-    in @ref Shaders::Phong instead of a custom shader (see
+    in @cpp Shaders::Phong @ce instead of a custom shader (see
     [mosra/magnum-examples#81](https://github.com/mosra/magnum-examples/pull/81))
 -   The @ref examples-box2d and @ref examples-bullet examples are now using
     instanced rendering to draw the whole scene in a single draw call.

@@ -5,8 +5,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -32,7 +32,7 @@
 
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation2D.h>
@@ -43,7 +43,7 @@ using Object2D = SceneGraph::Object<SceneGraph::MatrixTransformation2D>;
 
 class FlatShadeObject2D: public SceneGraph::Drawable2D {
     public:
-        explicit FlatShadeObject2D(Object2D& object, Shaders::Flat2D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup2D* const drawables):
+        explicit FlatShadeObject2D(Object2D& object, Shaders::FlatGL2D& shader, const Color3& color, GL::Mesh& mesh, SceneGraph::DrawableGroup2D* const drawables):
             SceneGraph::Drawable2D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
 
         void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
@@ -65,7 +65,7 @@ class FlatShadeObject2D: public SceneGraph::Drawable2D {
         }
 
     private:
-        Shaders::Flat2D& _shader;
+        Shaders::FlatGL2D& _shader;
         Color3 _color;
         GL::Mesh& _mesh;
         bool _bEnabled = true;

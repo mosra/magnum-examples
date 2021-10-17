@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -31,11 +31,11 @@
 
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 
 namespace Magnum { namespace Examples {
 
-Icosphere::Icosphere(GL::Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(mesh), shader(shader), color(color) {
+Icosphere::Icosphere(GL::Mesh* mesh, Shaders::PhongGL* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group), mesh(mesh), shader(shader), color(color) {
     scale(Vector3(0.1f));
 }
 
@@ -43,7 +43,7 @@ void Icosphere::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& 
     shader->setDiffuseColor(color)
         .setSpecularColor(Color3(1.0f))
         .setShininess(20)
-        .setLightPosition({3.0f, -3.0f, 3.0f})
+        .setLightPositions({{3.0f, -3.0f, 3.0f, 0.0f}})
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())

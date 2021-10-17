@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -89,7 +89,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     /* Finally, provide a way for the user to override the path */
     Utility::Arguments args;
     args.addFinalOptionalArgument("path", defaultPath)
-            .setHelp("path", "directory where the +x.jpg, +y.jpg, ... files are")
+            .setHelp("path", "a combined cube map file (such as an EXR) or a directory where the +x.jpg, +y.jpg, ... files are")
         .addSkippedPrefix("magnum", "engine-specific options")
         .setGlobalHelp("Cube map rendering example")
         .parse(arguments.argc, arguments.argv);
@@ -117,7 +117,7 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
 
     /* Load image importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("JpegImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("AnyImageImporter");
     if(!importer) std::exit(1);
 
     _resourceManager.set<Trade::AbstractImporter>("jpeg-importer",

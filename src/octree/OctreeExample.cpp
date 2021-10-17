@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -45,8 +45,8 @@
 #endif
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Icosphere.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #include "LooseOctree.h"
@@ -100,20 +100,20 @@ class OctreeExample: public Platform::Application {
         Containers::Pointer<LooseOctree> _octree;
 
         /* Profiling */
-        DebugTools::GLFrameProfiler _profiler{
-            DebugTools::GLFrameProfiler::Value::FrameTime|
-            DebugTools::GLFrameProfiler::Value::CpuDuration, 180};
+        DebugTools::FrameProfilerGL _profiler{
+            DebugTools::FrameProfilerGL::Value::FrameTime|
+            DebugTools::FrameProfilerGL::Value::CpuDuration, 180};
 
         /* Spheres rendering */
         GL::Mesh _sphereMesh{NoCreate};
         GL::Buffer _sphereInstanceBuffer{NoCreate};
-        Shaders::Phong _sphereShader{NoCreate};
+        Shaders::PhongGL _sphereShader{NoCreate};
         Containers::Array<SphereInstanceData> _sphereInstanceData;
 
         /* Treenode bounding boxes rendering */
         GL::Mesh _boxMesh{NoCreate};
         GL::Buffer _boxInstanceBuffer{NoCreate};
-        Shaders::Flat3D _boxShader{NoCreate};
+        Shaders::FlatGL3D _boxShader{NoCreate};
         Containers::Array<BoxInstanceData> _boxInstanceData;
         bool _drawBoundingBoxes = true;
 };
@@ -173,12 +173,9 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
     /* Setup points (render as spheres) */
     {
         const UnsignedInt numSpheres = args.value<UnsignedInt>("spheres");
-        _spherePositions = Containers::Array<Vector3>{Containers::NoInit,
-            numSpheres};
-        _sphereVelocities = Containers::Array<Vector3>{Containers::NoInit,
-            numSpheres};
-        _sphereInstanceData = Containers::Array<SphereInstanceData>{
-            Containers::NoInit, numSpheres};
+        _spherePositions = Containers::Array<Vector3>{NoInit, numSpheres};
+        _sphereVelocities = Containers::Array<Vector3>{NoInit, numSpheres};
+        _sphereInstanceData = Containers::Array<SphereInstanceData>{NoInit, numSpheres};
 
         for(std::size_t i = 0; i < numSpheres; ++i) {
             const Vector3 tmpPos = Vector3(std::rand(), std::rand(), std::rand())/
@@ -199,15 +196,15 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             _sphereInstanceData[i].color = Color3{tmpPos};
         }
 
-        _sphereShader = Shaders::Phong{
-            Shaders::Phong::Flag::VertexColor|
-            Shaders::Phong::Flag::InstancedTransformation};
+        _sphereShader = Shaders::PhongGL{
+            Shaders::PhongGL::Flag::VertexColor|
+            Shaders::PhongGL::Flag::InstancedTransformation};
         _sphereInstanceBuffer = GL::Buffer{};
         _sphereMesh = MeshTools::compile(Primitives::icosphereSolid(2));
         _sphereMesh.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
-            Shaders::Phong::TransformationMatrix{},
-            Shaders::Phong::NormalMatrix{},
-            Shaders::Phong::Color3{});
+            Shaders::PhongGL::TransformationMatrix{},
+            Shaders::PhongGL::NormalMatrix{},
+            Shaders::PhongGL::Color3{});
         _sphereMesh.setInstanceCount(_sphereInstanceData.size());
     }
 
@@ -228,14 +225,14 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
     /* Treenode bounding boxes render variables */
     {
-        _boxShader = Shaders::Flat3D{
-            Shaders::Flat3D::Flag::VertexColor|
-            Shaders::Flat3D::Flag::InstancedTransformation};
+        _boxShader = Shaders::FlatGL3D{
+            Shaders::FlatGL3D::Flag::VertexColor|
+            Shaders::FlatGL3D::Flag::InstancedTransformation};
         _boxInstanceBuffer = GL::Buffer{};
         _boxMesh = MeshTools::compile(Primitives::cubeWireframe());
         _boxMesh.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,
-            Shaders::Flat3D::TransformationMatrix{},
-            Shaders::Flat3D::Color3{});
+            Shaders::FlatGL3D::TransformationMatrix{},
+            Shaders::FlatGL3D::Color3{});
     }
 
     Debug{} << "Collision detection using octree";
@@ -367,7 +364,7 @@ void OctreeExample::drawTreeNodeBoundingBoxes() {
     arrayResize(_boxInstanceData, 0);
 
     /* Always draw the root node */
-    arrayAppend(_boxInstanceData, Containers::InPlaceInit,
+    arrayAppend(_boxInstanceData, InPlaceInit,
         _arcballCamera->viewMatrix()*
         Matrix4::translation(_octree->center())*
         Matrix4::scaling(Vector3{_octree->halfWidth()}), 0x00ffff_rgbf);
@@ -384,8 +381,7 @@ void OctreeExample::drawTreeNodeBoundingBoxes() {
                     const Matrix4 t = _arcballCamera->viewMatrix() *
                         Matrix4::translation(pNode.center())*
                         Matrix4::scaling(Vector3{pNode.halfWidth()});
-                    arrayAppend(_boxInstanceData, Containers::InPlaceInit, t,
-                        0x197f99_rgbf);
+                    arrayAppend(_boxInstanceData, InPlaceInit, t, 0x197f99_rgbf);
                 }
             }
         }

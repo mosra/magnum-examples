@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2018 — scturtle <scturtle@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -48,8 +48,8 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 #include <Magnum/Trade/MeshData.h>
 
 #ifdef MAGNUM_TARGET_WEBGL
@@ -116,8 +116,8 @@ class MouseInteractionExample: public Platform::Application {
         void mouseScrollEvent(MouseScrollEvent& event) override;
         void drawEvent() override;
 
-        Shaders::VertexColor3D _vertexColorShader{NoCreate};
-        Shaders::Flat3D _flatShader{NoCreate};
+        Shaders::VertexColorGL3D _vertexColorShader{NoCreate};
+        Shaders::FlatGL3D _flatShader{NoCreate};
         GL::Mesh _mesh{NoCreate}, _grid{NoCreate};
 
         Scene3D _scene;
@@ -143,7 +143,7 @@ class MouseInteractionExample: public Platform::Application {
 
 class VertexColorDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit VertexColorDrawable(Object3D& object, Shaders::VertexColor3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
+        explicit VertexColorDrawable(Object3D& object, Shaders::VertexColorGL3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
             _shader
@@ -152,13 +152,13 @@ class VertexColorDrawable: public SceneGraph::Drawable3D {
         }
 
     private:
-        Shaders::VertexColor3D& _shader;
+        Shaders::VertexColorGL3D& _shader;
         GL::Mesh& _mesh;
 };
 
 class FlatDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit FlatDrawable(Object3D& object, Shaders::Flat3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
+        explicit FlatDrawable(Object3D& object, Shaders::FlatGL3D& shader, GL::Mesh& mesh, SceneGraph::DrawableGroup3D& drawables): SceneGraph::Drawable3D{object, &drawables}, _shader(shader), _mesh(mesh) {}
 
         void draw(const Matrix4& transformation, SceneGraph::Camera3D& camera) {
             _shader
@@ -168,7 +168,7 @@ class FlatDrawable: public SceneGraph::Drawable3D {
         }
 
     private:
-        Shaders::Flat3D& _shader;
+        Shaders::FlatGL3D& _shader;
         GL::Mesh& _mesh;
 };
 
@@ -196,8 +196,8 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
     }
 
     /* Shaders, renderer setup */
-    _vertexColorShader = Shaders::VertexColor3D{};
-    _flatShader = Shaders::Flat3D{};
+    _vertexColorShader = Shaders::VertexColorGL3D{};
+    _flatShader = Shaders::FlatGL3D{};
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
 
     /* On WebGL we can't just read depth. The only possibility to read depth is
@@ -244,8 +244,8 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
     _mesh = GL::Mesh{};
     _mesh.setCount(3)
         .addVertexBuffer(std::move(buffer), 0,
-            Shaders::VertexColor3D::Position{},
-            Shaders::VertexColor3D::Color3{});
+            Shaders::VertexColorGL3D::Position{},
+            Shaders::VertexColorGL3D::Color3{});
 
     /* Triangle object */
     auto triangle = new Object3D{&_scene};

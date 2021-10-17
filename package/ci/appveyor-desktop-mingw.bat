@@ -7,7 +7,6 @@ IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\2.86.1.zip appveyor DownloadFile https://gi
 7z x 2.86.1.zip || exit /b
 cd bullet3-2.86.1 || exit /b
 mkdir build && cd build || exit /b
-rem CMake's Find module is not able to find Debug versions of the libraries
 cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DCMAKE_BUILD_TYPE=Release ^
@@ -53,11 +52,13 @@ cmake .. ^
     -DWITH_PRIMITIVES=ON ^
     -DWITH_SCENEGRAPH=ON ^
     -DWITH_SHADERS=ON ^
+    -DWITH_SHADERTOOLS=ON ^
     -DWITH_TEXT=ON ^
     -DWITH_TEXTURETOOLS=ON ^
     -DWITH_TRADE=ON ^
     -DWITH_SDL2APPLICATION=ON ^
     -DWITH_WGLCONTEXT=ON ^
+    -DWITH_VK=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -125,9 +126,11 @@ cmake .. ^
     -DWITH_SHADOWS_EXAMPLE=ON ^
     -DWITH_TEXT_EXAMPLE=ON ^
     -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON ^
+    -DWITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE=ON ^
     -DWITH_TRIANGLE_EXAMPLE=ON ^
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON ^
     -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF ^
+    -DWITH_TRIANGLE_VULKAN_EXAMPLE=ON ^
     -DWITH_VIEWER_EXAMPLE=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b

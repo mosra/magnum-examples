@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -34,7 +34,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Functions.h>
-#include <Magnum/Shaders/Generic.h>
+#include <Magnum/Shaders/GenericGL.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/Trade/MeshData.h>
 
@@ -43,11 +43,13 @@ namespace Magnum { namespace Examples {
 using namespace Math::Literals;
 
 ParticleGroup2D::ParticleGroup2D(const std::vector<Vector2>& points, Float particleRadius):
-    _points{points},
+    /* With {}, GCC 4.8 warns that "a temporary bound to '_points' only
+       persists until the constructor exits" (?!) */
+    _points(points),
     _particleRadius{particleRadius},
     _meshParticles{GL::MeshPrimitive::Points}
 {
-    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::Generic2D::Position{});
+    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::GenericGL2D::Position{});
     _particleShader.reset(new ParticleSphereShader2D);
 }
 

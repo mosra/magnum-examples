@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -38,7 +38,7 @@
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 
 namespace Magnum { namespace Examples {
 
@@ -51,7 +51,7 @@ class TriangleExample: public Platform::Application {
         void drawEvent() override;
 
         GL::Mesh _mesh;
-        Shaders::VertexColor2D _shader;
+        Shaders::VertexColorGL2D _shader;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -79,8 +79,8 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 
     _mesh.setCount(3)
          .addVertexBuffer(std::move(buffer), 0,
-            Shaders::VertexColor2D::Position{},
-            Shaders::VertexColor2D::Color3{});
+            Shaders::VertexColorGL2D::Position{},
+            Shaders::VertexColorGL2D::Color3{});
 }
 
 void TriangleExample::viewportEvent(ViewportEvent& event) {

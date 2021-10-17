@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -42,7 +42,7 @@
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
-#include <Magnum/Shaders/DistanceFieldVector.h>
+#include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Text/AbstractFont.h>
 #include <Magnum/Text/DistanceFieldGlyphCache.h>
@@ -71,7 +71,7 @@ class TextExample: public Platform::Application {
         GL::Mesh _rotatingText{NoCreate};
         GL::Buffer _vertices, _indices;
         Containers::Pointer<Text::Renderer2D> _dynamicText;
-        Shaders::DistanceFieldVector2D _shader;
+        Shaders::DistanceFieldVectorGL2D _shader;
 
         Matrix3 _transformationRotatingText,
             _projectionRotatingText,

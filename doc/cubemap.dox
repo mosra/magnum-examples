@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -37,10 +37,10 @@ and pre-made primitives.
 
 @section examples-cubemap-usage Usage
 
-The application tries to load cube map texture from the directory in which it
-is run. Cube map texture consists of six JEPG files `+x.jpg`, `-x.jpg`, `+y.jpg`,
-`-y.jpg`, `+z.jpg` and `-z.jpg`, each representing one side of the cube. Note
-that all images must be turned upside down (+Y is top):
+The application tries to load a cube map texture from the directory in which it
+is run, implicitly six JEPG files `+x.jpg`, `-x.jpg`, `+y.jpg`, `-y.jpg`,
+`+z.jpg` and `-z.jpg`, each representing one side of the cube. Note that all
+images must be turned upside down (+Y is top):
 
               +----+
               | -Y |
@@ -50,15 +50,19 @@ that all images must be turned upside down (+Y is top):
               | +Y |
               +----+
 
-You can also pass file path prefix to the application as parameter, for
-example
+You can also pass a path to the application as a parameter:
 
 @code{.sh}
 ./magnum-cubemap ~/images/city
 @endcode
 
 The application will then load `~/images/city+x.jpg`, `~/images/city-x.jpg`
-etc. as a cube map texture.
+etc. as a cube map texture. Alternatively, if you have a combined cube map file
+(such as an EXR), you can load it directly:
+
+@code{.sh}
+./magnum-cubemap path/to/a/cubemap/file.exr
+@endcode
 
 Sample cube map files are supplied alongside the source. If you
 @ref building-examples "install the examples", the images are also copied into

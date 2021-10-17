@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -32,6 +32,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/System.h>
 #include <Magnum/Math/Color.h>
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate(args.value("importer"));
+    importer->configuration().setValue("forceChannelCount", 4);
     if(!importer || !importer->openFile(args.value("file")))
         return 2;
 
@@ -65,7 +67,9 @@ int main(int argc, char** argv) {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     if(!image) return 3;
 
+    #ifndef CORRADE_NO_ASSERT
     const Vector2i imageSize = image->size();
+    #endif
     const std::ptrdiff_t skip = (image->size().x() + 39)/40;
     Debug{} << Debug::color << Debug::packed
         << image->pixels<Color4ub>().every({skip, skip}).flipped<0>();

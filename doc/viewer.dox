@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -208,7 +208,7 @@ textured, the mesh might or might not be indexed etc., the mesh creation
 procedure can get fairly long-winded. There is a convenience
 @ref MeshTools::compile() function which examines the data, adds all available
 vertex attributes to the buffer (normals, texture coordinates...), packs the
-indices (if any) and then configures the mesh for the @ref Shaders::Generic
+indices (if any) and then configures the mesh for the @ref Shaders::GenericGL
 shader, from which all other stock shaders are derived. This function is useful
 for exactly this case of importing general meshes --- but the lower-level way
 involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices() as

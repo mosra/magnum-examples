@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -25,26 +25,28 @@
 
 namespace Magnum {
 /** @page examples-triangle-vulkan Triangle using Vulkan
-@brief Directly using Vulkan with hand-written SPIR-V to produce a triangle offscreen.
+@brief Using Vulkan with SPIR-V assembly to produce a triangle offscreen.
 
 @m_footernavigation
 
 @image html triangle-vulkan.png
 
 This example has equivalent output to the OpenGL @ref examples-triangle "Triangle"
-example, but uses Vulkan instead. Showcases how to use Magnum builtin
-[flextGL](https://github.com/mosra/flextgl)-generated headers to load Vulkan
-function pointers, create the Vulkan instance, create the device, do the
-initial setup, handcraft a SPIR-V shader bytecode and render a basic rainbow
-triangle offscreen, exporting it to a PNG file using the
-@ref Trade::AbstractImageConverter APIs.
+example, but uses Vulkan instead. Showcases how to use the @ref Vk library to
+create the Vulkan instance, create the device, do the initial setup, assemble a
+SPIR-V shader bytecode using the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
+plugin and render a basic rainbow triangle offscreen, exporting it to a PNG
+file using the @ref Trade::AbstractImageConverter APIs.
 
 @section examples-triangle-vulkan-source Source
 
 Full source code is linked below and together with assets also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/triangle-vulkan).
-This example depends on the @ref Vk library that's not enabled by default in
-most cases, see its documentation for usage instructions.
+This example depends on the @ref Trade, @ref ShaderTools and @ref Vk libraries
+and in addition needs the @ref Trade::AnyImageConverter "AnyImageConverter"
+plugin and some `PngImageConverter` implementation -- see @ref file-formats.
+Not all are enabled by default in most cases, see their documentation for usage
+instructions.
 
 -   @ref triangle-vulkan/CMakeLists.txt "CMakeLists.txt"
 -   @ref triangle-vulkan/main.cpp "main.cpp"

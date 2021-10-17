@@ -64,6 +64,7 @@
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
 #  Shaders                      - Shaders library
+#  ShaderTools                  - ShaderTools library
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
 #  Trade                        - Trade library
@@ -85,6 +86,7 @@
 #  GlxContext                   - GLX context
 #  WglContext                   - WGL context
 #  OpenGLTester                 - OpenGLTester class
+#  VulkanTester                 - VulkanTester class
 #  MagnumFont                   - Magnum bitmap font plugin
 #  MagnumFontConverter          - Magnum bitmap font converter plugin
 #  ObjImporter                  - OBJ importer plugin
@@ -95,7 +97,9 @@
 #  fontconverter                - magnum-fontconverter executable
 #  imageconverter               - magnum-imageconverter executable
 #  sceneconverterter            - magnum-sceneconverter executable
+#  shaderconverterter           - magnum-shaderconverter executable
 #  gl-info                      - magnum-gl-info executable
+#  vk-info                      - magnum-vk-info executable
 #  al-info                      - magnum-al-info executable
 #
 # Example usage with specifying additional components is::
@@ -164,6 +168,10 @@
 #   installation directory
 #  MAGNUM_PLUGINS_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Plugin library
 #   installation directory
+#  MAGNUM_PLUGINS_SHADERCONVERTER_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Shader
+#   converter plugin binary installation directory
+#  MAGNUM_PLUGINS_SHADERCONVERTER_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Shader
+#   converter plugin library installation directory
 #  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_BINARY_INSTALL_DIR - Font plugin binary
 #   installation directory
 #  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_LIBRARY_INSTALL_DIR - Font plugin
@@ -196,7 +204,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -224,7 +232,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
-    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font)$")
+    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
         set(_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES PluginManager)
     endif()
 
@@ -338,12 +346,6 @@ if(NOT TARGET Magnum::Magnum)
     # Include directories
     set_property(TARGET Magnum::Magnum APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
         ${MAGNUM_INCLUDE_DIR})
-    # Some deprecated APIs use headers (but not externally defined symbols)
-    # from the GL library, link those includes as well
-    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_TARGET_GL)
-        set_property(TARGET Magnum::Magnum APPEND PROPERTY
-            INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
-    endif()
 
     # Dependent libraries
     set_property(TARGET Magnum::Magnum APPEND PROPERTY INTERFACE_LINK_LIBRARIES
@@ -354,22 +356,53 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENT_LIST
-    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Text
-    TextureTools Trade Vk
-    AndroidApplication EmscriptenApplication GlfwApplication GlxApplication
-    Sdl2Application XEglApplication WindowlessCglApplication
-    WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication
-    WindowlessWglApplication WindowlessWindowsEglApplication
-    CglContext EglContext GlxContext WglContext
-    OpenGLTester)
-set(_MAGNUM_PLUGIN_COMPONENT_LIST
+set(_MAGNUM_LIBRARY_COMPONENTS
+    Audio DebugTools GL MeshTools Primitives SceneGraph Shaders ShaderTools
+    Text TextureTools Trade
+    WindowlessEglApplication EglContext OpenGLTester)
+set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
     TgaImageConverter TgaImporter WavAudioImporter)
-set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
-    distancefieldconverter fontconverter imageconverter sceneconverter gl-info
-    al-info)
+set(_MAGNUM_EXECUTABLE_COMPONENTS
+    imageconverter sceneconverter shaderconverter gl-info al-info)
+# Audio and Vk libs aren't enabled by default, and none of the Context,
+# Application, Tester libs nor plugins are. Keep in sync with Magnum's root
+# CMakeLists.txt.
+set(_MAGNUM_IMPLICITLY_ENABLED_COMPONENTS
+    DebugTools MeshTools SceneGraph Shaders ShaderTools Text TextureTools Trade
+    GL Primitives)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS Vk VulkanTester)
+    list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS vk-info)
+endif()
+if(NOT CORRADE_TARGET_ANDROID)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS Sdl2Application)
+endif()
+if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS GlfwApplication)
+endif()
+if(CORRADE_TARGET_ANDROID)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS AndroidApplication)
+endif()
+if(CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS EmscriptenApplication)
+endif()
+if(CORRADE_TARGET_IOS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessIosApplication)
+endif()
+if(CORRADE_TARGET_APPLE AND NOT CORRADE_TARGET_IOS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessCglApplication CglContext)
+endif()
+if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS GlxApplication XEglApplication WindowlessGlxApplication GlxContext)
+endif()
+if(CORRADE_TARGET_WINDOWS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessWglApplication WglContext WindowlessWindowsEglApplication)
+endif()
+if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
+    list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS fontconverter distancefieldconverter)
+endif()
 
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )
@@ -434,6 +467,7 @@ if(MAGNUM_TARGET_GL)
 endif()
 
 set(_MAGNUM_Trade_DEPENDENCIES )
+set(_MAGNUM_VulkanTester_DEPENDENCIES Vk)
 set(_MAGNUM_AndroidApplication_DEPENDENCIES GL)
 set(_MAGNUM_EmscriptenApplication_DEPENDENCIES)
 if(MAGNUM_TARGET_GL)
@@ -467,9 +501,11 @@ set(_MAGNUM_WglContext_DEPENDENCIES GL)
 set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter GL) # and below
 set(_MAGNUM_MagnumFontConverter_DEPENDENCIES Trade TgaImageConverter) # and below
 set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
-foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
+foreach(_component ${_MAGNUM_PLUGIN_COMPONENTS})
     if(_component MATCHES ".+AudioImporter")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Audio)
+    elseif(_component MATCHES ".+ShaderConverter")
+        list(APPEND _MAGNUM_${_component}_DEPENDENCIES ShaderTools)
     elseif(_component MATCHES ".+(Importer|ImageConverter|SceneConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
@@ -495,19 +531,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 endforeach()
 
 # Join the lists, remove duplicate components
+set(_MAGNUM_ORIGINAL_FIND_COMPONENTS ${Magnum_FIND_COMPONENTS})
 if(_MAGNUM_ADDITIONAL_COMPONENTS)
     list(INSERT Magnum_FIND_COMPONENTS 0 ${_MAGNUM_ADDITIONAL_COMPONENTS})
 endif()
 if(Magnum_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES Magnum_FIND_COMPONENTS)
 endif()
-
-# Convert components lists to regular expressions so I can use if(MATCHES).
-# TODO: Drop this once CMake 3.3 and if(IN_LIST) can be used
-foreach(_WHAT LIBRARY PLUGIN EXECUTABLE)
-    string(REPLACE ";" "|" _MAGNUM_${_WHAT}_COMPONENTS "${_MAGNUM_${_WHAT}_COMPONENT_LIST}")
-    set(_MAGNUM_${_WHAT}_COMPONENTS "^(${_MAGNUM_${_WHAT}_COMPONENTS})$")
-endforeach()
 
 # Find all components. Maintain a list of components that'll need to have
 # their optional dependencies checked.
@@ -522,7 +552,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         set(Magnum_${_component}_FOUND TRUE)
     else()
         # Library components
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
             # Set library defaults, find the library
@@ -534,10 +564,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             find_library(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE Magnum${_component})
             mark_as_advanced(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG
                 MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
-        endif()
 
         # Plugin components
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        elseif(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
             # AudioImporter plugin specific name suffixes
@@ -548,6 +577,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # convert *AudioImporter.h to *Importer.h
                 string(REPLACE "AudioImporter" "Importer" _MAGNUM_${_COMPONENT}_HEADER_NAME "${_component}")
                 set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES ${_MAGNUM_${_COMPONENT}_HEADER_NAME}.h)
+
+            # ShaderConverter plugin specific name suffixes
+            elseif(_component MATCHES ".+ShaderConverter$")
+                set(_MAGNUM_${_COMPONENT}_PATH_SUFFIX shaderconverters)
 
             # Importer plugin specific name suffixes
             elseif(_component MATCHES ".+Importer$")
@@ -601,10 +634,26 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
             # Reset back
             set(CMAKE_FIND_LIBRARY_PREFIXES "${_tmp_prefixes}")
+
+        # Executables
+        elseif(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
+            add_executable(Magnum::${_component} IMPORTED)
+
+            find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
+            mark_as_advanced(MAGNUM_${_COMPONENT}_EXECUTABLE)
+
+            if(MAGNUM_${_COMPONENT}_EXECUTABLE)
+                set_property(TARGET Magnum::${_component} PROPERTY
+                    IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
+            endif()
+
+        # Something unknown, skip. FPHSA will take care of handling this below.
+        else()
+            continue()
         endif()
 
         # Library location for libraries/plugins
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             if(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     IMPORTED_CONFIGURATIONS RELEASE)
@@ -617,19 +666,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     IMPORTED_CONFIGURATIONS DEBUG)
                 set_property(TARGET Magnum::${_component} PROPERTY
                     IMPORTED_LOCATION_DEBUG ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
-            endif()
-        endif()
-
-        # Executables
-        if(_component MATCHES ${_MAGNUM_EXECUTABLE_COMPONENTS})
-            add_executable(Magnum::${_component} IMPORTED)
-
-            find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
-            mark_as_advanced(MAGNUM_${_COMPONENT}_EXECUTABLE)
-
-            if(MAGNUM_${_COMPONENT}_EXECUTABLE)
-                set_property(TARGET Magnum::${_component} PROPERTY
-                    IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
             endif()
         endif()
 
@@ -878,11 +914,21 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL OpenGLTester)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/GL)
 
+        # VulkanTester library
+        elseif(_component STREQUAL VulkanTester)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Vk)
+
         # Primitives library
         elseif(_component STREQUAL Primitives)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
 
         # No special setup for SceneGraph library
+
+        # ShaderTools library
+        elseif(_component STREQUAL ShaderTools)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
+
         # No special setup for Shaders library
 
         # Text library
@@ -901,7 +947,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Vk library
         elseif(_component STREQUAL Vk)
-            set(Vulkan_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumExternal/Vulkan)
             find_package(Vulkan REQUIRED)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)
@@ -919,7 +964,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # No special setup for WavAudioImporter plugin
 
         # Find library/plugin includes
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
                 NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
                 HINTS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
@@ -928,7 +973,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Automatic import of static plugins. Skip in case the include dir was
         # not found -- that'll fail later with a proper message.
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
             # Automatic import of static plugins
             file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
             string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)
@@ -941,7 +986,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # Link to core Magnum library, add inter-library dependencies. If there
         # are optional dependencies, defer adding them to later once we know if
         # they were found or not.
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
             set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
@@ -960,7 +1005,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Decide if the library was found
-        if(((_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS}) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component MATCHES ${_MAGNUM_EXECUTABLE_COMPONENTS} AND MAGNUM_${_COMPONENT}_EXECUTABLE))
+        if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
             set(Magnum_${_component}_FOUND TRUE)
         else()
             set(Magnum_${_component}_FOUND FALSE)
@@ -1022,11 +1067,45 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     endif()
 endif()
 
+# For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
+# useful info about the failed components.
+if(NOT CMAKE_VERSION VERSION_LESS 3.16)
+    set(_MAGNUM_REASON_FAILURE_MESSAGE )
+    # Go only through the originally specified find_package() components, not
+    # the dependencies added by us afterwards
+    foreach(_component ${_MAGNUM_ORIGINAL_FIND_COMPONENTS})
+        if(Magnum_${_component}_FOUND)
+            continue()
+        endif()
+
+        # If it's not known at all, tell the user -- it might be a new library
+        # and an old Find module, or something platform-specific.
+        if(NOT _component IN_LIST _MAGNUM_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND NOT _component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
+            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not a known component on this platform.")
+        # Otherwise, if it's not among implicitly built components, hint that
+        # the user may need to enable it
+        # TODO: currently, the _FOUND variable doesn't reflect if dependencies
+        #   were found. When it will, this needs to be updated to avoid
+        #   misleading messages.
+        elseif(NOT _component IN_LIST _MAGNUM_IMPLICITLY_ENABLED_COMPONENTS)
+            string(TOUPPER ${_component} _COMPONENT)
+            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Magnum.")
+        # Otherwise we have no idea. Better be silent than to print something
+        # misleading.
+        else()
+        endif()
+    endforeach()
+
+    string(REPLACE ";" " " _MAGNUM_REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
+    set(_MAGNUM_REASON_FAILURE_MESSAGE REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
+endif()
+
 # Complete the check with also all components
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY ${MAGNUM_EXTRAS_NEEDED}
-    HANDLE_COMPONENTS)
+    HANDLE_COMPONENTS
+    ${_MAGNUM_REASON_FAILURE_MESSAGE})
 
 # Components with optional dependencies -- add them once we know if they were
 # found or not.
@@ -1138,6 +1217,10 @@ set(MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum-
 set(MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
 set(MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum)
 set(MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_LIBRARY_INSTALL_DIR}/shaderconverters)
+set(MAGNUM_PLUGINS_SHADERCONVERTER_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/shaderconverters)
 set(MAGNUM_PLUGINS_FONT_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONT_DEBUG_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_LIBRARY_INSTALL_DIR}/fonts)
 set(MAGNUM_PLUGINS_FONT_RELEASE_BINARY_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_BINARY_INSTALL_DIR}/fonts)

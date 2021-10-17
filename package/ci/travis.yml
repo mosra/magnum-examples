@@ -9,59 +9,47 @@ addons:
     - libopenal-dev
     - libbullet-dev
     - libbox2d-dev
-    - libglew-dev # needed by the triangle-sokol example
 
 matrix:
   include:
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=ports-linux-gl
-    - TARGET=desktop
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=ports-linux-nondeprecated
-    - TARGET=desktop
-    - BUILD_DEPRECATED=OFF
-    - CMAKE_CXX_FLAGS="-DCORRADE_NO_ASSERT"
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=ports-linux-gles2
-    - TARGET=desktop-gles
-    - TARGET_GLES2=ON
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=ports-linux-gles3
-    - TARGET=desktop-gles
-    - TARGET_GLES2=OFF
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=ports-linux-vulkan
-    - TARGET=desktop-vulkan
-    addons:
-      apt:
-        packages:
-        - ninja-build
-  - language: cpp
-    os: osx
-    compiler: clang
-    env:
-    - JOBID=ports-macos-gl
-    - TARGET=desktop
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=ports-linux-gl
+    #- TARGET=desktop
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=ports-linux-nondeprecated
+    #- TARGET=desktop
+    #- BUILD_DEPRECATED=OFF
+    #- CMAKE_CXX_FLAGS="-DCORRADE_NO_ASSERT"
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=ports-linux-gles2
+    #- TARGET=desktop-gles
+    #- TARGET_GLES2=ON
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=ports-linux-gles3
+    #- TARGET=desktop-gles
+    #- TARGET_GLES2=OFF
+  #- language: cpp
+    #os: osx
+    #compiler: clang
+    #env:
+    #- JOBID=ports-macos-gl
+    #- TARGET=desktop
   - language: cpp
     os: osx
     osx_image: xcode7.3
@@ -76,27 +64,27 @@ matrix:
     - JOBID=ports-ios-gles3
     - TARGET=ios-simulator
     - TARGET_GLES2=OFF
-  - language: cpp
-    os: osx
-    osx_image: xcode9.3
-    env:
-    - JOBID=ports-emscripten-webgl1
-    - TARGET=emscripten
-    - TARGET_GLES2=ON
-  - language: cpp
-    os: osx
-    osx_image: xcode9.3
-    env:
-    - JOBID=ports-emscripten-webgl2
-    - TARGET=emscripten
-    - TARGET_GLES2=OFF
+  #- language: cpp
+    #os: osx
+    #osx_image: xcode9.3
+    #env:
+    #- JOBID=ports-emscripten-webgl1
+    #- TARGET=emscripten
+    #- TARGET_GLES2=ON
+  #- language: cpp
+    #os: osx
+    #osx_image: xcode9.3
+    #env:
+    #- JOBID=ports-emscripten-webgl2
+    #- TARGET=emscripten
+    #- TARGET_GLES2=OFF
   - language: android
     os: linux
     # Setting xenial here will cause it to use 12.04, with GCC 4.6 and other
     # prehistoric nightmares. So staying with 14.04 for the time being.
     dist: trusty
     env:
-    - JOBID=ports-android-gles2
+    - JOBID=android-gles2
     - TARGET=android
     - TARGET_GLES2=ON
     addons:
@@ -113,7 +101,7 @@ matrix:
     # prehistoric nightmares. So staying with 14.04 for the time being.
     dist: trusty
     env:
-    - JOBID=ports-android-gles3
+    - JOBID=android-gles3
     - TARGET=android
     - TARGET_GLES2=OFF
     addons:
@@ -158,7 +146,6 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v3.9/cmake-3.9.2-Linux-x86_64.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzf ../cmake-3.9.2-Linux-x86_64.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export PATH=$HOME/cmake/bin:$PATH && cmake --version; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install glew; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
@@ -178,15 +165,11 @@ install:
 - if [ ! -e "$HOME/imgui/imgui.h" ]; then cd $HOME ; wget -nc --no-check-certificate -O imgui.tar.gz https://github.com/ocornut/imgui/archive/v1.72.tar.gz && mkdir -p imgui && cd imgui && tar --strip-components=1 -xzf ../imgui.tar.gz && cd $TRAVIS_BUILD_DIR; fi
 
 script:
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/travis-desktop-gles.sh; fi
-# Vulkan needs to be in a separate build, because it needs new CMake (for the
-# Find module) and in the future also C++14. Unfortunately that means we can't
-# apply the sanitizer or non-deprecated build on it.
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then ./package/ci/travis-desktop-vulkan.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/unix-desktop.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/unix-desktop-gles.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then ./package/ci/travis-android-arm.sh; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/unix-desktop.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then ./package/ci/travis-ios-simulator.sh; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then ./package/ci/travis-emscripten.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then ./package/ci/emscripten.sh; fi
 # Travis somehow is not able to gather all output, try to force it using this
 - sync

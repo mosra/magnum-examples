@@ -3,8 +3,8 @@
 #
 #   Original authors — credit is appreciated but not required:
 #
-#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-#           Vladimír Vondruš <mosra@centrum.cz>
+#       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+#            — Vladimír Vondruš <mosra@centrum.cz>
 #       2013 — Jan Dupal <dupal.j@gmail.com>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -46,6 +46,7 @@ find_package(Magnum REQUIRED
     Shaders
     Trade)
 find_package(MagnumIntegration REQUIRED Bullet)
+find_package(Bullet REQUIRED Dynamics)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     find_package(Magnum REQUIRED EmscriptenApplication)
@@ -66,7 +67,8 @@ target_link_libraries(magnum-bullet PRIVATE
     Magnum::SceneGraph
     Magnum::Shaders
     Magnum::Trade
-    MagnumIntegration::Bullet)
+    MagnumIntegration::Bullet
+    Bullet::Dynamics)
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well

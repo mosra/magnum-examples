@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -57,7 +57,7 @@
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/Shaders/Phong.h>
+#include <Magnum/Shaders/PhongGL.h>
 
 namespace Magnum { namespace Examples {
 
@@ -68,7 +68,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class PickableObject: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit PickableObject(UnsignedInt id, Shaders::Phong& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
+        explicit PickableObject(UnsignedInt id, Shaders::PhongGL& shader, const Color3& color, GL::Mesh& mesh, Object3D& parent, SceneGraph::DrawableGroup3D& drawables): Object3D{&parent}, SceneGraph::Drawable3D{*this, &drawables}, _id{id}, _selected{false}, _shader(shader), _color{color}, _mesh(mesh) {}
 
         void setSelected(bool selected) { _selected = selected; }
 
@@ -80,14 +80,14 @@ class PickableObject: public Object3D, SceneGraph::Drawable3D {
                 .setAmbientColor(_selected ? _color*0.3f : Color3{})
                 .setDiffuseColor(_color*(_selected ? 2.0f : 1.0f))
                 /* relative to the camera */
-                .setLightPosition({13.0f, 2.0f, 5.0f})
+                .setLightPositions({{13.0f, 2.0f, 5.0f, 0.0f}})
                 .setObjectId(_id)
                 .draw(_mesh);
         }
 
         UnsignedInt _id;
         bool _selected;
-        Shaders::Phong& _shader;
+        Shaders::PhongGL& _shader;
         Color3 _color;
         GL::Mesh& _mesh;
 };
@@ -108,7 +108,7 @@ class PickingExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
 
-        Shaders::Phong _shader{Shaders::Phong::Flag::ObjectId};
+        Shaders::PhongGL _shader{Shaders::PhongGL::Flag::ObjectId};
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };
@@ -141,8 +141,8 @@ PickingExample::PickingExample(const Arguments& arguments):
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
                .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
                .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, _depth)
-               .mapForDraw({{Shaders::Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                            {Shaders::Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
+               .mapForDraw({{Shaders::PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                            {Shaders::PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
     CORRADE_INTERNAL_ASSERT(_framebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     /* Set up meshes */
@@ -192,14 +192,13 @@ void PickingExample::drawEvent() {
         .bind();
     _camera->draw(_drawables);
 
-    /* Bind the main buffer back */
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
-        .bind();
+    /* Clear the main buffer. Even though it seems unnecessary, if this is not
+       done, it can cause flicker on some drivers. */
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* Blit color to window framebuffer */
-    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
     GL::AbstractFramebuffer::blit(_framebuffer, GL::defaultFramebuffer,
-        {{}, _framebuffer.viewport().size()}, GL::FramebufferBlit::Color);
+        _framebuffer.viewport(), GL::FramebufferBlit::Color);
 
     swapBuffers();
 }
@@ -238,11 +237,13 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
-    /* Read object ID at given click position */
+    /* Read object ID at given click position, and then switch to the color
+       attachment again so drawEvent() blits correct buffer */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
     Image2D data = _framebuffer.read(
         Range2Di::fromSize(fbPosition, {1, 1}),
         {PixelFormat::R32UI});
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);

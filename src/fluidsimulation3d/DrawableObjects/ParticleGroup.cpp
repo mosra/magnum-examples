@@ -3,8 +3,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -34,7 +34,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Functions.h>
-#include <Magnum/Shaders/Generic.h>
+#include <Magnum/Shaders/GenericGL.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/Trade/MeshData.h>
 
@@ -46,7 +46,7 @@ ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleR
     _points(points),
     _particleRadius(particleRadius),
     _meshParticles(GL::MeshPrimitive::Points) {
-    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::Generic3D::Position{});
+    _meshParticles.addVertexBuffer(_bufferParticles, 0, Shaders::GenericGL3D::Position{});
     _particleShader.reset(new ParticleSphereShader);
 }
 

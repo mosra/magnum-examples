@@ -5,8 +5,8 @@
 
     Original authors — credit is appreciated but not required:
 
-        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 —
-            Vladimír Vondruš <mosra@centrum.cz>
+        2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -40,7 +40,7 @@ namespace Magnum { namespace Examples {
 
 class Icosphere: public Object3D, SceneGraph::Drawable3D {
     public:
-        explicit Icosphere(GL::Mesh* mesh, Shaders::Phong* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        explicit Icosphere(GL::Mesh* mesh, Shaders::PhongGL* shader, const Vector3& color, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         inline void advance(Rad angle) { rotate(angle, Vector3::zAxis()); }
 
@@ -48,7 +48,7 @@ class Icosphere: public Object3D, SceneGraph::Drawable3D {
 
     private:
         GL::Mesh* mesh;
-        Shaders::Phong* shader;
+        Shaders::PhongGL* shader;
         Color3 color;
 };
 

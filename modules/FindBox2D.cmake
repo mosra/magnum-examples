@@ -17,7 +17,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -39,11 +39,18 @@
 #
 
 # Library
-find_library(BOX2D_LIBRARY NAMES Box2D)
+find_library(BOX2D_LIBRARY
+    NAMES
+        box2d
+        # CamelCase naming used before Box2D 2.4
+        Box2D)
 
 # Include dir
 find_path(BOX2D_INCLUDE_DIR
-    NAMES Box2D/Box2D.h)
+    NAMES
+        box2d/box2d.h
+        # CamelCase naming used before Box2D 2.4
+        Box2D/Box2D.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Box2D DEFAULT_MSG
