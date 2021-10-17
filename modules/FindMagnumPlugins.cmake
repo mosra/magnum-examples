@@ -15,6 +15,7 @@
 #  AssimpImporter               - Assimp importer
 #  BasisImageConverter          - Basis image converter
 #  BasisImporter                - Basis importer
+#  CgltfImporter                - GLTF importer using cgltf
 #  DdsImporter                  - DDS importer
 #  DevIlImageImporter           - Image importer using DevIL
 #  DrFlacAudioImporter          - FLAC audio importer using dr_flac
@@ -22,18 +23,28 @@
 #  DrWavAudioImporter           - WAV audio importer using dr_wav
 #  Faad2AudioImporter           - AAC audio importer using FAAD2
 #  FreeTypeFont                 - FreeType font
+#  GlslangShaderConverter       - Glslang shader converter
 #  HarfBuzzFont                 - HarfBuzz font
+#  IcoImporter                  - ICO importer
 #  JpegImageConverter           - JPEG image converter
 #  JpegImporter                 - JPEG importer
+#  KtxImageConverter            - KTX image converter
+#  KtxImporter                  - KTX importer
+#  MeshOptimizerSceneConverter  - MeshOptimizer scene converter
 #  MiniExrImageConverter        - OpenEXR image converter using miniexr
 #  OpenGexImporter              - OpenGEX importer
 #  PngImageConverter            - PNG image converter
 #  PngImporter                  - PNG importer
+#  PrimitiveImporter            - Primitive importer
+#  SpirvToolsShaderConverter    - SPIR-V Tools shader converter
 #  StanfordImporter             - Stanford PLY importer
+#  StanfordSceneConverter       - Stanford PLY converter
+#  StbDxtImageConverter         - BC1/BC3 image compressor using stb_dxt
 #  StbImageConverter            - Image converter using stb_image_write
 #  StbImageImporter             - Image importer using stb_image
 #  StbTrueTypeFont              - TrueType font using stb_truetype
 #  StbVorbisAudioImporter       - OGG audio importer using stb_vorbis
+#  StlImporter                  - STL importer
 #  TinyGltfImporter             - GLTF importer using tiny_gltf
 #
 # Some plugins expose their internal state through separate libraries. The
@@ -69,8 +80,8 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2019 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -97,7 +108,7 @@ set(_MAGNUMPLUGINS_DEPENDENCIES )
 foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
     if(_component MATCHES ".+AudioImporter$")
         set(_MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES Audio)
-    elseif(_component MATCHES ".+(Importer|ImageConverter)")
+    elseif(_component MATCHES ".+(Importer|ImageConverter|SceneConverter)")
         set(_MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)$")
         set(_MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES Text)
@@ -105,8 +116,18 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
 
     if(_component STREQUAL AssimpImporter)
         list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES AnyImageImporter)
+    elseif(_component STREQUAL CgltfImporter)
+        list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES AnyImageImporter)
+    elseif(_component STREQUAL MeshOptimizerSceneConverter)
+        list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES MeshTools)
     elseif(_component STREQUAL OpenGexImporter)
         list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES AnyImageImporter)
+    elseif(_component STREQUAL PrimitiveImporter)
+        list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES Primitives)
+    elseif(_component STREQUAL StanfordImporter)
+        list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES MeshTools)
+    elseif(_component STREQUAL StanfordSceneConverter)
+        list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES MeshTools)
     elseif(_component STREQUAL TinyGltfImporter)
         list(APPEND _MAGNUMPLUGINS_${_component}_MAGNUM_DEPENDENCIES AnyImageImporter)
     endif()
@@ -122,14 +143,21 @@ mark_as_advanced(MAGNUMPLUGINS_INCLUDE_DIR)
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMPLUGINS_LIBRARY_COMPONENT_LIST OpenDdl)
-set(_MAGNUMPLUGINS_PLUGIN_COMPONENT_LIST
-    AssimpImporter BasisImageConverter BasisImporter DdsImporter DevIlImageImporter
-    DrFlacAudioImporter DrMp3AudioImporter DrWavAudioImporter Faad2AudioImporter
-    FreeTypeFont HarfBuzzFont JpegImageConverter JpegImporter
-    MiniExrImageConverter OpenGexImporter PngImageConverter PngImporter
-    StanfordImporter StbImageConverter StbImageImporter StbTrueTypeFont
-    StbVorbisAudioImporter TinyGltfImporter)
+set(_MAGNUMPLUGINS_LIBRARY_COMPONENTS OpenDdl)
+set(_MAGNUMPLUGINS_PLUGIN_COMPONENTS
+    AssimpImporter BasisImageConverter BasisImporter CgltfImporter DdsImporter
+    DevIlImageImporter DrFlacAudioImporter DrMp3AudioImporter
+    DrWavAudioImporter Faad2AudioImporter FreeTypeFont GlslangShaderConverter
+    HarfBuzzFont IcoImporter JpegImageConverter JpegImporter
+    KtxImageConverter KtxImporter MeshOptimizerSceneConverter
+    MiniExrImageConverter OpenExrImageConverter OpenExrImporter
+    OpenGexImporter PngImageConverter PngImporter PrimitiveImporter
+    SpirvToolsShaderConverter StanfordImporter StanfordSceneConverter
+    StbDxtImageConverter StbImageConverter StbImageImporter
+    StbTrueTypeFont StbVorbisAudioImporter StlImporter
+    TinyGltfImporter)
+# Nothing is enabled by default right now
+set(_MAGNUMPLUGINS_IMPLICITLY_ENABLED_COMPONENTS )
 
 # Inter-component dependencies
 set(_MAGNUMPLUGINS_HarfBuzzFont_DEPENDENCIES FreeTypeFont)
@@ -149,19 +177,13 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
 endforeach()
 
 # Join the lists, remove duplicate components
+set(_MAGNUMPLUGINS_ORIGINAL_FIND_COMPONENTS ${MagnumPlugins_FIND_COMPONENTS})
 if(_MAGNUMPLUGINS_ADDITIONAL_COMPONENTS)
     list(INSERT MagnumPlugins_FIND_COMPONENTS 0 ${_MAGNUMPLUGINS_ADDITIONAL_COMPONENTS})
 endif()
 if(MagnumPlugins_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES MagnumPlugins_FIND_COMPONENTS)
 endif()
-
-# Convert components lists to regular expressions so I can use if(MATCHES).
-# TODO: Drop this once CMake 3.3 and if(IN_LIST) can be used
-foreach(_WHAT LIBRARY PLUGIN)
-    string(REPLACE ";" "|" _MAGNUMPLUGINS_${_WHAT}_COMPONENTS "${_MAGNUMPLUGINS_${_WHAT}_COMPONENT_LIST}")
-    set(_MAGNUMPLUGINS_${_WHAT}_COMPONENTS "^(${_MAGNUMPLUGINS_${_WHAT}_COMPONENTS})$")
-endforeach()
 
 # Find all components
 foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
@@ -174,7 +196,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         set(MagnumPlugins_${_component}_FOUND TRUE)
     else()
         # Library components
-        if(_component MATCHES ${_MAGNUMPLUGINS_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
             add_library(MagnumPlugins::${_component} UNKNOWN IMPORTED)
 
             # Set library defaults, find the library
@@ -189,7 +211,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # Plugin components
-        if(_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS)
             add_library(MagnumPlugins::${_component} UNKNOWN IMPORTED)
 
             # AudioImporter plugin specific name suffixes
@@ -212,6 +234,10 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
             # ImageConverter plugin specific name suffixes
             elseif(_component MATCHES ".+ImageConverter$")
                 set(_MAGNUMPLUGINS_${_COMPONENT}_PATH_SUFFIX imageconverters)
+
+            # SceneConverter plugin specific name suffixes
+            elseif(_component MATCHES ".+SceneConverter$")
+                set(_MAGNUMPLUGINS_${_COMPONENT}_PATH_SUFFIX sceneconverters)
 
             # FontConverter plugin specific name suffixes
             elseif(_component MATCHES ".+FontConverter$")
@@ -252,7 +278,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # Library location for plugins/libraries
-        if(_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS} OR _component MATCHES ${_MAGNUMPLUGINS_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
             if(MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_RELEASE)
                 set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
                     IMPORTED_CONFIGURATIONS RELEASE)
@@ -293,6 +319,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES basisu_transcoder)
             endif()
 
+        # CgltfImporter has no dependencies
         # DdsImporter has no dependencies
 
         # DevIlImageImporter plugin dependencies
@@ -325,6 +352,12 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${FREETYPE_LIBRARIES})
             endif()
 
+        # GlslangShaderConverter plugin dependencies
+        elseif(_component STREQUAL GlslangShaderConverter)
+            find_package(Glslang REQUIRED)
+            set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Glslang::Glslang)
+
         # HarfBuzzFont plugin dependencies
         elseif(_component STREQUAL HarfBuzzFont)
             find_package(Freetype)
@@ -342,6 +375,8 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
             set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES HarfBuzz::HarfBuzz)
 
+        # IcoImporter has no dependencies
+
         # JpegImporter / JpegImageConverter plugin dependencies
         elseif(_component STREQUAL JpegImageConverter OR _component STREQUAL JpegImporter)
             find_package(JPEG)
@@ -356,7 +391,30 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${JPEG_LIBRARIES})
             endif()
 
+        # KtxImageConverter has no dependencies
+        # KtxImporter has no dependencies
+
+        # MeshOptimizerSceneConverter plugin dependencies
+        elseif(_component STREQUAL MeshOptimizerSceneConverter)
+            if(NOT TARGET meshoptimizer)
+                find_package(meshoptimizer REQUIRED CONFIG)
+                set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES meshoptimizer::meshoptimizer)
+            else()
+                set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES meshoptimizer)
+            endif()
+
         # MiniExrImageConverter has no dependencies
+
+        # OpenExrImporter / OpenExrImageConverter plugin dependencies
+        elseif(_component STREQUAL OpenExrImporter OR _component STREQUAL OpenExrImageConverter)
+            # Force our own FindOpenEXR module, which then delegates to the
+            # config if appropriate
+            find_package(OpenEXR REQUIRED MODULE)
+            set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES OpenEXR::IlmImf)
+
         # No special setup for the OpenDdl library
         # OpenGexImporter has no dependencies
 
@@ -377,17 +435,29 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                 set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${PNG_LIBRARIES})
             endif()
-        endif()
+
+        # PrimitiveImporter has no dependencies
+
+        # SpirvToolsShaderConverter plugin dependencies
+        elseif(_component STREQUAL SpirvToolsShaderConverter)
+            find_package(SpirvTools REQUIRED)
+            set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES SpirvTools::SpirvTools SpirvTools::Opt)
 
         # StanfordImporter has no dependencies
+        # StanfordSceneConverter has no dependencies
+        # StbDxtImageConverter has no dependencies
         # StbImageConverter has no dependencies
         # StbImageImporter has no dependencies
         # StbTrueTypeFont has no dependencies
         # StbVorbisAudioImporter has no dependencies
+        # StlImporter has no dependencies
         # TinyGltfImporter has no dependencies
 
+        endif()
+
         # Find plugin/library includes
-        if(_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS} OR _component MATCHES ${_MAGNUMPLUGINS_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
             find_path(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR
                 NAMES ${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES}
                 HINTS ${MAGNUMPLUGINS_INCLUDE_DIR}/${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
@@ -395,7 +465,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # Automatic import of static plugins
-        if(_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS AND _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR)
             file(READ ${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnumPlugins${_component}Configure)
             string(FIND "${_magnumPlugins${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnumPlugins${_component}_BUILD_STATIC)
             if(NOT _magnumPlugins${_component}_BUILD_STATIC EQUAL -1)
@@ -404,7 +474,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
             endif()
         endif()
 
-        if(_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS} OR _component MATCHES ${_MAGNUMPLUGINS_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
             # Link to core Magnum library, add other Magnum dependencies
             set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
@@ -421,7 +491,7 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         endif()
 
         # Decide if the plugin/library was found
-        if((_component MATCHES ${_MAGNUMPLUGINS_PLUGIN_COMPONENTS} OR _component MATCHES ${_MAGNUMPLUGINS_LIBRARY_COMPONENTS}) AND _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_RELEASE))
+        if((_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS) AND _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_RELEASE))
             set(MagnumPlugins_${_component}_FOUND TRUE)
         else()
             set(MagnumPlugins_${_component}_FOUND FALSE)
@@ -429,7 +499,41 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
     endif()
 endforeach()
 
+# For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
+# useful info about the failed components.
+if(NOT CMAKE_VERSION VERSION_LESS 3.16)
+    set(_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE)
+    # Go only through the originally specified find_package() components, not
+    # the dependencies added by us afterwards
+    foreach(_component ${_MAGNUMPLUGINS_ORIGINAL_FIND_COMPONENTS})
+        if(MagnumPlugins_${_component}_FOUND)
+            continue()
+        endif()
+
+        # If it's not known at all, tell the user -- it might be a new library
+        # and an old Find module, or something platform-specific.
+        if(NOT _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS)
+            list(APPEND _MAGNUMPLUGINS_REASON_FAILURE_MESSAGE "${_component} is not a known component on this platform.")
+        # Otherwise, if it's not among implicitly built components, hint that
+        # the user may need to enable it
+        # TODO: currently, the _FOUND variable doesn't reflect if dependencies
+        #   were found. When it will, this needs to be updated to avoid
+        #   misleading messages.
+        elseif(NOT _component IN_LIST _MAGNUMPLUGINS_IMPLICITLY_ENABLED_COMPONENTS)
+            string(TOUPPER ${_component} _COMPONENT)
+            list(APPEND _MAGNUMPLUGINS_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Magnum Plugins.")
+        # Otherwise we have no idea. Better be silent than to print something
+        # misleading.
+        else()
+        endif()
+    endforeach()
+
+    string(REPLACE ";" " " _MAGNUMPLUGINS_REASON_FAILURE_MESSAGE "${_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE}")
+    set(_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE REASON_FAILURE_MESSAGE "${_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(MagnumPlugins
     REQUIRED_VARS MAGNUMPLUGINS_INCLUDE_DIR
-    HANDLE_COMPONENTS)
+    HANDLE_COMPONENTS
+    ${_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE})
