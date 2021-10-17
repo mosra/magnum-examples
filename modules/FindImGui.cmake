@@ -64,6 +64,11 @@ if(CORRADE_TARGET_APPLE)
     find_library(_IMGUI_ApplicationServices_LIBRARY ApplicationServices)
     mark_as_advanced(_IMGUI_ApplicationServices_LIBRARY)
     set(_IMGUI_EXTRA_LIBRARIES ${_IMGUI_ApplicationServices_LIBRARY})
+
+# Since 1.82, ImGui on MinGW needs the imm32 library. For MSVC the library
+# seems to be linked implicitly so this is not needed.
+elseif(CORRADE_TARGET_WINDOWS AND CORRADE_TARGET_MINGW)
+    set(_IMGUI_EXTRA_LIBRARIES imm32)
 endif()
 
 # Vcpkg distributes imgui as a library with a config file, so try that first --
@@ -75,7 +80,6 @@ endif()
 if(NOT IMGUI_DIR AND TARGET imgui::imgui)
     if(NOT TARGET ImGui::ImGui)
         add_library(ImGui::ImGui INTERFACE IMPORTED)
-        # TODO: remove once 1.71 is obsolete
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES imgui::imgui ${_IMGUI_EXTRA_LIBRARIES})
 
@@ -104,7 +108,6 @@ else()
         add_library(ImGui::ImGui INTERFACE IMPORTED)
         set_property(TARGET ImGui::ImGui APPEND PROPERTY
             INTERFACE_INCLUDE_DIRECTORIES ${ImGui_INCLUDE_DIR})
-        # TODO: remove once 1.71 is obsolete
         if(_IMGUI_EXTRA_LIBRARIES)
             set_property(TARGET ImGui::ImGui APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_IMGUI_EXTRA_LIBRARIES})

@@ -96,6 +96,8 @@ mark_as_advanced(MAGNUMEXTRAS_INCLUDE_DIR)
 # components from other repositories)
 set(_MAGNUMEXTRAS_LIBRARY_COMPONENTS Ui)
 set(_MAGNUMEXTRAS_EXECUTABLE_COMPONENTS player ui-gallery)
+# Nothing is enabled by default right now
+set(_MAGNUMEXTRAS_IMPLICITLY_ENABLED_COMPONENTS )
 
 # Inter-component dependencies
 set(_MAGNUMEXTRAS_ui-gallery_DEPENDENCIES Ui)
@@ -185,8 +187,6 @@ foreach(_component ${MagnumExtras_FIND_COMPONENTS})
 
         # Link to core Magnum library, add inter-library dependencies
         if(_component IN_LIST _MAGNUMEXTRAS_LIBRARY_COMPONENTS)
-            # Link to Corrade dependencies, link to core Magnum library and
-            # other Magnum dependencies
             foreach(_dependency ${_MAGNUMEXTRAS_${_component}_CORRADE_DEPENDENCIES})
                 set_property(TARGET MagnumExtras::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Corrade::${_dependency})
