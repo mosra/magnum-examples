@@ -759,27 +759,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     endif()
                 endif()
 
-                # With GLVND (since CMake 3.11) we need to explicitly link to
-                # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
-                # our own EGL find module, which makes things simpler. The
-                # upstream FindOpenGL is anything but simple. Also can't use
-                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF.
-                if(MAGNUM_TARGET_GL)
-                    if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-                        set(OpenGL_GL_PREFERENCE GLVND)
-                        find_package(OpenGL)
-                        if(OPENGL_opengl_LIBRARY)
-                            set_property(TARGET Magnum::${_component} APPEND
-                            PROPERTY INTERFACE_LINK_LIBRARIES OpenGL::GLX)
-                        endif()
-                    elseif(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
-                        find_package(EGL)
-                        set_property(TARGET Magnum::${_component} APPEND
-                            PROPERTY INTERFACE_LINK_LIBRARIES EGL::EGL)
-                    endif()
-                endif()
-
             # (Windowless) GLX application dependencies
             elseif(_component STREQUAL GlxApplication OR _component STREQUAL WindowlessGlxApplication)
                 find_package(X11)
