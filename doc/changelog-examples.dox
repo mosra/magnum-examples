@@ -60,6 +60,12 @@ namespace Magnum {
     `dpkg-buildpackage`, avoiding a confusing error message that might lead
     people to think the packaging failed (see [mosra/magnum-plugins#105](https://github.com/mosra/magnum-plugins/issues/105))
 
+@subsection changelog-examples-latest-bugfixes Bug fixes
+
+-   The `ports` branch of the @ref examples-picking was fixed to work properly
+    on Firefox ... after three long years. See
+    [mosra/magnum-examples#53](https://github.com/mosra/magnum-examples/issues/53).
+
 @subsection changelog-examples-latest-documentation Documentation
 
 -   Updated license link for Source Sans Pro used by the
