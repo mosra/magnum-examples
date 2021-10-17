@@ -45,7 +45,7 @@
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 
@@ -60,7 +60,7 @@ class TexturedTriangleExample: public Platform::Application {
         void drawEvent() override;
 
         GL::Mesh _mesh;
-        Shaders::Flat2D _shader;
+        Shaders::FlatGL2D _shader;
         GL::Texture2D _texture;
 };
 
@@ -71,7 +71,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         .setWindowFlags(Configuration::WindowFlag::Resizable)
         #endif
     },
-    _shader{Shaders::Flat2D::Flag::Textured}
+    _shader{Shaders::FlatGL2D::Flag::Textured}
 {
     struct TriangleVertex {
         Vector2 position;
@@ -88,8 +88,8 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
     _mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3)
         .addVertexBuffer(std::move(buffer), 0,
-            Shaders::Flat2D::Position{},
-            Shaders::Flat2D::TextureCoordinates{});
+            Shaders::FlatGL2D::Position{},
+            Shaders::FlatGL2D::TextureCoordinates{});
 
     /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;

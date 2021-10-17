@@ -40,7 +40,7 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/MeshTools/Compile.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/MeshData.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
@@ -74,7 +74,7 @@ class RayTracingExample: public Platform::Application {
 
         Containers::Pointer<ArcBall> _arcballCamera;
         GL::Texture2D _texture{NoCreate};
-        Shaders::Flat2D _shader{NoCreate};
+        Shaders::FlatGL2D _shader{NoCreate};
         GL::Mesh _square{NoCreate};
 
         Containers::Pointer<RayTracer> _rayTracer;
@@ -122,7 +122,7 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
        software rendering. OTOH this adds a dependency on four new libs
        (MeshTools, Primitives, Shaders and Trade) which isn't exactly ideal
        either. */
-    _shader = Shaders::Flat2D{Shaders::Flat2D::Flag::Textured};
+    _shader = Shaders::FlatGL2D{Shaders::FlatGL2D::Flag::Textured};
     _square = MeshTools::compile(
         Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 
