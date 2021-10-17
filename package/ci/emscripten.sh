@@ -36,7 +36,10 @@ cd ../..
 
 # Crosscompile Box2D
 wget https://github.com/erincatto/Box2D/archive/v2.3.1.tar.gz
-tar -xzf v2.3.1.tar.gz && cd Box2D-2.3.1
+# Used to be named Box2D-2.3.1 in July 2020. Isn't it amazing when release URLs
+# that you'd think stay untouched just become a totally different thing
+# altogether?!
+tar -xzf v2.3.1.tar.gz && cd box2d-2.3.1
 mkdir build-emscripten && cd build-emscripten
 cmake ../Box2D \
     -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten.cmake" \
