@@ -240,14 +240,25 @@ void PickingExample::mouseReleaseEvent(MouseEvent& event) {
     /* Read object ID at given click position, and then switch to the color
        attachment again so drawEvent() blits correct buffer */
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
-    Image2D data = _framebuffer.read(
-        Range2Di::fromSize(fbPosition, {1, 1}),
-        {PixelFormat::R32UI});
+    Image2D data = _framebuffer.read(Range2Di::fromSize(fbPosition, {1, 1}),
+        /* WebGL only allows read through the full RGBA32 and 32-bit types */
+        #ifndef MAGNUM_TARGET_WEBGL
+        PixelFormat::R32UI
+        #else
+        PixelFormat::RGBA32UI
+        #endif
+    );
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
 
     /* Highlight object under mouse and deselect all other */
     for(auto* o: _objects) o->setSelected(false);
-    UnsignedInt id = data.pixels<UnsignedInt>()[0][0];
+    const UnsignedInt id =
+        #ifndef MAGNUM_TARGET_WEBGL
+        data.pixels<UnsignedInt>()[0][0]
+        #else
+        data.pixels<Vector4ui>()[0][0][0]
+        #endif
+        ;
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);
 
