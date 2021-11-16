@@ -34,12 +34,9 @@ namespace Magnum {
 
 @image html viewer.png
 
-In this example we will import a 3D scene file and display it interactively on
-the screen. The tutorial covers these new features:
-
--   Using @ref SceneGraph for managing objects, their relations and
-    transformations.
--   Importing scenes, meshes, materials and textures via @ref Trade::AbstractImporter.
+This example shows how to load a 3D scene file provided via a command line
+argument, import the scene hierarchy, meshes, materials and textures and
+populate a @ref SceneGraph with it.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/viewer/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
@@ -50,13 +47,12 @@ features. For a full-featured model viewer and animation player see the
 @section examples-viewer-scenegraph Scene graph
 
 In previous examples we managed our scene manually, because there was just one
-object. However, as object count increases, it's better to have the objects
-organized in a scene graph. Magnum @ref SceneGraph takes care of three key
-things:
+object. However, as scenes grow more complex, it's better to have them
+organized somehow. Magnum @ref SceneGraph takes care of three key things:
 
 -   parent/child object relations
 -   hierarchic object transformations
--   attaching features to objects (drawing, animation, ...)
+-   attaching *features* to objects (drawing, animation, ...)
 
 For a scene there is one root @ref SceneGraph::Scene object and some
 @ref SceneGraph::Object instances. Each object can have a parent and maintains
@@ -70,13 +66,13 @@ convenience functions for most used transformations, like translation, rotation
 and scaling. It is also possible to calculate an absolute transformation or
 transformation relative to some arbitrary object in the same scene.
 
-Features are added to objects to make them do something useful. The most common
-feature, which will be also used in this example, is @ref SceneGraph::Drawable.
-When implemented, it allows the object to be drawn on the screen. Each drawable
-is part of some @ref SceneGraph::DrawableGroup and this group can be then
-rendered in one shot using @ref SceneGraph::Camera. The camera is also a
-feature --- it handles various projection parameters and is attached to an
-object that controls its transformation in the scene.
+*Features* are added to objects to make them do something useful. The most
+common feature, which will be also used in this example, is
+@ref SceneGraph::Drawable. When implemented, it allows the object to be drawn
+on the screen. Each drawable is part of some @ref SceneGraph::DrawableGroup and
+this group can be then rendered in one shot using @ref SceneGraph::Camera. The
+camera is also a feature --- it handles various projection parameters and is
+attached to an object that controls its transformation in the scene.
 
 Magnum scene graph implementation works for both 2D and 3D scenes. Their usage
 is nearly the same and differs only in obvious ways (e.g. perspective
@@ -106,27 +102,27 @@ classes to save us more typing:
 Our main class stores shader instances for rendering colored and textured
 objects and all imported meshes and textures. After that, there is the scene
 graph --- root scene instance, a manipulator object for easy interaction with
-the scene, object holding the camera, the actual camera instance and a group
-of all drawables in the scene.
+the scene, object holding the camera, the actual camera feature instance and a
+group of all drawables in the scene.
 
 @skip class ViewerExample
 @until };
 @until };
 
 In the constructor we first parse command-line arguments using
-@ref Corrade::Utility::Arguments "Utility::Arguments". At the very least we
-need a filename to load. Magnum itself is also able to consume command-line
-arguments, for example to control DPI scaling or driver-specific options. All
-of them start with `--magnum-` and @ref Corrade::Utility::Arguments::addSkippedPrefix() "addSkippedPrefix()"
-makes it possible to specify them instead of failing with unknown argument
-error.
+@relativeref{Corrade,Utility::Arguments}. At the very least we need a filename
+to load. Magnum itself is also able to consume command-line arguments, for
+example to control DPI scaling or enable GPU validation. All of them start with
+`--magnum-` and @relativeref{Corrade::Utility::Arguments,addSkippedPrefix()}
+lets them get propagated to the engine without the application failing due to
+an unrecognized argument name.
 
 @skip ViewerExample::ViewerExample
 @until .parse(
 
 Then we setup the scene:
 
-@skip Every scene needs a camera
+@skip _cameraObject
 @until manipulator.setParent
 
 After that, we enable depth test and face culling for correct and fast
@@ -135,52 +131,45 @@ time. Note that these properties are usually part of the imported material
 data, but to keep the example simple we'll be only using the diffuse color and
 texture properties.
 
-@skip Setup renderer
+@skip GL::Renderer::enable
 @until setShininess
 @until setShininess
 
 @section examples-viewer-import Importing the data
 
-For scene import we are using the @ref Trade::AnySceneImporter "AnySceneImporter"
-plugin, which detects format based or file extension and then redirects the
-actual loading to a plugin dedicated for given format. So, for example, if you
-open `mesh.obj`, it'll be opened using @ref Trade::ObjImporter "ObjImporter",
-if you open `mesh.ply`, it'll go to @ref Trade::StanfordImporter "StanfordImporter",
-etc. Sometimes there is more than one possible choice (glTF files in particular
-can be opened using both @ref Trade::TinyGltfImporter "TinyGltfImporter" and
-@ref Trade::AssimpImporter "AssimpImporter") and so above we made it possible
-to override the used importer plugin using the @cpp "importer" @ce command-line
-argument. Another option is to specify the preference using
-@ref Corrade::PluginManager::Manager::setPreferredPlugins().
+For scene import we are using the @relativeref{Trade,AnySceneImporter} plugin,
+which detects format based or file extension and then redirects the actual
+loading to a plugin dedicated for given format. So, for example, if you open
+`mesh.obj`, it'll be opened using @relativeref{Trade,ObjImporter}, if you open
+`mesh.ply`, it'll go to @relativeref{Trade,StanfordImporter}, etc. Sometimes
+there is more than one possible choice (glTF files in particular can be opened
+using @relativeref{Trade,CgltfImporter}, @relativeref{Trade,TinyGltfImporter}
+or @relativeref{Trade,AssimpImporter}) and so above we made it possible to
+override the used importer plugin using the `--importer` command-line argument.
+Another option is to specify the preference using
+@relativeref{Corrade,PluginManager::Manager::setPreferredPlugins()}. See also
+@ref file-formats for a list of supported file formats and plugins implementing
+them.
 
-We try load and instantiate the plugin and open the file. If any operation
-fails, the application simply exits. The plugins print a message on error, so
-it's usually not needed to repeat it in application code.
+We try load and instantiate the plugin and open the file, which isn't any
+different from when we dealt with just images in the @ref examples-texturedquad
+example:
 
-@skip Load a scene importer
-@until std::exit(4);
+@skip PluginManager::Manager
+@until std::exit(1);
 
-First we import all textures. The textures are stored in an array of
-@ref Corrade::Containers::Optional "Containers::Optional" objects, so if
-importing a texture fails, given slot is set to
-@ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the
-unavailability. For simplicity we'll import only 8-bit-per-channel RGB or RGBA
-textures.
+@subsection examples-viewer-import-textures Importing textures
 
-Most scene importers internally use @ref Trade::AnyImageImporter "AnyImageImporter"
-for loading images from external files. It is similar to @ref Trade::AnySceneImporter "AnySceneImporter",
-but specialized for image loading. For example if the textures references
-`image.png`, it gets opened through @ref Trade::PngImporter "PngImporter",
-`texture.jpg` through @ref Trade::JpegImporter "JpegImporter" etc. The plugins
-also have aliases, so for example on platforms that don't have `libPNG`
-available, dependency-less @ref Trade::StbImageImporter "StbImageImporter" can
-be transparently used in place of @ref Trade::PngImporter "PngImporter" without
-changing anything in the loading code. The ultimate goal is that you can deploy
-different set of plugins for each platform but still use them in
-platform-independent way, without worrying about which plugin might be
-available on which system.
+First we import textures, if there are any. The textures are stored in an
+array of @relativeref{Corrade,Containers::Optional} objects, so if importing a
+texture fails, given slot is set to @relativeref{Corrade,Containers::NullOpt}
+to indicate the unavailability. This is also not that different from image
+loading in the @ref examples-texturedquad example, except that we first get a
+@ref Trade::TextureData, which references both the image and associated texture
+filtering options. For simplicity we'll import only 2D textures and ignore
+GPU-compressed formats.
 
-@skip Load all textures
+@skip _textures =
 @until }
 @until }
 @until }
@@ -189,64 +178,113 @@ available on which system.
 @until }
 @until }
 @until }
-@until }
+
+Note that the scene importer transparently deals with image loading for us, be
+it images embedded directly in the file or referenced externally. For
+flexibility, scene importers internally use @relativeref{Trade,AnyImageImporter}.
+It is like the @relativeref{Trade,AnySceneImporter} we used, but for images.
+For example if the scene references `image.png`, it gets opened through
+@relativeref{Trade,PngImporter}, `texture.jpg` through @relativeref{Trade,JpegImporter} etc. The plugins can also alias each other, so
+for example on platforms that don't have `libPNG` available, dependency-less
+@relativeref{Trade,StbImageImporter} can be transparently used in place of
+@relativeref{Trade,PngImporter} without changing anything in the application
+code. The ultimate goal is that you can deploy a different set of plugins for
+each platform but still use them in a platform-independent way, without having
+complex logic for which plugins to use on which system.
+
+@subsection examples-viewer-import-materials Importing materials
 
 After that we import all materials. The material data are stored only
 temporarily, because we'll later extract only the data we need from them.
-Again, for simplicity, we'll restrict the loading only to Phong-based
-materials.
+For simplicity, we'll treat each material *as if* it was Phong by turning it
+into @ref Trade::PhongMaterialData. Its convenience interfaces also provide
+reasonable defaults for when the material wouldn't have the Phong attributes
+we're looking for.
 
-@skip Load all materials
-@until }
-@until }
-@until }
-@until }
-@until }
-
-Next thing is loading meshes. Because the models might or might not be
-textured, the mesh might or might not be indexed etc., the mesh creation
-procedure can get fairly long-winded. There is a convenience
-@ref MeshTools::compile() function which examines the data, adds all available
-vertex attributes to the buffer (normals, texture coordinates...), packs the
-indices (if any) and then configures the mesh for the @ref Shaders::GenericGL
-shader, from which all other stock shaders are derived. This function is useful
-for exactly this case of importing general meshes --- but the lower-level way
-involving @ref MeshTools::interleave() and @ref MeshTools::compressIndices() as
-explained in the earlier @ref examples-primitives "Primitives example" is far
-more flexible if you want data packing, index optimization and other
-performance-related stuff. The only case that the following code does not
-handle are meshes without normals (as is common with files in Stanford/PLY
-format), there the normals would need to be generated to have the mesh
-displayed with proper lighting.
-
-@skip Load all meshes
-@until }
+@skip Containers::Array<Containers::Optional<Trade::PhongMaterialData>>
 @until }
 @until }
 @until }
 @until }
 
-Last remaining part is to populate the actual scene. If the format supports
-scene hierarchy, we recursively import all objects in the scene. If it doesn't
-(which is the case for the simplest mesh formats), we just add a single object
-with the first imported mesh and put a simple color-only material on it.
+@subsection examples-viewer-import-meshes Importing meshes
 
-@skip Load the scene
-@until new ColoredDrawable
+Next thing is loading meshes. This is easy to do with @ref MeshTools::compile()
+that was introduced previously, but we additionally tell it to generate
+normals if they're not present (as is sometimes the case with Stanford PLY
+files) --- if we wouldn't, the mesh would render completely black.
+
+@skip _meshes =
+@until }
+@until }
+@until }
 @until }
 
-The actual function that adds objects into the scene isn't very complex. First
-it creates the object with correct parent and transformation, then attaches
-either a colored or texture drawable feature to it (more on these two below)
-and then recursively calls itself on all object children. Again, for
-simplicity, only diffuse texture is considered in this example.
+@subsection examples-viewer-import-scene Importing the scene
 
-@skip void ViewerExample::addObject
+Last remaining part is to populate the actual scene. First we take care of an
+edge case where a file doesn't have any scene (which is always the case for PLY
+or STL files) --- we'll just load the first mesh, if it's there, and slap a
+default material on it:
+
+@skip if(importer->defaultScene
 @until }
 @until }
+
+Simply put, @ref Trade::SceneData contains a set of *fields*, where each field
+is a list of items describing which object has which parent, which meshes are
+assigned to which objects and so on. A scene can be many things so we check
+that it's 3D and contains a hierarchy with mesh references --- otherwise we
+wouldn't have anything to build our scene graph from. The
+@relativeref{Corrade::Utility,Fatal} utility prints a message and exits.
+
+@skip Containers::Optional<Trade::SceneData>
 @until }
 @until }
+
+Similarly as with other data we've imported so far, objects in
+@ref Trade::SceneData are referenced by IDs, so we create an array to map from
+IDs to actual `Object3D` instances. Here however, not all objects in the
+@relativeref{Trade::SceneData,mappingBound()} may actually be present in the
+scene hierarchy, some might describe other structures or belong to other
+scenes, and so we instantiate only objects that have a
+@ref Trade::SceneField::Parent assigned. We do that through the convenience
+@relativeref{Trade::SceneData,parentsAsArray()} that converts an arbitrary
+internal representation to pairs of 32-bit object ID to parent object ID
+mappings:
+
+@skip Containers::Array<Object3D*> objects
+@until new Object3D
+
+Then we go through the parent field again and set the actual parent, or parent
+directly to the manipulator if it's a root object indicated with @cpp -1 @ce.
+We do this in a separate pass to ensure the parent object is already allocated
+by the time we pass it to @ref SceneGraph::Object::setParent():
+
+@skip for(const Containers::Pair<UnsignedInt, Int>& parent
+@until );
+
+Next we assign transformations. Because we checked that the scene is 3D, it
+implies that there's a (3D) transformation field. It could be also  represented
+as separate translation/rotation/scaling components, but we want just matrices
+and that's what @relativeref{Trade::SceneData,transformations3DAsArray()} will
+make for us. Note that we only consider objects that are part of the hierarchy
+we just created, ignoring fields referencing objects outside of it. It goes the
+other way as well --- the transformation field doesn't have to be present for
+all objects in the hierarchy, objects not referenced by the it will retain the
+default identity transformation.
+
+@skip for(const Containers::Pair<UnsignedInt, Matrix4>& transformation
 @until }
+
+Finally, for objects that are a part of the hierarchy and have a mesh assigned,
+we add a drawable, either colored or textured depending on what's specified in
+its associated material. For simplicity, only diffuse texture is considered in
+this example. Here it can happen that a single object can have multiple meshes
+assigned --- the @ref SceneGraph supports that natively and it'll simply result
+in more than one drawable attached.
+
+@skip for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>&
 @until }
 @until }
 @until }
@@ -281,6 +319,7 @@ to import the light position and other properties as well, if the file has
 them.
 
 @skip void ColoredDrawable::draw
+@until }
 @until }
 @until }
 @until }
