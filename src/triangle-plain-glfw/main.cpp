@@ -63,19 +63,15 @@ int main(int argc, char** argv) {
             Vector2 position;
             Color3 color;
         };
-        const TriangleVertex data[]{
+        const TriangleVertex vertices[]{
             {{-0.5f, -0.5f}, 0xff0000_rgbf},    /* Left vertex, red color */
             {{ 0.5f, -0.5f}, 0x00ff00_rgbf},    /* Right vertex, green color */
             {{ 0.0f,  0.5f}, 0x0000ff_rgbf}     /* Top vertex, blue color */
         };
 
-        GL::Buffer buffer;
-        buffer.setData(data);
-
         GL::Mesh mesh;
-        mesh.setPrimitive(GL::MeshPrimitive::Triangles)
-            .setCount(3)
-            .addVertexBuffer(buffer, 0,
+        mesh.setCount(Containers::arraySize(vertices))
+            .addVertexBuffer(GL::Buffer{vertices}, 0,
                 Shaders::VertexColorGL2D::Position{},
                 Shaders::VertexColorGL2D::Color3{});
 

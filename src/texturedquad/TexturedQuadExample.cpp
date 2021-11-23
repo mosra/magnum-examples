@@ -27,7 +27,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Resource.h>
@@ -41,55 +40,55 @@
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 
-#include "TexturedTriangleShader.h"
+#include "TexturedQuadShader.h"
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleExample: public Platform::Application {
+class TexturedQuadExample: public Platform::Application {
     public:
-        explicit TexturedTriangleExample(const Arguments& arguments);
+        explicit TexturedQuadExample(const Arguments& arguments);
 
     private:
         void drawEvent() override;
 
         GL::Mesh _mesh;
-        TexturedTriangleShader _shader;
+        TexturedQuadShader _shader;
         GL::Texture2D _texture;
 };
 
-TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
+TexturedQuadExample::TexturedQuadExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
-        .setTitle("Magnum Textured Triangle Example")}
+        .setTitle("Magnum Textured Quad Example")}
 {
-    struct TriangleVertex {
+    struct QuadVertex {
         Vector2 position;
         Vector2 textureCoordinates;
     };
-    const TriangleVertex data[]{
-        {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Left position and texture coordinate */
-        {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Right position and texture coordinate */
-        {{ 0.0f,  0.5f}, {0.5f, 1.0f}}  /* Top position and texture coordinate */
+    const QuadVertex vertices[]{
+        {{ 0.5f, -0.5f}, {1.0f, 0.0f}}, /* Bottom right */
+        {{ 0.5f,  0.5f}, {1.0f, 1.0f}}, /* Top right */
+        {{-0.5f, -0.5f}, {0.0f, 0.0f}}, /* Bottom left */
+        {{-0.5f,  0.5f}, {0.0f, 1.0f}}  /* Top left */
     };
+    const UnsignedInt indices[]{        /* 3--1 1 */
+        0, 1, 2,                        /* | / /| */
+        2, 1, 3                         /* |/ / | */
+    };                                  /* 2 2--0 */
 
-    GL::Buffer buffer;
-    buffer.setData(data);
-    _mesh.setCount(3)
-        .addVertexBuffer(std::move(buffer), 0,
-            TexturedTriangleShader::Position{},
-            TexturedTriangleShader::TextureCoordinates{});
+    _mesh.setCount(Containers::arraySize(indices))
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            TexturedQuadShader::Position{},
+            TexturedQuadShader::TextureCoordinates{})
+        .setIndexBuffer(GL::Buffer{indices}, 0,
+            GL::MeshIndexType::UnsignedInt);
 
-    /* Load TGA importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate("TgaImporter");
-    if(!importer) std::exit(1);
+    const Utility::Resource rs{"texturedquad-data"};
+    if(!importer || !importer->openData(rs.getRaw("stone.tga")))
+        std::exit(1);
 
-    /* Load the texture */
-    const Utility::Resource rs{"textured-triangle-data"};
-    if(!importer->openData(rs.getRaw("stone.tga")))
-        std::exit(2);
-
-    /* Set texture data and parameters */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -99,7 +98,7 @@ TexturedTriangleExample::TexturedTriangleExample(const Arguments& arguments):
         .setSubImage(0, {}, *image);
 }
 
-void TexturedTriangleExample::drawEvent() {
+void TexturedQuadExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     using namespace Math::Literals;
@@ -114,4 +113,4 @@ void TexturedTriangleExample::drawEvent() {
 
 }}
 
-MAGNUM_APPLICATION_MAIN(Magnum::Examples::TexturedTriangleExample)
+MAGNUM_APPLICATION_MAIN(Magnum::Examples::TexturedQuadExample)

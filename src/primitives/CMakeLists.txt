@@ -42,6 +42,7 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     Shaders
+    Trade
     Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -54,7 +55,8 @@ target_link_libraries(magnum-primitives PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::Shaders)
+    Magnum::Shaders
+    Magnum::Trade)
 
 install(TARGETS magnum-primitives DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

@@ -335,7 +335,7 @@ and there are more plugins for various other formats.
 @par Enabling model-loading plugins in your project
     If you're using the CMake subproject setup, you'll need to modify the
     top-level `CMakeLists.txt` to enable these --- expanding on what
-    @ref examples-textured-triangle-importers "was shown in the previous tutorial":
+    @ref examples-texturedquad-importers "was shown in the Textured Quad tutorial":
 @par
     @code{.cmake}
     ...

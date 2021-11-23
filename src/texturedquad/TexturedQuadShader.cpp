@@ -27,7 +27,7 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "TexturedTriangleShader.h"
+#include "TexturedQuadShader.h"
 
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
@@ -37,16 +37,16 @@
 
 namespace Magnum { namespace Examples {
 
-TexturedTriangleShader::TexturedTriangleShader() {
+TexturedQuadShader::TexturedQuadShader() {
     MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL330);
 
-    const Utility::Resource rs{"textured-triangle-data"};
+    const Utility::Resource rs{"texturedquad-data"};
 
     GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex};
     GL::Shader frag{GL::Version::GL330, GL::Shader::Type::Fragment};
 
-    vert.addSource(rs.get("TexturedTriangleShader.vert"));
-    frag.addSource(rs.get("TexturedTriangleShader.frag"));
+    vert.addSource(rs.get("TexturedQuadShader.vert"));
+    frag.addSource(rs.get("TexturedQuadShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
@@ -55,7 +55,6 @@ TexturedTriangleShader::TexturedTriangleShader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     _colorUniform = uniformLocation("color");
-
     setUniform(uniformLocation("textureData"), TextureUnit);
 }
 

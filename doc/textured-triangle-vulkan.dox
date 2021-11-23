@@ -31,10 +31,11 @@ namespace Magnum {
 
 @image html textured-triangle.png
 
-This example has equivalent output to the OpenGL
-@ref examples-textured-triangle "Textured Triangle" example, but uses Vulkan instead, building on top of @ref examples-triangle-vulkan. In addition there's
-a texture and descriptor layout / set / pool setup and sampling in the
-SPIR-V shader assembly.
+This example has output similar to the OpenGL
+@ref examples-texturedquad "Textured Quad" example, but uses Vulkan instead,
+building on top of @ref examples-triangle-vulkan. In addition there's a texture
+and descriptor layout / set / pool setup and sampling in the SPIR-V shader
+assembly.
 
 @section examples-textured-triangle-vulkan-source Source
 

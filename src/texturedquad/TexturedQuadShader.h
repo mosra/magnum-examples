@@ -1,5 +1,5 @@
-#ifndef Magnum_Examples_TexturedTriangle_TexturedTriangleShader_h
-#define Magnum_Examples_TexturedTriangle_TexturedTriangleShader_h
+#ifndef Magnum_Examples_TexturedQuad_TexturedQuadShader_h
+#define Magnum_Examples_TexturedQuad_TexturedQuadShader_h
 /*
     This file is part of Magnum.
 
@@ -35,19 +35,19 @@
 
 namespace Magnum { namespace Examples {
 
-class TexturedTriangleShader: public GL::AbstractShaderProgram {
+class TexturedQuadShader: public GL::AbstractShaderProgram {
     public:
         typedef GL::Attribute<0, Vector2> Position;
         typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
-        explicit TexturedTriangleShader();
+        explicit TexturedQuadShader();
 
-        TexturedTriangleShader& setColor(const Color3& color) {
+        TexturedQuadShader& setColor(const Color3& color) {
             setUniform(_colorUniform, color);
             return *this;
         }
 
-        TexturedTriangleShader& bindTexture(GL::Texture2D& texture) {
+        TexturedQuadShader& bindTexture(GL::Texture2D& texture) {
             texture.bind(TextureUnit);
             return *this;
         }

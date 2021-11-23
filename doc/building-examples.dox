@@ -233,7 +233,7 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example. Requires
     the @ref Text library and some TTF font plugin such as
     @ref Text::FreeTypeFont "FreeTypeFont".
--   `WITH_TEXTUREDTRIANGLE_EXAMPLE` --- Build the @ref examples-textured-triangle
+-   `WITH_TEXTUREDQUAD_EXAMPLE` --- Build the @ref examples-texturedquad
     example. Requires some TGA importer plugin such as
     @ref Trade::TgaImporter "TgaImporter", not available in OpenGL ES.
 -   `WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-textured-triangle-vulkan "Vulkan Textured Triangle"

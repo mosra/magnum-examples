@@ -29,7 +29,7 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-project(MagnumTexturedTriangleExample CXX)
+project(MagnumTexturedQuadExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -41,21 +41,21 @@ find_package(Magnum REQUIRED GL Trade Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(TexturedTriangle_RESOURCES resources.conf)
+corrade_add_resource(TexturedQuad_RESOURCES resources.conf)
 
-add_executable(magnum-textured-triangle WIN32
-    TexturedTriangleExample.cpp
-    TexturedTriangleShader.cpp
-    TexturedTriangleShader.h
-    ${TexturedTriangle_RESOURCES})
-target_link_libraries(magnum-textured-triangle PRIVATE
+add_executable(magnum-texturedquad WIN32
+    TexturedQuadExample.cpp
+    TexturedQuadShader.cpp
+    TexturedQuadShader.h
+    ${TexturedQuad_RESOURCES})
+target_link_libraries(magnum-texturedquad PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::GL
     Magnum::Magnum
     Magnum::Trade)
 
-install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+install(TARGETS magnum-texturedquad DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
-set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-textured-triangle)
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-texturedquad)
