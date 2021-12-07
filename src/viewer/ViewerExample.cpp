@@ -245,7 +245,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     }
 
     /* Allocate objects that are part of the hierarchy */
-    Containers::Array<Object3D*> objects{scene->mappingBound()};
+    Containers::Array<Object3D*> objects{std::size_t(scene->mappingBound())};
     Containers::Array<Containers::Pair<UnsignedInt, Int>> parents
         = scene->parentsAsArray();
     for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
