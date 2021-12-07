@@ -55,7 +55,7 @@ cmake .. \
 ninja install
 cd ../..
 
-# Crosscompile Magnum Extras
+# Magnum Extras
 git clone --depth 1 git://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build && cd build
@@ -92,7 +92,7 @@ cmake .. \
     -DWITH_RAYTRACING_EXAMPLE=ON \
     -DWITH_SHADOWS_EXAMPLE=OFF \
     -DWITH_TEXT_EXAMPLE=ON \
-    -DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON \
+    -DWITH_TEXTUREDQUAD_EXAMPLE=ON \
     -DWITH_TRIANGLE_EXAMPLE=ON \
     -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
     -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \

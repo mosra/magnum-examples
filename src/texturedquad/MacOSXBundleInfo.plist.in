@@ -7,11 +7,11 @@
     <key>CFBundleExecutable</key>
     <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
     <key>CFBundleIdentifier</key>
-    <string>cz.mosra.magnum.magnum-textured-triangle</string>
+    <string>cz.mosra.magnum.magnum-texturedquad</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Magnum Textured Triangle</string>
+    <string>Magnum Textured Quad</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
 

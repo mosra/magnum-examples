@@ -27,14 +27,12 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
-#include <Magnum/MeshTools/Interleave.h>
-#include <Magnum/MeshTools/CompressIndices.h>
+#include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_ANDROID
 #include <Magnum/Platform/AndroidApplication.h>
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -79,22 +77,7 @@ PrimitivesExample::PrimitivesExample(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
 
-    Trade::MeshData cube = Primitives::cubeSolid();
-
-    GL::Buffer vertices;
-    vertices.setData(MeshTools::interleave(cube.positions3DAsArray(),
-                                           cube.normalsAsArray()));
-
-    std::pair<Containers::Array<char>, MeshIndexType> compressed =
-        MeshTools::compressIndices(cube.indicesAsArray());
-    GL::Buffer indices{GL::Buffer::TargetHint::ElementArray};
-    indices.setData(compressed.first);
-
-    _mesh.setPrimitive(cube.primitive())
-        .setCount(cube.indexCount())
-        .addVertexBuffer(std::move(vertices), 0, Shaders::PhongGL::Position{},
-                                                 Shaders::PhongGL::Normal{})
-        .setIndexBuffer(std::move(indices), 0, compressed.second);
+    _mesh = MeshTools::compile(Primitives::cubeSolid());
 
     _transformation =
         Matrix4::rotationX(30.0_degf)*Matrix4::rotationY(40.0_degf);

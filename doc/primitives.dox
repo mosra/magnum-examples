@@ -32,126 +32,89 @@ namespace Magnum {
 
 @image html primitives.png
 
-This example shows how to create indexed meshes from imported data and do some
-basic user interaction, introducing these new features:
-
--   Interleaving vertex data and compressing indices for better performance.
--   Basic 3D transformations and perspective projection.
--   Mouse event handling.
-
-This example displays a colored cube with ability to change its color and
-rotate it using a mouse.
+This example shows how to easily create a @ref GL::Mesh from arbitrary external
+data and do basic mouse interaction in a 3D scene.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 @section examples-primitives-setup Setting up
 
-This example makes use of imported 3D mesh data, processes them and renders
-using a Phong shader.
+The new includes are for a @ref Primitives::cubeSolid(), which returns a
+@ref Trade::MeshData, which we then turn into a GL mesh using
+@ref MeshTools::compile(). And because we have a 3D scene now, we'll want to
+draw it with @ref Shaders::PhongGL instead of plain flat shading.
 
 @dontinclude primitives/PrimitivesExample.cpp
 @skip #include
 @until Trade/MeshData
 
-@note Magnum does not provide any global "include everything" header, but
-    instead keeps the headers small with little dependencies. It may be a bit
-    annoying at first, but helps to keep your build times short. See
-    @ref compilation-speedup for more information.
-
 This time, for user interactivity we'll need to implement mouse event handlers
-and store transformation & projection @ref Math::Matrix4 "matrices" plus
-current @ref Math::Color3 "color".
+and store transformation & projection @ref Math::Matrix4 "Matrix4" plus the
+current @ref Math::Color3 "Color3".
 
 @skip class PrimitivesExample
 @until };
 
 Because we are displaying a 3D scene, we need to enable depth test to have the
-cube rendered in proper Z-order. Enabling face culling is not needed for proper
-rendering, but it will speed things up as only front-facing faces will be
-rendered.
+cube rendered in proper Z order. The @ref GL::Renderer::Feature::FaceCulling is
+not strictly needed, but for closed meshes it can save a lot of rasterization
+work by discarding triangles that face away from camera.
 
 @skip PrimitivesExample::PrimitivesExample
 @until GL::Renderer::enable(GL::Renderer::Feature::FaceCulling
 
 @section examples-primitives-mesh Preparing the mesh
 
-We now use the pre-made @ref Primitives::cubeSolid() "cube primitive" and
-create a mesh from it. The mesh is indexed and contains position and normal
-data. As said in the @ref examples-triangle "Triangle example", interleaving
-the data gives us the best memory access performance. We can do it by hand as
-in the previous example, but using @ref MeshTools::interleave() is much more
-convenient. We upload the interleaved data directly to a vertex buffer.
+Perhaps the biggest leap from previous examples is that setting up the mesh is
+now just a simple oneliner:
 
-@skip Trade::MeshData
-@until vertices.setData(
-@until )
+@skipline _mesh =
 
-Why do we need an indexed mesh and what it actually is? In most meshes the
-same vertex data are shared among more than one vertex, even a simple square
-consists of two triangles sharing two adjacent vertices. To save precious GPU
-memory, the mesh can be indexed, i.e. containing a buffer with unique vertex
-data and an index buffer telling which data belong to which vertex. The indices
-coming from @ref Trade::MeshData::indicesAsArray() are by default 32-bit
-integers, but most meshes don't need the full 32-bit range to index vertex data
---- our mesh has only 36 unique vertices, thus going to a 16-bit or even 8-bit
-type would be enough. @ref MeshTools::compressIndices() again does all the
-boring work for us --- it checks index range and creates an array consisting of
-@ref UnsignedByte, @ref UnsignedShort or @ref UnsignedInt indices based on
-that.
+The main responsibility here lies on @ref Trade::MeshData, which is a class
+capable of describing arbitrary meshes in arbitrary layouts. It's used as the
+backbone of the @ref Primitives library as well as of Magnum's asset import
+pipeline, which will be shown in the next @ref examples-viewer "Model Viewer example".
 
-@skip std::pair<Containers::Array<char>
-@until indices.
+The @ref Primitives::cubeSolid() gives us an indexed triangle mesh with
+positions and normals. @ref MeshTools::compile() then takes the
+@ref Trade::MeshData, uploads it to the GPU, and pops out a @ref GL::Mesh that
+owns the index and vertex buffers and has all attributes configured to be
+rendered with builtin shaders.
 
-Everything is now ready for configuring the mesh. We set the primitive type,
-index count, add our vertex buffer and specify the index buffer and type.
+While this admittedly skipped quite a few intermediate steps compared to manual
+mesh setup from the previous examples, in practice you'll mostly either deal
+with raw attribute arrays or already have a @ref Trade::MeshData to begin with.
+Nevertheless, it's not an opaque container --- be sure to go through its
+documentation to understand how the data is represented, how the attributes
+can be accessed and how it all maps to a @ref GL::Mesh.
 
-@skip _mesh.setPrimitive
-@until .setIndexBuffer
+@section examples-primitives-transformation Transformation and projection
 
-@m_class{m-block m-success}
-
-@par Handling generic meshes
-    Please note that the above isn't a one-size-fits-all recipe. Other
-    primitives may not be indexed, some (such as wireframe primitives) may not
-    contain normals and may be suited for use with different shaders.
-    Additionally, with the `*AsArray()` APIs we're taking a shortcut and
-    extracting the position, normal and index arrays in a contiguous array of a
-    canonical type to avoid dealing with attribute data stored as @ref Vector2s
-    or @ref Vector3h, indices stored as @ref UnsignedByte, extra attributes or
-    paddings in the vertex layout and so on.
-@par
-    Covering all possible differences and optimization opportunities is out of
-    the scope of this tutorial, see documentation of the @ref Trade::MeshData
-    class, particular primitives in the @ref Primitives namespace, various
-    @ref MeshTools functions, the @ref Shaders namespace and the @ref GL::Mesh
-    class for the full picture.
-@par
-    While the purpose of this example is to explain the low-level APIs for
-    building vertex and index buffers, all code from this section could be
-    simplified to a single line of code with @ref MeshTools::compile() --- it's
-    a generic utility that prepares the mesh for use with any of the builtin
-    shaders. It takes *some* control away from you, but compared to the above
-    it also preserves the original vertex formats and attribute layout without
-    forcing you to deal with those manually:
-@par
-    @code{.cpp}
-    _mesh = MeshTools::compile(Primitives::cubeSolid());
-    @endcode
-
-As a final step in the constructor we specify the initial transformation,
-projection and color. See @ref matrix-vector and @ref transformations for a
-more thorough introduction to transformations.
+As a final step in the constructor we specify the initial cube transformation,
+rotating it slightly for a 3D look. Earlier we used color literals from
+@ref Math::Literals, here we use angle literals. Magnum has strongly-typed
+angles, which allows us to conveniently use degrees even though APIs such as
+@ref Matrix4::rotationX() accept radians:
 
 @skip _transformation =
+@until ;
+
+Then we set up a perspective projection with an aspect ratio matching the
+window size and an initial color with an orange hue. For a more thorough
+introduction to Magnum's vector math library please see @ref matrix-vector and
+@ref transformations.
+
+@skip _projection =
 @until }
 @until }
 @until }
 
 @section examples-primitives-rendering Rendering
 
-In the draw event we clear the framebuffer (don't forget to clear also the
-depth buffer), set transformation, normal and projection matrices and all
-material parameters and draw the mesh.
+In the draw event we clear the framebuffer, now also clearing the depth buffer
+as we need it for the depth test. For the shader we hardcode a directional
+light source, set the cached color, transformation and projection matrices
+including a normal matrix and draw the mesh.
 
 @skip void PrimitivesExample::drawEvent
 @until }
@@ -160,9 +123,15 @@ material parameters and draw the mesh.
 
 @section examples-primitives-events Mouse event handling
 
-Event handling is also nothing complicated, on every click (press + release) we
-change color hue to some other and on mouse drag we rotate the object based on
-relative mouse position to previous event.
+On a click (press + release) we want to shift the color hue and on mouse drag
+we'll rotate the object using a bunch of vector and matrix operations.
+
+To save resources, the application doesn't redraw constantly by default, which
+means we have to trigger a @relativeref{Platform::Sdl2Application,redraw()} in
+order to see any effect from the events. In case you'd want to draw constantly
+--- for example in order to perform an animation --- you can call
+@relativeref{Platform::Sdl2Application,redraw()} directly in the
+@relativeref{Platform::Sdl2Application,drawEvent()}.
 
 @skip void PrimitivesExample::mousePressEvent
 @until }
@@ -184,16 +153,15 @@ MAGNUM_APPLICATION_MAIN(PrimitivesExample)
 
 Compilation is pretty straigtforward, similar to the @ref examples-triangle "Triangle example".
 Again omitting the basic setup described in the @ref getting-started "Getting Started Guide",
-we now need some additional libraries, like `MeshTools` and `Primitives`,
-everything else is the same as previously:
+we now use also the `MeshTools`, `Primitives` and `Trade` libraries:
 
 @dontinclude primitives/CMakeLists.txt
 @skip find_package(
-@until Magnum::Shaders)
+@until Magnum::Trade)
 
-You can now try using another primitive from @ref Primitives namespace or
-render the mesh with different shader from @ref Shaders namespace. The full
-file content is linked below. Full source code is also available in the
+You can now try using different primitives from the @ref Primitives namespace
+or render the mesh with a different shader from @ref Shaders namespace. The
+full file content is linked below. Full source code is also available in the
 [magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/primitives).
 
 -   @ref primitives/CMakeLists.txt "CMakeLists.txt"

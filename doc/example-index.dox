@@ -57,17 +57,17 @@ tutorials:
 @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html primitives.png
-@subpage examples-primitives @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-primitives
+@image html texturedquad.jpg
+@subpage examples-texturedquad @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-texturedquad
 @m_enddiv
 
 @m_div{m-clearfix-s} @m_enddiv
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html textured-triangle.png
-@subpage examples-textured-triangle @m_class{m-label m-default m-flat} **live web demo**
-\n @copybrief examples-textured-triangle
+@image html primitives.png
+@subpage examples-primitives @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief examples-primitives
 @m_enddiv
 
 @m_div{m-clearfix-l m-show-m} @m_enddiv

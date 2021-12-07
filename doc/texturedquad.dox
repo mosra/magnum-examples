@@ -1,0 +1,387 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page examples-texturedquad Textured Quad
+@brief Indexed meshes, importing image data, texturing and custom shaders.
+
+@tableofcontents
+@m_footernavigation
+
+@image html texturedquad.jpg width=400px
+
+This example expands on the basic @ref examples-triangle "Triangle example"
+with indexed meshes, loading images into textures, creating custom shaders and
+embedding resources into the executable.
+
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/textured-triangle/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+
+@section examples-texturedquad-skeleton Basic skeleton
+
+Compared to the previous example, we need extra includes for image loading,
+textures and compiled-in resources:
+
+@dontinclude texturedquad/TexturedQuadExample.cpp
+@skip #include
+@until TexturedQuadShader.h
+
+@m_class{m-block m-success}
+
+@par Includes in Magnum
+    Magnum does not provide any global "include everything" header, but instead
+    keeps the headers small with little dependencies. It may feel a bit
+    overwhelming at first, but makes a big difference with compile times. See
+    @ref compilation-speedup for more information.
+
+Basic skeleton of the main example class is similar to the previous one,
+except for a custom shader and added @ref GL::Texture2D.
+
+@skip class TexturedQuad
+@until };
+
+@section examples-texturedquad-shader Textured shader
+
+Let's look at the shader sources first, and then see how to expose their
+interface to the C++ code. The `TexturedQuadDhader.vert` shader just sets the
+position and passes texture coordinates through to the fragment shader. Note
+the explicit attribute locations, which we will refer to later:
+
+@dontinclude texturedquad/TexturedQuadShader.vert
+@skip layout
+@until }
+
+`TexturedQuadShader.frag` loads a color from the texture and multiplies it with
+a color coming from a @glsl uniform @ce. It also sets a reasonable default in
+case the uniform isn't set from user code.
+
+@dontinclude texturedquad/TexturedQuadShader.frag
+@skip uniform
+@until }
+
+We'll store the GLSL code as compiled-in resources because that's the most
+convenient way. Having them as a string literal in the C++ code would make
+them lose syntax highlighting but also mess up with line numbering in case the
+GLSL compiler fails with an error. And having them as separate files would
+cause additional complications when running the executable. The resource data
+will be compiled into the binary using CMake at the end of the example.
+
+On the C++ side, we subclass a @ref GL::AbstractShaderProgram and define the
+two vertex inputs using a @ref GL::Attribute @cpp typedef @ce, with matching
+types and locations. Next to these two attributes we also expose a uniform
+setter for the base color, and a texture binding function. Good practice is to
+allow @ref method-chaining "method chaining" on them.
+
+@dontinclude texturedquad/TexturedQuadShader.h
+@skip class TexturedQuadShader
+@until };
+@until };
+
+@m_class{m-block m-warning}
+
+@par Generic shader attributes
+    Ideally, you'd make attribute declarations compatible between shaders so
+    you can configure mesh attribute bindings independently of the shader used.
+    Magnum's builtin shaders all share attribute definitions with
+    @ref Shaders::GenericGL, the above typedefs would look like this if you'd
+    use the generic definitions instead:
+@par
+    @code{.cpp}
+    typedef Shaders::GenericGL2D::Position Position;
+    typedef Shaders::GenericGL2D::TextureCoordinates TextureCoordinates;
+    @endcode
+@par
+    It's also recommended to programmatically
+    @ref Shaders-GenericGL-custom "propagate the locations to the shader code"
+    to avoid them getting out of sync in the rare chance of generic definitions
+    being changed. In this example we however don't do it to keep the code as
+    simple as possible.
+
+In the constructor we load the above-mentioned embedded GLSL sources via
+@relativeref{Corrade,Utility::Resource}, compile and attach them and link the
+program together. We then retrieve location for the base color uniform and set
+the texture layer uniform to the same index we used in the
+@cpp bindTexture() @ce implementation above. As we conservatively rely on
+OpenGL 3.3, only the attribute locations could be set directly in the shader
+source with @glsl layout(location = N) @ce. With newer OpenGL versions we could
+also explicitly set uniform locations and texture binding slots, here we have
+to set them up from the C++ side using
+@relativeref{GL::AbstractShaderProgram,uniformLocation()} and
+@relativeref{GL::AbstractShaderProgram,setUniform()}. See
+@ref GL-AbstractShaderProgram-attribute-location,
+@ref GL-AbstractShaderProgram-uniform-location and
+@ref GL-AbstractShaderProgram-texture-units for more information.
+
+@dontinclude texturedquad/TexturedQuadShader.cpp
+@skip TexturedQuadShader::TexturedQuadShader
+@until }
+@until }
+@until }
+@until }
+@until }
+@until }
+
+@m_class{m-block m-success}
+
+@par Builtin textured shader
+    While the main purpose of this example is to show how to create custom
+    shaders, please note that there's a builtin equivalent of the above shader
+    as well --- @ref Shaders::FlatGL2D, the same we used in the original
+    @ref examples-triangle "Triangle example". Just pass
+    @ref Shaders::FlatGL2D::Flag::Textured to its constructor to get a textured
+    version, the usage is otherwise exactly the same as with the custom one
+    here. It also contains setters for passing transformation matrices, those
+    were omitted from this example to keep it short and simple.
+
+@section examples-texturedquad-mesh Setting up an indexed mesh
+
+To match the expectations of our shader, we'll use a @ref Vector2 for both 2D
+vertex positions and 2D texture coordinates. Instead of a single triangle
+however, we'll draw a quad using an index buffer --- one vertex for each
+corner, but composed of two triangles in a counterclockwise order, resulting in
+six indices in total.
+
+@dontinclude texturedquad/TexturedQuadExample.cpp
+@skip TexturedQuadExample::TexturedQuadExample
+@until };
+@until };
+@until };
+
+Because it's an indexed mesh, we pass index count instead of vertex count to
+@ref GL::Mesh::setCount(), and in addition to adding the vertex buffer we call
+also @ref GL::Mesh::setIndexBuffer() with an index type that matches our data.
+The buffers are again directly moved to the mesh so we don't need to worry
+about them later.
+
+@skipline _mesh.
+@until );
+
+@m_class{m-block m-danger}
+
+@par Triangle strips
+    We chose to use an index buffer here to show a low-level workflow with
+    indexed meshes. However, in this case, the quad could be also rendered
+    directly from the four vertices using a
+    @link GL::MeshPrimitive::TriangleStrip @endlink:
+@par
+    @code{.cpp}
+    _mesh.setPrimitive(GL::MeshPrimitive::TriangleStrip)
+        .setCount(Containers::arraySize(vertices))
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            TexturedQuadShader::Position{},
+            TexturedQuadShader::TextureCoordinates{});
+    @endcode
+
+@section examples-texturedquad-texture Loading an image and populating the texture
+
+Magnum implements support for various file formats using dynamically loaded
+plugins. This way the core libraries don't need to implicitly depend on a
+variety of 3rd party libraries and there's also a possibility to choose among
+alternative implementations for certain formats. See @ref plugins for more
+information about how plugins work and @ref file-formats for a list of common
+formats and plugins implementing them.
+
+For simplicity we'll use the TGA format through the
+@relativeref{Trade,TgaImporter} plugin, which is available directly in the core
+Magnum repository. The image will also be embedded as a resource, similarly to
+the GLSL shader code. If the plugin fails to load or the image file can't be
+opened, we exit --- no need to print anything in this case, the manager or the
+plugin itself already print an error message on their own.
+
+@dontinclude texturedquad/TexturedQuadExample.cpp
+@skip PluginManager::Manager
+@until exit
+
+After the image is loaded, we create a @ref GL::Texture2D from it. Note that we
+have to explicitly set all required texture parameters, otherwise the texture
+will be incomplete. @ref GL::textureFormat() is a convenience utility that
+picks up @ref GL::TextureFormat::RGB8, @ref GL::TextureFormat::RGBA8 or any
+other based on image's @ref PixelFormat.
+
+@skip Containers::Optional<Trade::ImageData2D>
+@until }
+@until }
+
+@section examples-texturedquad-drawing Drawing
+
+The drawing function is again fairly simple. We clear the buffer, set base
+color to light red, bind the texture and perform the drawing. Last thing is
+again buffer swap.
+
+@skip TexturedQuadExample::drawEvent
+@until }
+
+Finally, there's the main function macro:
+
+@code{.cpp}
+MAGNUM_APPLICATION_MAIN(TexturedQuadExample)
+@endcode
+
+@section examples-texturedquad-compilation Compilation
+
+Compilation is slightly more complicated compared to the previous example,
+because we're embedding resources into the executable.
+
+The `resources.conf` file lists all resources which need to be compiled into
+the executable, which is our GLSL shader sources and the texture image (the
+one used in the above screenshot is [stone.tga](https://github.com/mosra/magnum-examples/raw/master/src/texturedquad/stone.tga)).
+A resource group has an identifier through which it gets accessed, we use
+`texturedquad-data` to match the C++ code above. The resource compilation
+process is explained thoroughly in Corrade's
+@ref resource-management "resource management tutorial".
+
+@include texturedquad/resources.conf
+
+In the `CMakeLists.txt` file first we find the required Magnum package. We
+don't need the @ref Shaders library for anything anymore, however we use
+@ref Trade to load our image:
+
+@dontinclude texturedquad/CMakeLists.txt
+@skip find_package
+@until set_directory_properties
+
+After that we compile the resources using the
+@ref corrade-cmake-add-resource "corrade_add_resource()" macro and create an
+executable from the result and other source files. Last step is linking to all
+needed libraries. The plugin is loaded dynamically, so it's not handled by
+CMake in any way.
+
+@dontinclude texturedquad/CMakeLists.txt
+@skip corrade_add_resource
+@until Magnum::Trade)
+
+@m_class{m-block m-success}
+
+@par Enabling additional Magnum components in your project
+    If you're using the CMake subproject setup described in the
+    @ref getting-started "Getting Started Guide", you'll need to modify the
+    top-level `CMakeLists.txt` to enable the @ref Trade::TgaImporter "TgaImporter"
+    plugin as well. Because the plugins are loaded at runtime, CMake doesn't
+    know we need them to be built --- one option is to list them explicitly
+    like shown below, another (but uglier) is to not use `EXCLUDE_FROM_ALL` on
+    the magnum subdirectory, so everything is always built implicitly. The
+    plugin modules are placed into `Debug/lib/magnum-d/importers` (or
+    `Debug/bin/magnum-d/importers` on Windows) in the build directory and the
+    @ref Trade library will find them there on its own.
+@par
+    @code{.cmake}
+    ...
+
+    set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+    set(WITH_TGAIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+    # So the TgaImporter gets built implicitly
+    add_dependencies(magnum-texturedquad Magnum::TgaImporter)
+    @endcode
+@par
+    If you're using a Magnum package, @ref Trade::TgaImporter "TgaImporter" is
+    included by default (and you don't need to do anything in CMake in order to
+    use it); if you build it yourself, make sure you have `WITH_TGAIMPORTER`
+    enabled.
+
+Once the application builds and starts, you can now try playing around with the
+shader source, modifying texture coordinates or adding other effects. The full
+file content is linked below. Full source code is also available in the
+[magnum-examples GitHub repository](https://github.com/mosra/magnum-examples/tree/master/src/texturedquad).
+
+-   @ref texturedquad/CMakeLists.txt "CMakeLists.txt"
+-   @ref texturedquad/resources.conf "resources.conf"
+-   @ref texturedquad/TexturedQuadExample.cpp "TexturedQuadExample.cpp"
+-   @ref texturedquad/TexturedQuadShader.cpp "TexturedQuadShader.cpp"
+-   @ref texturedquad/TexturedQuadShader.frag "TexturedQuadShader.frag"
+-   @ref texturedquad/TexturedQuadShader.h "TexturedQuadShader.h"
+-   @ref texturedquad/TexturedQuadShader.vert "TexturedQuadShader.vert"
+-   [stone.tga](https://github.com/mosra/magnum-examples/raw/master/src/texturedquad/stone.tga)
+
+The [ports branch](https://github.com/mosra/magnum-examples/tree/ports/src/texturedquad)
+contains additional patches for @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+support that aren't present in `master` in order to keep the example code as
+simple as possible.
+
+@section examples-texturedquad-importers PNG, JPEG and other file formats
+
+In an effort to keep the core Magnum repository small, it has support just for
+the TGA format. But it doesn't stop there, the
+@ref building-plugins "Magnum Plugins" repository provides support for many
+more file formats. Let's try loading arbitrary files instead --- the
+@ref Trade::AnyImageImporter "AnyImageImporter" plugin autodetects a file
+format and then delegates to a plugin that knows how to load PNGs. All you
+need to do is load it instead of @cpp "TgaImporter" @ce and then bundle a
+different file type --- or rewrite the example to take files from the
+filesystem instead:
+
+@code{.cpp}
+Containers::Pointer<Trade::AbstractImporter> importer =
+    manager.loadAndInstantiate("AnyImageImporter");
+if(!importer || !importer->openFile("path/to/my/file.jpg"))
+    std::exit(1);
+@endcode
+
+The @ref examples-viewer tutorial expands further on this topic and also shows
+how to open files passed via command-line arguments.
+
+@m_class{m-block m-success}
+
+@par Enabling Magnum Plugins in your project
+    If you're using the CMake subproject setup described in the
+    @ref getting-started "Getting Started Guide", you'll need to modify the
+    top-level `CMakeLists.txt` to add Magnum Plugins as a subdirectory and
+    enable the new plugins. The @ref Trade::StbImageImporter "StbImageImporter"
+    is an universal dependency-less plugin that can handle PNGs, JPEGs and
+    other common files:
+@par
+    @code{.cmake}
+    ...
+
+    set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+    set(WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    # git clone https://github.com/mosra/magnum-plugins.git
+    add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
+
+    add_dependencies(magnum-texturedquad
+        Magnum::AnyImageImporter
+        MagnumPlugins::StbImageImporter)
+    @endcode
+@par
+    If you're using packaged Magnum, install
+    @ref building-plugins-packages "Magnum Plugins" the same way as you did with
+    Magnum, all the above-mentioned plugins are included by default (and you
+    don't need to do anything in CMake in order to use them). If you build it
+    yourself, make sure you have `WITH_ANYIMAGEIMPORTER` enabled for Magnum and
+    `WITH_STBIMAGEIMPORTER` enabled for Magnum Plugins.
+
+@example texturedquad/CMakeLists.txt @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/resources.conf @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/TexturedQuadExample.cpp @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/TexturedQuadShader.cpp @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/TexturedQuadShader.frag @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/TexturedQuadShader.h @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+@example texturedquad/TexturedQuadShader.vert @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
+
+*/
+}

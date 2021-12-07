@@ -29,7 +29,7 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-project(MagnumTexturedTriangleExample CXX)
+project(MagnumTexturedQuadExample CXX)
 
 # Add module path in case this is project root
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -53,18 +53,18 @@ endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-corrade_add_resource(TexturedTriangle_RESOURCES resources.conf)
+corrade_add_resource(TexturedQuad_RESOURCES resources.conf)
 
 if(NOT CORRADE_TARGET_ANDROID)
-    add_executable(magnum-textured-triangle WIN32
-        TexturedTriangleExample.cpp
-        ${TexturedTriangle_RESOURCES})
+    add_executable(magnum-texturedquad WIN32
+        TexturedQuadExample.cpp
+        ${TexturedQuad_RESOURCES})
 else()
-    add_library(magnum-textured-triangle SHARED
-        TexturedTriangleExample.cpp
-        ${TexturedTriangle_RESOURCES})
+    add_library(magnum-texturedquad SHARED
+        TexturedQuadExample.cpp
+        ${TexturedQuad_RESOURCES})
 endif()
-target_link_libraries(magnum-textured-triangle PRIVATE
+target_link_libraries(magnum-texturedquad PRIVATE
     Corrade::Main
     Magnum::Application
     Magnum::GL
@@ -75,48 +75,48 @@ target_link_libraries(magnum-textured-triangle PRIVATE
 # Gradle-free Android build
 if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
     include(${PROJECT_SOURCE_DIR}/../../toolchains/modules/UseAndroid.cmake)
-    android_create_apk(magnum-textured-triangle src/main/AndroidManifest.xml)
+    android_create_apk(magnum-texturedquad src/main/AndroidManifest.xml)
 endif()
 
 # iOS-specifics
 if(CORRADE_TARGET_IOS)
-    set_target_properties(magnum-textured-triangle PROPERTIES
+    set_target_properties(magnum-texturedquad PROPERTIES
         MACOSX_BUNDLE ON
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
         XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
-    target_link_libraries(magnum-textured-triangle PRIVATE Magnum::TgaImporter)
+    target_link_libraries(magnum-texturedquad PRIVATE Magnum::TgaImporter)
 endif()
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)
-    add_custom_command(TARGET magnum-textured-triangle POST_BUILD
+    add_custom_command(TARGET magnum-texturedquad POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
             ${MAGNUM_WEBAPPLICATION_CSS}
-            $<TARGET_FILE_DIR:magnum-textured-triangle>
+            $<TARGET_FILE_DIR:magnum-texturedquad>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/textured-triangle.html
-            $<TARGET_FILE_DIR:magnum-textured-triangle>/magnum-textured-triangle.html)
+            ${CMAKE_CURRENT_SOURCE_DIR}/texturedquad.html
+            $<TARGET_FILE_DIR:magnum-texturedquad>/magnum-texturedquad.html)
 
-    install(FILES textured-triangle.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle RENAME index.html)
-    install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
+    install(FILES texturedquad.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/texturedquad RENAME index.html)
+    install(TARGETS magnum-texturedquad DESTINATION ${MAGNUM_DEPLOY_PREFIX}/texturedquad)
     install(FILES
         ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
         ${MAGNUM_WEBAPPLICATION_CSS}
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle)
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/texturedquad)
     install(FILES
-        $<TARGET_FILE_DIR:magnum-textured-triangle>/magnum-textured-triangle.js.mem
-        $<TARGET_FILE_DIR:magnum-textured-triangle>/magnum-textured-triangle.wasm
-        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/textured-triangle OPTIONAL)
+        $<TARGET_FILE_DIR:magnum-texturedquad>/magnum-texturedquad.js.mem
+        $<TARGET_FILE_DIR:magnum-texturedquad>/magnum-texturedquad.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/texturedquad OPTIONAL)
 
 # Installation for desktop
 elseif(NOT CORRADE_TARGET_IOS)
-    install(TARGETS magnum-textured-triangle DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    install(TARGETS magnum-texturedquad DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 endif()
 
 # Make the executable a default target to build & run in Visual Studio
-set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-textured-triangle)
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-texturedquad)

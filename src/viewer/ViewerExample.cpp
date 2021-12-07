@@ -29,6 +29,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -57,7 +58,6 @@
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
-#include <Magnum/Trade/MeshObjectData3D.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>
@@ -84,8 +84,6 @@ class ViewerExample: public Platform::Application {
         #endif
 
         Vector3 positionOnSphere(const Vector2i& position) const;
-
-        void addObject(Trade::AbstractImporter& importer, Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials, Object3D& parent, UnsignedInt i);
 
         Shaders::PhongGL _coloredShader,
             _texturedShader{Shaders::PhongGL::Flag::DiffuseTexture};
@@ -130,16 +128,16 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         #endif
         .setTitle("Magnum Viewer Example")}
 {
-    /* Every scene needs a camera */
     _cameraObject
         .setParent(&_scene)
         .translate(Vector3::zAxis(5.0f));
     (*(_camera = new SceneGraph::Camera3D{_cameraObject}))
         .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
-        .setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f))
+        .setProjectionMatrix(
+            Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.01f, 1000.0f)
+        )
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
-    /* Base object, parent of all (for easy manipulation) */
     _manipulator.setParent(&_scene);
 
     /* Setup renderer and shader defaults */
@@ -156,150 +154,151 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load a scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("TinyGltfImporter");
-    if(!importer) std::exit(1);
-
-    Debug{} << "Opening file scene.glb";
-
-    /* Load file */
+    Containers::Pointer<Trade::AbstractImporter> importer =
+        manager.loadAndInstantiate("TinyGltfImporter");
     Utility::Resource rs("viewer-data");
-    if(!importer->openData(rs.getRaw("scene.glb")))
-        std::exit(4);
+    if(!importer || !importer->openData(rs.getRaw("scene.glb")))
+        std::exit(1);
 
     /* Load all textures. Textures that fail to load will be NullOpt. */
-    _textures = Containers::Array<Containers::Optional<GL::Texture2D>>{importer->textureCount()};
+    _textures = Containers::Array<Containers::Optional<GL::Texture2D>>{
+        importer->textureCount()};
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
-        Debug{} << "Importing texture" << i << importer->textureName(i);
-
-        Containers::Optional<Trade::TextureData> textureData = importer->texture(i);
+        Containers::Optional<Trade::TextureData> textureData =
+            importer->texture(i);
         if(!textureData || textureData->type() != Trade::TextureType::Texture2D) {
-            Warning{} << "Cannot load texture properties, skipping";
+            Warning{} << "Cannot load texture" << i
+                << importer->textureName(i);
             continue;
         }
 
-        Debug{} << "Importing image" << textureData->image() << importer->image2DName(textureData->image());
-
-        Containers::Optional<Trade::ImageData2D> imageData = importer->image2D(textureData->image());
-        GL::TextureFormat format;
-        if(imageData && imageData->format() == PixelFormat::RGB8Unorm) {
-            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            format = GL::TextureFormat::RGB8;
-            #else
-            format = GL::TextureFormat::RGB;
-            #endif
-        } else if(imageData && imageData->format() == PixelFormat::RGBA8Unorm) {
-            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            format = GL::TextureFormat::RGBA8;
-            #else
-            format = GL::TextureFormat::RGBA;
-            #endif
-        } else {
-            Warning{} << "Cannot load texture image, skipping";
+        Containers::Optional<Trade::ImageData2D> imageData =
+            importer->image2D(textureData->image());
+        if(!imageData || !imageData->isCompressed()) {
+            Warning{} << "Cannot load image" << textureData->image()
+                << importer->image2DName(textureData->image());
             continue;
         }
 
-        /* Configure the texture */
-        GL::Texture2D texture;
-        texture
+        (*(_textures[i] = GL::Texture2D{}))
             .setMagnificationFilter(textureData->magnificationFilter())
-            .setMinificationFilter(textureData->minificationFilter(), textureData->mipmapFilter())
+            .setMinificationFilter(textureData->minificationFilter(),
+                                   textureData->mipmapFilter())
             .setWrapping(textureData->wrapping().xy())
-            .setStorage(Math::log2(imageData->size().max()) + 1, format, imageData->size())
+            .setStorage(Math::log2(imageData->size().max()) + 1,
+                GL::textureFormat(imageData->format()), imageData->size())
             .setSubImage(0, {}, *imageData)
             .generateMipmap();
-
-        _textures[i] = std::move(texture);
     }
 
-    /* Load all materials. Materials that fail to load will be NullOpt. The
-       data will be stored directly in objects later, so save them only
-       temporarily. */
-    Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials{importer->materialCount()};
+    /* Load all materials. Materials that fail to load will be NullOpt. Only a
+       temporary array as the material attributes will be stored directly in
+       drawables later. */
+    Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials{
+        importer->materialCount()};
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
-        Debug{} << "Importing material" << i << importer->materialName(i);
-
-        Containers::Optional<Trade::MaterialData> materialData = importer->material(i);
-        if(!materialData || !(materialData->types() & Trade::MaterialType::Phong)) {
-            Warning{} << "Cannot load material, skipping";
+        Containers::Optional<Trade::MaterialData> materialData;
+        if(!(materialData = importer->material(i))) {
+            Warning{} << "Cannot load material" << i
+                << importer->materialName(i);
             continue;
         }
 
-        materials[i] = std::move(static_cast<Trade::PhongMaterialData&>(*materialData));
+        materials[i] = std::move(*materialData).as<Trade::PhongMaterialData>();
     }
 
-    /* Load all meshes. Meshes that fail to load will be NullOpt. */
-    _meshes = Containers::Array<Containers::Optional<GL::Mesh>>{importer->meshCount()};
+    /* Load all meshes. Meshes that fail to load will be NullOpt. Generate
+       normals if not present. */
+    _meshes = Containers::Array<Containers::Optional<GL::Mesh>>{
+        importer->meshCount()};
     for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
-        Debug{} << "Importing mesh" << i << importer->meshName(i);
-
-        Containers::Optional<Trade::MeshData> meshData = importer->mesh(i);
-        if(!meshData || !meshData->hasAttribute(Trade::MeshAttribute::Normal) || meshData->primitive() != MeshPrimitive::Triangles) {
-            Warning{} << "Cannot load the mesh, skipping";
+        Containers::Optional<Trade::MeshData> meshData;
+        if(!(meshData = importer->mesh(i))) {
+            Warning{} << "Cannot load mesh" << i << importer->meshName(i);
             continue;
         }
 
-        /* Compile the mesh */
-        _meshes[i] = MeshTools::compile(*meshData);
+        MeshTools::CompileFlags flags;
+        if(meshData->hasAttribute(Trade::MeshAttribute::Normal))
+            flags |= MeshTools::CompileFlag::GenerateFlatNormals;
+        _meshes[i] = MeshTools::compile(*meshData, flags);
     }
-
-    /* Load the scene */
-    if(importer->defaultScene() != -1) {
-        Debug{} << "Adding default scene" << importer->sceneName(importer->defaultScene());
-
-        Containers::Optional<Trade::SceneData> sceneData = importer->scene(importer->defaultScene());
-        if(!sceneData) {
-            Error{} << "Cannot load scene, exiting";
-            return;
-        }
-
-        /* Recursively add all children */
-        for(UnsignedInt objectId: sceneData->children3D())
-            addObject(*importer, materials, _manipulator, objectId);
 
     /* The format has no scene support, display just the first loaded mesh with
-       a default material and be done with it */
-    } else if(!_meshes.empty() && _meshes[0])
-        new ColoredDrawable{_manipulator, _coloredShader, *_meshes[0], 0xffffff_rgbf, _drawables};
-}
-
-void ViewerExample::addObject(Trade::AbstractImporter& importer, Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials, Object3D& parent, UnsignedInt i) {
-    Debug{} << "Importing object" << i << importer.object3DName(i);
-    Containers::Pointer<Trade::ObjectData3D> objectData = importer.object3D(i);
-    if(!objectData) {
-        Error{} << "Cannot import object, skipping";
+       a default material (if it's there) and be done with it. */
+    if(importer->defaultScene() == -1) {
+        if(!_meshes.empty() && _meshes[0])
+            new ColoredDrawable{_manipulator, _coloredShader, *_meshes[0],
+                0xffffff_rgbf, _drawables};
         return;
     }
 
-    /* Add the object to the scene and set its transformation */
-    auto* object = new Object3D{&parent};
-    object->setTransformation(objectData->transformation());
+    /* Load the scene */
+    Containers::Optional<Trade::SceneData> scene;
+    if(!(scene = importer->scene(importer->defaultScene())) ||
+       !scene->is3D() ||
+       !scene->hasField(Trade::SceneField::Parent) ||
+       !scene->hasField(Trade::SceneField::Mesh))
+    {
+        Fatal{} << "Cannot load scene" << importer->defaultScene()
+            << importer->sceneName(importer->defaultScene());
+    }
 
-    /* Add a drawable if the object has a mesh and the mesh is loaded */
-    if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh && objectData->instance() != -1 && _meshes[objectData->instance()]) {
-        const Int materialId = static_cast<Trade::MeshObjectData3D*>(objectData.get())->material();
+    /* Allocate objects that are part of the hierarchy */
+    Containers::Array<Object3D*> objects{scene->mappingBound()};
+    Containers::Array<Containers::Pair<UnsignedInt, Int>> parents
+        = scene->parentsAsArray();
+    for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
+        objects[parent.first()] = new Object3D{};
+
+    /* Assign parent references */
+    for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
+        objects[parent.first()]->setParent(parent.second() == -1 ?
+            &_manipulator : objects[parent.second()]);
+
+    /* Set transformations. Objects that are not part of the hierarchy are
+       ignored, objects that have no transformation entry retain an identity
+       transformation. */
+    for(const Containers::Pair<UnsignedInt, Matrix4>& transformation:
+        scene->transformations3DAsArray())
+    {
+        if(Object3D* object = objects[transformation.first()])
+            object->setTransformation(transformation.second());
+    }
+
+    /* Add drawables for objects that have a mesh, again ignoring objects that
+       are not part of the hierarchy. There can be multiple mesh assignments
+       for one object, simply add one drawable for each. */
+    for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>&
+        meshMaterial: scene->meshesMaterialsAsArray())
+    {
+        Object3D* object = objects[meshMaterial.first()];
+        Containers::Optional<GL::Mesh>& mesh =
+            _meshes[meshMaterial.second().first()];
+        if(!object || !mesh) continue;
+
+        Int materialId = meshMaterial.second().second();
 
         /* Material not available / not loaded, use a default material */
         if(materialId == -1 || !materials[materialId]) {
-            new ColoredDrawable{*object, _coloredShader, *_meshes[objectData->instance()], 0xffffff_rgbf, _drawables};
+            new ColoredDrawable{*object, _coloredShader, *mesh, 0xffffff_rgbf,
+                _drawables};
 
-        /* Textured material. If the texture failed to load, again just use a
-           default colored material. */
-        } else if(materials[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture)) {
-            Containers::Optional<GL::Texture2D>& texture = _textures[materials[materialId]->diffuseTexture()];
-            if(texture)
-                new TexturedDrawable{*object, _texturedShader, *_meshes[objectData->instance()], *texture, _drawables};
-            else
-                new ColoredDrawable{*object, _coloredShader, *_meshes[objectData->instance()], 0xffffff_rgbf, _drawables};
+        /* Textured material, if the texture loaded correctly */
+        } else if(materials[materialId]->hasAttribute(
+                Trade::MaterialAttribute::DiffuseTexture
+            ) && _textures[materials[materialId]->diffuseTexture()])
+        {
+            new TexturedDrawable{*object, _texturedShader, *mesh,
+                *_textures[materials[materialId]->diffuseTexture()],
+                _drawables};
 
         /* Color-only material */
         } else {
-            new ColoredDrawable{*object, _coloredShader, *_meshes[objectData->instance()], materials[materialId]->diffuseColor(), _drawables};
+            new ColoredDrawable{*object, _coloredShader, *mesh,
+                materials[materialId]->diffuseColor(), _drawables};
         }
     }
-
-    /* Recursively add children */
-    for(std::size_t id: objectData->children())
-        addObject(importer, materials, *object, id);
 }
 
 void ColoredDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {

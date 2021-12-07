@@ -70,7 +70,7 @@ option(WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
 option(WITH_RAYTRACING_EXAMPLE "Build Ray Tracing example" OFF)
 option(WITH_SHADOWS_EXAMPLE "Build Shadow Mapping example" OFF)
 option(WITH_TEXT_EXAMPLE "Build Text example (requires some TTF font plugin)" OFF)
-option(WITH_TEXTUREDTRIANGLE_EXAMPLE "Build TexturedTriangle example (requires some TGA importer plugin)" OFF)
+option(WITH_TEXTUREDQUAD_EXAMPLE "Build Textured Quad example (requires some TGA importer plugin)" OFF)
 option(WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE "Build Vulkan Textured Triangle example (requires some TGA importer plugin)" OFF)
 option(WITH_TRIANGLE_EXAMPLE "Build Triangle example" ON)
 option(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE "Build Plain GLFW Triangle example" OFF)
@@ -79,6 +79,12 @@ option(WITH_TRIANGLE_VULKAN_EXAMPLE "Build Vulkan Triangle example" OFF)
 option(WITH_VIEWER_EXAMPLE "Build Viewer example (requires the AnySceneImporter plugin)" OFF)
 if(CORRADE_TARGET_EMSCRIPTEN)
     option(WITH_WEBXR_EXAMPLE "Build WebXR example" OFF)
+endif()
+
+# Deprecated options
+if(MAGNUM_BUILD_DEPRECATED AND WITH_TEXTUREDTRIANGLE_EXAMPLE AND NOT WITH_TEXTUREDQUAD_EXAMPLE)
+    set(WITH_TEXTUREDQUAD_EXAMPLE ON)
+    message(DEPRECATION "The WITH_TEXTUREDTRIANGLE_EXAMPLE option is deprecated. Use WITH_TEXTUREDQUAD_EXAMPLE instead.")
 endif()
 
 # A single output location. After a decade of saying NO THIS IS A NON-SOLUTION

@@ -26,6 +26,11 @@ class MagnumExamples < Formula
       # happened with https://github.com/erincatto/Box2D/issues/431 yet
       system "cmake",
       *std_cmake_args,
+        # Without this, ARM builds will try to look for dependencies in
+        # /usr/local/lib and /usr/lib (which are the default locations) instead
+        # of /opt/homebrew/lib which is dedicated for ARM binaries. Please
+        # complain to Homebrew about this insane non-obvious filesystem layout.
+        "-DCMAKE_INSTALL_NAME_DIR:STRING=#{lib}",
         "-DWITH_ANIMATED_GIF_EXAMPLE=ON",
         "-DWITH_ARCBALL_EXAMPLE=ON",
         "-DWITH_AREALIGHTS_EXAMPLE=ON",
@@ -44,7 +49,7 @@ class MagnumExamples < Formula
         "-DWITH_RAYTRACING_EXAMPLE=ON",
         "-DWITH_SHADOWS_EXAMPLE=ON",
         "-DWITH_TEXT_EXAMPLE=ON",
-        "-DWITH_TEXTUREDTRIANGLE_EXAMPLE=ON",
+        "-DWITH_TEXTUREDQUAD_EXAMPLE=ON",
         "-DWITH_TRIANGLE_EXAMPLE=ON",
         "-DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF",
         "-DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF",

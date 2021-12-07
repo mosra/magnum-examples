@@ -124,8 +124,8 @@ if(WITH_TEXT_EXAMPLE)
     add_subdirectory(text)
 endif()
 
-if(WITH_TEXTUREDTRIANGLE_EXAMPLE)
-    add_subdirectory(textured-triangle)
+if(WITH_TEXTUREDQUAD_EXAMPLE)
+    add_subdirectory(texturedquad)
 endif()
 
 if(WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE)

@@ -41,7 +41,8 @@ find_package(Magnum REQUIRED
     GL
     MeshTools
     Primitives
-    Shaders)
+    Shaders
+    Trade)
 
 if(CORRADE_TARGET_ANDROID)
     find_package(Magnum REQUIRED AndroidApplication)
@@ -65,7 +66,8 @@ target_link_libraries(magnum-primitives PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::Primitives
-    Magnum::Shaders)
+    Magnum::Shaders
+    Magnum::Trade)
 
 # Gradle-free Android build
 if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)

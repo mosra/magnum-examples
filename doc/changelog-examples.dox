@@ -37,10 +37,16 @@ namespace Magnum {
 -   The @ref examples-triangle-vulkan is now written fully using the new
     @ref Vk and @ref ShaderTools libraries, with no raw Vulkan code left
 -   New @ref examples-textured-triangle-vulkan, mirroring the OpenGL
-    @ref examples-textured-triangle with Vulkan APIs
+    @ref examples-texturedquad with Vulkan APIs
 
 @subsection changelog-examples-latest-changes Changes and improvements
 
+-   The original Textured Triangle example was changed to
+    @ref examples-texturedquad to show also a low-level indexed mesh setup
+-   The @ref examples-primitives example got significantly simplified by using
+    @ref MeshTools::compile() instead of inflexible, verbose and slow
+    lower-level APIs. Description of those got moved to the
+    @ref Trade::MeshData class documentation.
 -   Fixed the @ref examples-webxr example to look correctly on HiDPI
 -   The WebVR example was obsoleted by the @ref examples-webxr example and is
     now removed
@@ -65,6 +71,12 @@ namespace Magnum {
 -   The `ports` branch of the @ref examples-picking was fixed to work properly
     on Firefox ... after three long years. See
     [mosra/magnum-examples#53](https://github.com/mosra/magnum-examples/issues/53).
+
+@subsection changelog-examples-latest-deprecated Deprecated APIs
+
+-   The `WITH_TEXTUREDTRIANGLE_EXAMPLE` CMake option is still recognized on
+    builds with @ref MAGNUM_BUILD_DEPRECATED enabled, but will produce a
+    warning. Use `WITH_TEXTUREDQUAD_EXAMPLE` instead.
 
 @subsection changelog-examples-latest-documentation Documentation
 
@@ -155,7 +167,7 @@ Released 2019-10-24, tagged as
     instead of requiring the user to always pass a path (see also
     [mosra/magnum-examples#44](https://github.com/mosra/magnum-examples/pull/44))
 -   Documented how to enable and use importer plugins in
-    @ref examples-textured-triangle and @ref examples-viewer (see
+    @ref examples-texturedquad and @ref examples-viewer (see
     [mosra/magnum#375](https://github.com/mosra/magnum/issues/375))
 
 @subsection changelog-examples-2019-10-bugfixes Bug fixes
