@@ -229,6 +229,9 @@ class LooseOctree {
         /* Count the maximum number of points stored in a tree node */
         std::size_t maxNumPointInNodes() const;
 
+        /* Count total number of points stored in a tree node */
+        std::size_t totalPointsInNodes() const;
+
         /* True rebuilds the tree from scratch in every update, false
            incrementally updates from the current state */
         void setAlwaysRebuild(const bool alwaysRebuild) {

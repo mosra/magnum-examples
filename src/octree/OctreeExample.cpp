@@ -244,8 +244,15 @@ void OctreeExample::drawEvent() {
 
         movePoints();
 
-        if(_collisionDetectionByOctree)
+        if(_collisionDetectionByOctree) {
             _octree->update();
+#if !defined(NDEBUG)
+            /* We never move points outside of Octree's bounding box,
+               hence all spheres should be in the tree at any given point of time */
+            CORRADE_ASSERT(_octree->totalPointsInNodes() == _spherePositions.size()
+                , "Broken Octee invariant: points count missmatch.", );
+#endif
+        }
     }
 
     /* Update camera before drawing instances */
