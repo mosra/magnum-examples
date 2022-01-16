@@ -51,13 +51,6 @@ environment:
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     #APPVEYOR_JOB_NAME: windows-rt-gles3-msvc2017
 
-notifications:
-- provider: Webhook
-  url: https://webhooks.gitter.im/e/415ae90928ba0dbd3df4
-  on_build_success: false
-  on_build_failure: true
-  on_build_status_changed: true
-
 install:
 - cinst ninja
 - set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
