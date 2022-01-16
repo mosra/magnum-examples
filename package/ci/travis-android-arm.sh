@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ev
 
-git clone --depth 1 git://github.com/mosra/corrade.git
+git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
@@ -37,7 +37,7 @@ ninja install
 cd ../..
 
 # Crosscompile Magnum
-git clone --depth 1 git://github.com/mosra/magnum.git
+git clone --depth 1 https://github.com/mosra/magnum.git
 cd magnum
 mkdir build-android-arm && cd build-android-arm
 cmake .. \
@@ -70,7 +70,7 @@ ninja install
 cd ../..
 
 # Crosscompile Magnum Integration
-git clone --depth 1 git://github.com/mosra/magnum-integration.git
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build-android-arm && cd build-android-arm
 cmake .. \
@@ -94,7 +94,7 @@ ninja install
 cd ../..
 
 # Crosscompile Magnum Extras
-git clone --depth 1 git://github.com/mosra/magnum-extras.git
+git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build-android-arm && cd build-android-arm
 cmake .. \
