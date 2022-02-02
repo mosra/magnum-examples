@@ -26,15 +26,16 @@ Basic rendering with builtin shaders. Fully equivalent to
     :code: py
     :start-line: 31
 
-`Textured Triangle`_
-======================
+`Textured Quad`_
+================
 
-.. image:: ../textured-triangle.png
+.. image:: ../texturedquad.jpg
+    :width: 400px
 
 Importing image data, texturing and custom shaders. Fully equivalent to
-:dox:`the C++ version <examples-textured-triangle>`.
+:dox:`the C++ version <examples-texturedquad>`.
 
-.. include:: ../../src/python/magnum-textured-triangle.py
+.. include:: ../../src/python/magnum-texturedquad.py
     :code: py
     :start-line: 31
 

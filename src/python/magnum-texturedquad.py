@@ -36,7 +36,7 @@ from magnum import *
 from magnum import gl, shaders, trade
 from magnum.platform.sdl2 import Application
 
-class TexturedTriangleShader(gl.AbstractShaderProgram):
+class TexturedQuadShader(gl.AbstractShaderProgram):
     POSITION = gl.Attribute(
         gl.Attribute.Kind.GENERIC, 0,
         gl.Attribute.Components.TWO,
@@ -96,29 +96,36 @@ void main() {
     def bind_texture(self, texture: gl.Texture2D):
         texture.bind(self._texture_unit)
 
-class TexturedTriangleExample(Application):
+class TexturedQuadExample(Application):
     def __init__(self):
         configuration = self.Configuration()
-        configuration.title = "Magnum Python Textured Triangle Example"
+        configuration.title = "Magnum Python Textured Quad Example"
         Application.__init__(self, configuration)
 
-        buffer = gl.Buffer()
-        buffer.set_data(array.array('f', [
-            -0.5, -0.5, 0.0, 0.0,
+        vertices = gl.Buffer()
+        vertices.set_data(array.array('f', [
              0.5, -0.5, 1.0, 0.0,
-             0.0,  0.5, 0.5, 1.0
+             0.5,  0.5, 1.0, 1.0,
+            -0.5, -0.5, 0.0, 0.0,
+            -0.5,  0.5, 0.0, 1.0
+        ]))
+        indices = gl.Buffer()
+        indices.set_data(array.array('I', [
+            0, 1, 2,
+            2, 1, 3
         ]))
 
         self._mesh = gl.Mesh()
-        self._mesh.count = 3
-        self._mesh.add_vertex_buffer(buffer, 0, 4*4,
-            TexturedTriangleShader.POSITION)
-        self._mesh.add_vertex_buffer(buffer, 2*4, 4*4,
-            TexturedTriangleShader.TEXTURE_COORDINATES)
+        self._mesh.count = 6
+        self._mesh.add_vertex_buffer(vertices, 0, 4*4,
+            TexturedQuadShader.POSITION)
+        self._mesh.add_vertex_buffer(vertices, 2*4, 4*4,
+            TexturedQuadShader.TEXTURE_COORDINATES)
+        self._mesh.set_index_buffer(indices, 0, gl.MeshIndexType.UNSIGNED_INT)
 
         importer = trade.ImporterManager().load_and_instantiate('TgaImporter')
         importer.open_file(os.path.join(os.path.dirname(__file__),
-                                        '../textured-triangle/stone.tga'))
+                                        '../texturedquad/stone.tga'))
         image = importer.image2d(0)
 
         self._texture = gl.Texture2D()
@@ -129,7 +136,7 @@ class TexturedTriangleExample(Application):
         self._texture.set_sub_image(0, Vector2i(), image)
 
         # or self._shader = shaders.Flat2D(shaders.Flat2D.Flags.TEXTURED)
-        self._shader = TexturedTriangleShader()
+        self._shader = TexturedQuadShader()
 
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR)
@@ -140,4 +147,4 @@ class TexturedTriangleExample(Application):
 
         self.swap_buffers()
 
-exit(TexturedTriangleExample().exec())
+exit(TexturedQuadExample().exec())
