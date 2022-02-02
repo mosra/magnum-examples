@@ -64,7 +64,7 @@ except for a custom shader and added @ref GL::Texture2D.
 @section examples-texturedquad-shader Textured shader
 
 Let's look at the shader sources first, and then see how to expose their
-interface to the C++ code. The `TexturedQuadDhader.vert` shader just sets the
+interface to the C++ code. The `TexturedQuadShader.vert` shader just sets the
 position and passes texture coordinates through to the fragment shader. Note
 the explicit attribute locations, which we will refer to later:
 
