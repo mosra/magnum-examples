@@ -135,7 +135,7 @@ class TexturedQuadExample(Application):
         self._texture.set_storage(1, gl.TextureFormat.RGB8, image.size)
         self._texture.set_sub_image(0, Vector2i(), image)
 
-        # or self._shader = shaders.Flat2D(shaders.Flat2D.Flags.TEXTURED)
+        # or self._shader = shaders.FlatGL2D(shaders.FlatGL2D.Flags.TEXTURED)
         self._shader = TexturedQuadShader()
 
     def draw_event(self):
