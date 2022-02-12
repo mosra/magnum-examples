@@ -100,3 +100,6 @@ cmake .. \
     -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
 ninja $NINJA_JOBS
+
+# Test install, after running the tests as for them it shouldn't be needed
+ninja install
