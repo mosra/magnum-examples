@@ -139,5 +139,4 @@ cmake .. \
     -DWITH_VIEWER_EXAMPLE=OFF \
     -DWITH_WEBXR_EXAMPLE=ON \
     -G Ninja
-# Otherwise the job gets killed (probably because using too much memory)
-ninja -j4
+ninja $NINJA_JOBS
