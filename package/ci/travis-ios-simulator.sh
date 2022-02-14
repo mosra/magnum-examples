@@ -4,7 +4,7 @@ set -ev
 git submodule update --init
 
 # Corrade
-git clone --depth 1 git://github.com/mosra/corrade.git
+git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
@@ -39,7 +39,7 @@ set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum
-git clone --depth 1 git://github.com/mosra/magnum.git
+git clone --depth 1 https://github.com/mosra/magnum.git
 cd magnum
 mkdir build-ios && cd build-ios
 cmake .. \
@@ -57,6 +57,7 @@ cmake .. \
     -DWITH_SCENEGRAPH=$TARGET_GLES3 \
     -DWITH_SHADERS=ON \
     -DWITH_SHADERTOOLS=OFF \
+    -DWITH_SCENETOOLS=OFF \
     -DWITH_TEXT=ON \
     -DWITH_TEXTURETOOLS=ON \
     -DWITH_TRADE=ON \
@@ -88,7 +89,7 @@ set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum Integration
-git clone --depth 1 git://github.com/mosra/magnum-integration.git
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build-ios && cd build-ios
 cmake .. \
@@ -109,7 +110,7 @@ set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum Extras
-git clone --depth 1 git://github.com/mosra/magnum-extras.git
+git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build-ios && cd build-ios
 cmake .. \

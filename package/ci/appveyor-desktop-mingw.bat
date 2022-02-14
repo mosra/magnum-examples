@@ -24,7 +24,7 @@ cmake --build . --target install || exit /b
 cd .. && cd ..
 
 rem Build Corrade
-git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
+git clone --depth 1 https://github.com/mosra/corrade.git || exit /b
 cd corrade || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^
@@ -38,7 +38,7 @@ cmake --build . --target install || exit /b
 cd .. && cd ..
 
 rem Build Magnum
-git clone --depth 1 git://github.com/mosra/magnum.git || exit /b
+git clone --depth 1 https://github.com/mosra/magnum.git || exit /b
 cd magnum || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^
@@ -51,6 +51,7 @@ cmake .. ^
     -DWITH_MESHTOOLS=ON ^
     -DWITH_PRIMITIVES=ON ^
     -DWITH_SCENEGRAPH=ON ^
+    -DWITH_SCENETOOLS=OFF ^
     -DWITH_SHADERS=ON ^
     -DWITH_SHADERTOOLS=ON ^
     -DWITH_TEXT=ON ^
@@ -69,7 +70,7 @@ rem For MinGW it's not possible to use the OVR SDK directly, the Oculus Runtime
 rem is needed to be installed, but that's apparently not possible from a
 rem command-line so I'm just disabling it.
 rem https://forums.oculus.com/community/discussion/18303/silent-installation-of-oculus-runtime-windows
-git clone --depth 1 git://github.com/mosra/magnum-integration.git || exit /b
+git clone --depth 1 https://github.com/mosra/magnum-integration.git || exit /b
 cd magnum-integration || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^
@@ -87,7 +88,7 @@ cmake --build . --target install || exit /b
 cd .. && cd ..
 
 rem Build Magnum Extras
-git clone --depth 1 git://github.com/mosra/magnum-extras.git || exit /b
+git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
 cd magnum-extras || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^

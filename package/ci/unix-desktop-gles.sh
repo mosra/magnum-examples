@@ -2,7 +2,7 @@
 set -ev
 
 # Corrade
-git clone --depth 1 git://github.com/mosra/corrade.git
+git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
 mkdir build && cd build
 cmake .. \
@@ -16,7 +16,7 @@ ninja install
 cd ../..
 
 # Magnum
-git clone --depth 1 git://github.com/mosra/magnum.git
+git clone --depth 1 https://github.com/mosra/magnum.git
 cd magnum
 mkdir build && cd build
 cmake .. \
@@ -29,6 +29,7 @@ cmake .. \
     -DWITH_DEBUGTOOLS=ON \
     -DWITH_PRIMITIVES=ON \
     -DWITH_SCENEGRAPH=ON \
+    -DWITH_SCENETOOLS=OFF \
     -DWITH_SHADERS=ON \
     -DWITH_SHADERTOOLS=OFF \
     -DWITH_TEXT=ON \
@@ -40,7 +41,7 @@ ninja install
 cd ../..
 
 # Magnum Integration
-git clone --depth 1 git://github.com/mosra/magnum-integration.git
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
 cd magnum-integration
 mkdir build && cd build
 cmake .. \
@@ -56,7 +57,7 @@ ninja install
 cd ../..
 
 # Magnum Extras
-git clone --depth 1 git://github.com/mosra/magnum-extras.git
+git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build && cd build
 cmake .. \
