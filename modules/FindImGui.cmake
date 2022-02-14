@@ -36,7 +36,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -59,7 +59,9 @@
 #
 
 # In 1.71 ImGui depends on the ApplicationServices framework for macOS
-# clipboard support. It's removed again in 1.72. TODO: remove once obsolete
+# clipboard support. Since 1.72 the dependency is optional and used only if
+# IMGUI_ENABLE_OSX_DEFAULT_CLIPBOARD_FUNCTIONS is enabled, but link to it
+# always to be nice to users.
 if(CORRADE_TARGET_APPLE)
     find_library(_IMGUI_ApplicationServices_LIBRARY ApplicationServices)
     mark_as_advanced(_IMGUI_ApplicationServices_LIBRARY)

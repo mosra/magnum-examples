@@ -20,7 +20,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -135,6 +135,14 @@ find_path(OPENAL_INCLUDE_DIR NAMES al.h
     # As above, skipping the obsolete PATHS and registry in vanilla FindOpenAL
     )
 
+# (Static) macOS / iOS dependencies
+if(CORRADE_TARGET_APPLE AND OPENAL_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+    find_library(_OPENAL_CoreAudio_LIBRARY CoreAudio)
+    mark_as_advanced(_OPENAL_CoreAudio_LIBRARY)
+    set(_OPENAL_FRAMEWORK_LIBRARIES ${_OPENAL_CoreAudio_LIBRARY})
+    set(_OPENAL_FRAMEWORK_LIBRARY_NAMES _OPENAL_CoreAudio_LIBRARY)
+endif()
+
 # OpenAL DLL on Windows
 if(CORRADE_TARGET_WINDOWS)
     # TODO: debug?
@@ -146,6 +154,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenAL DEFAULT_MSG
     OPENAL_LIBRARY
+    ${_OPENAL_FRAMEWORK_LIBRARY_NAMES}
     OPENAL_INCLUDE_DIR)
 
 if(NOT TARGET OpenAL::OpenAL)
@@ -160,6 +169,12 @@ if(NOT TARGET OpenAL::OpenAL)
         add_library(OpenAL::OpenAL UNKNOWN IMPORTED)
         set_property(TARGET OpenAL::OpenAL PROPERTY
             IMPORTED_LOCATION ${OPENAL_LIBRARY})
+    endif()
+
+    # Link frameworks on macOS / iOS if we have a static SDL
+    if(CORRADE_TARGET_APPLE AND OPENAL_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+        set_property(TARGET OpenAL::OpenAL APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${_OPENAL_FRAMEWORK_LIBRARIES})
     endif()
 
     set_target_properties(OpenAL::OpenAL PROPERTIES
