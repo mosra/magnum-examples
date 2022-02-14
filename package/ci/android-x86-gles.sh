@@ -112,3 +112,23 @@ cd ../..
 
 # So Gradle can find our stuff, hopefully the Android binaries first
 export CMAKE_PREFIX_PATH="$HOME/deps/;$HOME/deps-native/"
+
+# Build the Triangle example
+cd src/triangle
+gradle build
+cd ../..
+
+# Build the Primitives example
+cd src/primitives
+gradle build
+cd ../..
+
+# Build the Textured Quad example
+cd src/texturedquad
+gradle build
+cd ../..
+
+# Build the Viewer example
+cd src/viewer
+gradle build
+cd ../..

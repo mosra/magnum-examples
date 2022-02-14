@@ -225,7 +225,7 @@ jobs:
     - build:
         script: emscripten.sh
 
-  android-x86-gles2:
+  ports-android-x86-gles2:
     executor: android-29
     environment:
       # STUPID yml interprets unquoted ON as a boolean
@@ -236,7 +236,7 @@ jobs:
     - build:
         script: android-x86-gles.sh
 
-  android-x86-gles3:
+  ports-android-x86-gles3:
     executor: android-29
     environment:
       # STUPID yml interprets unquoted OFF as a boolean
@@ -269,6 +269,6 @@ workflows:
     - ports-macos
     - ports-emscripten-webgl1
     - ports-emscripten-webgl2
-    #- android-x86-gles2
-    #- android-x86-gles3
+    - ports-android-x86-gles2
+    - ports-android-x86-gles3
     - ports-ios-gles3
