@@ -206,6 +206,17 @@ jobs:
     - build:
         script: emscripten.sh
 
+  ios-gles3:
+    executor: xcode-11_4
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_GLES2: "OFF"
+    steps:
+    - install-base-macos:
+        extra: xcbeautify
+    - build:
+        script: ios-simulator-gles.sh
+
 workflows:
   version: 2
   build:
@@ -217,3 +228,4 @@ workflows:
     - macos
     - emscripten-webgl1
     - emscripten-webgl2
+    #- ios-gles3
