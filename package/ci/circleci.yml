@@ -262,13 +262,13 @@ workflows:
   version: 2
   build:
     jobs:
-    - ports-linux
-    - ports-linux-gles2
-    - ports-linux-gles3
-    - ports-linux-nondeprecated
-    - ports-macos
-    - ports-emscripten-webgl1
-    - ports-emscripten-webgl2
+    #- ports-linux
+    #- ports-linux-gles2
+    #- ports-linux-gles3
+    #- ports-linux-nondeprecated
+    #- ports-macos
+    #- ports-emscripten-webgl1
+    #- ports-emscripten-webgl2
     - ports-android-x86-gles2
     - ports-android-x86-gles3
-    - ports-ios-gles3
+    #- ports-ios-gles3

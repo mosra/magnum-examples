@@ -2,56 +2,56 @@ clone_depth: 1
 
 environment:
   matrix:
-  - TARGET: desktop
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: ports-windows-msvc2015
-    ENABLE_VULKAN: OFF
-  - TARGET: desktop
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-msvc2017
-    ENABLE_VULKAN: OFF
-  - TARGET: desktop
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: ports-windows-msvc2019
-    ENABLE_VULKAN: ON
-  - TARGET: desktop
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-    APPVEYOR_JOB_NAME: ports-windows-msvc2022
-    ENABLE_VULKAN: ON
-  - TARGET: desktop
-    COMPILER: mingw
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-mingw
-    ENABLE_VULKAN: ON
-  - TARGET: desktop-gles
-    COMPILER: msvc
-    TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2019
-  - TARGET: desktop-gles
-    COMPILER: msvc
-    TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2022
-  - TARGET: desktop-gles
-    COMPILER: msvc
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2019
-  - TARGET: desktop-gles
-    COMPILER: msvc
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2022
-  # Disabled because SDL_WinRTRunApp: identifier not found
-  #- TARGET: rt
-    #TARGET_GLES2: OFF
+  #- TARGET: desktop
+    #COMPILER: msvc
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #APPVEYOR_JOB_NAME: ports-windows-msvc2015
+    #ENABLE_VULKAN: OFF
+  #- TARGET: desktop
+    #COMPILER: msvc
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: ports-windows-rt-gles3-msvc2017
+    #APPVEYOR_JOB_NAME: ports-windows-msvc2017
+    #ENABLE_VULKAN: OFF
+  #- TARGET: desktop
+    #COMPILER: msvc
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #APPVEYOR_JOB_NAME: ports-windows-msvc2019
+    #ENABLE_VULKAN: ON
+  #- TARGET: desktop
+    #COMPILER: msvc
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    #APPVEYOR_JOB_NAME: ports-windows-msvc2022
+    #ENABLE_VULKAN: ON
+  #- TARGET: desktop
+    #COMPILER: mingw
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    #APPVEYOR_JOB_NAME: ports-windows-mingw
+    #ENABLE_VULKAN: ON
+  #- TARGET: desktop-gles
+    #COMPILER: msvc
+    #TARGET_GLES2: ON
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2019
+  #- TARGET: desktop-gles
+    #COMPILER: msvc
+    #TARGET_GLES2: ON
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    #APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2022
+  #- TARGET: desktop-gles
+    #COMPILER: msvc
+    #TARGET_GLES2: OFF
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    #APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2019
+  #- TARGET: desktop-gles
+    #COMPILER: msvc
+    #TARGET_GLES2: OFF
+    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    #APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2022
+  ## Disabled because SDL_WinRTRunApp: identifier not found
+  ##- TARGET: rt
+    ##TARGET_GLES2: OFF
+    ##APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ##APPVEYOR_JOB_NAME: ports-windows-rt-gles3-msvc2017
 
 install:
 - cinst ninja
