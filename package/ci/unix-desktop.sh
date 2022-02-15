@@ -111,5 +111,7 @@ cmake .. \
     -DWITH_TRIANGLE_VULKAN_EXAMPLE=ON \
     -DWITH_VIEWER_EXAMPLE=ON \
     -G Ninja
-# Otherwise the job gets killed (probably because using too much memory)
-ninja -j4
+ninja $NINJA_JOBS
+
+# Test install, after running the tests as for them it shouldn't be needed
+ninja install

@@ -62,8 +62,8 @@
 #
 # Features of found Corrade library are exposed in these variables:
 #
-#  CORRADE_MSVC2019_COMPATIBILITY - Defined if compiled with compatibility
-#   mode for MSVC 2019
+#  CORRADE_MSVC_COMPATIBILITY   - Defined if compiled with compatibility
+#   mode for MSVC 2019+ without the /permissive- flag set
 #  CORRADE_MSVC2017_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2017
 #  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
@@ -264,7 +264,7 @@
 #   This file is part of Corrade.
 #
 #   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#               2017, 2018, 2019, 2020, 2021
+#               2017, 2018, 2019, 2020, 2021, 2022
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -312,7 +312,7 @@ string(REGEX REPLACE "\n" ";" _corradeConfigure "${_corradeConfigure}")
 set(_corradeFlags
     MSVC2015_COMPATIBILITY
     MSVC2017_COMPATIBILITY
-    MSVC2019_COMPATIBILITY
+    MSVC_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
     BUILD_STATIC_UNIQUE_GLOBALS

@@ -20,7 +20,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -174,31 +174,32 @@ if(CORRADE_TARGET_WINDOWS)
         PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 endif()
 
-# (Static) macOS / iOS dependencies
-if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+# (Static) macOS / iOS dependencies. On macOS these were mainly needed when
+# building SDL statically using its CMake project, on iOS always.
+if(CORRADE_TARGET_APPLE AND (SDL2_LIBRARY_DEBUG MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$" OR SDL2_LIBRARY_RELEASE MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"))
+    set(_SDL2_FRAMEWORKS
+        iconv # should be in the system, needed by iOS as well now
+        AudioToolbox
+        AVFoundation
+        CoreHaptics # needed since 2.0.18(?) on iOS and macOS
+        Foundation
+        Metal # needed since 2.0.8 on iOS, since 2.0.14 on macOS
+        GameController) # needed since 2.0.18(?) on macOS as well
     if(CORRADE_TARGET_IOS)
-        set(_SDL2_FRAMEWORKS
-            AudioToolbox
-            AVFoundation
+        list(APPEND _SDL2_FRAMEWORKS
+            CoreBluetooth # needed since 2.0.10
             CoreGraphics
             CoreMotion
             Foundation
-            GameController
-            Metal # needed since 2.0.8
             QuartzCore
             UIKit)
     else()
-        # Those are needed when building SDL statically using its CMake project
-        set(_SDL2_FRAMEWORKS
-            iconv # should be in the system
-            AudioToolbox
-            AVFoundation
+        list(APPEND _SDL2_FRAMEWORKS
             Carbon
             Cocoa
             CoreAudio
             CoreVideo
             ForceFeedback
-            Foundation
             IOKit)
     endif()
     set(_SDL2_FRAMEWORK_LIBRARIES )
@@ -247,7 +248,7 @@ if(NOT TARGET SDL2::SDL2)
         endif()
 
         # Link frameworks on macOS / iOS if we have a static SDL
-        if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
+        if(CORRADE_TARGET_APPLE AND (SDL2_LIBRARY_DEBUG MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$" OR SDL2_LIBRARY_RELEASE MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$"))
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()

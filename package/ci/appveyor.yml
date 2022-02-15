@@ -18,6 +18,11 @@ environment:
     APPVEYOR_JOB_NAME: ports-windows-msvc2019
     ENABLE_VULKAN: ON
   - TARGET: desktop
+    COMPILER: msvc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: ports-windows-msvc2022
+    ENABLE_VULKAN: ON
+  - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: ports-windows-mingw
@@ -25,28 +30,24 @@ environment:
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2017
-  - TARGET: desktop-gles
-    COMPILER: msvc
-    TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2019
   - TARGET: desktop-gles
     COMPILER: msvc
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2017
+    TARGET_GLES2: ON
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: ports-windows-gles2-msvc2022
   - TARGET: desktop-gles
     COMPILER: msvc
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2019
+  - TARGET: desktop-gles
+    COMPILER: msvc
+    TARGET_GLES2: OFF
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    APPVEYOR_JOB_NAME: ports-windows-gles3-msvc2022
   # Disabled because SDL_WinRTRunApp: identifier not found
-  #- TARGET: rt
-    #TARGET_GLES2: ON
-    #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    #APPVEYOR_JOB_NAME: ports-windows-rt-gles2-msvc2017
   #- TARGET: rt
     #TARGET_GLES2: OFF
     #APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
