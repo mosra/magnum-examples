@@ -13,7 +13,7 @@ executors:
     #   dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
     # Since 2022-01-20 the oldest 11 image is 11.4.
     macos:
-      xcode: 11.4
+      xcode: 11.4.1
   emscripten:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
