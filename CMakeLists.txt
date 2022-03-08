@@ -98,7 +98,7 @@ endif()
 #   all plugins are put into the same place, so PluginManager has a single
 #   place to look into; and thanks to the dynamic libraries being there as
 #   well, this location can be automagically detected as relative to
-#   Directory::libraryLocation().
+#   Utility::Path::libraryLocation().
 # - Thanks to the $<CONFIG> being part of the output path, you are always sure
 #   you never accidentally mix up debug/release libraries when switching
 #   CMAKE_BUILD_TYPE in an existing build dir.

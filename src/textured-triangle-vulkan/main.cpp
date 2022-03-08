@@ -35,7 +35,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Configuration.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/Magnum.h>

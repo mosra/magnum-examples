@@ -30,7 +30,9 @@
 #include "CubeMap.h"
 
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/Utility/String.h>
 #include <Magnum/ImageView.h>
@@ -55,7 +57,7 @@
 
 namespace Magnum { namespace Examples {
 
-CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
+CubeMap::CubeMap(CubeMapResourceManager& resourceManager, Containers::StringView prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D(parent), SceneGraph::Drawable3D(*this, group) {
     /* Cube mesh. We'll look at it from the inside, so flip face winding. The
        cube primitive references constant memory, so we have to make the data
        owned & mutable first. */
@@ -77,7 +79,7 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& pre
         Resource<Trade::AbstractImporter> importer = resourceManager.get<Trade::AbstractImporter>("jpeg-importer");
 
         /* If this is already a file, maybe it's a cubemap file already? */
-        if(Utility::Directory::exists(prefix) && !Utility::Directory::isDirectory(prefix)) {
+        if(Utility::Path::exists(prefix) && !Utility::Path::isDirectory(prefix)) {
             /** @todo clean up once there's ImageFlag::CubeMap and all that */
             if(!importer->openFile(prefix))
                 Fatal{} << "Cannot open" << prefix;
@@ -95,30 +97,30 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, const std::string& pre
         /* Otherwise open six different files */
         } else {
             /* Configure texture storage using size of first image */
-            importer->openFile(Utility::Directory::join(prefix, "+x.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "+x.jpg"));
             Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
             CORRADE_INTERNAL_ASSERT(image);
             Vector2i size = image->size();
             cubeMap->setStorage(Math::log2(size.min())+1, GL::TextureFormat::RGB8, size)
                 .setSubImage(GL::CubeMapCoordinate::PositiveX, 0, {}, *image);
 
-            importer->openFile(Utility::Directory::join(prefix, "-x.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "-x.jpg"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
             cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeX, 0, {}, *image);
 
-            importer->openFile(Utility::Directory::join(prefix, "+y.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "+y.jpg"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
             cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveY, 0, {}, *image);
 
-            importer->openFile(Utility::Directory::join(prefix, "-y.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "-y.jpg"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
             cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeY, 0, {}, *image);
 
-            importer->openFile(Utility::Directory::join(prefix, "+z.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "+z.jpg"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
             cubeMap->setSubImage(GL::CubeMapCoordinate::PositiveZ, 0, {}, *image);
 
-            importer->openFile(Utility::Directory::join(prefix, "-z.jpg"));
+            importer->openFile(Utility::Path::join(prefix, "-z.jpg"));
             CORRADE_INTERNAL_ASSERT_OUTPUT(image = importer->image2D(0));
             cubeMap->setSubImage(GL::CubeMapCoordinate::NegativeZ, 0, {}, *image);
         }

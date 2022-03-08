@@ -27,8 +27,9 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
@@ -74,13 +75,13 @@ using namespace Math::Literals;
 CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try to locate the bundled images, first in the source directory, then in
        the installation directory and as a fallback next to the executable */
-    std::string defaultPath;
-    if(Utility::Directory::exists(CUBEMAP_EXAMPLE_DIR))
+    Containers::String defaultPath;
+    if(Utility::Path::exists(CUBEMAP_EXAMPLE_DIR))
         defaultPath = CUBEMAP_EXAMPLE_DIR;
-    else if(Utility::Directory::exists(CUBEMAP_EXAMPLE_INSTALL_DIR))
+    else if(Utility::Path::exists(CUBEMAP_EXAMPLE_INSTALL_DIR))
         defaultPath = CUBEMAP_EXAMPLE_INSTALL_DIR;
     else
-        defaultPath = Utility::Directory::path(Utility::Directory::executableLocation());
+        defaultPath = Utility::Path::split(*Utility::Path::executableLocation()).first();
 
     /* Finally, provide a way for the user to override the path */
     Utility::Arguments args;
