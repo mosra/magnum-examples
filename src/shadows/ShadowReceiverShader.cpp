@@ -31,6 +31,8 @@
 #include "ShadowReceiverShader.h"
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
@@ -50,9 +52,9 @@ ShadowReceiverShader::ShadowReceiverShader(std::size_t numShadowLevels) {
 
     std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
     vert.addSource(preamble);
-    vert.addSource(rs.get("ShadowReceiver.vert"));
+    vert.addSource(rs.getString("ShadowReceiver.vert"));
     frag.addSource(preamble);
-    frag.addSource(rs.get("ShadowReceiver.frag"));
+    frag.addSource(rs.getString("ShadowReceiver.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

@@ -29,6 +29,7 @@
  */
 
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/StlMath.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>

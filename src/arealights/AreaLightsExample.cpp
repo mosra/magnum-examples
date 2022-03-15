@@ -32,6 +32,8 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -78,8 +80,8 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
             GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
 
-            vert.addSource(rs.get("AreaLights.vert"));
-            frag.addSource(rs.get("AreaLights.frag"));
+            vert.addSource(rs.getString("AreaLights.vert"));
+            frag.addSource(rs.getString("AreaLights.frag"));
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

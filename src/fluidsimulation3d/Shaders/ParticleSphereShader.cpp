@@ -32,6 +32,8 @@
 
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Magnum/GL/Shader.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
@@ -44,8 +46,8 @@ ParticleSphereShader::ParticleSphereShader() {
 
     GL::Shader vertShader{GL::Version::GL330, GL::Shader::Type::Vertex};
     GL::Shader fragShader{GL::Version::GL330, GL::Shader::Type::Fragment};
-    vertShader.addSource(rs.get("ParticleSphereShader.vert"));
-    fragShader.addSource(rs.get("ParticleSphereShader.frag"));
+    vertShader.addSource(rs.getString("ParticleSphereShader.vert"));
+    fragShader.addSource(rs.getString("ParticleSphereShader.frag"));
 
     CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vertShader, fragShader}));
     attachShaders({vertShader, fragShader});

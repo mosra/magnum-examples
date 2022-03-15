@@ -29,6 +29,7 @@
  */
 
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/StlMath.h>
 #include <Magnum/Image.h>
 #include <Magnum/Timeline.h>

@@ -30,6 +30,8 @@
 #include "TexturedQuadShader.h"
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
@@ -45,8 +47,8 @@ TexturedQuadShader::TexturedQuadShader() {
     GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex};
     GL::Shader frag{GL::Version::GL330, GL::Shader::Type::Fragment};
 
-    vert.addSource(rs.get("TexturedQuadShader.vert"));
-    frag.addSource(rs.get("TexturedQuadShader.frag"));
+    vert.addSource(rs.getString("TexturedQuadShader.vert"));
+    frag.addSource(rs.getString("TexturedQuadShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

@@ -31,6 +31,8 @@
 #include "Shaders/ParticleSphereShader2D.h"
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Shader.h>
 #include <Magnum/GL/Version.h>
@@ -44,8 +46,8 @@ ParticleSphereShader2D::ParticleSphereShader2D() {
 
     GL::Shader vertShader{ GL::Version::GL330, GL::Shader::Type::Vertex };
     GL::Shader fragShader{ GL::Version::GL330, GL::Shader::Type::Fragment };
-    vertShader.addSource(rs.get("ParticleSphereShader2D.vert"));
-    fragShader.addSource(rs.get("ParticleSphereShader2D.frag"));
+    vertShader.addSource(rs.getString("ParticleSphereShader2D.vert"));
+    fragShader.addSource(rs.getString("ParticleSphereShader2D.frag"));
 
     CORRADE_INTERNAL_ASSERT(GL::Shader::compile({ vertShader, fragShader }));
     attachShaders({vertShader, fragShader});
