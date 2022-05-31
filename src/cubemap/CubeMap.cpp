@@ -90,7 +90,11 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, Containers::StringView
                 Fatal{} << "Cannot open the image as a cube map";
 
             const Vector2i size = image->size().xy();
-            (*cubeMap)
+            /** @todo mips?! */
+            if(image->isCompressed()) (*cubeMap)
+                .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->compressedFormat()), size)
+                .setCompressedSubImage(0, {}, *image);
+            else (*cubeMap)
                 .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->format()), size)
                 .setSubImage(0, {}, *image);
 
