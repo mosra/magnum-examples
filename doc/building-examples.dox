@@ -76,7 +76,7 @@ the `package/archlinux` directory. They allow you to build and install the
 package directly from the source tree. Example usage:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+git clone https://github.com/mosra/magnum-examples && cd magnum-examples
 cd package/archlinux
 makepkg -fp PKGBUILD # or any other PKGBUILD file
 @endcode
@@ -109,7 +109,7 @@ just change directory to package root, link or copy the `package/debian`
 directory there and run `dpkg-buildpackage`:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+git clone https://github.com/mosra/magnum-examples && cd magnum-examples
 ln -s package/debian .
 dpkg-buildpackage --no-sign
 @endcode
@@ -137,7 +137,7 @@ Gentoo Git ebuild is available in the `package/gentoo` directory. Get the
 then build and install Magnum Examples like this:
 
 @code{.sh}
-git clone git://github.com/mosra/magnum-examples && cd magnum-examples
+git clone https://github.com/mosra/magnum-examples && cd magnum-examples
 cd package/gentoo
 sudo ebuild dev-libs/magnum-examples/magnum-examples-9999.ebuild manifest clean merge
 @endcode
