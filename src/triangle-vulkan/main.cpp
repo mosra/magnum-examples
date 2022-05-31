@@ -29,6 +29,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -208,7 +209,7 @@ int main(int argc, char** argv) {
                OpFunctionEnd
 )"_s;
     Vk::Shader shader{device, Vk::ShaderCreateInfo{
-        CORRADE_INTERNAL_ASSERT_EXPRESSION(CORRADE_INTERNAL_ASSERT_EXPRESSION(
+        *CORRADE_INTERNAL_ASSERT_EXPRESSION(CORRADE_INTERNAL_ASSERT_EXPRESSION(
             PluginManager::Manager<ShaderTools::AbstractConverter>{}
                 .loadAndInstantiate("SpirvAssemblyToSpirvShaderConverter")
         )->convertDataToData({}, assembly))}};
