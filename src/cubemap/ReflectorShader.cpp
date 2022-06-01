@@ -30,6 +30,8 @@
 #include "ReflectorShader.h"
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/CubeMapTexture.h>
 #include <Magnum/GL/Shader.h>
@@ -63,8 +65,8 @@ ReflectorShader::ReflectorShader() {
         #endif
         GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.get("ReflectorShader.vert"));
-    frag.addSource(rs.get("ReflectorShader.frag"));
+    vert.addSource(rs.getString("ReflectorShader.vert"));
+    frag.addSource(rs.getString("ReflectorShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

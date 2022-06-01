@@ -70,6 +70,7 @@ This example depends on the @ref ImGuiIntegration library which is not a part
 of the core Magnum repository, see its documentation for usage instructions.
 
 -   @ref fluidsimulation3d/CMakeLists.txt "CMakeLists.txt"
+-   @ref fluidsimulation3d/configure.h.cmake "configure.h.cmake"
 -   @ref fluidsimulation3d/DrawableObjects/FlatShadeObject.h "DrawableObjects/FlatShadeObject.h"
 -   @ref fluidsimulation3d/DrawableObjects/ParticleGroup.cpp "DrawableObjects/ParticleGroup.cpp"
 -   @ref fluidsimulation3d/DrawableObjects/ParticleGroup.h "DrawableObjects/ParticleGroup.h"
@@ -94,6 +95,7 @@ support that aren't present in `master` in order to keep the example code as
 simple as possible.
 
 @example fluidsimulation3d/CMakeLists.txt @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
+@example fluidsimulation3d/configure.h.cmake @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
 @example fluidsimulation3d/DrawableObjects/FlatShadeObject.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
 @example fluidsimulation3d/DrawableObjects/ParticleGroup.cpp @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation
 @example fluidsimulation3d/DrawableObjects/ParticleGroup.h @m_examplenavigation{examples-fluidsimulation3d,fluidsimulation3d/} @m_footernavigation

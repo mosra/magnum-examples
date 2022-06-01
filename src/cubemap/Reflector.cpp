@@ -31,6 +31,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/Mesh.h>

@@ -71,13 +71,13 @@ This example depends on the @ref DartIntegration library and the
 @ref Trade::AssimpImporter "AssimpImporter" plugin which are not a part of the
 core Magnum repository, see their documentation for usage instructions.
 
--   @ref dart/DartExample.cpp "DartExample.cpp"
 -   @ref dart/CMakeLists.txt "CMakeLists.txt"
 -   @ref dart/configure.h.cmake "configure.h.cmake"
+-   @ref dart/DartExample.cpp "DartExample.cpp"
 
-@example dart/DartExample.cpp @m_examplenavigation{examples-dart,dart/} @m_footernavigation
 @example dart/CMakeLists.txt @m_examplenavigation{examples-dart,dart/} @m_footernavigation
 @example dart/configure.h.cmake @m_examplenavigation{examples-dart,dart/} @m_footernavigation
+@example dart/DartExample.cpp @m_examplenavigation{examples-dart,dart/} @m_footernavigation
 
 */
 }

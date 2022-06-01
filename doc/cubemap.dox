@@ -93,6 +93,7 @@ JPEG loading. These are not a part of the core Magnum repository, see their
 documentation for usage instructions.
 
 -   @ref cubemap/CMakeLists.txt "CMakeLists.txt"
+-   @ref cubemap/configure.h.cmake "configure.h.cmake"
 -   @ref cubemap/CubeMap.cpp "CubeMap.cpp"
 -   @ref cubemap/CubeMap.h "CubeMap.h"
 -   @ref cubemap/CubeMapExample.cpp "CubeMapExample.cpp"
@@ -116,6 +117,7 @@ aren't present in `master` in order to keep the example code as simple as
 possible.
 
 @example cubemap/CMakeLists.txt @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
+@example cubemap/configure.h.cmake @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
 @example cubemap/CubeMap.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
 @example cubemap/CubeMap.h @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation
 @example cubemap/CubeMapExample.cpp @m_examplenavigation{examples-cubemap,cubemap/} @m_footernavigation

@@ -10,7 +10,7 @@ depends=('magnum-git' 'magnum-plugins-git' 'magnum-integration-git' 'magnum-extr
 makedepends=('cmake' 'git' 'ninja')
 provides=('magnum-examples')
 conflicts=('magnum-examples')
-source=("git+git://github.com/mosra/magnum-examples.git")
+source=("git+https://github.com/mosra/magnum-examples.git")
 sha1sums=('SKIP')
 
 pkgver() {

@@ -39,7 +39,7 @@ class CubeMapShader;
 
 class CubeMap: public Object3D, SceneGraph::Drawable3D {
     public:
-        CubeMap(CubeMapResourceManager& resourceManager, const std::string& prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group);
+        CubeMap(CubeMapResourceManager& resourceManager, Containers::StringView prefix, Object3D* parent, SceneGraph::DrawableGroup3D* group);
 
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
 

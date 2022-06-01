@@ -30,6 +30,8 @@
 #include "CubeMapShader.h"
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/CubeMapTexture.h>
 #include <Magnum/GL/Shader.h>
@@ -59,8 +61,8 @@ CubeMapShader::CubeMapShader() {
         #endif
         GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.get("CubeMapShader.vert"));
-    frag.addSource(rs.get("CubeMapShader.frag"));
+    vert.addSource(rs.getString("CubeMapShader.vert"));
+    frag.addSource(rs.getString("CubeMapShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

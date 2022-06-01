@@ -227,7 +227,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     /* The format has no scene support, display just the first loaded mesh with
        a default material (if it's there) and be done with it. */
     if(importer->defaultScene() == -1) {
-        if(!_meshes.empty() && _meshes[0])
+        if(!_meshes.isEmpty() && _meshes[0])
             new ColoredDrawable{_manipulator, _coloredShader, *_meshes[0],
                 0xffffff_rgbf, _drawables};
         return;

@@ -43,9 +43,10 @@
 #include <dart/dynamics/Skeleton.hpp>
 #include <dart/dynamics/WeldJoint.hpp>
 #include <dart/simulation/World.hpp>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Arguments.h>
-#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Path.h>
 #include <Magnum/ResourceManager.h>
 #include <Magnum/DartIntegration/ConvertShapeNode.h>
 #include <Magnum/DartIntegration/World.h>
@@ -236,13 +237,13 @@ class DartExample: public Platform::Application {
 DartExample::DartExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try to locate the models, first in the source directory, then in the
        installation directory and as a fallback next to the executable */
-    std::string resPath;
-    if(Utility::Directory::exists(DART_EXAMPLE_DIR))
+    Containers::String resPath;
+    if(Utility::Path::exists(DART_EXAMPLE_DIR))
         resPath = DART_EXAMPLE_DIR;
-    else if(Utility::Directory::exists(DART_EXAMPLE_INSTALL_DIR))
+    else if(Utility::Path::exists(DART_EXAMPLE_INSTALL_DIR))
         resPath = DART_EXAMPLE_INSTALL_DIR;
     else
-        resPath = Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), "urdf");
+        resPath = Utility::Path::join(Utility::Path::split(*Utility::Path::executableLocation()).first(), "urdf");
 
     /* Finally, provide a way for the user to override the model directory */
     Utility::Arguments args;
@@ -252,7 +253,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
         .setGlobalHelp("Controls a robotic manipulator with DART")
         .parse(arguments.argc, arguments.argv);
     /* DART can't handle relative paths, so prepend CWD to them if needed */
-    resPath = Utility::Directory::join(Utility::Directory::current(), args.value("urdf"));
+    resPath = Utility::Path::join(*Utility::Path::currentDirectory(), args.value("urdf"));
 
     /* Try 8x MSAA */
     Configuration conf;
@@ -279,9 +280,9 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     /* DART: Load Skeletons/Robots */
     DartLoader loader;
     /* Add packages (needed for URDF loading) */
-    loader.addPackageDirectory("iiwa14", Utility::Directory::join(resPath, "iiwa14"));
-    loader.addPackageDirectory("robotiq", Utility::Directory::join(resPath, "robotiq"));
-    std::string filename = Utility::Directory::join(resPath, "iiwa14_simple.urdf");
+    loader.addPackageDirectory("iiwa14", Utility::Path::join(resPath, "iiwa14"));
+    loader.addPackageDirectory("robotiq", Utility::Path::join(resPath, "robotiq"));
+    std::string filename = Utility::Path::join(resPath, "iiwa14_simple.urdf");
 
     /* First load the KUKA manipulator */
     _manipulator = loader.parseSkeleton(filename);
@@ -304,7 +305,7 @@ DartExample::DartExample(const Arguments& arguments): Platform::Application{argu
     #endif
 
     /* Load the Robotiq 2-finger gripper */
-    filename = Utility::Directory::join(resPath, "robotiq.urdf");
+    filename = Utility::Path::join(resPath, "robotiq.urdf");
     auto gripper_skel = loader.parseSkeleton(filename);
     if(!gripper_skel) {
         Error{} << "Failed to load" << filename << Debug::nospace << ", exiting.";
