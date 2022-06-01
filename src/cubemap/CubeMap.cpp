@@ -91,10 +91,18 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, Containers::StringView
 
             const Vector2i size = image->size().xy();
             /** @todo mips?! */
-            if(image->isCompressed()) (*cubeMap)
-                .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->compressedFormat()), size)
-                .setCompressedSubImage(0, {}, *image);
-            else (*cubeMap)
+            if(image->isCompressed()) {
+                #ifndef MAGNUM_TARGET_GLES3
+                (*cubeMap)
+                    .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->compressedFormat()), size)
+                    .setCompressedSubImage(0, {}, *image);
+                #else
+                /** @todo drop once compressed images contain block size
+                    information implicitly and setCompressedSubImage() for 3D
+                    images is enabled on ES */
+                Fatal{} << "Sorry, compressed cubemaps are not supported in the OpenGL ES build due to lack of convenience APIs in Magnum.";
+                #endif
+            } else (*cubeMap)
                 .setStorage(Math::log2(size.min())+1, GL::textureFormat(image->format()), size)
                 .setSubImage(0, {}, *image);
 
