@@ -72,7 +72,7 @@ set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum Plugins
-git clone --depth 1 git://github.com/mosra/magnum-plugins.git
+git clone --depth 1 https://github.com/mosra/magnum-plugins.git
 cd magnum-plugins
 mkdir build-ios && cd build-ios
 cmake .. \
