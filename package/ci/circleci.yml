@@ -1,9 +1,9 @@
 version: 2.1
 
 executors:
-  ubuntu-16_04:
+  ubuntu-18_04:
     docker:
-    - image: ubuntu:xenial-20201014
+    - image: ubuntu:bionic-20220427
   xcode-11_5:
     # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
     # have to use 10.3 instead; since 2021-06-08 MoltenVK refuses to work on
@@ -37,7 +37,8 @@ commands:
         # Git is needed always for cloning Corrade, Magnum etc
         command: |
           apt update
-          apt install -y git ninja-build << parameters.extra >>
+          # libidn11 needed by CMake
+          apt install -y git ninja-build libidn11 << parameters.extra >>
 
   install-base-macos:
     parameters:
@@ -103,12 +104,13 @@ commands:
 
 jobs:
   linux:
-    executor: ubuntu-16_04
+    executor: ubuntu-18_04
     environment:
       PLATFORM_GL_API: GLX
       WITH_BOX2D: "ON"
-      # DART temporarily disabled on Linux because of GCC 4 and 5 ABI mismatch
+      # DART was disabled on Ubuntu 16.04 because of GCC 4 and 5 ABI mismatch
       # on 16.04: https://github.com/dartsim/dart/issues/967#issuecomment-469075835
+      # TODO: investigate and re-enable on 18.04
       WITH_DART: "OFF"
     steps:
     - install-base-linux:
@@ -120,7 +122,7 @@ jobs:
         script: unix-desktop.sh
 
   linux-gles2:
-    executor: ubuntu-16_04
+    executor: ubuntu-18_04
     environment:
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted ON as a boolean
@@ -138,7 +140,7 @@ jobs:
         script: unix-desktop-gles.sh
 
   linux-gles3:
-    executor: ubuntu-16_04
+    executor: ubuntu-18_04
     environment:
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted OFF as a boolean
@@ -156,7 +158,7 @@ jobs:
         script: unix-desktop-gles.sh
 
   linux-nondeprecated:
-    executor: ubuntu-16_04
+    executor: ubuntu-18_04
     environment:
       # STUPID yml interprets unquoted OFF as a boolean
       BUILD_DEPRECATED: "OFF"
