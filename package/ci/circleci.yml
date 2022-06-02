@@ -24,6 +24,9 @@ executors:
     # https://github.com/mosra/magnum/issues/413,
     # https://github.com/emscripten-core/emscripten/pull/10161
     - image: emscripten/emsdk:1.39.6-upstream
+  android-29:
+    machine:
+      image: android:202102-01
 
 commands:
   install-base-linux:
@@ -52,6 +55,19 @@ commands:
         # a spectacular way. How is this acceptable?!
         command: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake ninja << parameters.extra >>
+
+  install-base-android:
+    parameters:
+      extra:
+        type: string
+        default: ""
+    steps:
+    - run:
+        name: Update apt and install base packages
+        # Compared to Docker images this needs sudo
+        command: |
+          sudo apt update
+          sudo apt install -y ninja-build << parameters.extra >>
 
   install-gcc-4_8:
     steps:
@@ -209,10 +225,32 @@ jobs:
     - build:
         script: emscripten.sh
 
+  ports-android-x86-gles2:
+    executor: android-29
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      TARGET_GLES2: "ON"
+    steps:
+    - install-base-android:
+        extra: wget
+    - build:
+        script: android-x86-gles.sh
+
+  ports-android-x86-gles3:
+    executor: android-29
+    environment:
+      # STUPID yml interprets unquoted OFF as a boolean
+      TARGET_GLES2: "OFF"
+    steps:
+    - install-base-android:
+        extra: wget
+    - build:
+        script: android-x86-gles.sh
+
   ports-ios-gles3:
     executor: xcode-11_5
     environment:
-      # STUPID yml interprets unquoted ON as a boolean
+      # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
     - install-base-macos:
@@ -224,11 +262,13 @@ workflows:
   version: 2
   build:
     jobs:
-    - ports-linux
-    - ports-linux-gles2
-    - ports-linux-gles3
-    - ports-linux-nondeprecated
-    - ports-macos
-    - ports-emscripten-webgl1
-    - ports-emscripten-webgl2
-    - ports-ios-gles3
+    #- ports-linux
+    #- ports-linux-gles2
+    #- ports-linux-gles3
+    #- ports-linux-nondeprecated
+    #- ports-macos
+    #- ports-emscripten-webgl1
+    #- ports-emscripten-webgl2
+    - ports-android-x86-gles2
+    - ports-android-x86-gles3
+    #- ports-ios-gles3
