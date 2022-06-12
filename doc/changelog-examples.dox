@@ -74,9 +74,14 @@ namespace Magnum {
 
 @subsection changelog-examples-latest-deprecated Deprecated APIs
 
+-   All @ref building-examples-features "CMake build options" are now prefixed
+    with `MAGNUM_`. For backwards compatibility, unless
+    @ref MAGNUM_BUILD_DEPRECATED is disabled and unless a prefixed option is
+    already set during the initial run, the unprefixed options are still
+    recognized with a warning. See also [mosra/corrade#139](https://github.com/mosra/corrade/issues/139).
 -   The `WITH_TEXTUREDTRIANGLE_EXAMPLE` CMake option is still recognized on
     builds with @ref MAGNUM_BUILD_DEPRECATED enabled, but will produce a
-    warning. Use `WITH_TEXTUREDQUAD_EXAMPLE` instead.
+    warning. Use `MAGNUM_WITH_TEXTUREDQUAD_EXAMPLE` instead.
 
 @subsection changelog-examples-latest-documentation Documentation
 

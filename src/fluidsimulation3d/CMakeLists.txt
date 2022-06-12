@@ -49,8 +49,8 @@ find_package(MagnumIntegration REQUIRED ImGui)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-option(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING "Build FluidSimulation example with parallel computation" ON)
-option(FLUIDSIMULATION3D_EXAMPLE_USE_TBB "Using Intel TBB if FluidSimulation is built with parallel computation enabled" OFF)
+option(MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING "Build FluidSimulation example with parallel computation" ON)
+option(MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB "Using Intel TBB if FluidSimulation is built with parallel computation enabled" OFF)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
@@ -86,11 +86,11 @@ target_link_libraries(magnum-fluidsimulation3d PRIVATE
 target_include_directories(magnum-fluidsimulation3d PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
-if(FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING)
+if(MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING)
     find_package(Threads REQUIRED)
     target_link_libraries(magnum-fluidsimulation3d PRIVATE Threads::Threads)
 endif()
-if(FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
+if(MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB)
     # TBBConfig.cmake adds -isystem /usr/lib/cmake/TBB/../../../include, which
     # breaks compilation. Temporary workaround by not including that dir as
     # system, see https://github.com/intel/tbb/issues/195 and

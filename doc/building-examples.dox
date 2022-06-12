@@ -197,73 +197,78 @@ class, unless said otherwise. Some examples depend on plugins, extras and
 integration libraries, see @ref building-plugins, @ref building-integration and
 @ref building-extras for more information.
 
--   `WITH_ANIMATED_GIF__EXAMPLE` -- Build the @ref examples-animated-gif
+-   `MAGNUM_WITH_ANIMATED_GIF_EXAMPLE` -- Build the @ref examples-animated-gif
     example. Requires @ref Trade::StbImageImporter "StbImageImporter".
--   `WITH_ARCBALL_EXAMPLE` -- Build the @ref examples-arcball example.
--   `WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights example.
-    Requires the @ref Ui library and some TTF font plugin such as
+-   `MAGNUM_WITH_ARCBALL_EXAMPLE` -- Build the @ref examples-arcball example.
+-   `MAGNUM_WITH_AREALIGHTS_EXAMPLE` -- Build the @ref examples-arealights
+    example. Requires the @ref Ui library and some TTF font plugin such as
     @ref Text::FreeTypeFont "FreeTypeFont".
--   `WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example. Requires
-    the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
--   `WITH_BOX2D_EXAMPLE` --- Build the @ref examples-box2d example. Depends on
-    [Box2D](https://box2d.org/).
--   `WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example. Requires
-    the @ref BulletIntegration library.
--   `WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example. Requires
-    some JPEG importer plugin such as @ref Trade::JpegImporter "JpegImporter",
-    not available in OpenGL ES.
--   `WITH_DART_EXAMPLE` --- Build the @ref examples-dart example. Requires
-    the @ref DartIntegration library.
--   `WITH_FLUIDSIMULATION3D_EXAMPLE` -- Build the @ref examples-fluidsimulation3d
+-   `MAGNUM_WITH_AUDIO_EXAMPLE` --- Build the @ref examples-audio example.
+    Requires the @ref Audio library and the @ref Audio::StbVorbisImporter "StbVorbisAudioImporter" plugin.
+-   `MAGNUM_WITH_BOX2D_EXAMPLE` --- Build the @ref examples-box2d example.
+    Depends on [Box2D](https://box2d.org/).
+-   `MAGNUM_WITH_BULLET_EXAMPLE` --- Build the @ref examples-bullet example.
+    Requires the @ref BulletIntegration library.
+-   `MAGNUM_WITH_CUBEMAP_EXAMPLE` --- Build the @ref examples-cubemap example.
+    Requires some JPEG importer plugin such as
+    @ref Trade::JpegImporter "JpegImporter", not available in OpenGL ES.
+-   `MAGNUM_WITH_DART_EXAMPLE` --- Build the @ref examples-dart example.
+    Requires the @ref DartIntegration library.
+-   `MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE` -- Build the
+    @ref examples-fluidsimulation3d example.
+-   `MAGNUM_WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion
     example.
--   `WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion example.
--   `WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur example.
-    Not available on OpenGL ES.
--   `WITH_MOUSEINTERACTION_EXAMPLE` --- Build the @ref examples-mouseinteraction
-    example.
--   `WITH_OCTREE_EXAMPLE` --- Build the @ref examples-octree example.
--   `WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
+-   `MAGNUM_WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur
+    example. Not available on OpenGL ES.
+-   `MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE` --- Build the
+    @ref examples-mouseinteraction example.
+-   `MAGNUM_WITH_OCTREE_EXAMPLE` --- Build the @ref examples-octree example.
+-   `MAGNUM_WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
     the @ref OvrIntegration library.
--   `WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
--   `WITH_PRIMITIVES_EXAMPLE` --- Build the @ref examples-primitives "Primitives"
-    example.
--   `WITH_RAYTRACING_EXAMPLE` --- Build the @ref examples-raytracing "RayTracing"
-    example.
--   `WITH_SHADOWS_EXAMPLE` --- Build the @ref examples-shadows example.
--   `WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example. Requires
-    the @ref Text library and some TTF font plugin such as
+-   `MAGNUM_WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
+-   `MAGNUM_WITH_PRIMITIVES_EXAMPLE` --- Build the
+    @ref examples-primitives "Primitives" example.
+-   `MAGNUM_WITH_RAYTRACING_EXAMPLE` --- Build the
+    @ref examples-raytracing "RayTracing" example.
+-   `MAGNUM_WITH_SHADOWS_EXAMPLE` --- Build the @ref examples-shadows example.
+-   `MAGNUM_WITH_TEXT_EXAMPLE` --- Build the @ref examples-text example.
+    Requires the @ref Text library and some TTF font plugin such as
     @ref Text::FreeTypeFont "FreeTypeFont".
--   `WITH_TEXTUREDQUAD_EXAMPLE` --- Build the @ref examples-texturedquad
+-   `MAGNUM_WITH_TEXTUREDQUAD_EXAMPLE` --- Build the @ref examples-texturedquad
     example. Requires some TGA importer plugin such as
     @ref Trade::TgaImporter "TgaImporter", not available in OpenGL ES.
--   `WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-textured-triangle-vulkan "Vulkan Textured Triangle"
+-   `MAGNUM_WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE` --- Build the
+    @ref examples-textured-triangle-vulkan "Vulkan Textured Triangle"
     example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
     the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
     plugin and some `PngImporter` and `PngImageConverter` plugin
     implementation.
--   `WITH_TRIANGLE_EXAMPLE` --- Build the @ref examples-triangle "Triangle"
-    example. Enabled by default.
--   `WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
+-   `MAGNUM_WITH_TRIANGLE_EXAMPLE` --- Build the
+    @ref examples-triangle "Triangle" example. Enabled by default.
+-   `MAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
     @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example. Depends on
     [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
--   `WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
+-   `MAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
     @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
     [GLEW](http://glew.sourceforge.net/).
--   `WITH_TRIANGLE_VULKAN_EXAMPLE` --- Build the @ref examples-triangle-vulkan "Vulkan Triangle"
-    example. Requires the @ref ShaderTools, @ref Vk and @ref Trade libraries,
-    the @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter"
-    plugin and some `PngImageConverter` plugin implementation.
--   `WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer" example.
-    Requires the @ref Trade::AnySceneImporter "AnySceneImporter" plugin.
--   `WITH_WEBXR_EXAMPLE` --- Build the @ref examples-webxr "WebXR" example.
-    Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+-   `MAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE` --- Build the
+    @ref examples-triangle-vulkan "Vulkan Triangle" example. Requires the
+    @ref ShaderTools, @ref Vk and @ref Trade libraries, the
+    @ref ShaderTools::SpirvToolsConverter "SpirvToolsShaderConverter" plugin
+    and some `PngImageConverter` plugin implementation.
+-   `MAGNUM_WITH_VIEWER_EXAMPLE` --- Build the @ref examples-viewer "Viewer"
+    example. Requires the @ref Trade::AnySceneImporter "AnySceneImporter"
+    plugin.
+-   `MAGNUM_WITH_WEBXR_EXAMPLE` --- Build the @ref examples-webxr "WebXR"
+    example. Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 
 Some examples accept additional options:
 
--   `FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING` --- Controls multithreading
-    for the @ref examples-fluidsimulation3d example. `ON` by default.
--   `FLUIDSIMULATION3D_EXAMPLE_USE_TBB` --- If enabled together with
-    `FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING`, uses
+-   `MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING` --- Controls
+    multithreading for the @ref examples-fluidsimulation3d example. `ON` by
+    default.
+-   `MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB` --- If enabled together with
+    `MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING`, uses
     [Intel TBB](https://github.com/intel/tbb) for parallel processing in the
     @ref examples-fluidsimulation3d example. `OFF` by default.
 

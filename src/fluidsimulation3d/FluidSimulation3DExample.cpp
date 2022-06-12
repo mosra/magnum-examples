@@ -55,7 +55,7 @@
 
 #include "configure.h"
 
-#ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+#ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
 #include <thread>
 #endif
 
@@ -452,11 +452,11 @@ void FluidSimulation3DExample::showMenu() {
     ImGui::Text("Hide/show menu: H");
     ImGui::Text("Num. particles: %d", Int(_fluidSolver->numParticles()));
     ImGui::Text("Simulation steps/frame: %d", _substeps);
-    #ifndef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    #ifndef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
     ImGui::Text("Rendering: %3.2f FPS (1 thread)", Double(ImGui::GetIO().Framerate));
     #else
     ImGui::Text("Rendering: %3.2f FPS (%d threads"
-        #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+        #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB
         " + TBB"
         #endif
         ")", Double(ImGui::GetIO().Framerate), Int(std::thread::hardware_concurrency()));

@@ -32,8 +32,8 @@
 
 #include "configure.h"
 
-#ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+#ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB
     #include <tbb/parallel_for.h>
     #else
     #include "ThreadPool.h"
@@ -43,8 +43,8 @@
 namespace Magnum { namespace Examples { namespace TaskScheduler {
 
 template<class IndexType, class Function> void forEach(IndexType endIdx, Function&& func) {
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB
     tbb::parallel_for(tbb::blocked_range<IndexType>(IndexType(0), endIdx),
         [&](const tbb::blocked_range<IndexType>& r) {
             for(IndexType i = r.begin(), iEnd = r.end(); i < iEnd; ++i) {
