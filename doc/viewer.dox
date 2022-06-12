@@ -380,14 +380,14 @@ and there are more plugins for various other formats.
     ...
 
     # If you want to load just basic OBJs
-    set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
-    set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
-    set(WITH_OBJIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_OBJIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
     # If you want to load (textured) glTF as well
-    set(WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
-    set(WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
     add_dependencies(magnum-viewer
@@ -401,7 +401,7 @@ and there are more plugins for various other formats.
     If you're using packaged Magnum, all the above-mentioned plugins are
     included by default (and you don't need to do anything in CMake in order to
     use them); if you build it yourself, make sure you have the desired
-    `WITH_*` options enabled.
+    `MAGNUM_WITH_*` options enabled.
 
 You can experiment by loading scenes of varying complexity and formats, adding
 light and camera property import or supporting more than just diffuse Phong

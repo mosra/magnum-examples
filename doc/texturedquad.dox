@@ -288,8 +288,8 @@ CMake in any way.
     @code{.cmake}
     ...
 
-    set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
-    set(WITH_TGAIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_TGAIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
     # So the TgaImporter gets built implicitly
@@ -298,8 +298,8 @@ CMake in any way.
 @par
     If you're using a Magnum package, @ref Trade::TgaImporter "TgaImporter" is
     included by default (and you don't need to do anything in CMake in order to
-    use it); if you build it yourself, make sure you have `WITH_TGAIMPORTER`
-    enabled.
+    use it); if you build it yourself, make sure you have
+    `MAGNUM_WITH_TGAIMPORTER` enabled.
 
 Once the application builds and starts, you can now try playing around with the
 shader source, modifying texture coordinates or adding other effects. The full
@@ -356,10 +356,10 @@ how to open files passed via command-line arguments.
     @code{.cmake}
     ...
 
-    set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
-    set(WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
     # git clone https://github.com/mosra/magnum-plugins.git
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
@@ -372,8 +372,8 @@ how to open files passed via command-line arguments.
     @ref building-plugins-packages "Magnum Plugins" the same way as you did with
     Magnum, all the above-mentioned plugins are included by default (and you
     don't need to do anything in CMake in order to use them). If you build it
-    yourself, make sure you have `WITH_ANYIMAGEIMPORTER` enabled for Magnum and
-    `WITH_STBIMAGEIMPORTER` enabled for Magnum Plugins.
+    yourself, make sure you have `MAGNUM_WITH_ANYIMAGEIMPORTER` enabled for
+    Magnum and `MAGNUM_WITH_STBIMAGEIMPORTER` enabled for Magnum Plugins.
 
 @example texturedquad/CMakeLists.txt @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation
 @example texturedquad/resources.conf @m_examplenavigation{examples-texturedquad,texturedquad/} @m_footernavigation

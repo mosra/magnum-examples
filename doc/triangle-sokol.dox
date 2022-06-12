@@ -36,8 +36,8 @@ not required to use it --- it's possible to use a completely custom renderer
 while taking advantage of all other things that Magnum has, such as math
 library or asset management APIs. While this example works with standard Magnum
 installations that include the @ref GL library, it's also possible to build a
-renderer-less version by toggling `WITH_GL` and all other options that depend
-on it off. See @ref building-features for more information.
+renderer-less version by toggling `MAGNUM_WITH_GL` and all other options that
+depend on it off. See @ref building-features for more information.
 
 This example uses the [sokol_gfx](https://github.com/floooh/sokol)
 single-header C library that abstracts OpenGL (ES), D3D and Metal APIs. For
