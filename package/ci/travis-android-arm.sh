@@ -9,10 +9,10 @@ mkdir build && cd build || exit /b
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DWITH_UTILITY=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_PLUGINMANAGER=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_WITH_UTILITY=OFF \
     -G Ninja
 ninja install
 cd ..
@@ -27,11 +27,11 @@ cmake .. \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCORRADE_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_TESTSUITE=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
     -G Ninja
 ninja install
 cd ../..
@@ -48,23 +48,23 @@ cmake .. \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
-    -DWITH_AUDIO=OFF \
-    -DWITH_DEBUGTOOLS=ON \
-    -DWITH_MESHTOOLS=ON \
-    -DWITH_PRIMITIVES=ON \
-    -DWITH_SCENEGRAPH=ON \
-    -DWITH_SCENETOOLS=OFF \
-    -DWITH_SHADERS=ON \
-    -DWITH_SHADERTOOLS=OFF \
-    -DWITH_TEXT=ON \
-    -DWITH_TEXTURETOOLS=ON \
-    -DWITH_TRADE=ON \
-    -DWITH_SDL2APPLICATION=OFF \
-    -DWITH_ANDROIDAPPLICATION=ON \
-    -DTARGET_GLES2=$TARGET_GLES2 \
+    -DMAGNUM_WITH_AUDIO=OFF \
+    -DMAGNUM_WITH_DEBUGTOOLS=ON \
+    -DMAGNUM_WITH_MESHTOOLS=ON \
+    -DMAGNUM_WITH_PRIMITIVES=ON \
+    -DMAGNUM_WITH_SCENEGRAPH=ON \
+    -DMAGNUM_WITH_SCENETOOLS=OFF \
+    -DMAGNUM_WITH_SHADERS=ON \
+    -DMAGNUM_WITH_SHADERTOOLS=OFF \
+    -DMAGNUM_WITH_TEXT=ON \
+    -DMAGNUM_WITH_TEXTURETOOLS=ON \
+    -DMAGNUM_WITH_TRADE=ON \
+    -DMAGNUM_WITH_SDL2APPLICATION=OFF \
+    -DMAGNUM_WITH_ANDROIDAPPLICATION=ON \
+    -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
     -G Ninja
 ninja install
 cd ../..
@@ -81,14 +81,14 @@ cmake .. \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DIMGUI_DIR=$HOME/imgui \
-    -DWITH_BULLET=OFF \
-    -DWITH_DART=OFF \
-    -DWITH_IMGUI=ON \
-    -DWITH_OVR=OFF \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
+    -DMAGNUM_WITH_BULLET=OFF \
+    -DMAGNUM_WITH_DART=OFF \
+    -DMAGNUM_WITH_IMGUI=ON \
+    -DMAGNUM_WITH_OVR=OFF \
     -G Ninja
 ninja install
 cd ../..
@@ -105,11 +105,11 @@ cmake .. \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
-    -DWITH_UI=OFF \
+    -DMAGNUM_WITH_UI=OFF \
     -G Ninja
 ninja install
 cd ../..

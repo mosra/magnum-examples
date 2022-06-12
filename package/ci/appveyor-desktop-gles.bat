@@ -31,8 +31,8 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DWITH_INTERCONNECT=OFF ^
-    -DWITH_TESTSUITE=OFF ^
+    -DCORRADE_WITH_INTERCONNECT=OFF ^
+    -DCORRADE_WITH_TESTSUITE=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -46,21 +46,21 @@ cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" ^
-    -DTARGET_GLES=ON ^
-    -DTARGET_GLES2=%TARGET_GLES2% ^
-    -DTARGET_DESKTOP_GLES=ON ^
-    -DWITH_AUDIO=ON ^
-    -DWITH_DEBUGTOOLS=ON ^
-    -DWITH_MESHTOOLS=ON ^
-    -DWITH_PRIMITIVES=ON ^
-    -DWITH_SCENEGRAPH=ON ^
-    -DWITH_SCENETOOLS=OFF ^
-    -DWITH_SHADERS=ON ^
-    -DWITH_SHADERTOOLS=OFF ^
-    -DWITH_TEXT=ON ^
-    -DWITH_TEXTURETOOLS=ON ^
-    -DWITH_TRADE=ON ^
-    -DWITH_SDL2APPLICATION=ON ^
+    -DMAGNUM_TARGET_GLES=ON ^
+    -DMAGNUM_TARGET_GLES2=%TARGET_GLES2% ^
+    -DMAGNUM_TARGET_DESKTOP_GLES=ON ^
+    -DMAGNUM_WITH_AUDIO=ON ^
+    -DMAGNUM_WITH_DEBUGTOOLS=ON ^
+    -DMAGNUM_WITH_MESHTOOLS=ON ^
+    -DMAGNUM_WITH_PRIMITIVES=ON ^
+    -DMAGNUM_WITH_SCENEGRAPH=ON ^
+    -DMAGNUM_WITH_SCENETOOLS=OFF ^
+    -DMAGNUM_WITH_SHADERS=ON ^
+    -DMAGNUM_WITH_SHADERTOOLS=OFF ^
+    -DMAGNUM_WITH_TEXT=ON ^
+    -DMAGNUM_WITH_TEXTURETOOLS=ON ^
+    -DMAGNUM_WITH_TRADE=ON ^
+    -DMAGNUM_WITH_SDL2APPLICATION=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -75,10 +75,10 @@ cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DIMGUI_DIR=%APPVEYOR_BUILD_FOLDER%/deps/imgui ^
-    -DWITH_BULLET=ON ^
-    -DWITH_DART=OFF ^
-    -DWITH_IMGUI=ON ^
-    -DWITH_OVR=OFF ^
+    -DMAGNUM_WITH_BULLET=ON ^
+    -DMAGNUM_WITH_DART=OFF ^
+    -DMAGNUM_WITH_IMGUI=ON ^
+    -DMAGNUM_WITH_OVR=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
@@ -91,7 +91,7 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DWITH_UI=OFF ^
+    -DMAGNUM_WITH_UI=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b

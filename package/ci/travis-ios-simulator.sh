@@ -12,10 +12,10 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DWITH_UTILITY=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_PLUGINMANAGER=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_WITH_UTILITY=OFF \
     -G Ninja
 ninja install
 cd ..
@@ -26,14 +26,14 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_STATIC=ON \
-    -DTESTSUITE_TARGET_XCTEST=ON \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCORRADE_BUILD_STATIC=ON \
+    -DCORRADE_TESTSUITE_TARGET_XCTEST=ON \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
@@ -46,25 +46,25 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_PREFIX_PATH=$TRAVIS_BUILD_DIR/sdl2 \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_AUDIO=ON \
-    -DWITH_DEBUGTOOLS=ON \
-    -DWITH_MESHTOOLS=ON \
-    -DWITH_PRIMITIVES=ON \
-    -DWITH_SCENEGRAPH=ON \
-    -DWITH_SHADERS=ON \
-    -DWITH_SHADERTOOLS=OFF \
-    -DWITH_SCENETOOLS=OFF \
-    -DWITH_TEXT=ON \
-    -DWITH_TEXTURETOOLS=ON \
-    -DWITH_TRADE=ON \
-    -DWITH_GLFWAPPLICATION=OFF \
-    -DWITH_SDL2APPLICATION=ON \
-    -DTARGET_GLES2=$TARGET_GLES2 \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_AUDIO=ON \
+    -DMAGNUM_WITH_DEBUGTOOLS=ON \
+    -DMAGNUM_WITH_MESHTOOLS=ON \
+    -DMAGNUM_WITH_PRIMITIVES=ON \
+    -DMAGNUM_WITH_SCENEGRAPH=ON \
+    -DMAGNUM_WITH_SHADERS=ON \
+    -DMAGNUM_WITH_SHADERTOOLS=OFF \
+    -DMAGNUM_WITH_SCENETOOLS=OFF \
+    -DMAGNUM_WITH_TEXT=ON \
+    -DMAGNUM_WITH_TEXTURETOOLS=ON \
+    -DMAGNUM_WITH_TRADE=ON \
+    -DMAGNUM_WITH_GLFWAPPLICATION=OFF \
+    -DMAGNUM_WITH_SDL2APPLICATION=ON \
+    -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
@@ -77,15 +77,15 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DIMGUI_DIR=$HOME/imgui \
-    -DWITH_BULLET=OFF \
-    -DWITH_DART=OFF \
-    -DWITH_OVR=OFF \
-    -DWITH_IMGUI=ON \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_BULLET=OFF \
+    -DMAGNUM_WITH_DART=OFF \
+    -DMAGNUM_WITH_OVR=OFF \
+    -DMAGNUM_WITH_IMGUI=ON \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
@@ -98,11 +98,11 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_UI=OFF \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_UI=OFF \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
@@ -113,10 +113,10 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$TRAVIS_BUILD_DIR/sdl2" \
     -DCMAKE_BUILD_TYPE=Release \
     -DIMGUI_DIR=$HOME/imgui \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DWITH_ANIMATED_GIF_EXAMPLE=OFF \
     -DWITH_ARCBALL_EXAMPLE=OFF \
     -DWITH_AREALIGHTS_EXAMPLE=OFF \
