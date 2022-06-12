@@ -30,7 +30,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm64/usr \
-        -DWITH_TRIANGLE_EXAMPLE=ON
+        -DMAGNUM_WITH_TRIANGLE_EXAMPLE=ON
     ninja
 }
 
