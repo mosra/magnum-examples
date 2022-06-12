@@ -1042,6 +1042,10 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     # IN_LIST as an operator since 3.1 (Emscripten needs at least 3.7), but
     # it's behind a policy, so enable that one as well.
     cmake_policy(SET CMP0057 NEW)
+    # TODO since 1.39.19 it's possible to use `-sUSE_WEBGL2=1`, which can be
+    #   then passed via target_link_libraries() etc. without requiring CMake
+    #   3.13: https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#13919-07072020
+    #   -- change to that once we drop support for older Emscripten versions
     if(CMAKE_VERSION VERSION_LESS 3.13 AND GL IN_LIST Magnum_FIND_COMPONENTS AND NOT MAGNUM_TARGET_GLES2 AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-s USE_WEBGL2=1")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
     endif()
@@ -1069,7 +1073,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
         #   misleading messages.
         elseif(NOT _component IN_LIST _MAGNUM_IMPLICITLY_ENABLED_COMPONENTS)
             string(TOUPPER ${_component} _COMPONENT)
-            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Magnum.")
+            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled MAGNUM_WITH_${_COMPONENT} when building Magnum.")
         # Otherwise we have no idea. Better be silent than to print something
         # misleading.
         else()
