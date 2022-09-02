@@ -142,7 +142,7 @@ void TextExample::drawEvent() {
         .setColor(0x2f83cc_rgbf)
         .setOutlineColor(0xdcdcdc_rgbf)
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/ _transformationRotatingText.uniformScaling())
+        .setSmoothness(0.025f/_transformationRotatingText.uniformScaling())
         .draw(_rotatingText);
 
     _shader
