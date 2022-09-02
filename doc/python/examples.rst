@@ -77,3 +77,16 @@ the meshes directly by name as the full scene hierarchy import APIs from
 .. include:: ../../src/python/magnum-viewer.py
     :code: py
     :start-line: 31
+
+`Text`_
+=======
+
+.. image:: ../text.png
+    :width: 400px
+
+Distance-field text rendering. Fully equivalent to
+:dox:`the C++ version <examples-text>`.
+
+.. include:: ../../src/python/magnum-text.py
+    :code: py
+    :start-line: 31
