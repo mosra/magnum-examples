@@ -242,7 +242,7 @@ The following consist of documented source code only:
 @parblock
 
 @m_div{m-col-m-4 m-col-s-6 m-text-center}
-@image html text.png
+@image html text.png width=400px
 @subpage examples-text @m_class{m-label m-default m-flat} **live web demo** \n
 @copybrief examples-text
 @m_enddiv

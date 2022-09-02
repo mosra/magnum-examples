@@ -87,14 +87,14 @@ TextExample::TextExample(const Arguments& arguments):
     _font->fillGlyphCache(_cache,
         "abcdefghijklmnopqrstuvwxyz"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "0123456789:-+,.!°ěäЗдравстуймиΓειασουκόμ ");
+        "0123456789:-+,.!°ěäПривітСΓειασουκόμ ");
 
     /* Text that rotates using mouse wheel. Size relative to the window size
        (1/10 of it) -- if you resize the window, it gets bigger */
     std::tie(_rotatingText, std::ignore) = Text::Renderer2D::render(*_font, _cache, 0.2f,
         "Hello, world!\n"
         "Ahoj, světe!\n"
-        "Здравствуй, мир!\n"
+        "Привіт Світ!\n"
         "Γεια σου κόσμε!\n"
         "Hej Världen!",
         _vertices, _indices, GL::BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
