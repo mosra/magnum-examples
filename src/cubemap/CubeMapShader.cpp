@@ -29,7 +29,7 @@
 
 #include "CubeMapShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -52,7 +52,7 @@ CubeMapShader::CubeMapShader() {
     vert.addSource(rs.getString("CubeMapShader.vert"));
     frag.addSource(rs.getString("CubeMapShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

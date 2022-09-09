@@ -30,7 +30,7 @@
 #include "MotionBlurCamera.h"
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -89,7 +89,7 @@ MotionBlurCamera::MotionBlurShader::MotionBlurShader() {
     vert.addSource(rs.getString("MotionBlurShader.vert"));
     frag.addSource(rs.getString("MotionBlurShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

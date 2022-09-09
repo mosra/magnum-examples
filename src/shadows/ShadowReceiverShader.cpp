@@ -30,7 +30,7 @@
 
 #include "ShadowReceiverShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -56,7 +56,7 @@ ShadowReceiverShader::ShadowReceiverShader(std::size_t numShadowLevels) {
     frag.addSource(preamble);
     frag.addSource(rs.getString("ShadowReceiver.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");

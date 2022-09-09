@@ -30,7 +30,7 @@
 
 #include "ParticleSphereShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
@@ -49,7 +49,7 @@ ParticleSphereShader::ParticleSphereShader() {
     vertShader.addSource(rs.getString("ParticleSphereShader.vert"));
     fragShader.addSource(rs.getString("ParticleSphereShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vertShader, fragShader}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vertShader.compile() && fragShader.compile());
     attachShaders({vertShader, fragShader});
     CORRADE_INTERNAL_ASSERT(link());
 

@@ -29,7 +29,7 @@
 
 #include "TexturedQuadShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -50,7 +50,7 @@ TexturedQuadShader::TexturedQuadShader() {
     vert.addSource(rs.getString("TexturedQuadShader.vert"));
     frag.addSource(rs.getString("TexturedQuadShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

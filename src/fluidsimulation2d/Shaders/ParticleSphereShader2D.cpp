@@ -30,7 +30,7 @@
 
 #include "Shaders/ParticleSphereShader2D.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -48,8 +48,8 @@ ParticleSphereShader2D::ParticleSphereShader2D() {
     GL::Shader fragShader{ GL::Version::GL330, GL::Shader::Type::Fragment };
     vertShader.addSource(rs.getString("ParticleSphereShader2D.vert"));
     fragShader.addSource(rs.getString("ParticleSphereShader2D.frag"));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vertShader.compile() && fragShader.compile());
 
-    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({ vertShader, fragShader }));
     attachShaders({vertShader, fragShader});
     CORRADE_INTERNAL_ASSERT(link());
 
