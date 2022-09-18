@@ -6,7 +6,7 @@ pkgdesc="Examples for the Magnum C++11/C++14 graphics engine"
 arch=('i686' 'x86_64')
 url="https://magnum.graphics"
 license=('custom:Public Domain')
-depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal' 'glew' 'box2d' 'libdart' 'imgui-src')
+depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal' 'glew' 'box2d' 'imgui-src')
 makedepends=('cmake' 'ninja')
 options=('!strip' '!buildflags')
 provides=('magnum-examples-git')
@@ -29,7 +29,7 @@ build() {
         -DMAGNUM_WITH_BOX2D_EXAMPLE=ON \
         -DMAGNUM_WITH_BULLET_EXAMPLE=ON \
         -DMAGNUM_WITH_CUBEMAP_EXAMPLE=ON \
-        -DMAGNUM_WITH_DART_EXAMPLE=ON \
+        -DMAGNUM_WITH_DART_EXAMPLE=OFF \
         -DMAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE=ON \
         -DMAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE=ON \
         -DMAGNUM_WITH_IMGUI_EXAMPLE=ON \
