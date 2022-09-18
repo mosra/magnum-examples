@@ -71,6 +71,8 @@ namespace Magnum {
 -   The `ports` branch of the @ref examples-picking was fixed to work properly
     on Firefox ... after three long years. See
     [mosra/magnum-examples#53](https://github.com/mosra/magnum-examples/issues/53).
+-   The @ref examples-octree example got fixed to properly remove all invalid
+    points (see [mosra/magnum-examples#99](https://github.com/mosra/magnum-examples/pull/99))
 
 @subsection changelog-examples-latest-deprecated Deprecated APIs
 

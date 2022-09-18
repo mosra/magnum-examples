@@ -43,6 +43,8 @@ namespace Magnum {
     @ref examples-imgui example
 -   **Gabriel de Perthuis** ([\@g2p](https://github.com/g2p)) --- buildsystem
     fixes
+-   **[\@grishavanika](https://github.com/grishavanika)** --- fixes in the
+    @ref examples-octree example
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     original @ref examples-imgui example
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
