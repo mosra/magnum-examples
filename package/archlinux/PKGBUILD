@@ -8,7 +8,7 @@ url="https://magnum.graphics"
 license=('custom:Public Domain')
 depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal' 'glew' 'box2d' 'libdart' 'imgui-src')
 makedepends=('cmake' 'ninja')
-options=(!strip)
+options=('!strip' '!buildflags')
 provides=('magnum-examples-git')
 
 _rootdir=$startdir/../../
@@ -18,7 +18,8 @@ build() {
     cd "$_rootdir/build"
 
     cmake .. \
-        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CONFIGURATION_TYPES="Debug;Release" \
+        -DCMAKE_CROSS_CONFIGS=all \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DIMGUI_DIR=/opt/imgui \
         -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
@@ -47,13 +48,20 @@ build() {
         -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
         -DMAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE=ON \
         -DMAGNUM_WITH_VIEWER_EXAMPLE=ON \
-        -G Ninja
-    ninja
+        -G "Ninja Multi-Config"
+    ninja all:all
 }
 
 package() {
     cd "$_rootdir/build"
-    DESTDIR="$pkgdir/" ninja install
+    DESTDIR="$pkgdir/" ninja install:Debug
+
+    # Prevent the Release build from overwriting Debug binaries
+    for i in $(ls $pkgdir/usr/bin/magnum-*); do
+        mv ${i}{,d}
+    done
+
+    DESTDIR="$pkgdir/" ninja install/strip:Release
 
     # Install the UNLICENSE because Arch has no pre-defined license for Public
     # Domain
