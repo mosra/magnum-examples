@@ -220,12 +220,30 @@ jobs:
 workflows:
   version: 2
   build:
+    # While there's no actual execution or data dependency between the jobs,
+    # this is done in order to reduce unnecessary credit usage. The base and
+    # non-deprecated Linux builds are taken as the main sanity checks. Only if
+    # they pass, the rest of the jobs gets gradually executed, with further
+    # dependencies especially for the macOS jobs that take the most credits.
     jobs:
     - linux
-    - linux-gles2
-    - linux-gles3
+    - linux-gles2:
+        requires:
+        - linux
+    - linux-gles3:
+        requires:
+        - linux
     - linux-nondeprecated
-    - macos
-    - emscripten-webgl1
-    - emscripten-webgl2
-    #- ios-gles3
+    - macos:
+        requires:
+        - linux
+        - linux-nondeprecated
+    - emscripten-webgl1:
+        requires:
+        - linux-gles2
+    - emscripten-webgl2:
+        requires:
+        - linux-gles3
+    # - ios-gles3:
+    #     requires:
+    #     - macos
