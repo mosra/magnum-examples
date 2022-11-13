@@ -77,8 +77,9 @@ class ViewerExample: public Platform::Application {
 
         Vector3 positionOnSphere(const Vector2i& position) const;
 
-        Shaders::PhongGL _coloredShader,
-            _texturedShader{Shaders::PhongGL::Flag::DiffuseTexture};
+        Shaders::PhongGL _coloredShader;
+        Shaders::PhongGL _texturedShader{Shaders::PhongGL::Configuration{}
+            .setFlags(Shaders::PhongGL::Flag::DiffuseTexture)};
         Containers::Array<Containers::Optional<GL::Mesh>> _meshes;
         Containers::Array<Containers::Optional<GL::Texture2D>> _textures;
 

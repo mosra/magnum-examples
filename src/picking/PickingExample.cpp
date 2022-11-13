@@ -103,7 +103,8 @@ class PickingExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
 
-        Shaders::PhongGL _shader{Shaders::PhongGL::Flag::ObjectId};
+        Shaders::PhongGL _shader{Shaders::PhongGL::Configuration{}
+            .setFlags(Shaders::PhongGL::Flag::ObjectId)};
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };

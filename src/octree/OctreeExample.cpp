@@ -190,9 +190,9 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
             _sphereInstanceData[i].color = Color3{tmpPos};
         }
 
-        _sphereShader = Shaders::PhongGL{
-            Shaders::PhongGL::Flag::VertexColor|
-            Shaders::PhongGL::Flag::InstancedTransformation};
+        _sphereShader = Shaders::PhongGL{Shaders::PhongGL::Configuration{}
+            .setFlags(Shaders::PhongGL::Flag::VertexColor|
+                      Shaders::PhongGL::Flag::InstancedTransformation)};
         _sphereInstanceBuffer = GL::Buffer{};
         _sphereMesh = MeshTools::compile(Primitives::icosphereSolid(2));
         _sphereMesh.addVertexBufferInstanced(_sphereInstanceBuffer, 1, 0,
@@ -219,9 +219,9 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
     /* Treenode bounding boxes render variables */
     {
-        _boxShader = Shaders::FlatGL3D{
-            Shaders::FlatGL3D::Flag::VertexColor|
-            Shaders::FlatGL3D::Flag::InstancedTransformation};
+        _boxShader = Shaders::FlatGL3D{Shaders::FlatGL3D::Configuration{}
+            .setFlags(Shaders::FlatGL3D::Flag::VertexColor|
+                      Shaders::FlatGL3D::Flag::InstancedTransformation)};
         _boxInstanceBuffer = GL::Buffer{};
         _boxMesh = MeshTools::compile(Primitives::cubeWireframe());
         _boxMesh.addVertexBufferInstanced(_boxInstanceBuffer, 1, 0,

@@ -169,9 +169,9 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     _world.emplace(b2Vec2{0.0f, -9.81f});
 
     /* Create an instanced shader */
-    _shader = Shaders::FlatGL2D{
-        Shaders::FlatGL2D::Flag::VertexColor|
-        Shaders::FlatGL2D::Flag::InstancedTransformation};
+    _shader = Shaders::FlatGL2D{Shaders::FlatGL2D::Configuration{}
+        .setFlags(Shaders::FlatGL2D::Flag::VertexColor|
+                  Shaders::FlatGL2D::Flag::InstancedTransformation)};
 
     /* Box mesh with an (initially empty) instance buffer */
     _mesh = MeshTools::compile(Primitives::squareSolid());

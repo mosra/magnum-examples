@@ -63,9 +63,9 @@ class AnimatedGifExample: public Platform::Application {
         void tickEvent() override;
 
         GL::Mesh _mesh{NoCreate};
-        Shaders::FlatGL2D _shader{
-            Shaders::FlatGL2D::Flag::Textured|
-            Shaders::FlatGL2D::Flag::TextureTransformation};
+        Shaders::FlatGL2D _shader{Shaders::FlatGL2D::Configuration{}
+            .setFlags(Shaders::FlatGL2D::Flag::Textured|
+                      Shaders::FlatGL2D::Flag::TextureTransformation)};
         GL::Texture2D _texture;
         Vector2i _gridSize, _imageSize;
 

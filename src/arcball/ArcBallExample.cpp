@@ -138,9 +138,9 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             .setStorage(1, GL::TextureFormat::RGB8, size)
             .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Unorm, size, map});
 
-        _shader = Shaders::MeshVisualizerGL3D{
-            Shaders::MeshVisualizerGL3D::Flag::Wireframe|
-            Shaders::MeshVisualizerGL3D::Flag::VertexId};
+        _shader = Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Configuration{}
+            .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+                      Shaders::MeshVisualizerGL3D::Flag::VertexId)};
         _shader
             .setViewportSize(Vector2{framebufferSize()})
             .setColor(0xffffff_rgbf)
