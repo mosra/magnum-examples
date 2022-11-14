@@ -227,13 +227,15 @@ workflows:
     # dependencies especially for the macOS jobs that take the most credits.
     jobs:
     - linux
+    - linux-nondeprecated
     - linux-gles2:
         requires:
         - linux
+        - linux-nondeprecated
     - linux-gles3:
         requires:
         - linux
-    - linux-nondeprecated
+        - linux-nondeprecated
     - macos:
         requires:
         - linux
