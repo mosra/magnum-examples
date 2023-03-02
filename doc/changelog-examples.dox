@@ -65,6 +65,9 @@ namespace Magnum {
 -   Updated Debian build instructions to pass `--no-sign` to
     `dpkg-buildpackage`, avoiding a confusing error message that might lead
     people to think the packaging failed (see [mosra/magnum-plugins#105](https://github.com/mosra/magnum-plugins/issues/105))
+-   It's now possible to use `<PackageName>_ROOT` to point to install locations
+    of dependencies such as Corrade on CMake 3.12+, in addition to putting them
+    all together inside `CMAKE_PREFIX_PATH`. See also [mosra/magnum#614](https://github.com/mosra/magnum/issues/614).
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
