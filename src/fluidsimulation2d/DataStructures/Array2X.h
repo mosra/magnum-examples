@@ -32,6 +32,7 @@
 
 #include <cstring>
 #include <vector>
+#include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Magnum/Math/Vector2.h>
 

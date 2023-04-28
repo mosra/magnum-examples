@@ -30,6 +30,7 @@
 
 #include "ArcBall.h"
 
+#include <Corrade/Utility/Assert.h>
 #include <Magnum/Math/Matrix3.h>
 
 namespace Magnum { namespace Examples {

@@ -31,6 +31,7 @@
  */
 
 #include <vector>
+#include <Corrade/Utility/Assert.h>
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Functions.h>
 #include <Magnum/Math/Vector3.h>
