@@ -99,6 +99,7 @@ jobs:
   linux:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
       WITH_BOX2D: "ON"
       # DART was disabled on Ubuntu 16.04 because of GCC 4 and 5 ABI mismatch
@@ -117,6 +118,7 @@ jobs:
   linux-gles2:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
@@ -135,6 +137,7 @@ jobs:
   linux-gles3:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
@@ -156,6 +159,7 @@ jobs:
       # STUPID yml interprets unquoted OFF as a boolean
       BUILD_DEPRECATED: "OFF"
       CMAKE_CXX_FLAGS: -DCORRADE_NO_ASSERT
+      CONFIGURATION: Release
       PLATFORM_GL_API: GLX
       WITH_BOX2D: "ON"
       # Disabled due to GCC 4/5 ABI mismatch, see above
@@ -172,6 +176,7 @@ jobs:
   macos:
     executor: xcode-11_7
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
