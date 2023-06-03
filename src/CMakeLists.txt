@@ -116,6 +116,10 @@ if(MAGNUM_WITH_RAYTRACING_EXAMPLE)
     add_subdirectory(raytracing)
 endif()
 
+if(MAGNUM_WITH_ROPESIMULATION2D_EXAMPLE)
+    add_subdirectory(ropesimmulation2d)
+endif()
+
 if(MAGNUM_WITH_SHADOWS_EXAMPLE)
     add_subdirectory(shadows)
 endif()
