@@ -186,7 +186,7 @@ void OvrExample::drawEvent() {
         _framebuffer[eye]
             .attachTexture(GL::Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
             .attachTexture(GL::Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
-            /* Clear with the standard grey so that at least that will be visible in
+            /* Clear with the standard gray so that at least that will be visible in
             case the scene is not correctly set up */
             .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
             .bind();
