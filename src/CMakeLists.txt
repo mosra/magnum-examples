@@ -88,6 +88,10 @@ if(MAGNUM_WITH_LEAPMOTION_EXAMPLE)
     add_subdirectory(leapmotion)
 endif()
 
+if(MAGNUM_WITH_LINERENDERING_EXAMPLE)
+    add_subdirectory(linerendering)
+endif()
+
 if(MAGNUM_WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()

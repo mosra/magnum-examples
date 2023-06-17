@@ -118,6 +118,7 @@ option(MAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE "Build 2D Fluid Simulation example 
 option(MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE "Build 3D Fluid Simulation example (requires the ImGui integration)" OFF)
 option(MAGNUM_WITH_IMGUI_EXAMPLE "Build ImGui example" OFF)
 option(MAGNUM_WITH_LEAPMOTION_EXAMPLE "Build LeapMotion example" OFF)
+option(MAGNUM_WITH_LINERENDERING_EXAMPLE "Build Line Rendering example" OFF)
 option(MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE "Build Mouse Interaction example" OFF)
 cmake_dependent_option(MAGNUM_WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 option(MAGNUM_WITH_OCTREE_EXAMPLE "Build Octree example" OFF)
