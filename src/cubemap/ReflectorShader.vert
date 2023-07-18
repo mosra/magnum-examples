@@ -50,7 +50,7 @@ void main(void) {
 
     /* Factor of reflectivity - normals perpendicular to viewer are not reflective */
     factor = pow(1 - max(0.0, dot(transformedNormal,
-        cameraMatrix*normalMatrix*vec3(0, 0, 1))),
+        normalize(cameraMatrix*normalMatrix*vec3(0, 0, 1)))),
         reflectivity);
 
     tarnishTextureCoords = textureCoords;
