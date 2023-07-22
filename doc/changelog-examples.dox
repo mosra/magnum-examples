@@ -32,6 +32,14 @@ namespace Magnum {
 
 @section changelog-examples-latest Changes since 2020.06
 
+@subsection changelog-examples-latest-dependencies Dependency changes
+
+-   Minimal supported CMake version is now 3.5, changed from 3.4, since CMake
+    3.27+ warns if a compatibility with CMake below 3.5 is requested. Older
+    versions are not supported anymore and all workarounds for them were
+    removed. This is a conservative change, as there are no known supported
+    distributions which would have anything older than 3.5.
+
 @subsection changelog-examples-latest-new New features
 
 -   The @ref examples-triangle-vulkan is now written fully using the new

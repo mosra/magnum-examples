@@ -27,7 +27,8 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.4)
+# Matches Corrade requirement, see its root CMakeLists for more information.
+cmake_minimum_required(VERSION 3.5)
 
 # Don't restrict INTERPROCEDURAL_OPTIMIZATION only for icc on Linux
 if(POLICY CMP0069)
@@ -173,15 +174,7 @@ if(_MAGNUMEXAMPLES_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS AND MAGNUM_BUILD_DEPRECA
     endforeach()
 
     if(_MAGNUMEXAMPLES_WARN_DEPRECATED_UNPREFIXED_OPTION)
-        # CMake 3.5+ has deprecation warnings enabled by default (which makes
-        # sense), 3.4 not. Use a warning there instead.
-        # TODO: drop when 3.4 is not supported anymore
-        if(CMAKE_VERSION VERSION_LESS 3.5)
-            set(DEPRECATION_OR_WARNING WARNING)
-        else()
-            set(DEPRECATION_OR_WARNING DEPRECATION)
-        endif()
-        message(${DEPRECATION_OR_WARNING} "Unprefixed options such as ${_MAGNUMEXAMPLES_WARN_DEPRECATED_UNPREFIXED_OPTION} are deprecated, use MAGNUM_${_MAGNUMEXAMPLES_WARN_DEPRECATED_UNPREFIXED_OPTION} instead. Delete the unprefixed variable from CMake cache or set both to the same value to silence this warning.")
+        message(DEPRECATION "Unprefixed options such as ${_MAGNUMEXAMPLES_WARN_DEPRECATED_UNPREFIXED_OPTION} are deprecated, use MAGNUM_${_MAGNUMEXAMPLES_WARN_DEPRECATED_UNPREFIXED_OPTION} instead. Delete the unprefixed variable from CMake cache or set both to the same value to silence this warning.")
     endif()
 endif()
 
