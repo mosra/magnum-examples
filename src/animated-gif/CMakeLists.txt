@@ -72,3 +72,6 @@ install(TARGETS
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-animated-gif)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-animated-gif-console PROPERTIES FOLDER "MagnumExamples")

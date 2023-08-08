@@ -55,3 +55,6 @@ install(TARGETS magnum-textured-triangle-vulkan DESTINATION ${MAGNUM_BINARY_INST
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-textured-triangle-vulkan)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-textured-triangle-vulkan PROPERTIES FOLDER "MagnumExamples")

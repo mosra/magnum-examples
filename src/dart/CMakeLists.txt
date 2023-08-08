@@ -106,3 +106,6 @@ install(FILES
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-dart)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-dart PROPERTIES FOLDER "MagnumExamples")

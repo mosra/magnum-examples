@@ -65,3 +65,6 @@ install(TARGETS magnum-triangle-plain-glfw DESTINATION ${MAGNUM_BINARY_INSTALL_D
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-triangle-plain-glfw)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-triangle-plain-glfw PROPERTIES FOLDER "MagnumExamples")

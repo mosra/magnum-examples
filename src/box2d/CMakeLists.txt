@@ -67,3 +67,6 @@ install(TARGETS magnum-box2d DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-box2d)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-box2d PROPERTIES FOLDER "MagnumExamples")

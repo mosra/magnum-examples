@@ -80,3 +80,6 @@ install(TARGETS magnum-shadows DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-shadows)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-shadows PROPERTIES FOLDER "MagnumExamples")

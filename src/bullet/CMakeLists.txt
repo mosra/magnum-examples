@@ -69,3 +69,6 @@ install(TARGETS magnum-bullet DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-bullet)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-bullet PROPERTIES FOLDER "MagnumExamples")

@@ -85,3 +85,6 @@ install(FILES +x.jpg +y.jpg +z.jpg -x.jpg -y.jpg -z.jpg DESTINATION ${MAGNUM_DAT
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-cubemap)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-cubemap PROPERTIES FOLDER "MagnumExamples")

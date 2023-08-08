@@ -84,3 +84,6 @@ install(FILES
     $<TARGET_FILE_DIR:magnum-webxr>/magnum-webxr.js.mem
     $<TARGET_FILE_DIR:magnum-webxr>/magnum-webxr.wasm
     DESTINATION ${MAGNUM_DEPLOY_PREFIX}/webxr OPTIONAL)
+
+#group into MagnumExamples on visual studio
+set_target_properties(magnum-webxr PROPERTIES FOLDER "MagnumExamples")
