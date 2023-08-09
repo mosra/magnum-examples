@@ -56,6 +56,9 @@ endif()
 
 project(MagnumExamples CXX)
 
+# Use folders for nice tree in Visual Studio and XCode
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED)
 

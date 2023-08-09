@@ -40,6 +40,10 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumExamples")
+
 if(MAGNUM_WITH_ANIMATED_GIF_EXAMPLE)
     add_subdirectory(animated-gif)
 endif()
