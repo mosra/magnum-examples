@@ -94,6 +94,8 @@ namespace Magnum {
     @ref examples-imgui example
 -   **Tomáš Skřivan** ([\@lecopivo](https://github.com/lecopivo)) --- original
     @ref examples-imgui example
+-   **Trevor Cash** ([\@TrevorCash](https://github.com/TrevorCash)) ---
+    buildsystem improvements
 -   **Winfried Baumann** ([\@codewing](https://github.com/codewing)) ---
     example code cleanup
 

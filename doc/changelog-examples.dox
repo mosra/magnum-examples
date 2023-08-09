@@ -76,6 +76,8 @@ namespace Magnum {
 -   It's now possible to use `<PackageName>_ROOT` to point to install locations
     of dependencies such as Corrade on CMake 3.12+, in addition to putting them
     all together inside `CMAKE_PREFIX_PATH`. See also [mosra/magnum#614](https://github.com/mosra/magnum/issues/614).
+-   Examples are now put into a MagnumExamples folder on MSVC and Xcode (see
+    [mosra/magnum-examples#107](https://github.com/mosra/magnum-examples/pull/107))
 
 @subsection changelog-examples-latest-bugfixes Bug fixes
 
