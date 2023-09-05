@@ -1,29 +1,28 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=emscripten-magnum-examples
-pkgver=dev.webgl2
+pkgver=dev.wasm
 pkgrel=1
-pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten)"
+pkgdesc="Examples for Magnum OpenGL graphics engine (Emscripten, wasm)"
 arch=('any')
-url="http://mosra.cz/blog/magnum.php"
+url="https://magnum.graphics"
 license=('MIT')
-depends=('emscripten-magnum=dev.webgl2' 'imgui-src')
+depends=('emscripten-magnum=dev.wasm')
 makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
 
 build() {
-    # Not using ninja because it cannot handle the relink step
-    if [ ! -d "$_rootdir/build-emscripten-webgl2" ] ; then
-        mkdir "$_rootdir/build-emscripten-webgl2"
-        cd "$_rootdir/build-emscripten-webgl2"
+    if [ ! -d "$_rootdir/build-emscripten-wasm" ] ; then
+        mkdir "$_rootdir/build-emscripten-wasm"
+        cd "$_rootdir/build-emscripten-wasm"
 
         cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten-wasm.cmake" \
             -G Ninja
     fi
 
-    cd "$_rootdir/build-emscripten-webgl2"
+    cd "$_rootdir/build-emscripten-wasm"
 
     # Colored output is enabled implicitly. If Ninja detects it's outputting to
     # a pipe, it strips it away from the output; Clang unfortunately doesn't
@@ -34,7 +33,7 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DIMGUI_DIR=/opt/imgui \
-        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
         -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
         -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \
         -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF \
@@ -64,6 +63,6 @@ build() {
 }
 
 package() {
-  cd "$_rootdir/build-emscripten-webgl2"
+  cd "$_rootdir/build-emscripten-wasm"
   DESTDIR="$pkgdir/" ninja install
 }
