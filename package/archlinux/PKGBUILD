@@ -13,6 +13,9 @@ provides=('magnum-examples-git')
 
 _rootdir=$startdir/../../
 
+_buildtype=Release
+# _buildtype=RelWithDebInfo
+
 build() {
     mkdir -p "$_rootdir/build"
     cd "$_rootdir/build"
@@ -23,7 +26,7 @@ build() {
     # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
     # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
-        -DCMAKE_CONFIGURATION_TYPES="Debug;Release" \
+        -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
         -DCMAKE_CROSS_CONFIGS=all \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_COLOR_DIAGNOSTICS=ON \
@@ -55,7 +58,7 @@ build() {
         -DMAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE=ON \
         -DMAGNUM_WITH_VIEWER_EXAMPLE=ON \
         -G "Ninja Multi-Config"
-    ninja all:all
+    ninja all:Debug all:$_buildtype
 }
 
 package() {
@@ -67,7 +70,11 @@ package() {
         mv ${i}{,d}
     done
 
-    DESTDIR="$pkgdir/" ninja install/strip:Release
+    if [ "$_buildtype" = RelWithDebInfo ]; then
+        DESTDIR="$pkgdir/" ninja install:$_buildtype
+    else
+        DESTDIR="$pkgdir/" ninja install/strip:$_buildtype
+    fi
 
     # Install the UNLICENSE because Arch has no pre-defined license for Public
     # Domain
