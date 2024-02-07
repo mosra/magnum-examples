@@ -38,10 +38,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Under Emscripten, GL is linked implicitly. With MINIMAL_RUNTIME you need to
-# specify -lGL. Simply set the library name to that.
+# Under Emscripten, EGL is linked implicitly. With MINIMAL_RUNTIME you need to
+# specify -lEGL. Simply set the library name to that.
 if(CORRADE_TARGET_EMSCRIPTEN)
-    set(EGL_LIBRARY GL CACHE STRING "Path to a library." FORCE)
+    set(EGL_LIBRARY EGL CACHE STRING "Path to a library." FORCE)
 else()
     find_library(EGL_LIBRARY NAMES
         EGL
@@ -69,7 +69,7 @@ if(NOT TARGET EGL::EGL)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if((APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+    if((APPLE AND EGL_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(EGL::EGL INTERFACE IMPORTED)
         set_property(TARGET EGL::EGL APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${EGL_LIBRARY})
