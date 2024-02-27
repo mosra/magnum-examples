@@ -86,6 +86,8 @@ namespace Magnum {
     [mosra/magnum-examples#53](https://github.com/mosra/magnum-examples/issues/53).
 -   The @ref examples-octree example got fixed to properly remove all invalid
     points (see [mosra/magnum-examples#99](https://github.com/mosra/magnum-examples/pull/99))
+-   The @ref examples-viewer used a wrong logic for generating mesh normals
+    (see [mosra/magnum-examples#109](https://github.com/mosra/magnum-examples/issues/109))
 
 @subsection changelog-examples-latest-deprecated Deprecated APIs
 

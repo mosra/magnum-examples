@@ -218,7 +218,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         }
 
         MeshTools::CompileFlags flags;
-        if(meshData->hasAttribute(Trade::MeshAttribute::Normal))
+        if(!meshData->hasAttribute(Trade::MeshAttribute::Normal))
             flags |= MeshTools::CompileFlag::GenerateFlatNormals;
         _meshes[i] = MeshTools::compile(*meshData, flags);
     }
