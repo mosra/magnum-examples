@@ -135,9 +135,9 @@
 #   globals unique even across different shared libraries
 #  MAGNUM_TARGET_GL             - Defined if compiled with OpenGL interop
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
-#  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
-#  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
+#  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0 / WebGL
+#   1 instead of OpenGL ES 3.0+ / WebGL 2
 #  MAGNUM_TARGET_EGL            - Defined if compiled for EGL instead of a
 #   platform-specific OpenGL support library like CGL, EAGL, GLX or WGL
 #  MAGNUM_TARGET_VK             - Defined if compiled with Vulkan interop
@@ -152,6 +152,8 @@
 #   Android, Emscripten or Windows RT. Use MAGNUM_TARGET_EGL instead.
 #  MAGNUM_TARGET_DESKTOP_GLES`  - Defined if compiled for OpenGL ES but
 #   GLX / WGL is used instead of EGL. Use MAGNUM_TARGET_EGL instead.
+#  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0+ /
+#   WebGL 2. Use an inverse of the MAGNUM_TARGET_GLES2 variable instead.
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -291,7 +293,6 @@ set(_magnumFlags
     TARGET_GL
     TARGET_GLES
     TARGET_GLES2
-    TARGET_GLES3
     TARGET_WEBGL
     TARGET_EGL
     TARGET_VK)
@@ -315,6 +316,9 @@ if(MAGNUM_BUILD_DEPRECATED)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL)
             set(MAGNUM_TARGET_DESKTOP_GLES 1)
         endif()
+    endif()
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
+        set(MAGNUM_TARGET_GLES3 1)
     endif()
 endif()
 
@@ -917,7 +921,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(OpenGLES2 REQUIRED)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES OpenGLES2::OpenGLES2)
-            elseif(MAGNUM_TARGET_GLES3)
+            else()
                 find_package(OpenGLES3 REQUIRED)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
