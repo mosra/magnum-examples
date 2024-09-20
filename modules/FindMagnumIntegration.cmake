@@ -89,8 +89,14 @@ if(_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES)
     find_package(Magnum OPTIONAL_COMPONENTS ${_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES})
 endif()
 
-# Global integration include dir
-find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum
+# Global include dir that's unique to Magnum Integration. Often it will be
+# installed alongside Magnum, which is why the hint, but if not, it shouldn't
+# just pick MAGNUM_INCLUDE_DIR because then _MAGNUMINTEGRATION_*_INCLUDE_DIR
+# will fail to be found. In case of CMake subprojects the versionIntegration.h
+# is generated inside the build dir so this won't find it, instead
+# src/CMakeLists.txt forcibly sets MAGNUMINTEGRATION_INCLUDE_DIR as an internal
+# cache value to make that work.
+find_path(MAGNUMINTEGRATION_INCLUDE_DIR Magnum/versionIntegration.h
     HINTS ${MAGNUM_INCLUDE_DIR})
 mark_as_advanced(MAGNUMINTEGRATION_INCLUDE_DIR)
 

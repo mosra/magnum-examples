@@ -68,10 +68,6 @@
 # Corrade library dependencies
 set(_MAGNUMEXTRAS_CORRADE_DEPENDENCIES )
 foreach(_component ${MagnumExtras_FIND_COMPONENTS})
-    if(_component STREQUAL Ui)
-        set(_MAGNUMEXTRAS_${_component}_CORRADE_DEPENDENCIES Interconnect)
-    endif()
-
     list(APPEND _MAGNUMEXTRAS_CORRADE_DEPENDENCIES ${_MAGNUMEXTRAS_${_component}_CORRADE_DEPENDENCIES})
 endforeach()
 find_package(Corrade REQUIRED ${_MAGNUMEXTRAS_CORRADE_DEPENDENCIES})
@@ -80,15 +76,20 @@ find_package(Corrade REQUIRED ${_MAGNUMEXTRAS_CORRADE_DEPENDENCIES})
 set(_MAGNUMEXTRAS_MAGNUM_DEPENDENCIES )
 foreach(_component ${MagnumExtras_FIND_COMPONENTS})
     if(_component STREQUAL Ui)
-        set(_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES Text GL)
+        set(_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES Text GL Trade)
     endif()
 
     list(APPEND _MAGNUMEXTRAS_MAGNUM_DEPENDENCIES ${_MAGNUMEXTRAS_${_component}_MAGNUM_DEPENDENCIES})
 endforeach()
 find_package(Magnum REQUIRED ${_MAGNUMEXTRAS_MAGNUM_DEPENDENCIES})
 
-# Global integration include dir
-find_path(MAGNUMEXTRAS_INCLUDE_DIR Magnum
+# Global include dir that's unique to Magnum Extras. Often it will be installed
+# alongside Magnum, which is why the hint, but if not, it shouldn't just pick
+# MAGNUM_INCLUDE_DIR because then _MAGNUMEXTRAS_*_INCLUDE_DIR will fail to be
+# found. In case of CMake subprojects the versionExtras.h is generated inside
+# the build dir so this won't find it, instead src/CMakeLists.txt forcibly sets
+# MAGNUMEXTRAS_INCLUDE_DIR as an internal cache value to make that work.
+find_path(MAGNUMEXTRAS_INCLUDE_DIR Magnum/versionExtras.h
     HINTS ${MAGNUM_INCLUDE_DIR})
 mark_as_advanced(MAGNUMEXTRAS_INCLUDE_DIR)
 
