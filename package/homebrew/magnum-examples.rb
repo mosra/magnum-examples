@@ -6,7 +6,7 @@ class MagnumExamples < Formula
   sha256 "d93c4fa034667f92d83459c06254e70619865f8568e46d9d72bb06aac29b7153"
   head "https://github.com/mosra/magnum-examples.git"
 
-  depends_on "cmake"
+  depends_on "cmake" => :build
   depends_on "magnum"
   depends_on "magnum-plugins"
   depends_on "magnum-extras"
