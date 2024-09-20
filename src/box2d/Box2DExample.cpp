@@ -29,6 +29,7 @@
 */
 
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -46,19 +47,25 @@
 #include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Trade/MeshData.h>
 
-/* Box2D 2.3 (from 2014) uses mixed case, 2.4 (from 2020) uses lowercase */
+/* Box2D 2.3 (from 2014) uses mixed case, 2.4 (from 2020) uses lowercase. Then,
+   3.0 (from 2024) is a whole other thing altogether. Yes, of course there's no
+   usable version define to hook to, so we have to query header presence. */
 #ifdef __has_include
-#if __has_include(<box2d/box2d.h>)
+#if __has_include(<box2d/base.h>)
 #include <box2d/box2d.h>
+#define BOX2D_VERSION3
+#elif __has_include(<box2d/box2d.h>)
+#include <box2d/box2d.h>
+#define BOX2D_VERSION24
 #else
 #include <Box2D/Box2D.h>
-#define IT_IS_THE_OLD_BOX2D
+#define BOX2D_VERSION23
 #endif
 /* If the compiler doesn't have __has_include, assume it's extremely old, and
    thus an extremely old Box2D is more likely as well */
 #else
 #include <Box2D/Box2D.h>
-#define IT_IS_THE_OLD_BOX2D
+#define BOX2D_VERSION23
 #endif
 
 namespace Magnum { namespace Examples {
@@ -81,7 +88,12 @@ class Box2DExample: public Platform::Application {
         void drawEvent() override;
         void mousePressEvent(MouseEvent& event) override;
 
-        b2Body* createBody(Object2D& object, const Vector2& size, b2BodyType type, const DualComplex& transformation, Float density = 1.0f);
+        #ifdef BOX2D_VERSION3
+        b2BodyId
+        #else
+        b2Body*
+        #endif
+        createBody(Object2D& object, const Vector2& size, b2BodyType type, const DualComplex& transformation, Float density = 1.0f);
 
         GL::Mesh _mesh{NoCreate};
         GL::Buffer _instanceBuffer{NoCreate};
@@ -92,7 +104,14 @@ class Box2DExample: public Platform::Application {
         Object2D* _cameraObject;
         SceneGraph::Camera2D* _camera;
         SceneGraph::DrawableGroup2D _drawables;
+        #ifdef BOX2D_VERSION3
+        b2WorldId _world{};
+        Containers::ScopeGuard _worldDestruct{&_world, [](b2WorldId* world){
+            b2DestroyWorld(*world);
+        }};
+        #else
         Containers::Optional<b2World> _world;
+        #endif
 };
 
 class BoxDrawable: public SceneGraph::Drawable2D {
@@ -108,6 +127,33 @@ class BoxDrawable: public SceneGraph::Drawable2D {
         Color3 _color;
 };
 
+#ifdef BOX2D_VERSION3
+b2BodyId Box2DExample::createBody(Object2D& object, const Vector2& halfSize, const b2BodyType type, const DualComplex& transformation, const Float density) {
+    /* If the body is static, it won't ever get listed in b2BodyEvents, so make
+       sure its transformation is set at least once */
+    object
+        .setTranslation(transformation.translation())
+        .setRotation(transformation.rotation())
+        .setScaling(halfSize);
+
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.position = b2Vec2{transformation.translation().x(),
+                              transformation.translation().y()};
+    bodyDef.rotation = b2Rot{transformation.rotation().real(),
+                             transformation.rotation().imaginary()};
+    bodyDef.type = type;
+    b2BodyId body = b2CreateBody(_world, & bodyDef);
+    b2Body_SetUserData(body, &object);
+
+    b2Polygon box = b2MakeBox(halfSize.x(), halfSize.y());
+    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    shapeDef.density = density;
+    shapeDef.friction = 0.8f;
+    b2CreatePolygonShape(body, &shapeDef, &box);
+
+    return body;
+}
+#else
 b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, const b2BodyType type, const DualComplex& transformation, const Float density) {
     b2BodyDef bodyDefinition;
     bodyDefinition.position.Set(transformation.translation().x(), transformation.translation().y());
@@ -124,7 +170,7 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
     fixture.shape = &shape;
     body->CreateFixture(&fixture);
 
-    #ifndef IT_IS_THE_OLD_BOX2D
+    #ifdef BOX2D_VERSION24
     /* Why keep things simple if there's an awful and backwards-incompatible
        way, eh? https://github.com/erincatto/box2d/pull/658 */
     body->GetUserData().pointer = reinterpret_cast<std::uintptr_t>(&object);
@@ -135,6 +181,7 @@ b2Body* Box2DExample::createBody(Object2D& object, const Vector2& halfSize, cons
 
     return body;
 }
+#endif
 
 Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Make it possible for the user to have some fun */
@@ -166,7 +213,13 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Create the Box2D world with the usual gravity vector */
+    #ifdef BOX2D_VERSION3
+    b2WorldDef worldDef = b2DefaultWorldDef();
+    worldDef.gravity = b2Vec2{0.0f, -9.81f};
+    _world = b2CreateWorld(&worldDef);
+    #else
     _world.emplace(b2Vec2{0.0f, -9.81f});
+    #endif
 
     /* Create an instanced shader */
     _shader = Shaders::FlatGL2D{Shaders::FlatGL2D::Configuration{}
@@ -218,9 +271,20 @@ void Box2DExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* Step the world and update all object positions */
+    #ifdef BOX2D_VERSION3
+    b2World_Step(_world, 1.0f/60.0f, 4);
+    const b2BodyEvents events = b2World_GetBodyEvents(_world);
+    for(Int i = 0; i != events.moveCount; ++i) {
+        (*static_cast<Object2D*>(events.moveEvents[i].userData))
+            .setTranslation({events.moveEvents[i].transform.p.x,
+                             events.moveEvents[i].transform.p.y})
+            .setRotation({events.moveEvents[i].transform.q.c,
+                          events.moveEvents[i].transform.q.s});
+    }
+    #else
     _world->Step(1.0f/60.0f, 6, 2);
     for(b2Body* body = _world->GetBodyList(); body; body = body->GetNext()) {
-        #ifndef IT_IS_THE_OLD_BOX2D
+        #ifdef BOX2D_VERSION24
         /* Why keep things simple if there's an awful backwards-incompatible
            way, eh? https://github.com/erincatto/box2d/pull/658 */
         (*reinterpret_cast<Object2D*>(body->GetUserData().pointer))
@@ -230,6 +294,7 @@ void Box2DExample::drawEvent() {
             .setTranslation({body->GetPosition().x, body->GetPosition().y})
             .setRotation(Complex::rotation(Rad(body->GetAngle())));
     }
+    #endif
 
     /* Populate instance data with transformations and colors */
     arrayResize(_instanceData, 0);
