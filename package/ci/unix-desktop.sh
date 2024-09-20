@@ -81,7 +81,7 @@ cd ../..
 mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-    -DCMAKE_PREFIX_PATH=$HOME/deps \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=$CONFIGURATION \
     -DIMGUI_DIR=$HOME/imgui \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
