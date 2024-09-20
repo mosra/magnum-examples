@@ -32,7 +32,7 @@ mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DCORRADE_WITH_INTERCONNECT=ON ^
+    -DCORRADE_WITH_INTERCONNECT=OFF ^
     -DCORRADE_WITH_TESTSUITE=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
