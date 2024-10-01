@@ -39,7 +39,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Text/AbstractFont.h>
-#include <Magnum/Text/DistanceFieldGlyphCache.h>
+#include <Magnum/Text/DistanceFieldGlyphCacheGL.h>
 #include <Magnum/Text/Renderer.h>
 
 namespace Magnum { namespace Examples {
@@ -60,7 +60,7 @@ class TextExample: public Platform::Application {
         PluginManager::Manager<Text::AbstractFont> _manager;
         Containers::Pointer<Text::AbstractFont> _font;
 
-        Text::DistanceFieldGlyphCache _cache;
+        Text::DistanceFieldGlyphCacheGL _cache;
         GL::Mesh _rotatingText{NoCreate};
         GL::Buffer _vertices, _indices;
         Containers::Pointer<Text::Renderer2D> _dynamicText;
