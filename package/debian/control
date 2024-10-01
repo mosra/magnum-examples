@@ -11,5 +11,5 @@ Vcs-Browser: https://github.com/mosra/magnum-examples
 Package: magnum-examples
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, magnum, magnum-plugins, magnum-integration, magnum-extras, libbox2d2.3.0, libbulletcollision2.83.6|libbullet2.87|libbullet2.88, libopenal1
+Depends: ${shlibs:Depends}, ${misc:Depends}, magnum, magnum-plugins, magnum-integration, magnum-extras, libbox2d2.3.0|libbox2d2
 Description: Examples for the Magnum C++11/C++14 graphics engine
