@@ -122,7 +122,8 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
        software rendering. OTOH this adds a dependency on four new libs
        (MeshTools, Primitives, Shaders and Trade) which isn't exactly ideal
        either. */
-    _shader = Shaders::FlatGL2D{Shaders::FlatGL2D::Flag::Textured};
+    _shader = Shaders::FlatGL2D{Shaders::FlatGL2D::Configuration{}
+        .setFlags(Shaders::FlatGL2D::Flag::Textured)};
     _square = MeshTools::compile(
         Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 

@@ -71,7 +71,8 @@ TexturedQuadExample::TexturedQuadExample(const Arguments& arguments):
         .setWindowFlags(Configuration::WindowFlag::Resizable)
         #endif
     },
-    _shader{Shaders::FlatGL2D::Flag::Textured}
+    _shader{Shaders::FlatGL2D::Configuration{}
+        .setFlags(Shaders::FlatGL2D::Flag::Textured)}
 {
     struct QuadVertex {
         Vector2 position;
