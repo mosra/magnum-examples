@@ -46,7 +46,7 @@
 #include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Text/AbstractFont.h>
-#include <Magnum/Text/DistanceFieldGlyphCache.h>
+#include <Magnum/Text/DistanceFieldGlyphCacheGL.h>
 #include <Magnum/Text/Renderer.h>
 
 namespace Magnum { namespace Examples {
@@ -67,7 +67,7 @@ class TextExample: public Platform::Application {
         PluginManager::Manager<Trade::AbstractImporter> _importerManager;
         PluginManager::Manager<Text::AbstractFont> _manager;
         Containers::Pointer<Text::AbstractFont> _font;
-        Containers::Pointer<Text::GlyphCache> _cache;
+        Containers::Pointer<Text::GlyphCacheGL> _cache;
 
         GL::Mesh _rotatingText{NoCreate};
         GL::Buffer _vertices, _indices;
@@ -110,7 +110,7 @@ TextExample::TextExample(const Arguments& arguments):
         std::exit(1);
     }
     /* We know it's Text::GlyphCache, so cast it. Sigh, this is awful. */
-    _cache = Containers::pointerCast<Text::GlyphCache>(_font->createGlyphCache());
+    _cache = Containers::pointerCast<Text::GlyphCacheGL>(_font->createGlyphCache());
     CORRADE_INTERNAL_ASSERT(_cache);
 
     std::tie(_rotatingText, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.2f,
