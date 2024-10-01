@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2016 — Bill Robinson <airbaggins@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -30,9 +30,10 @@
 
 #include "ShadowReceiverShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
@@ -50,13 +51,12 @@ ShadowReceiverShader::ShadowReceiverShader(std::size_t numShadowLevels) {
     GL::Shader vert{GL::Version::GL330, GL::Shader::Type::Vertex};
     GL::Shader frag{GL::Version::GL330, GL::Shader::Type::Fragment};
 
-    std::string preamble = "#define NUM_SHADOW_MAP_LEVELS " + std::to_string(numShadowLevels) + "\n";
-    vert.addSource(preamble);
-    vert.addSource(rs.getString("ShadowReceiver.vert"));
-    frag.addSource(preamble);
-    frag.addSource(rs.getString("ShadowReceiver.frag"));
+    vert.addSource(Utility::format("#define NUM_SHADOW_MAP_LEVELS {}\n", + numShadowLevels))
+        .addSource(rs.getString("ShadowReceiver.vert"));
+    frag.addSource(Utility::format("#define NUM_SHADOW_MAP_LEVELS {}\n", + numShadowLevels))
+        .addSource(rs.getString("ShadowReceiver.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     bindAttributeLocation(Position::Location, "position");
     bindAttributeLocation(Normal::Location, "normal");

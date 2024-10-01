@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2017 — Jonathan Hale <squareys@googlemail.com>, based on "Real-Time
             Polygonal-Light Shading with Linearly Transformed Cosines", by Eric
             Heitz et al, https://eheitzresearch.wordpress.com/415-2/
@@ -31,14 +31,16 @@
 */
 
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Function.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
-#include <Corrade/Interconnect/Receiver.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix3.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>
@@ -57,16 +59,23 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
 #include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Text/AbstractFont.h> /** @todo remove once extra glyph cache fill is done better */
+#include <Magnum/Text/AbstractGlyphCache.h> /** @todo remove once extra glyph cache fill is done better */
 #include <Magnum/Text/Alignment.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
 #include <Magnum/Ui/Anchor.h>
+#include <Magnum/Ui/Application.h>
 #include <Magnum/Ui/Button.h>
+#include <Magnum/Ui/EventLayer.h>
+#include <Magnum/Ui/Input.h>
 #include <Magnum/Ui/Label.h>
-#include <Magnum/Ui/Plane.h>
-#include <Magnum/Ui/UserInterface.h>
-#include <Magnum/Ui/ValidatedInput.h>
+#include <Magnum/Ui/SnapLayouter.h>
+#include <Magnum/Ui/Style.h>
+#include <Magnum/Ui/TextLayer.h> /** @todo remove once extra glyph cache fill is done better */
+#include <Magnum/Ui/TextProperties.h>
+#include <Magnum/Ui/UserInterfaceGL.h>
 
 #ifdef MAGNUM_TARGET_GLES
 #include <Magnum/PixelFormat.h>
@@ -92,7 +101,7 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             vert.addSource(rs.getString("AreaLights.vert"));
             frag.addSource(rs.getString("AreaLights.frag"));
 
-            CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
             attachShaders({vert, frag});
 
@@ -215,37 +224,10 @@ class AreaLightShader: public GL::AbstractShaderProgram {
 
 /* Base UI plane */
 constexpr Vector2 WidgetSize{80, 32};
-const std::regex FloatValidator{R"(-?\d+(\.\d+)?)"};
-
-struct BaseUiPlane: Ui::Plane {
-    explicit BaseUiPlane(Ui::UserInterface& ui):
-        Ui::Plane{ui, Ui::Snap::Top|Ui::Snap::Bottom|Ui::Snap::Left|Ui::Snap::Right, 0, 16, 128},
-        metalness{*this, {Ui::Snap::Top|Ui::Snap::Right, WidgetSize}, FloatValidator, "0.5", 5},
-        roughness{*this, {Ui::Snap::Bottom, metalness, WidgetSize}, FloatValidator, "0.25", 5},
-        f0{*this, {Ui::Snap::Bottom, roughness, WidgetSize}, FloatValidator, "0.25", 5},
-
-        apply{*this, {Ui::Snap::Bottom|Ui::Snap::Right, WidgetSize}, "Apply", Ui::Style::Primary},
-        reset{*this, {Ui::Snap::Top, apply, WidgetSize}, "Reset", Ui::Style::Danger}
-    {
-        Ui::Label{*this, {Ui::Snap::Left, metalness}, "Metalness", Text::Alignment::MiddleRight};
-        Ui::Label{*this, {Ui::Snap::Left, roughness}, "Roughness", Text::Alignment::MiddleRight};
-        Ui::Label{*this, {Ui::Snap::Left, f0}, "ƒ₀", Text::Alignment::MiddleRight};
-
-        Ui::Label{*this, {Ui::Snap::Bottom|Ui::Snap::Left, WidgetSize},
-            "Use WASD + mouse to move, (Shift +) M/R/F to change parameters.",
-            Text::Alignment::MiddleLeft};
-    }
-
-    Ui::ValidatedInput metalness,
-        roughness,
-        f0;
-    Ui::Button apply,
-        reset;
-};
 
 using namespace Math::Literals;
 
-class AreaLightsExample: public Platform::Application, public Interconnect::Receiver {
+class AreaLightsExample: public Platform::Application {
     public:
         explicit AreaLightsExample(const Arguments& arguments);
 
@@ -313,8 +295,12 @@ class AreaLightsExample: public Platform::Application, public Interconnect::Rece
         Float _f0 = 0.5f; /* Specular reflection coefficient */
 
         /* UI */
-        Containers::Optional<Ui::UserInterface> _ui;
-        Containers::Optional<BaseUiPlane> _baseUiPlane;
+        struct {
+            Ui::UserInterfaceGL ui{NoCreate};
+            Ui::Input metalness{NoCreate, ui},
+                roughness{NoCreate, ui},
+                f0{NoCreate, ui};
+        } _ui;
 };
 
 constexpr struct {
@@ -426,48 +412,62 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _flatShader = Shaders::FlatGL3D{};
 
     /* Create the UI */
-    _ui.emplace(Vector2{windowSize()}/dpiScaling(), windowSize(), framebufferSize(), Ui::mcssDarkStyleConfiguration(), "ƒ₀");
-    Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetFocused, *this, &AreaLightsExample::startTextInput);
-    Interconnect::connect(*_ui, &Ui::UserInterface::inputWidgetBlurred, *this, &AreaLightsExample::stopTextInput);
+    {
+        _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::McssDarkStyle{});
+        /** @todo make a builtin API for this, or, better, make it automatic */
+        CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(1, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
+        Ui::NodeHandle root = Ui::snap(_ui.ui, Ui::Snap::Fill|Ui::Snap::NoPad, {});
 
-    /* Base UI plane */
-    _baseUiPlane.emplace(*_ui);
-    Interconnect::connect(_baseUiPlane->metalness, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
-    Interconnect::connect(_baseUiPlane->roughness, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
-    Interconnect::connect(_baseUiPlane->f0, &Ui::Input::valueChanged, *this, &AreaLightsExample::enableApplyButton);
-    Interconnect::connect(_baseUiPlane->apply, &Ui::Button::tapped, *this, &AreaLightsExample::apply);
-    Interconnect::connect(_baseUiPlane->reset, &Ui::Button::tapped, *this, &AreaLightsExample::reset);
+        /** @todo some numeric-only validators, length restriction, once the UI
+            lib is capable of that */
+        _ui.metalness = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::TopRight|Ui::Snap::Inside, root, WidgetSize), "0.5"};
+        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.metalness, WidgetSize), "Metalness", Text::Alignment::MiddleRight);
+
+        _ui.roughness = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::Bottom, _ui.metalness, WidgetSize), "0.25"};
+        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.roughness, WidgetSize), "Roughness", Text::Alignment::MiddleRight);
+
+        _ui.f0 = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::Bottom, _ui.roughness, WidgetSize), "0.25"};
+        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.f0, WidgetSize), "ƒ₀", Text::Alignment::MiddleRight);
+
+        /** @todo enable the Apply button only if something changes once the UI
+            library has a way to signal that, or at least has onKeyPress etc */
+        Ui::NodeHandle apply = Ui::button(Ui::snap(_ui.ui, Ui::Snap::BottomRight|Ui::Snap::Inside, root, WidgetSize), "Apply", Ui::ButtonStyle::Primary);
+        _ui.ui.eventLayer().onTapOrClick(apply, {*this, &AreaLightsExample::apply});
+
+        Ui::NodeHandle reset = Ui::button(Ui::snap(_ui.ui, Ui::Snap::Top, apply, WidgetSize), "Reset", Ui::ButtonStyle::Danger);
+        _ui.ui.eventLayer().onTapOrClick(reset, {*this, &AreaLightsExample::reset});
+    }
+
+    /* On Emscritpten we need to explicitly startTextInput() in order to get
+       any text input events */
+    /** @todo call this from the UI directly */
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    startTextInput();
+    #endif
 
     /* Apply the default values */
     apply();
 }
 
-void AreaLightsExample::enableApplyButton(const std::string&) {
-    _baseUiPlane->apply.setEnabled(Ui::ValidatedInput::allValid({
-        _baseUiPlane->metalness,
-        _baseUiPlane->roughness,
-        _baseUiPlane->f0}));
-}
-
 void AreaLightsExample::apply() {
-    _metalness = Math::clamp(std::stof(_baseUiPlane->metalness.value()), 0.1f, 1.0f);
-    _roughness = Math::clamp(std::stof(_baseUiPlane->roughness.value()), 0.1f, 1.0f);
-    _f0 = Math::clamp(std::stof(_baseUiPlane->f0.value()), 0.1f, 1.0f);
+    _metalness = Math::clamp(std::stof(_ui.metalness.text()), 0.1f, 1.0f);
+    _roughness = Math::clamp(std::stof(_ui.roughness.text()), 0.1f, 1.0f);
+    _f0 = Math::clamp(std::stof(_ui.f0.text()), 0.1f, 1.0f);
 
     _areaLightShader.setMetalness(_metalness)
         .setRoughness(_roughness)
         .setF0(_f0);
 
     /* Set the clamped values back */
-    _baseUiPlane->metalness.setValue(Utility::formatString("{:.5}", _metalness));
-    _baseUiPlane->roughness.setValue(Utility::formatString("{:.5}", _roughness));
-    _baseUiPlane->f0.setValue(Utility::formatString("{:.5}", _f0));
+    _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
+    _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
+    _ui.f0.setText(Utility::formatString("{:.5}", _f0));
 }
 
 void AreaLightsExample::reset() {
-    _baseUiPlane->metalness.setValue("0.5");
-    _baseUiPlane->roughness.setValue("0.25");
-    _baseUiPlane->f0.setValue("0.25");
+    _ui.metalness.setText("0.5");
+    _ui.roughness.setText("0.25");
+    _ui.f0.setText("0.25");
 
     _cameraRotation = {};
     _cameraPosition = {0.0f, 1.0f, 6.0f};
@@ -536,7 +536,7 @@ void AreaLightsExample::drawEvent() {
     /* Draw the UI */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-    _ui->draw();
+    _ui.ui.draw();
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
@@ -549,18 +549,21 @@ void AreaLightsExample::mousePressEvent(MouseEvent& event) {
     if((event.button() == MouseEvent::Button::Left))
         _previousMousePosition = event.position();
 
-    if(!_ui->handlePressEvent(event.position())) return;
+    _ui.ui.pointerPressEvent(event);
 
-    redraw();
+    if(_ui.ui.state())
+        redraw();
 }
 
 void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
-    if(_ui->handleReleaseEvent(event.position()))
+    _ui.ui.pointerReleaseEvent(event);
+
+    if(_ui.ui.state())
         redraw();
 }
 
 void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(_ui->handleMoveEvent(event.position())) {
+    if(_ui.ui.pointerMoveEvent(event)) {
         /* UI handles it */
 
     } else if((event.buttons() & MouseMoveEvent::Button::Left)) {
@@ -569,16 +572,16 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
         _cameraRotation += delta;
 
         _previousMousePosition = event.position();
+    }
 
-    } else return;
-
-    redraw();
+    if(_ui.ui.state())
+        redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
-    /* If an input is focused, pass the events only to the UI */
-    if(isTextInputActive() && _ui->focusedInputWidget()) {
-        if(!_ui->focusedInputWidget()->handleKeyPress(event)) return;
+    /* If the UI accepts an input event, pass them only there  */
+    if(_ui.ui.keyPressEvent(event)) {
+        /* Redraw at the end */
 
     /* Movement */
     } else if(event.key() == KeyEvent::Key::W) {
@@ -596,7 +599,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _roughness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setRoughness(_roughness);
-        _baseUiPlane->roughness.setValue(Utility::formatString("{:.5}", _roughness));
+        _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
 
     /* Increase/decrease metalness */
     } else if(event.key() == KeyEvent::Key::M) {
@@ -604,7 +607,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _metalness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setMetalness(_metalness);
-        _baseUiPlane->metalness.setValue(Utility::formatString("{:.5}", _metalness));
+        _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
 
     /* Increase/decrease f0 */
     } else if(event.key() == KeyEvent::Key::F) {
@@ -612,7 +615,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
             _f0 + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setF0(_f0);
-        _baseUiPlane->f0.setValue(Utility::formatString("{:.5}", _f0));
+        _ui.f0.setText(Utility::formatString("{:.5}", _f0));
 
     /* Reload shader */
     } else if(event.key() == KeyEvent::Key::F5) {
@@ -636,7 +639,9 @@ void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::textInputEvent(TextInputEvent& event) {
-    if(isTextInputActive() && _ui->focusedInputWidget() && _ui->focusedInputWidget()->handleTextInput(event))
+    _ui.ui.textInputEvent(event);
+
+    if(_ui.ui.state())
         redraw();
 }
 

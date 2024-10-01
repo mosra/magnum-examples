@@ -20,7 +20,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -70,6 +70,11 @@ if(TARGET OpenAL OR TARGET OpenAL::OpenAL)
         # INTERFACE_INCLUDE_DIRECTORIES for some reason (apparently the
         # $<BUILD_INTERFACE:> in there doesn't work or whatever), so let's do
         # that ourselves.
+        #
+        # TODO this could be probably fixable by using target_link_libraries()
+        # instead of set_target_properties() because it evaluates generator
+        # expressions, but that needs CMake 3.10+, before that
+        # target_link_libraries() can't be called on INTERFACE targets.
         get_target_property(_OPENAL_SOURCE_DIR OpenAL SOURCE_DIR)
         set_target_properties(OpenAL::OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_OPENAL_SOURCE_DIR}/include/AL)
 
@@ -161,7 +166,7 @@ if(NOT TARGET OpenAL::OpenAL)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if((APPLE AND ${OPENAL_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+    if((APPLE AND OPENAL_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenAL::OpenAL INTERFACE IMPORTED)
         set_property(TARGET OpenAL::OpenAL APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${OPENAL_LIBRARY})

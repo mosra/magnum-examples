@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -50,7 +50,7 @@ void main(void) {
 
     /* Factor of reflectivity - normals perpendicular to viewer are not reflective */
     factor = pow(1.0 - max(0.0, dot(transformedNormal,
-        cameraMatrix*normalMatrix*vec3(0.0, 0.0, 1.0))),
+        normalize(cameraMatrix*normalMatrix*vec3(0, 0, 1)))),
         reflectivity);
 
     tarnishTextureCoords = textureCoords;

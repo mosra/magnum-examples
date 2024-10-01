@@ -4,17 +4,12 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
-  xcode-11_5:
-    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
-    # have to use 10.3 instead; since 2021-06-08 MoltenVK refuses to work on
-    # 10.14 so have to use 11.2 at least. Can't fake this with hand-installed
-    # vulkan-loader because that one is built on 10.15 and can't be used on
-    # older versions due to
-    #   dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
-    # Since 2022-01-20 the oldest 11 image is 11.4. Since 2922-05-23,
-    # 11.4.1 images wait endlessly for "VM assignment", using 11.5 instead.
+  # Anything below 13.4.1 (and all x86 variants) are deprecated as of June 28th
+  # 2024
+  xcode-13_4:
     macos:
-      xcode: 11.5
+      xcode: 13.4.1
+    resource_class: macos.m1.medium.gen1
   emscripten:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -40,6 +35,26 @@ commands:
           # libidn11 needed by CMake
           apt install -y git ninja-build libidn11 << parameters.extra >>
 
+  # TODO this might get resolved with 1.11.1:
+  #   https://github.com/ninja-build/ninja/pull/1827
+  #   https://github.com/ninja-build/ninja/pull/2174
+  # But wouldn't it build too slow then? Heh
+  cap-ninja-jobs:
+    parameters:
+      count:
+        type: integer
+        # It reports 36 cores and ninja goes with 38 currently, RAM fluctuates
+        # from 3 to 70 GB.
+        default: 24
+    steps:
+    - run:
+        name: Query CPU cores, default Ninja parallelism and available RAM, cap jobs
+        command: |
+          nproc
+          ninja --help 2>&1 | grep "N jobs in parallel" || true
+          free
+          echo "export NINJA_JOBS=-j<< parameters.count >>" >> $BASH_ENV
+
   install-base-macos:
     parameters:
       extra:
@@ -64,24 +79,34 @@ commands:
           echo 'export CC=gcc-4.8' >> $BASH_ENV
           echo 'export CXX=g++-4.8' >> $BASH_ENV
 
-  install-cmake-3_4:
+  install-cmake:
+    parameters:
+      version:
+        type: string
+      sudo:
+        type: string
+        default: ""
     steps:
     - run:
-        name: Install CMake 3.4
+        name: Install CMake << parameters.version >>
         command: |
-          apt install -y wget
+          version_short=<< parameters.version >>
+          version_short="${version_short%.*}"
+          << parameters.sudo >> apt install -y wget
           mkdir -p $HOME/cmake && cd $HOME/cmake
-          wget -nc --no-check-certificate https://cmake.org/files/v3.4/cmake-3.4.3-Linux-x86_64.tar.gz
-          tar --strip-components=1 -xzf cmake-3.4.3-Linux-x86_64.tar.gz
+          wget -nc --no-check-certificate https://cmake.org/files/v$version_short/cmake-<< parameters.version >>-Linux-x86_64.tar.gz
+          tar --strip-components=1 -xzf cmake-<< parameters.version >>-Linux-x86_64.tar.gz
           echo 'export PATH=$HOME/cmake/bin:$PATH' >> $BASH_ENV
-          source $BASH_ENV && cmake --version | grep 3.4
+          source $BASH_ENV
+          cmake --version | grep << parameters.version >>
+          ctest --version | grep << parameters.version >>
 
   install-imgui:
     steps:
     - run:
         name: Install ImGui
         command: |
-          export IMGUI_VERSION=v1.72
+          export IMGUI_VERSION=v1.88
           mkdir -p $HOME/imgui && cd $HOME/imgui
           wget --no-check-certificate https://github.com/ocornut/imgui/archive/$IMGUI_VERSION.tar.gz
           tar --strip-components=1 -xzf $IMGUI_VERSION.tar.gz
@@ -106,6 +131,7 @@ jobs:
   ports-linux:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
       WITH_BOX2D: "ON"
       # DART was disabled on Ubuntu 16.04 because of GCC 4 and 5 ABI mismatch
@@ -115,8 +141,13 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
+    # OOMs during compilation of random files
+    # TODO revisit once deprecated includes are dropped (non-deprecated build
+    # doesn't fail)
+    - cap-ninja-jobs
     - install-gcc-4_8
-    - install-cmake-3_4
+    - install-cmake:
+        version: "3.5.2"
     - install-imgui
     - build:
         script: unix-desktop.sh
@@ -124,6 +155,7 @@ jobs:
   ports-linux-gles2:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
@@ -134,7 +166,8 @@ jobs:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
     - install-gcc-4_8
-    - install-cmake-3_4
+    - install-cmake:
+        version: "3.5.2"
     - install-imgui
     - build:
         script: unix-desktop-gles.sh
@@ -142,6 +175,7 @@ jobs:
   ports-linux-gles3:
     executor: ubuntu-18_04
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: EGL
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
@@ -152,7 +186,8 @@ jobs:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
     - install-gcc-4_8
-    - install-cmake-3_4
+    - install-cmake:
+        version: "3.5.2"
     - install-imgui
     - build:
         script: unix-desktop-gles.sh
@@ -163,6 +198,7 @@ jobs:
       # STUPID yml interprets unquoted OFF as a boolean
       BUILD_DEPRECATED: "OFF"
       CMAKE_CXX_FLAGS: -DCORRADE_NO_ASSERT
+      CONFIGURATION: Release
       PLATFORM_GL_API: GLX
       WITH_BOX2D: "ON"
       # Disabled due to GCC 4/5 ABI mismatch, see above
@@ -171,14 +207,16 @@ jobs:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
     - install-gcc-4_8
-    - install-cmake-3_4
+    - install-cmake:
+        version: "3.5.2"
     - install-imgui
     - build:
         script: unix-desktop.sh
 
   ports-macos:
-    executor: xcode-11_5
+    executor: xcode-13_4
     environment:
+      CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
@@ -210,10 +248,14 @@ jobs:
         script: emscripten.sh
 
   ports-ios-gles3:
-    executor: xcode-11_5
+    executor: xcode-13_4
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
+      # Yep, xcodebuild is beyond stupid and just DOESN'T build in parallel by
+      # default. The default medium resource class has 4 CPUs and Ninja uses
+      # -j6, so do the same for xcodebuild.
+      XCODE_JOBS: 6
     steps:
     - install-base-macos:
         extra: xcbeautify
@@ -223,12 +265,32 @@ jobs:
 workflows:
   version: 2
   build:
+    # While there's no actual execution or data dependency between the jobs,
+    # this is done in order to reduce unnecessary credit usage. The base and
+    # non-deprecated Linux builds are taken as the main sanity checks. Only if
+    # they pass, the rest of the jobs gets gradually executed, with further
+    # dependencies especially for the macOS jobs that take the most credits.
     jobs:
     - ports-linux
-    - ports-linux-gles2
-    - ports-linux-gles3
     - ports-linux-nondeprecated
-    - ports-macos
-    - ports-emscripten-webgl1
-    - ports-emscripten-webgl2
-    - ports-ios-gles3
+    - ports-linux-gles2:
+        requires:
+        - ports-linux
+        - ports-linux-nondeprecated
+    - ports-linux-gles3:
+        requires:
+        - ports-linux
+        - ports-linux-nondeprecated
+    - ports-macos:
+        requires:
+        - ports-linux
+        - ports-linux-nondeprecated
+    - ports-emscripten-webgl1:
+        requires:
+        - ports-linux-gles2
+    - ports-emscripten-webgl2:
+        requires:
+        - ports-linux-gles3
+    - ports-ios-gles3:
+        requires:
+        - ports-macos

@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -87,7 +87,9 @@ TextExample::TextExample(const Arguments& arguments):
     _vertices(GL::Buffer::TargetHint::Array),
     _indices(GL::Buffer::TargetHint::ElementArray)
 {
-    /* Load MagnumFont plugin */
+    /* Make the font plugin manager aware of the importer manager for
+       dependencies, load MagnumFont plugin */
+    _manager.registerExternalManager(_importerManager);
     _font = _manager.loadAndInstantiate("MagnumFont");
     if(!_font) std::exit(1);
 
@@ -114,7 +116,7 @@ TextExample::TextExample(const Arguments& arguments):
     std::tie(_rotatingText, std::ignore) = Text::Renderer2D::render(*_font, *_cache, 0.2f,
         "Hello, world!\n"
         "Ahoj, světe!\n"
-        "Здравствуй, мир!\n"
+        "Привіт Світ!\n"
         "Γεια σου κόσμε!\n"
         "Hej Världen!",
         _vertices, _indices, GL::BufferUsage::StaticDraw, Text::Alignment::MiddleCenter);
@@ -162,7 +164,7 @@ void TextExample::drawEvent() {
         .setColor(0x2f83cc_rgbf)
         .setOutlineColor(0xdcdcdc_rgbf)
         .setOutlineRange(0.45f, 0.35f)
-        .setSmoothness(0.025f/ _transformationRotatingText.uniformScaling())
+        .setSmoothness(0.025f/_transformationRotatingText.uniformScaling())
         .draw(_rotatingText);
 
     _shader

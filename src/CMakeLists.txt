@@ -4,7 +4,7 @@
 #   Original authors — credit is appreciated but not required:
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#       2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+#       2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 #       2019 — Jonathan Hale <squareys@googlemail.com>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -40,118 +40,122 @@ if(CORRADE_TARGET_WINDOWS)
     add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
-if(WITH_ANIMATED_GIF_EXAMPLE)
+# IDE folder in VS, Xcode etc. CMake 3.12+, older versions have only the FOLDER
+# property that would have to be set on each target separately.
+set(CMAKE_FOLDER "MagnumExamples")
+
+if(MAGNUM_WITH_ANIMATED_GIF_EXAMPLE)
     add_subdirectory(animated-gif)
 endif()
 
-if(WITH_ARCBALL_EXAMPLE)
+if(MAGNUM_WITH_ARCBALL_EXAMPLE)
     add_subdirectory(arcball)
 endif()
 
-if(WITH_AREALIGHTS_EXAMPLE)
+if(MAGNUM_WITH_AREALIGHTS_EXAMPLE)
     add_subdirectory(arealights)
 endif()
 
-if(WITH_AUDIO_EXAMPLE)
+if(MAGNUM_WITH_AUDIO_EXAMPLE)
     add_subdirectory(audio)
 endif()
 
-if(WITH_BOX2D_EXAMPLE)
+if(MAGNUM_WITH_BOX2D_EXAMPLE)
     add_subdirectory(box2d)
 endif()
 
-if(WITH_BULLET_EXAMPLE)
+if(MAGNUM_WITH_BULLET_EXAMPLE)
     add_subdirectory(bullet)
 endif()
 
-if(WITH_CUBEMAP_EXAMPLE)
+if(MAGNUM_WITH_CUBEMAP_EXAMPLE)
     add_subdirectory(cubemap)
 endif()
 
-if(WITH_DART_EXAMPLE)
+if(MAGNUM_WITH_DART_EXAMPLE)
     add_subdirectory(dart)
 endif()
 
-if(WITH_FLUIDSIMULATION2D_EXAMPLE)
+if(MAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE)
     add_subdirectory(fluidsimulation2d)
 endif()
 
-if(WITH_FLUIDSIMULATION3D_EXAMPLE)
+if(MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE)
     add_subdirectory(fluidsimulation3d)
 endif()
 
-if(WITH_IMGUI_EXAMPLE)
+if(MAGNUM_WITH_IMGUI_EXAMPLE)
     add_subdirectory(imgui)
 endif()
 
-if(WITH_LEAPMOTION_EXAMPLE)
+if(MAGNUM_WITH_LEAPMOTION_EXAMPLE)
     add_subdirectory(leapmotion)
 endif()
 
-if(WITH_MOTIONBLUR_EXAMPLE)
+if(MAGNUM_WITH_MOTIONBLUR_EXAMPLE)
     add_subdirectory(motionblur)
 endif()
 
-if(WITH_MOUSEINTERACTION_EXAMPLE)
+if(MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE)
     add_subdirectory(mouseinteraction)
 endif()
 
-if(WITH_OCTREE_EXAMPLE)
+if(MAGNUM_WITH_OCTREE_EXAMPLE)
     add_subdirectory(octree)
 endif()
 
-if(WITH_OVR_EXAMPLE)
+if(MAGNUM_WITH_OVR_EXAMPLE)
     add_subdirectory(ovr)
 endif()
 
-if(WITH_PICKING_EXAMPLE)
+if(MAGNUM_WITH_PICKING_EXAMPLE)
     add_subdirectory(picking)
 endif()
 
-if(WITH_PRIMITIVES_EXAMPLE)
+if(MAGNUM_WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
 
-if(WITH_RAYTRACING_EXAMPLE)
+if(MAGNUM_WITH_RAYTRACING_EXAMPLE)
     add_subdirectory(raytracing)
 endif()
 
-if(WITH_SHADOWS_EXAMPLE)
+if(MAGNUM_WITH_SHADOWS_EXAMPLE)
     add_subdirectory(shadows)
 endif()
 
-if(WITH_TEXT_EXAMPLE)
+if(MAGNUM_WITH_TEXT_EXAMPLE)
     add_subdirectory(text)
 endif()
 
-if(WITH_TEXTUREDQUAD_EXAMPLE)
+if(MAGNUM_WITH_TEXTUREDQUAD_EXAMPLE)
     add_subdirectory(texturedquad)
 endif()
 
-if(WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE)
+if(MAGNUM_WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE)
     add_subdirectory(textured-triangle-vulkan)
 endif()
 
-if(WITH_TRIANGLE_EXAMPLE)
+if(MAGNUM_WITH_TRIANGLE_EXAMPLE)
     add_subdirectory(triangle)
 endif()
 
-if(WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
+if(MAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE)
     add_subdirectory(triangle-plain-glfw)
 endif()
 
-if(WITH_TRIANGLE_SOKOL_EXAMPLE)
+if(MAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE)
     add_subdirectory(triangle-sokol)
 endif()
 
-if(WITH_TRIANGLE_VULKAN_EXAMPLE)
+if(MAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE)
     add_subdirectory(triangle-vulkan)
 endif()
 
-if(WITH_VIEWER_EXAMPLE)
+if(MAGNUM_WITH_VIEWER_EXAMPLE)
     add_subdirectory(viewer)
 endif()
 
-if(WITH_WEBXR_EXAMPLE)
+if(MAGNUM_WITH_WEBXR_EXAMPLE)
     add_subdirectory(webxr)
 endif()

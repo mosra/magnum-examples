@@ -19,21 +19,27 @@ build() {
 
         cmake .. \
             -DCMAKE_SYSTEM_NAME=Android \
-            -DCMAKE_SYSTEM_VERSION=22 \
+            -DCMAKE_SYSTEM_VERSION=24 \
             -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-            -DCMAKE_FIND_ROOT_PATH=/opt/android-ndk/platforms/android-22/arch-arm64/usr \
+            -DCMAKE_FIND_ROOT_PATH=/opt/android-ndk/platforms/android-24/arch-arm64/usr \
             -G Ninja
     fi
 
     cd "$_rootdir/build-android-arm64"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output; Clang unfortunately doesn't
+    # have any env var to temporarily disable colors. The inverse, i.e.
+    # preserving colors when Ninja outputs to a pipe can be done with
+    # CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm64/usr \
-        -DWITH_PRIMITIVES_EXAMPLE=ON \
-        -DWITH_TEXTURED_TRIANGLE_EXAMPLE=ON \
-        -DWITH_TRIANGLE_EXAMPLE=ON \
-        -DWITH_VIEWER_EXAMPLE=ON
+        -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-24/arch-arm64/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
+        -DMAGNUM_WITH_PRIMITIVES_EXAMPLE=ON \
+        -DMAGNUM_WITH_TEXTURED_TRIANGLE_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_EXAMPLE=ON \
+        -DMAGNUM_WITH_VIEWER_EXAMPLE=ON
     ninja
 }
 

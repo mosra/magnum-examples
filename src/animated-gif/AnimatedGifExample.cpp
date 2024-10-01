@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -63,9 +63,9 @@ class AnimatedGifExample: public Platform::Application {
         void tickEvent() override;
 
         GL::Mesh _mesh{NoCreate};
-        Shaders::FlatGL2D _shader{
-            Shaders::FlatGL2D::Flag::Textured|
-            Shaders::FlatGL2D::Flag::TextureTransformation};
+        Shaders::FlatGL2D _shader{Shaders::FlatGL2D::Configuration{}
+            .setFlags(Shaders::FlatGL2D::Flag::Textured|
+                      Shaders::FlatGL2D::Flag::TextureTransformation)};
         GL::Texture2D _texture;
         Vector2i _gridSize, _imageSize;
 

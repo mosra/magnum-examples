@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -108,7 +108,8 @@ class PickingExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
 
-        Shaders::PhongGL _shader{Shaders::PhongGL::Flag::ObjectId};
+        Shaders::PhongGL _shader{Shaders::PhongGL::Configuration{}
+            .setFlags(Shaders::PhongGL::Flag::ObjectId)};
         GL::Mesh _cube, _plane, _sphere;
 
         enum { ObjectCount = 6 };

@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2013 — Jan Dupal <dupal.j@gmail.com>
         2019 — Max Schwarz <max.schwarz@online.de>
 
@@ -190,9 +190,9 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
         .setViewport(GL::defaultFramebuffer.viewport().size());
 
     /* Create an instanced shader */
-    _shader = Shaders::PhongGL{
-        Shaders::PhongGL::Flag::VertexColor|
-        Shaders::PhongGL::Flag::InstancedTransformation};
+    _shader = Shaders::PhongGL{Shaders::PhongGL::Configuration{}
+        .setFlags(Shaders::PhongGL::Flag::VertexColor|
+                  Shaders::PhongGL::Flag::InstancedTransformation)};
     _shader.setAmbientColor(0x111111_rgbf)
            .setSpecularColor(0x330000_rgbf)
            .setLightPositions({{10.0f, 15.0f, 5.0f, 0.0f}});

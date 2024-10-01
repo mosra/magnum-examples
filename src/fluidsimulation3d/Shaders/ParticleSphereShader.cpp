@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -30,7 +30,7 @@
 
 #include "ParticleSphereShader.h"
 
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
@@ -61,7 +61,7 @@ ParticleSphereShader::ParticleSphereShader() {
     vertShader.addSource(rs.getString("ParticleSphereShader.vert"));
     fragShader.addSource(rs.getString("ParticleSphereShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vertShader, fragShader}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vertShader.compile() && fragShader.compile());
     attachShaders({vertShader, fragShader});
     CORRADE_INTERNAL_ASSERT(link());
 

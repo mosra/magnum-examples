@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -45,7 +45,7 @@
 #include <Magnum/Math/Functions.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/FlipNormals.h>
-#include <Magnum/MeshTools/Reference.h>
+#include <Magnum/MeshTools/Copy.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/SceneGraph/Camera.h>
@@ -62,7 +62,7 @@ CubeMap::CubeMap(CubeMapResourceManager& resourceManager, Containers::StringView
        cube primitive references constant memory, so we have to make the data
        owned & mutable first. */
     if(!(_cube = resourceManager.get<GL::Mesh>("cube"))) {
-        Trade::MeshData cubeData = MeshTools::owned(Primitives::cubeSolid());
+        Trade::MeshData cubeData = MeshTools::copy(Primitives::cubeSolid());
         MeshTools::flipFaceWindingInPlace(cubeData.mutableIndices());
 
         resourceManager.set(_cube.key(), MeshTools::compile(cubeData), ResourceDataState::Final, ResourcePolicy::Resident);

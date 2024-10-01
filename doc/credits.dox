@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -43,6 +43,8 @@ namespace Magnum {
     @ref examples-imgui example
 -   **Gabriel de Perthuis** ([\@g2p](https://github.com/g2p)) --- buildsystem
     fixes
+-   **[\@grishavanika](https://github.com/grishavanika)** --- fixes in the
+    @ref examples-octree example
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     original @ref examples-imgui example
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
@@ -92,6 +94,8 @@ namespace Magnum {
     @ref examples-imgui example
 -   **Tomáš Skřivan** ([\@lecopivo](https://github.com/lecopivo)) --- original
     @ref examples-imgui example
+-   **Trevor Cash** ([\@TrevorCash](https://github.com/TrevorCash)) ---
+    buildsystem improvements
 -   **Winfried Baumann** ([\@codewing](https://github.com/codewing)) ---
     example code cleanup
 

@@ -12,6 +12,19 @@ options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
 
+prepare() {
+    # This is needed in order to fill ~/.emscripten_cache/sysroot/ with
+    # up-to-date dependency headers and libs. There's
+    #   embuilder build sysroot --force
+    # as suggested in https://github.com/emscripten-core/emscripten/pull/13090
+    # that does the same in a builtin way, but it DELIBERATELY does not
+    # preserve timestamps in any way, forcing a full rebuild every time. Why?!
+    #   https://github.com/emscripten-core/emscripten/blob/0566a76b500bd2bbd535e108f657fce1db7f6f75/tools/shared.py#L687
+    # Could use cp -rp instead of rsync if the system include dir didn't have
+    # that stupid designed-to-fail version.h :(
+    rsync -rlt /usr/lib/emscripten/system/include/ --exclude=emscripten/version.h $(em-config CACHE)/sysroot/include/
+}
+
 build() {
     if [ ! -d "$_rootdir/build-emscripten-wasm-webgl2" ] ; then
         mkdir "$_rootdir/build-emscripten-wasm-webgl2"
@@ -24,35 +37,41 @@ build() {
 
     cd "$_rootdir/build-emscripten-wasm-webgl2"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output; Clang unfortunately doesn't
+    # have any env var to temporarily disable colors. The inverse, i.e.
+    # preserving colors when Ninja outputs to a pipe can be done with
+    # CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
-        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DIMGUI_DIR=/opt/imgui \
-        -DWITH_ANIMATED_GIF_EXAMPLE=OFF \
-        -DWITH_ARCBALL_EXAMPLE=ON \
-        -DWITH_AREALIGHTS_EXAMPLE=ON \
-        -DWITH_AUDIO_EXAMPLE=ON \
-        -DWITH_BOX2D_EXAMPLE=ON \
-        -DWITH_BULLET_EXAMPLE=ON \
-        -DWITH_CUBEMAP_EXAMPLE=OFF \
-        -DWITH_DART_EXAMPLE=OFF \
-        -DWITH_FLUIDSIMULATION2D_EXAMPLE=ON \
-        -DWITH_FLUIDSIMULATION3D_EXAMPLE=ON \
-        -DWITH_IMGUI_EXAMPLE=ON \
-        -DWITH_MOTIONBLUR_EXAMPLE=OFF \
-        -DWITH_MOUSEINTERACTION_EXAMPLE=ON \
-        -DWITH_OCTREE_EXAMPLE=ON \
-        -DWITH_PICKING_EXAMPLE=ON \
-        -DWITH_PRIMITIVES_EXAMPLE=ON \
-        -DWITH_RAYTRACING_EXAMPLE=ON \
-        -DWITH_SHADOWS_EXAMPLE=OFF \
-        -DWITH_TEXT_EXAMPLE=ON \
-        -DWITH_TEXTUREDQUAD_EXAMPLE=ON \
-        -DWITH_TRIANGLE_EXAMPLE=ON \
-        -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
-        -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
-        -DWITH_VIEWER_EXAMPLE=ON \
-        -DWITH_WEBXR_EXAMPLE=ON
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
+        -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
+        -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON \
+        -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=ON \
+        -DMAGNUM_WITH_AUDIO_EXAMPLE=ON \
+        -DMAGNUM_WITH_BOX2D_EXAMPLE=ON \
+        -DMAGNUM_WITH_BULLET_EXAMPLE=ON \
+        -DMAGNUM_WITH_CUBEMAP_EXAMPLE=OFF \
+        -DMAGNUM_WITH_DART_EXAMPLE=OFF \
+        -DMAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE=ON \
+        -DMAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE=ON \
+        -DMAGNUM_WITH_IMGUI_EXAMPLE=ON \
+        -DMAGNUM_WITH_MOTIONBLUR_EXAMPLE=OFF \
+        -DMAGNUM_WITH_MOUSEINTERACTION_EXAMPLE=ON \
+        -DMAGNUM_WITH_OCTREE_EXAMPLE=ON \
+        -DMAGNUM_WITH_PICKING_EXAMPLE=ON \
+        -DMAGNUM_WITH_PRIMITIVES_EXAMPLE=ON \
+        -DMAGNUM_WITH_RAYTRACING_EXAMPLE=ON \
+        -DMAGNUM_WITH_SHADOWS_EXAMPLE=OFF \
+        -DMAGNUM_WITH_TEXT_EXAMPLE=ON \
+        -DMAGNUM_WITH_TEXTUREDQUAD_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
+        -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
+        -DMAGNUM_WITH_VIEWER_EXAMPLE=ON \
+        -DMAGNUM_WITH_WEBXR_EXAMPLE=ON
     ninja
 }
 

@@ -20,7 +20,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -69,7 +69,7 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if((CORRADE_TARGET_APPLE AND ${OPENGLES3_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+    if((CORRADE_TARGET_APPLE AND OPENGLES3_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
         set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${OPENGLES3_LIBRARY})
@@ -79,12 +79,11 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
             IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
     endif()
 
-    # Emscripten needs a special flag to use WebGL 2. CMake 3.13 allows to set
-    # this via INTERFACE_LINK_OPTIONS, for older versions we modify the global
-    # CMAKE_EXE_LINKER_FLAGS inside FindMagnum.cmake.
-    if(CORRADE_TARGET_EMSCRIPTEN AND NOT CMAKE_VERSION VERSION_LESS 3.13)
-        # I could probably use target_link_options() here, but let's be
-        # consistent with the rest
+    # Emscripten needs a special flag to use WebGL 2
+    if(CORRADE_TARGET_EMSCRIPTEN)
+        if(CMAKE_VERSION VERSION_LESS 3.13)
+            message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
+        endif()
         set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
             INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
     endif()

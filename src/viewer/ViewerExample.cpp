@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -85,8 +85,9 @@ class ViewerExample: public Platform::Application {
 
         Vector3 positionOnSphere(const Vector2i& position) const;
 
-        Shaders::PhongGL _coloredShader,
-            _texturedShader{Shaders::PhongGL::Flag::DiffuseTexture};
+        Shaders::PhongGL _coloredShader;
+        Shaders::PhongGL _texturedShader{Shaders::PhongGL::Configuration{}
+            .setFlags(Shaders::PhongGL::Flag::DiffuseTexture)};
         Containers::Array<Containers::Optional<GL::Mesh>> _meshes;
         Containers::Array<Containers::Optional<GL::Texture2D>> _textures;
 
@@ -219,7 +220,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         }
 
         MeshTools::CompileFlags flags;
-        if(meshData->hasAttribute(Trade::MeshAttribute::Normal))
+        if(!meshData->hasAttribute(Trade::MeshAttribute::Normal))
             flags |= MeshTools::CompileFlag::GenerateFlatNormals;
         _meshes[i] = MeshTools::compile(*meshData, flags);
     }

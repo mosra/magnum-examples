@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -150,9 +150,9 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
             .setStorage(1, GL::TextureFormat::RGB8, size)
             .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Unorm, size, map});
 
-        _shader = Shaders::MeshVisualizerGL3D{
-            Shaders::MeshVisualizerGL3D::Flag::Wireframe|
-            Shaders::MeshVisualizerGL3D::Flag::VertexId};
+        _shader = Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Configuration{}
+            .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+                      Shaders::MeshVisualizerGL3D::Flag::VertexId)};
         _shader
             .setViewportSize(Vector2{framebufferSize()})
             .setColor(0xffffff_rgbf)

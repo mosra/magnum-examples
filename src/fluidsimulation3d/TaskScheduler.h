@@ -6,7 +6,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -32,8 +32,8 @@
 
 #include "configure.h"
 
-#ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+#ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB
     #include <tbb/parallel_for.h>
     #else
     #include "ThreadPool.h"
@@ -43,8 +43,8 @@
 namespace Magnum { namespace Examples { namespace TaskScheduler {
 
 template<class IndexType, class Function> void forEach(IndexType endIdx, Function&& func) {
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
-    #ifdef FLUIDSIMULATION3D_EXAMPLE_USE_TBB
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_MULTITHREADING
+    #ifdef MAGNUM_FLUIDSIMULATION3D_EXAMPLE_USE_TBB
     tbb::parallel_for(tbb::blocked_range<IndexType>(IndexType(0), endIdx),
         [&](const tbb::blocked_range<IndexType>& r) {
             for(IndexType i = r.begin(), iEnd = r.end(); i < iEnd; ++i) {

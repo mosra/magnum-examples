@@ -54,10 +54,12 @@ environment:
     #APPVEYOR_JOB_NAME: ports-windows-rt-gles3-msvc2017
 
 install:
-- cinst ninja
-- set PATH=C:/Sys/bin;C:/tools/ninja;%PATH%
-- IF "%TARGET_GLES2%" == "ON" set TARGET_GLES3=OFF
-- IF "%TARGET_GLES2%" == "OFF" set TARGET_GLES3=ON
+# Ninja. `cinst ninja` started 503ing in late November 2019 and in 2024
+# Chocolatey seems to not be here at all anymore. So install by hand, as that's
+# reliable always.
+- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ninja-win.zip appveyor DownloadFile https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
+- 7z x ninja-win.zip -oC:/tools
+- set PATH=C:/tools;%PATH%
 
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.19.1-bin.zip appveyor DownloadFile https://openal-soft.org/openal-binaries/openal-soft-1.19.1-bin.zip
@@ -76,8 +78,8 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
 # ImGui
-- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui-1.72.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/v1.72.zip -FileName imgui-1.72.zip
-- 7z x imgui-1.72.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-1.72 imgui
+- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui-1.88.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/v1.88.zip -FileName imgui-1.88.zip
+- 7z x imgui-1.88.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-1.88 imgui
 
 # OVR SDK
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.26.0_public_minimal.zip appveyor DownloadFile https://ci.magnum.graphics/ovr_sdk_win_1.26.0_public_minimal.zip
@@ -99,4 +101,3 @@ cache:
 - SDL2-devel-2.0.9-mingw.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.26.0_public_minimal.zip -> package/ci/appveyor-cache-reset.txt
 - glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
-- imgui-1.72.zip -> package/ci/appveyor-cache-reset.txt

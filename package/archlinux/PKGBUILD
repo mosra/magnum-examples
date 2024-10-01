@@ -6,54 +6,77 @@ pkgdesc="Examples for the Magnum C++11/C++14 graphics engine"
 arch=('i686' 'x86_64')
 url="https://magnum.graphics"
 license=('custom:Public Domain')
-depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal' 'glew' 'box2d' 'libdart' 'imgui-src')
+depends=('magnum' 'magnum-plugins' 'magnum-integration' 'magnum-extras' 'bullet' 'openal' 'glew' 'box2d' 'imgui-src')
 makedepends=('cmake' 'ninja')
-options=(!strip)
+options=('!strip' '!buildflags')
 provides=('magnum-examples-git')
 
 _rootdir=$startdir/../../
+
+_buildtype=Release
+# _buildtype=RelWithDebInfo
 
 build() {
     mkdir -p "$_rootdir/build"
     cd "$_rootdir/build"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output, alternatively you can set the
+    # GCC_COLORS= (empty) env variable to temporarily disable colors. The
+    # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
+    # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
-        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
+        -DCMAKE_CROSS_CONFIGS=all \
+        -DCMAKE_CXX_FLAGS_DEBUG="-g -gz=zstd" \
+        -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer -gz=zstd" \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DIMGUI_DIR=/opt/imgui \
-        -DWITH_ANIMATED_GIF_EXAMPLE=ON \
-        -DWITH_ARCBALL_EXAMPLE=ON \
-        -DWITH_AREALIGHTS_EXAMPLE=ON \
-        -DWITH_AUDIO_EXAMPLE=ON \
-        -DWITH_BOX2D_EXAMPLE=ON \
-        -DWITH_BULLET_EXAMPLE=ON \
-        -DWITH_CUBEMAP_EXAMPLE=ON \
-        -DWITH_DART_EXAMPLE=ON \
-        -DWITH_FLUIDSIMULATION2D_EXAMPLE=ON \
-        -DWITH_FLUIDSIMULATION3D_EXAMPLE=ON \
-        -DWITH_IMGUI_EXAMPLE=ON \
-        -DWITH_MOTIONBLUR_EXAMPLE=ON \
-        -DWITH_MOUSEINTERACTION_EXAMPLE=ON \
-        -DWITH_OCTREE_EXAMPLE=ON \
-        -DWITH_PICKING_EXAMPLE=ON \
-        -DWITH_PRIMITIVES_EXAMPLE=ON \
-        -DWITH_RAYTRACING_EXAMPLE=ON \
-        -DWITH_SHADOWS_EXAMPLE=ON \
-        -DWITH_TEXT_EXAMPLE=ON \
-        -DWITH_TEXTUREDQUAD_EXAMPLE=ON \
-        -DWITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE=ON \
-        -DWITH_TRIANGLE_EXAMPLE=ON \
-        -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
-        -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
-        -DWITH_TRIANGLE_VULKAN_EXAMPLE=ON \
-        -DWITH_VIEWER_EXAMPLE=ON \
-        -G Ninja
-    ninja
+        -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
+        -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON \
+        -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=ON \
+        -DMAGNUM_WITH_AUDIO_EXAMPLE=ON \
+        -DMAGNUM_WITH_BOX2D_EXAMPLE=ON \
+        -DMAGNUM_WITH_BULLET_EXAMPLE=ON \
+        -DMAGNUM_WITH_CUBEMAP_EXAMPLE=ON \
+        -DMAGNUM_WITH_DART_EXAMPLE=OFF \
+        -DMAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE=ON \
+        -DMAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE=ON \
+        -DMAGNUM_WITH_IMGUI_EXAMPLE=ON \
+        -DMAGNUM_WITH_MOTIONBLUR_EXAMPLE=ON \
+        -DMAGNUM_WITH_MOUSEINTERACTION_EXAMPLE=ON \
+        -DMAGNUM_WITH_OCTREE_EXAMPLE=ON \
+        -DMAGNUM_WITH_PICKING_EXAMPLE=ON \
+        -DMAGNUM_WITH_PRIMITIVES_EXAMPLE=ON \
+        -DMAGNUM_WITH_RAYTRACING_EXAMPLE=ON \
+        -DMAGNUM_WITH_SHADOWS_EXAMPLE=ON \
+        -DMAGNUM_WITH_TEXT_EXAMPLE=ON \
+        -DMAGNUM_WITH_TEXTUREDQUAD_EXAMPLE=ON \
+        -DMAGNUM_WITH_TEXTUREDTRIANGLE_VULKAN_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=ON \
+        -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
+        -DMAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE=ON \
+        -DMAGNUM_WITH_VIEWER_EXAMPLE=ON \
+        -G "Ninja Multi-Config"
+    ninja all:Debug all:$_buildtype
 }
 
 package() {
     cd "$_rootdir/build"
-    DESTDIR="$pkgdir/" ninja install
+    DESTDIR="$pkgdir/" ninja install:Debug
+
+    # Prevent the Release build from overwriting Debug binaries
+    for i in $(ls $pkgdir/usr/bin/magnum-*); do
+        mv ${i}{,d}
+    done
+
+    if [ "$_buildtype" = RelWithDebInfo ]; then
+        DESTDIR="$pkgdir/" ninja install:$_buildtype
+    else
+        DESTDIR="$pkgdir/" ninja install/strip:$_buildtype
+    fi
 
     # Install the UNLICENSE because Arch has no pre-defined license for Public
     # Domain

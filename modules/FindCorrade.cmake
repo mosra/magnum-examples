@@ -16,6 +16,8 @@
 # components, which are:
 #
 #  Containers                   - Containers library
+#  Interconnect                 - Interconnect library
+#  Main                         - Main library
 #  PluginManager                - PluginManager library
 #  TestSuite                    - TestSuite library
 #  Utility                      - Utility library
@@ -68,7 +70,7 @@
 #   mode for MSVC 2017
 #  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2015
-#  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated APIs
+#  CORRADE_BUILD_DEPRECATED     - Defined if compiled with deprecated features
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries.
 #   Default are shared libraries.
@@ -78,6 +80,9 @@
 #  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
 #   possible to safely use certain Corrade features simultaneously in multiple
 #   threads
+#  CORRADE_BUILD_CPU_RUNTIME_DISPATCH - Defined if built with code paths
+#   optimized for multiple architectres with the best matching variant selected
+#   at runtime based on detected CPU features
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, macOS)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for Apple platforms
@@ -98,6 +103,8 @@
 #  CORRADE_TARGET_MSVC          - Defined if compiling with MSVC or Clang with
 #   a MSVC frontend
 #  CORRADE_TARGET_MINGW         - Defined if compiling under MinGW
+#  CORRADE_CPU_USE_IFUNC        - Defined if GNU IFUNC is allowed to be used
+#   for runtime dispatch in the Cpu library
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targeting Xcode
@@ -115,6 +122,7 @@
 #   automatically)
 #  CORRADE_TESTSUITE_XCTEST_RUNNER - Path to XCTestRunner.mm.in file
 #  CORRADE_TESTSUITE_ADB_RUNNER - Path to AdbRunner.sh file
+#  CORRADE_UTILITY_JS           - Path to CorradeUtility.js file
 #  CORRADE_PEDANTIC_COMPILER_OPTIONS - List of pedantic compiler options used
 #   for targets with :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` enabled
 #  CORRADE_PEDANTIC_COMPILER_DEFINITIONS - List of pedantic compiler
@@ -208,7 +216,7 @@
 #                     <metadata file>
 #                     <sources>...)
 #
-# Unline the above version this puts everything into ``<debug install dir>`` on
+# Unlike the above version this puts everything into ``<debug install dir>`` on
 # both DLL and non-DLL platforms. If ``<debug install dir>`` is set to
 # :variable:`CMAKE_CURRENT_BINARY_DIR` (e.g. for testing purposes), the files
 # are copied directly, without the need to perform install step. Note that the
@@ -264,7 +272,7 @@
 #   This file is part of Corrade.
 #
 #   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#               2017, 2018, 2019, 2020, 2021, 2022
+#               2017, 2018, 2019, 2020, 2021, 2022, 2023
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -317,6 +325,7 @@ set(_corradeFlags
     BUILD_STATIC
     BUILD_STATIC_UNIQUE_GLOBALS
     BUILD_MULTITHREADED
+    BUILD_CPU_RUNTIME_DISPATCH
     TARGET_UNIX
     TARGET_APPLE
     TARGET_IOS
@@ -325,10 +334,12 @@ set(_corradeFlags
     TARGET_WINDOWS_RT
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
-    # TARGET_X86 etc and TARGET_LIBCXX are not exposed to CMake as the meaning
-    # is unclear on platforms with multi-arch binaries or when mixing different
-    # STL implementations. TARGET_GCC etc are figured out via UseCorrade.cmake,
-    # as the compiler can be different when compiling the lib & when using it.
+    # TARGET_X86 etc, TARGET_32BIT, TARGET_BIG_ENDIAN and TARGET_LIBCXX etc.
+    # are not exposed to CMake as the meaning is unclear on platforms with
+    # multi-arch binaries or when mixing different STL implementations.
+    # TARGET_GCC etc are figured out via UseCorrade.cmake, as the compiler can
+    # be different when compiling the lib & when using it.
+    CPU_USE_IFUNC
     PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     TESTSUITE_TARGET_XCTEST
     UTILITY_USE_ANSI_COLORS)
@@ -406,6 +417,8 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
     if(TARGET Corrade::${_component})
         set(Corrade_${_component}_FOUND TRUE)
     else()
+        unset(Corrade_${_component}_FOUND)
+
         # Library (and not header-only) components
         if(_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND NOT _component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS)
             add_library(Corrade::${_component} UNKNOWN IMPORTED)
@@ -461,8 +474,9 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         # Interconnect library
         if(_component STREQUAL Interconnect)
             # Disable /OPT:ICF on MSVC, which merges functions with identical
-            # contents and thus breaks signal comparison
-            if(CORRADE_TARGET_WINDOWS AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+            # contents and thus breaks signal comparison. Same case is for
+            # clang-cl which uses the MSVC linker by default.
+            if(CORRADE_TARGET_WINDOWS AND (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC"))
                 if(CMAKE_VERSION VERSION_LESS 3.13)
                     set_property(TARGET Corrade::${_component} PROPERTY
                         INTERFACE_LINK_LIBRARIES "-OPT:NOICF,REF")
@@ -496,25 +510,33 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         elseif(_component STREQUAL PluginManager)
             # -ldl is handled by Utility now
 
-        # TestSuite library has some additional files
+        # TestSuite library has some additional files. If those are not found,
+        # set the component _FOUND variable to false so it works properly both
+        # when the component is required and when it's optional.
         elseif(_component STREQUAL TestSuite)
             # XCTest runner file
             if(CORRADE_TESTSUITE_TARGET_XCTEST)
                 find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
                     PATH_SUFFIXES share/corrade/TestSuite)
-                set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
+                if(NOT CORRADE_TESTSUITE_XCTEST_RUNNER)
+                    set(Corrade_${_component}_FOUND FALSE)
+                endif()
 
             # ADB runner file
             elseif(CORRADE_TARGET_ANDROID)
                 find_file(CORRADE_TESTSUITE_ADB_RUNNER AdbRunner.sh
                     PATH_SUFFIXES share/corrade/TestSuite)
-                set(CORRADE_TESTSUITE_ADB_RUNNER_NEEDED CORRADE_TESTSUITE_ADB_RUNNER)
+                if(NOT CORRADE_TESTSUITE_ADB_RUNNER)
+                    set(Corrade_${_component}_FOUND FALSE)
+                endif()
 
             # Emscripten runner file
             elseif(CORRADE_TARGET_EMSCRIPTEN)
                 find_file(CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER EmscriptenRunner.html.in
                     PATH_SUFFIXES share/corrade/TestSuite)
-                set(CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER_NEEDED CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER)
+                if(NOT CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER)
+                    set(Corrade_${_component}_FOUND FALSE)
+                endif()
             endif()
 
         # Utility library (contains all setup that is used by others)
@@ -529,6 +551,16 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             set_property(TARGET Corrade::${_component} APPEND PROPERTY
                 COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
+            # -fno-strict-aliasing is set in UseCorrade.cmake for everyone who
+            # enables CORRADE_USE_PEDANTIC_FLAGS. Not all projects linking to
+            # Corrade enable it (or can't enable it), but this flag is
+            # essential to prevent insane bugs and random breakages, so force
+            # it for anyone linking to Corrade::Utility. Similar code is in
+            # Corrade/Utility/CMakeLists.txt.
+            if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang" AND NOT CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC") OR CORRADE_TARGET_EMSCRIPTEN)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY INTERFACE_COMPILE_OPTIONS -fno-strict-aliasing)
+            endif()
+
             # Path::libraryLocation() needs this
             if(CORRADE_TARGET_UNIX)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
@@ -538,6 +570,15 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             if(CORRADE_TARGET_ANDROID)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES "log")
+            endif()
+            # Emscripten has various stuff implemented in JS
+            if(CORRADE_TARGET_EMSCRIPTEN)
+                find_file(CORRADE_UTILITY_JS CorradeUtility.js
+                    PATH_SUFFIXES lib)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                    # TODO switch to INTERFACE_LINK_OPTIONS and SHELL: once we
+                    #   require CMake 3.13 unconditionally
+                    INTERFACE_LINK_LIBRARIES "--js-library ${CORRADE_UTILITY_JS}")
             endif()
         endif()
 
@@ -559,11 +600,14 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             endforeach()
         endif()
 
-        # Decide if the component was found
-        if((_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND _CORRADE_${_COMPONENT}_INCLUDE_DIR AND (_component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS OR CORRADE_${_COMPONENT}_LIBRARY_RELEASE OR CORRADE_${_COMPONENT}_LIBRARY_DEBUG)) OR (_component IN_LIST _CORRADE_EXECUTABLE_COMPONENTS AND CORRADE_${_COMPONENT}_EXECUTABLE))
-            set(Corrade_${_component}_FOUND TRUE)
-        else()
-            set(Corrade_${_component}_FOUND FALSE)
+        # Decide if the component was found, unless the _FOUND is already set
+        # by something above.
+        if(NOT DEFINED Corrade_${_component}_FOUND)
+            if((_component IN_LIST _CORRADE_LIBRARY_COMPONENTS AND _CORRADE_${_COMPONENT}_INCLUDE_DIR AND (_component IN_LIST _CORRADE_HEADER_ONLY_COMPONENTS OR CORRADE_${_COMPONENT}_LIBRARY_RELEASE OR CORRADE_${_COMPONENT}_LIBRARY_DEBUG)) OR (_component IN_LIST _CORRADE_EXECUTABLE_COMPONENTS AND CORRADE_${_COMPONENT}_EXECUTABLE))
+                set(Corrade_${_component}_FOUND TRUE)
+            else()
+                set(Corrade_${_component}_FOUND FALSE)
+            endif()
         endif()
     endif()
 endforeach()
@@ -590,7 +634,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
         #   misleading messages.
         elseif(NOT _component IN_LIST _CORRADE_IMPLICITLY_ENABLED_COMPONENTS)
             string(TOUPPER ${_component} _COMPONENT)
-            list(APPEND _CORRADE_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Corrade.")
+            list(APPEND _CORRADE_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled CORRADE_WITH_${_COMPONENT} when building Corrade.")
         # Otherwise we have no idea. Better be silent than to print something
         # misleading.
         else()
@@ -606,9 +650,6 @@ find_package_handle_standard_args(Corrade REQUIRED_VARS
     CORRADE_INCLUDE_DIR
     _CORRADE_MODULE_DIR
     _CORRADE_CONFIGURE_FILE
-    ${CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED}
-    ${CORRADE_TESTSUITE_ADB_RUNNER_NEEDED}
-    ${CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER_NEEDED}
     HANDLE_COMPONENTS
     ${_CORRADE_REASON_FAILURE_MESSAGE})
 

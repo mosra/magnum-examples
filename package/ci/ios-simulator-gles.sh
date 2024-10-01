@@ -12,10 +12,10 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DWITH_UTILITY=OFF \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_PLUGINMANAGER=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_WITH_UTILITY=OFF \
     -G Ninja
 ninja install
 cd ..
@@ -26,15 +26,15 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DBUILD_STATIC=ON \
-    -DTESTSUITE_TARGET_XCTEST=ON \
-    -DWITH_INTERCONNECT=OFF \
-    -DWITH_TESTSUITE=OFF \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCORRADE_BUILD_STATIC=ON \
+    -DCORRADE_TESTSUITE_TARGET_XCTEST=ON \
+    -DCORRADE_WITH_INTERCONNECT=OFF \
+    -DCORRADE_WITH_TESTSUITE=OFF \
+    -DCORRADE_BUILD_STATIC=ON \
     -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcbeautify
+set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
 # Crosscompile SDL. On 2022-14-02 curl says the certificate is expired, so
@@ -43,7 +43,7 @@ cd ../..
 curl --insecure -O https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
 tar -xzvf SDL2-2.0.10.tar.gz
 cd SDL2-2.0.10/Xcode-iOS/SDL
-set -o pipefail && xcodebuild -sdk iphonesimulator13.5 | xcbeautify
+set -o pipefail && xcodebuild -sdk iphonesimulator -jobs $XCODE_JOBS -parallelizeTargets | xcbeautify
 cp build/Release-iphonesimulator/libSDL2.a $HOME/deps/lib
 mkdir -p $HOME/deps/include/SDL2
 cp -R ../../include/* $HOME/deps/include/SDL2
@@ -57,28 +57,29 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_PREFIX_PATH=$TRAVIS_BUILD_DIR/sdl2 \
-    -DWITH_AUDIO=OFF \
-    -DWITH_DEBUGTOOLS=OFF \
-    -DWITH_MESHTOOLS=ON \
-    -DWITH_PRIMITIVES=ON \
-    -DWITH_SCENEGRAPH=ON \
-    -DWITH_SCENETOOLS=OFF \
-    -DWITH_SHADERS=ON \
-    -DWITH_SHADERTOOLS=OFF \
-    -DWITH_TEXT=OFF \
-    -DWITH_TEXTURETOOLS=OFF \
-    -DWITH_TRADE=ON \
-    -DWITH_VK=OFF \
-    -DWITH_GLFWAPPLICATION=OFF \
-    -DWITH_SDL2APPLICATION=ON \
-    -DWITH_TGAIMPORTER=ON \
-    -DTARGET_GLES2=$TARGET_GLES2 \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_AUDIO=OFF \
+    -DMAGNUM_WITH_DEBUGTOOLS=OFF \
+    -DMAGNUM_WITH_MATERIALTOOLS=OFF \
+    -DMAGNUM_WITH_MESHTOOLS=ON \
+    -DMAGNUM_WITH_PRIMITIVES=ON \
+    -DMAGNUM_WITH_SCENEGRAPH=ON \
+    -DMAGNUM_WITH_SCENETOOLS=OFF \
+    -DMAGNUM_WITH_SHADERS=ON \
+    -DMAGNUM_WITH_SHADERTOOLS=OFF \
+    -DMAGNUM_WITH_TEXT=OFF \
+    -DMAGNUM_WITH_TEXTURETOOLS=OFF \
+    -DMAGNUM_WITH_TRADE=ON \
+    -DMAGNUM_WITH_VK=OFF \
+    -DMAGNUM_WITH_GLFWAPPLICATION=OFF \
+    -DMAGNUM_WITH_SDL2APPLICATION=ON \
+    -DMAGNUM_WITH_TGAIMPORTER=ON \
+    -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
+    -DMAGNUM_TUILD_STATIC=ON \
     -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcbeautify
+set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
 # Crosscompile Magnum Plugins
@@ -89,12 +90,12 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DWITH_STBIMAGEIMPORTER=ON \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_STBIMAGEIMPORTER=ON \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcbeautify
+set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
 # Crosscompile Magnum Integration
@@ -105,11 +106,11 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcbeautify
+set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
 # Crosscompile Magnum Extras
@@ -120,11 +121,11 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DBUILD_STATIC=ON \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcbeautify
+set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
 # Crosscompile
@@ -133,32 +134,32 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
-    -DWITH_ANIMATED_GIF_EXAMPLE=OFF \
-    -DWITH_ARCBALL_EXAMPLE=OFF \
-    -DWITH_AREALIGHTS_EXAMPLE=OFF \
-    -DWITH_AUDIO_EXAMPLE=OFF \
-    -DWITH_BOX2D_EXAMPLE=OFF \
-    -DWITH_BULLET_EXAMPLE=OFF \
-    -DWITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
-    -DWITH_DART_EXAMPLE=OFF \
-    -DWITH_FLUIDSIMULATION2D_EXAMPLE=OFF \
-    -DWITH_FLUIDSIMULATION3D_EXAMPLE=OFF \
-    -DWITH_IMGUI_EXAMPLE=OFF \
-    -DWITH_MOTIONBLUR_EXAMPLE=OFF \
-    -DWITH_MOUSEINTERACTION_EXAMPLE=OFF \
-    -DWITH_OCTREE_EXAMPLE=OFF \
-    -DWITH_OVR_EXAMPLE=OFF \
-    -DWITH_PICKING_EXAMPLE=OFF \
-    -DWITH_PRIMITIVES_EXAMPLE=ON \
-    -DWITH_RAYTRACING_EXAMPLE=OFF \
-    -DWITH_SHADOWS_EXAMPLE=OFF \
-    -DWITH_TEXT_EXAMPLE=OFF \
-    -DWITH_TEXTUREDQUAD_EXAMPLE=ON \
-    -DWITH_TRIANGLE_EXAMPLE=ON \
-    -DWITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
-    -DWITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
-    -DWITH_VIEWER_EXAMPLE=OFF \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
+    -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \
+    -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF \
+    -DMAGNUM_WITH_AUDIO_EXAMPLE=OFF \
+    -DMAGNUM_WITH_BOX2D_EXAMPLE=OFF \
+    -DMAGNUM_WITH_BULLET_EXAMPLE=OFF \
+    -DMAGNUM_WITH_CUBEMAP_EXAMPLE=$TARGET_GLES3 \
+    -DMAGNUM_WITH_DART_EXAMPLE=OFF \
+    -DMAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE=OFF \
+    -DMAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE=OFF \
+    -DMAGNUM_WITH_IMGUI_EXAMPLE=OFF \
+    -DMAGNUM_WITH_MOTIONBLUR_EXAMPLE=OFF \
+    -DMAGNUM_WITH_MOUSEINTERACTION_EXAMPLE=OFF \
+    -DMAGNUM_WITH_OCTREE_EXAMPLE=OFF \
+    -DMAGNUM_WITH_OVR_EXAMPLE=OFF \
+    -DMAGNUM_WITH_PICKING_EXAMPLE=OFF \
+    -DMAGNUM_WITH_PRIMITIVES_EXAMPLE=ON \
+    -DMAGNUM_WITH_RAYTRACING_EXAMPLE=OFF \
+    -DMAGNUM_WITH_SHADOWS_EXAMPLE=OFF \
+    -DMAGNUM_WITH_TEXT_EXAMPLE=OFF \
+    -DMAGNUM_WITH_TEXTUREDQUAD_EXAMPLE=ON \
+    -DMAGNUM_WITH_TRIANGLE_EXAMPLE=ON \
+    -DMAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE=OFF \
+    -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
+    -DMAGNUM_WITH_VIEWER_EXAMPLE=OFF \
     -G Xcode
-set -o pipefail && cmake --build . --config Release | xcbeautify
+set -o pipefail && cmake --build . --config Release -j$XCODE_JOBS | xcbeautify

@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
         2015, 2016, 2018 — Jonathan Hale <squareys@googlemail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -186,7 +186,7 @@ void OvrExample::drawEvent() {
         _framebuffer[eye]
             .attachTexture(GL::Framebuffer::ColorAttachment(0), _textureSwapChain[eye]->activeTexture(), 0)
             .attachTexture(GL::Framebuffer::BufferAttachment::Depth, _depth[eye], 0)
-            /* Clear with the standard grey so that at least that will be visible in
+            /* Clear with the standard gray so that at least that will be visible in
             case the scene is not correctly set up */
             .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
             .bind();

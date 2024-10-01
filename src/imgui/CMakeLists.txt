@@ -4,7 +4,7 @@
 #   Original authors — credit is appreciated but not required:
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#       2020, 2021, 2022 — Vladimír Vondruš <mosra@centrum.cz>
+#       2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
 #       2018 — ShaddyAQN <ShaddyAQN@gmail.com>
 #       2018 — Jonathan Hale <squareys@googlemail.com>
 #       2018 — Tomáš Skřivan <skrivantomas@seznam.cz>
@@ -31,7 +31,7 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.5)
 
 project(MagnumImGuiExample CXX)
 

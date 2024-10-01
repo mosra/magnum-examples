@@ -20,7 +20,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -64,7 +64,7 @@ if(NOT TARGET OpenGLES2::OpenGLES2)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if((CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+    if((CORRADE_TARGET_APPLE AND OPENGLES2_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
         set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
