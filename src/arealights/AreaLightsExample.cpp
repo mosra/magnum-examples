@@ -89,7 +89,12 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
             GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
 
-            vert.addSource(rs.getString("AreaLights.vert"));
+            vert.addSource(Utility::format(
+                    "#define POSITION_ATTRIBUTE_LOCATION {}\n"
+                    "#define NORMAL_ATTRIBUTE_LOCATION {}\n",
+                    Shaders::GenericGL3D::Position::Location,
+                    Shaders::GenericGL3D::Normal::Location))
+                .addSource(rs.getString("AreaLights.vert"));
             frag.addSource(rs.getString("AreaLights.frag"));
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());

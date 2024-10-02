@@ -30,8 +30,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-layout(location = 0) in vec4 position;
-layout(location = 2) in vec3 normal;
+layout(location = POSITION_ATTRIBUTE_LOCATION) in vec4 position;
+layout(location = NORMAL_ATTRIBUTE_LOCATION) in vec3 normal;
 
 out vec4 v_position;
 out vec3 v_normal;
