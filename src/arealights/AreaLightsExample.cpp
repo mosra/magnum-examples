@@ -36,6 +36,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/PluginManager.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
@@ -98,7 +99,12 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex};
             GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
 
-            vert.addSource(rs.getString("AreaLights.vert"));
+            vert.addSource(Utility::format(
+                    "#define POSITION_ATTRIBUTE_LOCATION {}\n"
+                    "#define NORMAL_ATTRIBUTE_LOCATION {}\n",
+                    Shaders::GenericGL3D::Position::Location,
+                    Shaders::GenericGL3D::Normal::Location))
+                .addSource(rs.getString("AreaLights.vert"));
             frag.addSource(rs.getString("AreaLights.frag"));
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
@@ -345,10 +351,12 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     _projection = Matrix4::perspectiveProjection(60.0_degf, 4.0f/3.0f, 0.1f, 50.0f);
     _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
 
-    /* Load LTC matrix and BRDF textures */
+    /* Load LTC matrix and BRDF textures. The shader assumes the data is
+       Y-down, so disable Y-flipping in the importer. */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
     if(!importer) std::exit(1);
+    importer->configuration().setValue("assumeYUpZBackward", true);
 
     const Utility::Resource rs{"arealights-data"};
     if(!importer->openData(rs.getRaw("ltc_amp.dds")))
@@ -549,14 +557,16 @@ void AreaLightsExample::mousePressEvent(MouseEvent& event) {
     if((event.button() == MouseEvent::Button::Left))
         _previousMousePosition = event.position();
 
-    _ui.ui.pointerPressEvent(event);
+    if(!_ui.ui.pointerPressEvent(event))
+        redraw();
 
     if(_ui.ui.state())
         redraw();
 }
 
 void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
-    _ui.ui.pointerReleaseEvent(event);
+    if(!_ui.ui.pointerReleaseEvent(event))
+        redraw();
 
     if(_ui.ui.state())
         redraw();
@@ -572,6 +582,7 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
         _cameraRotation += delta;
 
         _previousMousePosition = event.position();
+        redraw();
     }
 
     if(_ui.ui.state())
