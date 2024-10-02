@@ -421,7 +421,10 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Create the UI */
     {
-        _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::McssDarkStyle{});
+        /* We don't use the icons for anything, load the style without to not
+           need to link to image importers on the web */
+        Ui::McssDarkStyle style;
+        _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), style, style.features() & ~Ui::StyleFeature::TextLayerImages);
         /** @todo make a builtin API for this, or, better, make it automatic */
         CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(1, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
         Ui::NodeHandle root = Ui::snap(_ui.ui, Ui::Snap::Fill|Ui::Snap::NoPad, {});
