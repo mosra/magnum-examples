@@ -515,14 +515,16 @@ void AreaLightsExample::mousePressEvent(MouseEvent& event) {
     if((event.button() == MouseEvent::Button::Left))
         _previousMousePosition = event.position();
 
-    _ui.ui.pointerPressEvent(event);
+    if(!_ui.ui.pointerPressEvent(event))
+        redraw();
 
     if(_ui.ui.state())
         redraw();
 }
 
 void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
-    _ui.ui.pointerReleaseEvent(event);
+    if(!_ui.ui.pointerReleaseEvent(event))
+        redraw();
 
     if(_ui.ui.state())
         redraw();
@@ -538,6 +540,7 @@ void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
         _cameraRotation += delta;
 
         _previousMousePosition = event.position();
+        redraw();
     }
 
     if(_ui.ui.state())
