@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023, 2024 — Vladimír Vondruš <mosra@centrum.cz>
         2017 — Jonathan Hale <squareys@googlemail.com>, based on "Real-Time
             Polygonal-Light Shading with Linearly Transformed Cosines", by Eric
             Heitz et al, https://eheitzresearch.wordpress.com/415-2/
