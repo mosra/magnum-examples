@@ -95,7 +95,8 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
+#               2020, 2021, 2022, 2023, 2024
+#             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2019 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -167,6 +168,33 @@ find_path(MAGNUMPLUGINS_INCLUDE_DIR Magnum/versionPlugins.h
     HINTS ${MAGNUM_INCLUDE_DIR})
 mark_as_advanced(MAGNUMPLUGINS_INCLUDE_DIR)
 
+# CMake module dir for dependencies. It might not be present at all if no
+# feature that needs them is enabled, in which case it'll be left at NOTFOUND.
+# But in that case it should also not be subsequently needed for any
+# find_package(). If this is called from a superproject, the
+# _MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR is already set by
+# modules/CMakeLists.txt.
+find_path(_MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR
+    NAMES
+        FindAssimp.cmake FindBasisUniversal.cmake FindDevIL.cmake
+        FindFAAD2.cmake FindGlslang.cmake FindHarfBuzz.cmake
+        FindOpenEXR.cmake FindSpirvTools.cmake FindSpng.cmake FindWebP.cmake
+        FindZstd.cmake
+    PATH_SUFFIXES share/cmake/MagnumPlugins/dependencies)
+mark_as_advanced(_MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR)
+
+# If the module dir is found and is not present in CMAKE_MODULE_PATH already
+# (such as when someone explicitly added it, or if it's the Magnum's modules/
+# dir in case of a superproject), add it as the first before all other. Set a
+# flag to remove it again at the end, so the modules don't clash with Find
+# modules of the same name from other projects.
+if(_MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR AND NOT _MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR IN_LIST CMAKE_MODULE_PATH)
+    set(CMAKE_MODULE_PATH ${_MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR} ${CMAKE_MODULE_PATH})
+    set(_MAGNUMPLUGINS_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH ON)
+else()
+    unset(_MAGNUMPLUGINS_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
+endif()
+
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUMPLUGINS_LIBRARY_COMPONENTS OpenDdl)
@@ -219,6 +247,10 @@ if(MagnumPlugins_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES MagnumPlugins_FIND_COMPONENTS)
 endif()
 
+# Special cases of include paths. Libraries not listed here have a path suffix
+# and include name derived from the library name in the loop below. (So far no
+# special cases.)
+
 # Find all components
 foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
@@ -233,9 +265,13 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
         if(_component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
             add_library(MagnumPlugins::${_component} UNKNOWN IMPORTED)
 
-            # Set library defaults, find the library
-            set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${_component})
-            set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
+            # Include path names to find, unless specified above already
+            if(NOT _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX)
+                set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/${_component})
+            endif()
+            if(NOT _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES)
+                set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
+            endif()
 
             # Try to find both debug and release version
             find_library(MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_DEBUG Magnum${_component}-d)
@@ -278,8 +314,10 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                 set(_MAGNUMPLUGINS_${_COMPONENT}_PATH_SUFFIX fontconverters)
             endif()
 
-            # Don't override the exception for *AudioImporter plugins
-            set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX MagnumPlugins/${_component})
+            # Include path names to find, unless specified above already
+            if(NOT _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX)
+                set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX MagnumPlugins/${_component})
+            endif()
             if(NOT _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES)
                 set(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
             endif()
@@ -309,6 +347,27 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
 
             # Reset back
             set(CMAKE_FIND_LIBRARY_PREFIXES "${_tmp_prefixes}")
+        endif()
+
+        # Find plugin/library includes
+        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
+            find_path(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR
+                NAMES ${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES}
+                HINTS ${MAGNUMPLUGINS_INCLUDE_DIR}/${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
+            mark_as_advanced(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR)
+        endif()
+
+        # Decide if the plugin/library was found. If not, skip the rest, which
+        # populates the target properties and finds additional dependencies.
+        # This means that the rest can also rely on that e.g. FindZstd.cmake is
+        # present in _MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR -- given that the
+        # library needing Zstd was found, it likely also installed FindZstd for
+        # itself.
+        if((_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS) AND _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_RELEASE))
+            set(MagnumPlugins_${_component}_FOUND TRUE)
+        else()
+            set(MagnumPlugins_${_component}_FOUND FALSE)
+            continue()
         endif()
 
         # Library location for plugins/libraries
@@ -561,14 +620,6 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
 
         endif()
 
-        # Find plugin/library includes
-        if(_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS)
-            find_path(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR
-                NAMES ${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_NAMES}
-                HINTS ${MAGNUMPLUGINS_INCLUDE_DIR}/${_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
-            mark_as_advanced(_MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR)
-        endif()
-
         # Automatic import of static plugins. Skip in case the include dir was
         # not found -- that'll fail later with a proper message. Skip it also
         # if the include dir doesn't contain the generated configure.h, which
@@ -599,13 +650,6 @@ foreach(_component ${MagnumPlugins_FIND_COMPONENTS})
                 set_property(TARGET MagnumPlugins::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES MagnumPlugins::${_dependency})
             endforeach()
-        endif()
-
-        # Decide if the plugin/library was found
-        if((_component IN_LIST _MAGNUMPLUGINS_PLUGIN_COMPONENTS OR _component IN_LIST _MAGNUMPLUGINS_LIBRARY_COMPONENTS) AND _MAGNUMPLUGINS_${_COMPONENT}_INCLUDE_DIR AND (MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMPLUGINS_${_COMPONENT}_LIBRARY_RELEASE))
-            set(MagnumPlugins_${_component}_FOUND TRUE)
-        else()
-            set(MagnumPlugins_${_component}_FOUND FALSE)
         endif()
     endif()
 endforeach()
@@ -641,6 +685,13 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
 
     string(REPLACE ";" " " _MAGNUMPLUGINS_REASON_FAILURE_MESSAGE "${_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE}")
     set(_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE REASON_FAILURE_MESSAGE "${_MAGNUMPLUGINS_REASON_FAILURE_MESSAGE}")
+endif()
+
+# Remove Magnum Plugins dependency module dir from CMAKE_MODULE_PATH again. Do
+# it before the FPHSA call which may exit early in case of a failure.
+if(_MAGNUMPLUGINS_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
+    list(REMOVE_ITEM CMAKE_MODULE_PATH ${_MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR})
+    unset(_MAGNUMPLUGINS_REMOVE_DEPENDENCY_MODULE_DIR_FROM_CMAKE_PATH)
 endif()
 
 include(FindPackageHandleStandardArgs)
