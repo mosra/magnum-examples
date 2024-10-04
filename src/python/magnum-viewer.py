@@ -88,7 +88,7 @@ class ViewerExample(Application):
         colored_shader.shininess = 80.0
 
         # Import Suzanne head and eyes (yes, sorry, it's all hardcoded here)
-        importer = trade.ImporterManager().load_and_instantiate('TinyGltfImporter')
+        importer = trade.ImporterManager().load_and_instantiate('GltfImporter')
         importer.open_file(os.path.join(os.path.dirname(__file__),
                                         '../viewer/scene.glb'))
         suzanne_object = Object3D(parent=self._manipulator)
