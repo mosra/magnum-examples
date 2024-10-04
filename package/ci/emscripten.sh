@@ -3,23 +3,9 @@ set -ev
 
 git submodule update --init
 
+# Crosscompile Corrade
 git clone --depth 1 https://github.com/mosra/corrade.git
 cd corrade
-
-# Build native corrade-rc
-mkdir build && cd build || exit /b
-cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DCORRADE_WITH_INTERCONNECT=OFF \
-    -DCORRADE_WITH_PLUGINMANAGER=OFF \
-    -DCORRADE_WITH_TESTSUITE=OFF \
-    -DCORRADE_WITH_UTILITY=OFF \
-    -G Ninja
-ninja install
-cd ..
-
-# Crosscompile Corrade
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE="../../toolchains/generic/Emscripten-wasm.cmake" \
@@ -27,7 +13,6 @@ cmake .. \
     -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCORRADE_WITH_INTERCONNECT=OFF \
     -DCORRADE_WITH_TESTSUITE=OFF \
     -G Ninja
@@ -45,7 +30,6 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_AUDIO=OFF \
     -DMAGNUM_WITH_DEBUGTOOLS=ON \
     -DMAGNUM_WITH_MATERIALTOOLS=OFF \
@@ -76,7 +60,6 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DIMGUI_DIR=$HOME/imgui \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_BULLET=OFF \
     -DMAGNUM_WITH_DART=OFF \
     -DMAGNUM_WITH_IMGUI=ON \
@@ -96,7 +79,6 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_UI=OFF \
     -G Ninja
 ninja install
@@ -112,7 +94,6 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DIMGUI_DIR=$HOME/imgui \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF \
