@@ -156,7 +156,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     /* Load a scene importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
-        manager.loadAndInstantiate("TinyGltfImporter");
+        manager.loadAndInstantiate("GltfImporter");
     Utility::Resource rs("viewer-data");
     if(!importer || !importer->openData(rs.getRaw("scene.glb")))
         std::exit(1);

@@ -53,7 +53,7 @@ else()
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    find_package(MagnumPlugins REQUIRED TinyGltfImporter)
+    find_package(MagnumPlugins REQUIRED GltfImporter)
 endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -80,7 +80,7 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Trade)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::TinyGltfImporter)
+    target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::GltfImporter)
 endif()
 
 # Gradle-free Android build
