@@ -144,13 +144,12 @@ loading to a plugin dedicated for given format. So, for example, if you open
 `mesh.obj`, it'll be opened using @relativeref{Trade,ObjImporter}, if you open
 `mesh.ply`, it'll go to @relativeref{Trade,StanfordImporter}, etc. Sometimes
 there is more than one possible choice (glTF files in particular can be opened
-using @relativeref{Trade,CgltfImporter}, @relativeref{Trade,TinyGltfImporter}
-or @relativeref{Trade,AssimpImporter}) and so above we made it possible to
-override the used importer plugin using the `--importer` command-line argument.
-Another option is to specify the preference using
-@relativeref{Corrade,PluginManager::Manager::setPreferredPlugins()}. See also
-@ref file-formats for a list of supported file formats and plugins implementing
-them.
+using @relativeref{Trade,GltfImporter} or @relativeref{Trade,AssimpImporter})
+and so above we made it possible to override the used importer plugin using the
+`--importer` command-line argument. Another option is to specify the preference
+using @relativeref{Corrade,PluginManager::Manager::setPreferredPlugins()}. See
+also @ref file-formats for a list of supported file formats and plugins
+implementing them.
 
 We try load and instantiate the plugin and open the file, which isn't any
 different from when we dealt with just images in the @ref examples-texturedquad
@@ -366,7 +365,7 @@ repository contains a very rudimentary OBJ file loader in @ref Trade::ObjImporte
 and you can try it with the [scene.obj](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.obj)
 file bundled in the example repository. For more advanced models with custom
 textures and materials, @ref building-plugins "Magnum Plugins" provide
-@ref Trade::TinyGltfImporter "TinyGltfImporter" that can load the
+@relativeref{Trade,GltfImporter} that can load the
 [scene.glb](https://github.com/mosra/magnum-examples/raw/master/src/viewer/scene.glb),
 and there are more plugins for various other formats.
 
@@ -388,7 +387,7 @@ and there are more plugins for various other formats.
 
     # If you want to load (textured) glTF as well
     set(MAGNUM_WITH_STBIMAGEIMPORTER ON CACHE BOOL "" FORCE)
-    set(MAGNUM_WITH_TINYGLTFIMPORTER ON CACHE BOOL "" FORCE)
+    set(MAGNUM_WITH_GLTFIMPORTER ON CACHE BOOL "" FORCE)
     add_subdirectory(magnum-plugins EXCLUDE_FROM_ALL)
 
     add_dependencies(magnum-viewer
@@ -396,7 +395,7 @@ and there are more plugins for various other formats.
         Magnum::AnySceneImporter
         Magnum::ObjImporter
         MagnumPlugins::StbImageImporter
-        MagnumPlugins::TinyGltfImporter)
+        MagnumPlugins::GltfImporter)
     @endcode
 @par
     If you're using packaged Magnum, all the above-mentioned plugins are
