@@ -37,6 +37,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
@@ -148,7 +149,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
 
         /* Loop at 60 Hz max */
         setSwapInterval(1);
-        setMinimalLoopPeriod(16);
+        setMinimalLoopPeriod(16.0_msec);
     }
 
     /* Setup camera */

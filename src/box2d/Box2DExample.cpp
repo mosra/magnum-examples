@@ -37,6 +37,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/ConfigurationValue.h>
 #include <Magnum/Math/DualComplex.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Square.h>
@@ -251,7 +252,7 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
 
     setSwapInterval(1);
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     #endif
 }
 

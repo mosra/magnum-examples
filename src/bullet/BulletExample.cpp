@@ -42,6 +42,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Constants.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Transform.h>
 #include <Magnum/Platform/Sdl2Application.h>
@@ -239,7 +240,7 @@ BulletExample::BulletExample(const Arguments& arguments): Platform::Application(
 
     /* Loop at 60 Hz max */
     setSwapInterval(1);
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     _timeline.start();
 }
 

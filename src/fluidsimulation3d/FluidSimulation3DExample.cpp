@@ -39,6 +39,7 @@
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/FunctionsBatch.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Version.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
@@ -220,7 +221,7 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
 
     /* Start the timer, loop at 60 Hz max */
     setSwapInterval(1);
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     _timeline.start();
 }
 
