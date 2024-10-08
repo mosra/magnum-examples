@@ -109,8 +109,8 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::yAxis(0.75f))
         .rotateZ(240.0_degf);
 
-    setSwapInterval(16);
-    setMinimalLoopPeriod(40);
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16);
 }
 
 void MotionBlurExample::viewportEvent(ViewportEvent& event) {
