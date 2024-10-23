@@ -341,10 +341,10 @@ camera.
 @until }
 @until }
 
-Lastly there is mouse handling to rotate and zoom the scene around, nothing new
-to talk about.
+Lastly there is pointer handling to rotate and zoom the scene around, nothing
+new to talk about.
 
-@skip void ViewerExample::mousePressEvent
+@skip void ViewerExample::pointerPressEvent
 @until }
 @until }
 @until }

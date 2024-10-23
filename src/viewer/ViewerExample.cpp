@@ -70,12 +70,12 @@ class ViewerExample: public Platform::Application {
     private:
         void drawEvent() override;
         void viewportEvent(ViewportEvent& event) override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
 
-        Vector3 positionOnSphere(const Vector2i& position) const;
+        Vector3 positionOnSphere(const Vector2& position) const;
 
         Shaders::PhongGL _coloredShader;
         Shaders::PhongGL _texturedShader{Shaders::PhongGL::Configuration{}
@@ -337,17 +337,23 @@ void ViewerExample::viewportEvent(ViewportEvent& event) {
     _camera->setViewport(event.windowSize());
 }
 
-void ViewerExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() == MouseEvent::Button::Left)
-        _previousPosition = positionOnSphere(event.position());
+void ViewerExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
+    _previousPosition = positionOnSphere(event.position());
 }
 
-void ViewerExample::mouseReleaseEvent(MouseEvent& event) {
-    if(event.button() == MouseEvent::Button::Left)
-        _previousPosition = Vector3();
+void ViewerExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
+    _previousPosition = {};
 }
 
-void ViewerExample::mouseScrollEvent(MouseScrollEvent& event) {
+void ViewerExample::scrollEvent(ScrollEvent& event) {
     if(!event.offset().y()) return;
 
     /* Distance to origin */
@@ -360,15 +366,17 @@ void ViewerExample::mouseScrollEvent(MouseScrollEvent& event) {
     redraw();
 }
 
-Vector3 ViewerExample::positionOnSphere(const Vector2i& position) const {
-    const Vector2 positionNormalized = Vector2{position}/Vector2{_camera->viewport()} - Vector2{0.5f};
+Vector3 ViewerExample::positionOnSphere(const Vector2& position) const {
+    const Vector2 positionNormalized = position/Vector2{_camera->viewport()} - Vector2{0.5f};
     const Float length = positionNormalized.length();
     const Vector3 result(length > 1.0f ? Vector3(positionNormalized, 0.0f) : Vector3(positionNormalized, 1.0f - length));
     return (result*Vector3::yScale(-1.0f)).normalized();
 }
 
-void ViewerExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+void ViewerExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     const Vector3 currentPosition = positionOnSphere(event.position());
     const Vector3 axis = Math::cross(_previousPosition, currentPosition);
