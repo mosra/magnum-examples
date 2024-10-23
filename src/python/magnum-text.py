@@ -56,7 +56,8 @@ class TextExample(Application):
 
         # Text that rotates using mouse wheel. Size relative to the window size
         # (1/10 of it) -- if you resize the window, it gets bigger
-        self._rotating_text = text.Renderer2D(self._font, self._cache, 0.2, text.Alignment.MIDDLE_CENTER)
+        self._rotating_text = text.Renderer2D(self._font, self._cache, 0.2,
+                                              text.Alignment.MIDDLE_CENTER)
         self._rotating_text.reserve(128)
         self._rotating_text.render(
             "Hello, world!\n"
@@ -69,7 +70,8 @@ class TextExample(Application):
         # in points that stays the same if you resize the window. Aligned so
         # top right of the bounding box is at mesh origin, and then transformed
         # so the origin is at the top right corner of the window.
-        self._dynamic_text = text.Renderer2D(self._font, self._cache, 32.0, text.Alignment.TOP_RIGHT)
+        self._dynamic_text = text.Renderer2D(self._font, self._cache, 32.0,
+                                             text.Alignment.TOP_RIGHT)
         self._dynamic_text.reserve(40)
         self._transformation_projection_dynamic_text =\
             Matrix3.projection(Vector2(self.window_size))@\
@@ -82,8 +84,10 @@ class TextExample(Application):
         self._shader = shaders.DistanceFieldVectorGL2D()
 
         gl.Renderer.enable(gl.Renderer.Feature.BLENDING)
-        gl.Renderer.set_blend_function(gl.Renderer.BlendFunction.ONE, gl.Renderer.BlendFunction.ONE_MINUS_SOURCE_ALPHA)
-        gl.Renderer.set_blend_equation(gl.Renderer.BlendEquation.ADD, gl.Renderer.BlendEquation.ADD)
+        gl.Renderer.set_blend_function(gl.Renderer.BlendFunction.ONE,
+            gl.Renderer.BlendFunction.ONE_MINUS_SOURCE_ALPHA)
+        gl.Renderer.set_blend_equation(gl.Renderer.BlendEquation.ADD,
+            gl.Renderer.BlendEquation.ADD)
 
         self.update_text()
 
@@ -98,7 +102,8 @@ class TextExample(Application):
         self._shader.color = [0.184, 0.514, 0.8]
         self._shader.outline_color = [0.863, 0.863, 0.863]
         self._shader.outline_range = (0.45, 0.35)
-        self._shader.smoothness = 0.025/self._transformation_rotating_text.uniform_scaling()
+        self._shader.smoothness = 0.025/\
+            self._transformation_rotating_text.uniform_scaling()
         self._shader.draw(self._rotating_text.mesh)
 
         self._shader.transformation_projection_matrix = \
@@ -140,6 +145,7 @@ class TextExample(Application):
 
     def update_text(self):
         # TODO show rotation once Complex.from_matrix() is a thing
-        self._dynamic_text.render("Scale: {:.2}".format(self._transformation_rotating_text.uniform_scaling()))
+        self._dynamic_text.render("Scale: {:.2}"
+            .format(self._transformation_rotating_text.uniform_scaling()))
 
 exit(TextExample().exec())
