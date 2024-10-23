@@ -53,7 +53,6 @@ class PrimitivesExample(Application):
                 fov=Deg(35.0), aspect_ratio=1.33333, near=0.01, far=100.0)@
             Matrix4.translation(Vector3.z_axis(-10.0)))
         self._color = Color3.from_hsv(Deg(35.0), 1.0, 1.0)
-        self._previous_mouse_position = Vector2i()
 
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR|
@@ -70,21 +69,24 @@ class PrimitivesExample(Application):
 
         self.swap_buffers()
 
-    def mouse_release_event(self, event: Application.MouseEvent):
+    def pointer_release_event(self, event: Application.PointerEvent):
+        if not event.is_primary or \
+           not (event.pointer & (self.Pointer.MOUSE_LEFT|self.Pointer.FINGER)):
+            return
+
         self._color = Color3.from_hsv(self._color.hue() + Deg(50.0), 1.0, 1.0)
         self.redraw()
 
-    def mouse_move_event(self, event: Application.MouseMoveEvent):
-        if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
-            delta = 1.0*(
-                Vector2(event.position - self._previous_mouse_position)/
-                Vector2(self.window_size))
-            self._transformation = (
-                Matrix4.rotation_x(Rad(delta.y))@
-                self._transformation@
-                Matrix4.rotation_y(Rad(delta.x)))
-            self.redraw()
+    def pointer_move_event(self, event: Application.PointerMoveEvent):
+        if not event.is_primary or \
+           not (event.pointers & (self.Pointer.MOUSE_LEFT|self.Pointer.FINGER)):
+            return
 
-        self._previous_mouse_position = event.position
+        delta = 1.0*event.relative_position/Vector2(self.window_size)
+        self._transformation = (
+            Matrix4.rotation_x(Rad(delta.y))@
+            self._transformation@
+            Matrix4.rotation_y(Rad(delta.x)))
+        self.redraw()
 
 exit(PrimitivesExample().exec())

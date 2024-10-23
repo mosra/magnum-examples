@@ -48,7 +48,7 @@ class TextExample(Application):
             '../text/SourceSansPro-Regular.ttf'), 180.0)
 
         # Glyphs we need to render everything
-        self._cache = text.DistanceFieldGlyphCache(Vector2i(2048), Vector2i(512), 22)
+        self._cache = text.DistanceFieldGlyphCacheGL(Vector2i(2048), Vector2i(512), 22)
         self._font.fill_glyph_cache(self._cache,
             "abcdefghijklmnopqrstuvwxyz"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -119,7 +119,7 @@ class TextExample(Application):
             Matrix3.projection(Vector2(self.window_size))@\
             Matrix3.translation(Vector2(self.window_size)*0.5)
 
-    def mouse_scroll_event(self, event: Application.MouseScrollEvent):
+    def scroll_event(self, event: Application.ScrollEvent):
         if not event.offset.y: return
 
         if event.offset.y > 0:
