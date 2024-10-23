@@ -35,6 +35,7 @@
 #include <Magnum/Timeline.h>
 #include <Magnum/Animation/Track.h>
 #include <Magnum/Animation/Player.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
@@ -51,6 +52,8 @@
 #include <Magnum/Trade/MeshData.h>
 
 namespace Magnum { namespace Examples {
+
+using namespace Math::Literals;
 
 class AnimatedGifExample: public Platform::Application {
     public:
@@ -158,11 +161,11 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
         .setPlayCount(0)
         .play(_timeline.previousFrameTime());
 
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
 }
 
 void AnimatedGifExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Space) {
+    if(event.key() == Key::Space) {
         if(_player.state() == Animation::State::Playing) {
             _player.pause(_timeline.previousFrameTime());
             setWindowTitle("[⏸] Magnum Animated Gif Example");

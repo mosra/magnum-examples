@@ -101,8 +101,6 @@ class ViewerExample(Application):
         self._suzanne_eyes = ColoredDrawable(suzanne_object, self._drawables,
             suzanne_eyes_mesh, colored_shader, Color3(0.95))
 
-        self._previous_mouse_position = Vector2i()
-
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR|
                                      gl.FramebufferClear.DEPTH)
@@ -110,18 +108,17 @@ class ViewerExample(Application):
         self._camera.draw(self._drawables)
         self.swap_buffers()
 
-    def mouse_move_event(self, event: Application.MouseMoveEvent):
-        if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
-            delta = 1.0*(
-                Vector2(event.position - self._previous_mouse_position)/
-                Vector2(self.window_size))
-            self._manipulator.rotate_y_local(Rad(delta.x))
-            self._manipulator.rotate_x(Rad(delta.y))
-            self.redraw()
+    def pointer_move_event(self, event: Application.PointerMoveEvent):
+        if not event.is_primary or \
+           not (event.pointers & (self.Pointer.MOUSE_LEFT|self.Pointer.FINGER)):
+            return
 
-        self._previous_mouse_position = event.position
+        delta = 1.0*event.relative_position/Vector2(self.window_size)
+        self._manipulator.rotate_y_local(Rad(delta.x))
+        self._manipulator.rotate_x(Rad(delta.y))
+        self.redraw()
 
-    def mouse_scroll_event(self, event: Application.MouseScrollEvent):
+    def scroll_event(self, event: Application.ScrollEvent):
         if not event.offset.y: return
 
         # Distance to origin

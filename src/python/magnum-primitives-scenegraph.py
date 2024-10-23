@@ -83,8 +83,6 @@ class PrimitivesSceneGraphExample(Application):
             meshtools.compile(primitives.cube_solid()), shaders.PhongGL(),
             Color3.from_hsv(Deg(35.0), 1.0, 1.0))
 
-        self._previous_mouse_position = Vector2i()
-
     def draw_event(self):
         gl.default_framebuffer.clear(gl.FramebufferClear.COLOR|
                                      gl.FramebufferClear.DEPTH)
@@ -92,20 +90,23 @@ class PrimitivesSceneGraphExample(Application):
         self._camera.draw(self._drawables)
         self.swap_buffers()
 
-    def mouse_release_event(self, event: Application.MouseEvent):
+    def pointer_release_event(self, event: Application.PointerEvent):
+        if not event.is_primary or \
+           not (event.pointer & (self.Pointer.MOUSE_LEFT|self.Pointer.FINGER)):
+            return
+
         self._cube_drawable.color = Color3.from_hsv(
             self._cube_drawable.color.hue() + Deg(50.0), 1.0, 1.0)
         self.redraw()
 
-    def mouse_move_event(self, event: Application.MouseMoveEvent):
-        if event.buttons & self.MouseMoveEvent.Buttons.LEFT:
-            delta = 1.0*(
-                Vector2(event.position - self._previous_mouse_position)/
-                Vector2(self.window_size))
-            self._cube.rotate_y_local(Rad(delta.x))
-            self._cube.rotate_x(Rad(delta.y))
-            self.redraw()
+    def pointer_move_event(self, event: Application.PointerMoveEvent):
+        if not event.is_primary or \
+           not (event.pointers & (self.Pointer.MOUSE_LEFT|self.Pointer.FINGER)):
+            return
 
-        self._previous_mouse_position = event.position
+        delta = 1.0*event.relative_position/Vector2(self.window_size)
+        self._cube.rotate_y_local(Rad(delta.x))
+        self._cube.rotate_x(Rad(delta.y))
+        self.redraw()
 
 exit(PrimitivesSceneGraphExample().exec())

@@ -37,6 +37,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/ConfigurationValue.h>
 #include <Magnum/Math/DualComplex.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
@@ -91,7 +92,7 @@ class Box2DExample: public Platform::Application {
     private:
         void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
 
         #ifdef BOX2D_VERSION3
         b2BodyId
@@ -260,12 +261,14 @@ Box2DExample::Box2DExample(const Arguments& arguments): Platform::Application{ar
     #endif
 
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     #endif
 }
 
-void Box2DExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left) return;
+void Box2DExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     /* Calculate mouse position in the Box2D world. Make it relative to window,
        with origin at center and then scale to world size with Y inverted. */

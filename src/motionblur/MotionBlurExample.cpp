@@ -28,8 +28,8 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/utilities.h>
 #include <Magnum/Mesh.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/MeshTools/Compile.h>
@@ -109,8 +109,8 @@ MotionBlurExample::MotionBlurExample(const Arguments& arguments): Platform::Appl
         ->translate(Vector3::yAxis(0.75f))
         .rotateZ(240.0_degf);
 
-    setSwapInterval(16);
-    setMinimalLoopPeriod(40);
+    setSwapInterval(1);
+    setMinimalLoopPeriod(16.0_msec);
 }
 
 void MotionBlurExample::viewportEvent(ViewportEvent& event) {

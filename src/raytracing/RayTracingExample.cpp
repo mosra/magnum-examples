@@ -63,10 +63,10 @@ class RayTracingExample: public Platform::Application {
         void drawEvent() override;
         void viewportEvent(ViewportEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
 
         void renderAndUpdateBlockPixels();
         void resizeBuffers(const Vector2i& bufferSize);
@@ -178,12 +178,12 @@ void RayTracingExample::viewportEvent(ViewportEvent& event) {
 
 void RayTracingExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
-        case KeyEvent::Key::R:
+        case Key::R:
             _arcballCamera->reset();
             Debug{} << "Reset camera";
             break;
 
-        case KeyEvent::Key::D:
+        case Key::D:
             _depthOfField ^= true;
             updateRayTracerCamera();
             if(_depthOfField)
@@ -192,16 +192,16 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
                 Debug{} << "Depth-of-Field disabled";
             break;
 
-        case KeyEvent::Key::M:
+        case Key::M:
             _rayTracer->markNextBlock() ^= true;
             break;
 
-        case KeyEvent::Key::N:
+        case Key::N:
             _rayTracer->generateSceneObjects();
             _rayTracer->clearBuffers();
             break;
 
-        case KeyEvent::Key::Space:
+        case Key::Space:
             _paused ^= true;
             break;
 
@@ -213,7 +213,11 @@ void RayTracingExample::keyPressEvent(KeyEvent& event) {
     redraw(); /* camera has changed, or ray tracer started/paused, redraw! */
 }
 
-void RayTracingExample::mousePressEvent(MouseEvent& event) {
+void RayTracingExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
@@ -224,7 +228,11 @@ void RayTracingExample::mousePressEvent(MouseEvent& event) {
     event.setAccepted();
 }
 
-void RayTracingExample::mouseReleaseEvent(MouseEvent&) {
+void RayTracingExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
@@ -232,17 +240,19 @@ void RayTracingExample::mouseReleaseEvent(MouseEvent&) {
     #endif
 }
 
-void RayTracingExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!event.buttons()) { return; }
+void RayTracingExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
-    if(event.modifiers() & MouseMoveEvent::Modifier::Shift)
+    if(event.modifiers() & Modifier::Shift)
         _arcballCamera->translate(event.position());
     else _arcballCamera->rotate(event.position());
 
     event.setAccepted();
 }
 
-void RayTracingExample::mouseScrollEvent(MouseScrollEvent& event) {
+void RayTracingExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
     if(Math::abs(delta) < 1.0e-2f) return;
 

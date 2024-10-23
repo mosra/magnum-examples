@@ -34,7 +34,7 @@ namespace Magnum {
 @image html primitives.png
 
 This example shows how to easily create a @ref GL::Mesh from arbitrary external
-data and do basic mouse interaction in a 3D scene.
+data and do basic mouse or touch interaction in a 3D scene.
 
 @m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/primitives/">@m_div{m-big}Live web demo @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
@@ -49,9 +49,9 @@ draw it with @ref Shaders::PhongGL instead of plain flat shading.
 @skip #include
 @until Trade/MeshData
 
-This time, for user interactivity we'll need to implement mouse event handlers
-and store transformation & projection @ref Math::Matrix4 "Matrix4" plus the
-current @ref Math::Color3 "Color3".
+This time, for user interactivity we'll need to implement pointer event
+handlers and store transformation & projection @relativeref{Math,Matrix4}
+plus the current @relativeref{Math,Color3}.
 
 @skip class PrimitivesExample
 @until };
@@ -122,10 +122,15 @@ including a normal matrix and draw the mesh.
 @until }
 @until }
 
-@section examples-primitives-events Mouse event handling
+@section examples-primitives-events Pointer event handling
 
-On a click (press + release) we want to shift the color hue and on mouse drag
-we'll rotate the object using a bunch of vector and matrix operations.
+On a click or tap (pointer press + release) we want to shift the color hue and
+on drag we'll rotate the object using a bunch of vector and matrix operations.
+@ref Platform::Sdl2Application supports both mouse and touch input, to make the
+code touch-aware we allow @relativeref{Platform::Sdl2Application,Pointer::Finger}
+to be used in addition to @relativeref{Platform::Sdl2Application,Pointer::MouseLeft}.
+We won't handle any multi-touch gestures and thus ignore all but the
+@relativeref{Platform::Sdl2Application,PointerEvent::isPrimary()} events.
 
 To save resources, the application doesn't redraw constantly by default, which
 means we have to trigger a @relativeref{Platform::Sdl2Application,redraw()} in
@@ -134,9 +139,7 @@ order to see any effect from the events. In case you'd want to draw constantly
 @relativeref{Platform::Sdl2Application,redraw()} directly in the
 @relativeref{Platform::Sdl2Application,drawEvent()}.
 
-@skip void PrimitivesExample::mousePressEvent
-@until }
-@until }
+@skip void PrimitivesExample::pointerReleaseEvent
 @until }
 @until }
 @until }

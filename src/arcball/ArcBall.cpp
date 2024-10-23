@@ -46,10 +46,8 @@ Quaternion ndcToArcBall(const Vector2& p) {
         return {{p.x(), p.y(), Math::sqrt(1.0f - dist)}, 0.0f};
 
     /* Point is outside sphere */
-    else {
-        const Vector2 proj = p.normalized();
-        return {{proj.x(), proj.y(), 0.0f}, 0.0f};
-    }
+    else
+        return {{p.normalized(), 0.0f}, 0.0f};
 }
 
 }
@@ -93,34 +91,34 @@ void ArcBall::setLagging(const Float lagging) {
     _lagging = lagging;
 }
 
-void ArcBall::initTransformation(const Vector2i& mousePos) {
-    _prevMousePosNDC = screenCoordToNDC(mousePos);
+void ArcBall::initTransformation(const Vector2& pointerPosition) {
+    _prevPointerPositionNdc = screenCoordToNdc(pointerPosition);
 }
 
-void ArcBall::rotate(const Vector2i& mousePos) {
-    const Vector2 mousePosNDC = screenCoordToNDC(mousePos);
-    const Quaternion currentQRotation = ndcToArcBall(mousePosNDC);
-    const Quaternion prevQRotation = ndcToArcBall(_prevMousePosNDC);
-    _prevMousePosNDC = mousePosNDC;
+void ArcBall::rotate(const Vector2& pointerPosition) {
+    const Vector2 pointerPositionNdc = screenCoordToNdc(pointerPosition);
+    const Quaternion currentQRotation = ndcToArcBall(pointerPositionNdc);
+    const Quaternion prevQRotation = ndcToArcBall(_prevPointerPositionNdc);
+    _prevPointerPositionNdc = pointerPositionNdc;
     _targetQRotation =
         (currentQRotation*prevQRotation*_targetQRotation).normalized();
 }
 
-void ArcBall::translate(const Vector2i& mousePos) {
-    const Vector2 mousePosNDC = screenCoordToNDC(mousePos);
-    const Vector2 translationNDC = mousePosNDC - _prevMousePosNDC;
-    _prevMousePosNDC = mousePosNDC;
-    translateDelta(translationNDC);
+void ArcBall::translate(const Vector2& pointerPosition) {
+    const Vector2 mousePosNdc = screenCoordToNdc(pointerPosition);
+    const Vector2 translationNdc = mousePosNdc - _prevPointerPositionNdc;
+    _prevPointerPositionNdc = mousePosNdc;
+    translateDelta(translationNdc);
 }
 
-void ArcBall::translateDelta(const Vector2& translationNDC) {
+void ArcBall::translateDelta(const Vector2& translationNdc) {
     /* Half size of the screen viewport at the view center and perpendicular
        with the viewDir */
     const Float hh = Math::abs(_targetZooming)*Math::tan(_fov*0.5f);
     const Float hw = hh*Vector2{_windowSize}.aspectRatio();
 
     _targetPosition += _inverseView.transformVector(
-        {translationNDC.x()*hw, translationNDC.y()*hh, 0.0f});
+        {translationNdc.x()*hw, translationNdc.y()*hh, 0.0f});
 }
 
 void ArcBall::zoom(const Float delta) {
@@ -172,9 +170,9 @@ void ArcBall::updateInternalTransformations() {
     _inverseView = _view.inverted();
 }
 
-Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {
-    return {mousePos.x()*2.0f/_windowSize.x() - 1.0f,
-            1.0f - 2.0f*mousePos.y()/ _windowSize.y()};
+Vector2 ArcBall::screenCoordToNdc(const Vector2& pointerPosition) const {
+    return Vector2::yScale(-1.0f)*
+        (pointerPosition*2.0f/Vector2{_windowSize} - Vector2{1.0f});
 }
 
 }}

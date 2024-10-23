@@ -37,6 +37,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
@@ -73,10 +74,10 @@ class OctreeExample: public Platform::Application {
         void viewportEvent(ViewportEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
 
         void movePoints();
         void collisionDetectionAndHandlingBruteForce();
@@ -153,7 +154,7 @@ OctreeExample::OctreeExample(const Arguments& arguments) : Platform::Application
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* Loop at 60 Hz max */
         setSwapInterval(1);
-        setMinimalLoopPeriod(16);
+        setMinimalLoopPeriod(16.0_msec);
         #endif
     }
 
@@ -402,10 +403,10 @@ void OctreeExample::viewportEvent(ViewportEvent& event) {
 }
 
 void OctreeExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::B) {
+    if(event.key() == Key::B) {
         _drawBoundingBoxes ^= true;
 
-    } else if(event.key() == KeyEvent::Key::O) {
+    } else if(event.key() == Key::O) {
         if((_collisionDetectionByOctree ^= true))
             Debug{} << "Collision detection using octree";
         else
@@ -414,14 +415,14 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
            together */
         if(_profiler.isEnabled()) _profiler.enable();
 
-    } else if(event.key() == KeyEvent::Key::P) {
+    } else if(event.key() == Key::P) {
         if(_profiler.isEnabled()) _profiler.disable();
         else _profiler.enable();
 
-    } else if(event.key() == KeyEvent::Key::R) {
+    } else if(event.key() == Key::R) {
         _arcballCamera->reset();
 
-    } else if(event.key() == KeyEvent::Key::Space) {
+    } else if(event.key() == Key::Space) {
         _animation ^= true;
 
     } else return;
@@ -430,7 +431,11 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
     redraw();
 }
 
-void OctreeExample::mousePressEvent(MouseEvent& event) {
+void OctreeExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Enable mouse capture so the mouse can drag outside of the window */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
@@ -441,7 +446,11 @@ void OctreeExample::mousePressEvent(MouseEvent& event) {
     redraw(); /* camera has changed, redraw! */
 }
 
-void OctreeExample::mouseReleaseEvent(MouseEvent&) {
+void OctreeExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Disable mouse capture again */
     /** @todo replace once https://github.com/mosra/magnum/pull/419 is in */
@@ -449,10 +458,12 @@ void OctreeExample::mouseReleaseEvent(MouseEvent&) {
     #endif
 }
 
-void OctreeExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!event.buttons()) return;
+void OctreeExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
-    if(event.modifiers() & MouseMoveEvent::Modifier::Shift)
+    if(event.modifiers() & Modifier::Shift)
         _arcballCamera->translate(event.position());
     else _arcballCamera->rotate(event.position());
 
@@ -460,7 +471,7 @@ void OctreeExample::mouseMoveEvent(MouseMoveEvent& event) {
     redraw(); /* camera has changed, redraw! */
 }
 
-void OctreeExample::mouseScrollEvent(MouseScrollEvent& event) {
+void OctreeExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
     if(Math::abs(delta) < 1.0e-2f) return;
 

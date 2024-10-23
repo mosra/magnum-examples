@@ -44,6 +44,7 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
@@ -194,7 +195,7 @@ AudioExample::AudioExample(const Arguments& arguments):
     /* Loop at 60 Hz max */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     setSwapInterval(1);
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     #endif
 }
 
@@ -214,17 +215,18 @@ void AudioExample::drawEvent() {
 }
 
 void AudioExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Down)
+    if(event.key() == Key::Down)
         _sourceRig.rotateXLocal(-5.0_degf);
-    else if(event.key() == KeyEvent::Key::Up)
+    else if(event.key() == Key::Up)
         _sourceRig.rotateXLocal(5.0_degf);
-    else if(event.key() == KeyEvent::Key::Left)
+    else if(event.key() == Key::Left)
         _sourceRig.rotateY(5.0_degf);
-    else if(event.key() == KeyEvent::Key::Right)
+    else if(event.key() == Key::Right)
         _sourceRig.rotateY(-5.0_degf);
-    else if(event.key() == KeyEvent::Key::PageUp)
+    else if(event.key() == Key::PageUp)
         _sourceObject.translate(Vector3::zAxis(-0.25f));
-    else if(event.key() == KeyEvent::Key::PageDown && _sourceObject.transformation().translation().z() < 0.0f)
+    else if(event.key() == Key::PageDown &&
+            _sourceObject.transformation().translation().z() < 0.0f)
         _sourceObject.translate(Vector3::zAxis(0.25f));
     else return;
 

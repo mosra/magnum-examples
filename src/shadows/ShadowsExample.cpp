@@ -72,9 +72,9 @@ class ShadowsExample: public Platform::Application {
         };
 
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
         void keyPressEvent(KeyEvent &event) override;
         void keyReleaseEvent(KeyEvent &event) override;
 
@@ -283,20 +283,26 @@ void ShadowsExample::renderDebugLines() {
     _debugLines.draw(_activeCamera->projectionMatrix()*_activeCamera->cameraMatrix());
 }
 
-void ShadowsExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left) return;
+void ShadowsExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     event.setAccepted();
 }
 
-void ShadowsExample::mouseReleaseEvent(MouseEvent& event) {
+void ShadowsExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     event.setAccepted();
-    redraw();
 }
 
-void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+void ShadowsExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     const Matrix4 transform = _activeCameraObject->transformation();
 
@@ -314,57 +320,57 @@ void ShadowsExample::mouseMoveEvent(MouseMoveEvent& event) {
 }
 
 void ShadowsExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Up) {
+    if(event.key() == Key::Up) {
         _mainCameraVelocity.z() = -1.0f;
 
-    } else if(event.key() == KeyEvent::Key::Down) {
+    } else if(event.key() == Key::Down) {
         _mainCameraVelocity.z() = 1.0f;
 
-    } else if(event.key() == KeyEvent::Key::PageUp) {
+    } else if(event.key() == Key::PageUp) {
         _mainCameraVelocity.y() = 1.0f;
 
-    } else if(event.key() == KeyEvent::Key::PageDown) {
+    } else if(event.key() == Key::PageDown) {
         _mainCameraVelocity.y() = -1.0f;
 
-    } else if(event.key() == KeyEvent::Key::Right) {
+    } else if(event.key() == Key::Right) {
         _mainCameraVelocity.x() = 1.0f;
 
-    } else if(event.key() == KeyEvent::Key::Left) {
+    } else if(event.key() == Key::Left) {
         _mainCameraVelocity.x() = -1.0f;
 
-    } else if(event.key() == KeyEvent::Key::F1) {
+    } else if(event.key() == Key::F1) {
         _activeCamera = &_mainCamera;
         _activeCameraObject = &_mainCameraObject;
 
-    } else if(event.key() == KeyEvent::Key::F2) {
+    } else if(event.key() == Key::F2) {
         _activeCamera = &_debugCamera;
         _activeCameraObject = &_debugCameraObject;
 
-    } else if(event.key() == KeyEvent::Key::F3) {
+    } else if(event.key() == Key::F3) {
         _shadowMapFaceCullMode = (_shadowMapFaceCullMode + 1) % 3;
         Debug() << "Face cull mode:"
             << (_shadowMapFaceCullMode == 0 ? "no cull" : _shadowMapFaceCullMode == 1 ? "cull back" : "cull front");
 
-    } else if(event.key() == KeyEvent::Key::F4) {
+    } else if(event.key() == Key::F4) {
         _shadowStaticAlignment = !_shadowStaticAlignment;
         Debug() << "Shadow alignment:"
             << (_shadowStaticAlignment ? "static" : "camera direction");
 
-    } else if(event.key() == KeyEvent::Key::F5) {
+    } else if(event.key() == Key::F5) {
         setShadowSplitExponent(_layerSplitExponent *= 1.125f);
 
-    } else if(event.key() == KeyEvent::Key::F6) {
+    } else if(event.key() == Key::F6) {
         setShadowSplitExponent(_layerSplitExponent /= 1.125f);
 
-    } else if(event.key() == KeyEvent::Key::F7) {
+    } else if(event.key() == Key::F7) {
         _shadowReceiverShader.setShadowBias(_shadowBias /= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
-    } else if(event.key() == KeyEvent::Key::F8) {
+    } else if(event.key() == Key::F8) {
         _shadowReceiverShader.setShadowBias(_shadowBias *= 1.125f);
         Debug() << "Shadow bias" << _shadowBias;
 
-    } else if(event.key() == KeyEvent::Key::F9) {
+    } else if(event.key() == Key::F9) {
         std::size_t numLayers = _shadowLight.layerCount() - 1;
         if(numLayers >= 1) {
             _shadowLight.setupShadowmaps(numLayers, _shadowMapSize);
@@ -373,7 +379,7 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
             Debug() << "Shadow map size" << _shadowMapSize << "x" << _shadowLight.layerCount() << "layers";
         } else return;
 
-    } else if(event.key() == KeyEvent::Key::F10) {
+    } else if(event.key() == Key::F10) {
         std::size_t numLayers = _shadowLight.layerCount() + 1;
         if(numLayers <= 32) {
             _shadowLight.setupShadowmaps(numLayers, _shadowMapSize);
@@ -382,10 +388,10 @@ void ShadowsExample::keyPressEvent(KeyEvent& event) {
             Debug() << "Shadow map size" << _shadowMapSize << "x" << _shadowLight.layerCount() << "layers";
         } else return;
 
-    } else if(event.key() == KeyEvent::Key::F11) {
+    } else if(event.key() == Key::F11) {
         setShadowMapSize(_shadowMapSize/2);
 
-    } else if(event.key() == KeyEvent::Key::F12) {
+    } else if(event.key() == Key::F12) {
         setShadowMapSize(_shadowMapSize*2);
 
     } else return;
@@ -423,13 +429,13 @@ void ShadowsExample::recompileReceiverShader(const std::size_t numLayers) {
 }
 
 void ShadowsExample::keyReleaseEvent(KeyEvent &event) {
-    if(event.key() == KeyEvent::Key::Up || event.key() == KeyEvent::Key::Down) {
+    if(event.key() == Key::Up || event.key() == Key::Down) {
         _mainCameraVelocity.z() = 0.0f;
 
-    } else if (event.key() == KeyEvent::Key::PageDown || event.key() == KeyEvent::Key::PageUp) {
+    } else if (event.key() == Key::PageDown || event.key() == Key::PageUp) {
         _mainCameraVelocity.y() = 0.0f;
 
-    } else if (event.key() == KeyEvent::Key::Right || event.key() == KeyEvent::Key::Left) {
+    } else if (event.key() == Key::Right || event.key() == Key::Left) {
         _mainCameraVelocity.x() = 0.0f;
 
     } else return;

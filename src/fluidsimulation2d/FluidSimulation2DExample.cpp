@@ -38,6 +38,7 @@
 #include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/FunctionsBatch.h>
+#include <Magnum/Math/Time.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
 #include <Magnum/MeshTools/Compile.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
@@ -67,16 +68,16 @@ class FluidSimulation2DExample: public Platform::Application {
         void viewportEvent(ViewportEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
         void textInputEvent(TextInputEvent& event) override;
         void drawEvent() override;
 
         /* Fluid simulation helper functions */
         void resetSimulation();
-        Vector2 windowPos2WorldPos(const Vector2i& winPos);
+        Vector2 windowPos2WorldPos(const Vector2& winPos);
 
         /* Window control */
         void showMenu();
@@ -221,7 +222,7 @@ FluidSimulation2DExample::FluidSimulation2DExample(const Arguments& arguments): 
     /* Start the timer, loop at 60 Hz max */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     setSwapInterval(1);
-    setMinimalLoopPeriod(16);
+    setMinimalLoopPeriod(16.0_msec);
     #endif
     _timeline.start();
 }
@@ -305,18 +306,18 @@ void FluidSimulation2DExample::viewportEvent(ViewportEvent& event) {
 
 void FluidSimulation2DExample::keyPressEvent(KeyEvent& event) {
     switch(event.key()) {
-        case KeyEvent::Key::E:
+        case Key::E:
             _fluidSolver->emitParticles();
             break;
-        case KeyEvent::Key::H:
+        case Key::H:
             _showMenu ^= true;
             event.setAccepted(true);
             break;
-        case KeyEvent::Key::R:
+        case Key::R:
             resetSimulation();
             event.setAccepted(true);
             break;
-        case KeyEvent::Key::Space:
+        case Key::Space:
             _pausedSimulation ^= true;
             event.setAccepted(true);
             break;
@@ -333,11 +334,15 @@ void FluidSimulation2DExample::keyReleaseEvent(KeyEvent& event) {
     }
 }
 
-void FluidSimulation2DExample::mousePressEvent(MouseEvent& event) {
-    if(_imGuiContext.handleMousePressEvent(event)) {
+void FluidSimulation2DExample::pointerPressEvent(PointerEvent& event) {
+    if(_imGuiContext.handlePointerPressEvent(event)) {
         event.setAccepted(true);
         return;
     }
+
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     _lastMousePressedWorldPos = windowPos2WorldPos(event.position());
     if(_bMouseInteraction) {
@@ -350,9 +355,13 @@ void FluidSimulation2DExample::mousePressEvent(MouseEvent& event) {
     }
 }
 
-void FluidSimulation2DExample::mouseReleaseEvent(MouseEvent& event) {
-    if(_imGuiContext.handleMouseReleaseEvent(event))
+void FluidSimulation2DExample::pointerReleaseEvent(PointerEvent& event) {
+    if(_imGuiContext.handlePointerReleaseEvent(event))
         event.setAccepted(true);
+
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     if(_bMouseInteraction) {
         _drawablePointer->setEnabled(false);
@@ -360,13 +369,15 @@ void FluidSimulation2DExample::mouseReleaseEvent(MouseEvent& event) {
     }
 }
 
-void FluidSimulation2DExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(_imGuiContext.handleMouseMoveEvent(event)) {
+void FluidSimulation2DExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(_imGuiContext.handlePointerMoveEvent(event)) {
         event.setAccepted(true);
         return;
     }
 
-    if(!event.buttons()) return;
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     const Vector2 currentPos = windowPos2WorldPos(event.position());
     if(_bMouseInteraction) {
@@ -385,12 +396,12 @@ void FluidSimulation2DExample::mouseMoveEvent(MouseMoveEvent& event) {
     }
 }
 
-void FluidSimulation2DExample::mouseScrollEvent(MouseScrollEvent& event) {
+void FluidSimulation2DExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
     if(Math::abs(delta) < 1.0e-2f)
         return;
 
-    if(_imGuiContext.handleMouseScrollEvent(event)) {
+    if(_imGuiContext.handleScrollEvent(event)) {
         /* Prevent scrolling the page */
         event.setAccepted();
         return;
@@ -482,18 +493,19 @@ void FluidSimulation2DExample::resetSimulation() {
     _numEmission = 0;
 }
 
-Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2i& windowPosition) {
+Vector2 FluidSimulation2DExample::windowPos2WorldPos(const Vector2& windowPosition) {
     /* First scale the position from being relative to window size to being
        relative to framebuffer size as those two can be different on HiDPI
        systems */
-    const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2 position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
 
     /* Compute inverted model view projection matrix */
     const Matrix3 invViewProjMat = (_camera->projectionMatrix()*_camera->cameraMatrix()).inverted();
 
     /* Compute the world coordinate from window coordinate */
-    const Vector2i flippedPos = Vector2i(position.x(), framebufferSize().y() - position.y());
-    const Vector2 ndcPos = Vector2(flippedPos) / Vector2(framebufferSize())*Vector2{2.0f} - Vector2{1.0f};
+    const Vector2 flippedPos{position.x(), framebufferSize().y() - position.y()};
+    const Vector2 ndcPos = flippedPos/Vector2(framebufferSize())*2.0f
+        - Vector2{1.0f};
     return invViewProjMat.transformPoint(ndcPos);
 }
 
