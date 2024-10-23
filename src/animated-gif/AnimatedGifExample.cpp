@@ -165,7 +165,7 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
 }
 
 void AnimatedGifExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Space) {
+    if(event.key() == Key::Space) {
         if(_player.state() == Animation::State::Playing) {
             _player.pause(_timeline.previousFrameTime());
             setWindowTitle("[⏸] Magnum Animated Gif Example");
