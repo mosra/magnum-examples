@@ -79,7 +79,7 @@ class ArcBall {
 
         /* Translate the camera by the delta amount of (NDC) pointer position.
            Note that NDC position must be in [-1, -1] to [1, 1]. */
-        void translateDelta(const Vector2& translationNDC);
+        void translateDelta(const Vector2& translationNdc);
 
         /* Zoom the camera (positive delta = zoom in, negative = zoom out) */
         void zoom(Float delta);
@@ -110,15 +110,15 @@ class ArcBall {
         /* Update the camera transformations */
         void updateInternalTransformations();
 
-        /* Transform from screen coordinate to NDC - normalized device
+        /* Transform from screen coordinate to NDC -- normalized device
            coordinate. The top-left of the screen corresponds to [-1, 1] NDC,
            and the bottom right is [1, -1] NDC. */
-        Vector2 screenCoordToNDC(const Vector2& pointerPosition) const;
+        Vector2 screenCoordToNdc(const Vector2& pointerPosition) const;
 
         Deg _fov;
         Vector2i _windowSize;
 
-        Vector2 _prevPointerPositionNDC;
+        Vector2 _prevPointerPositionNdc;
         Float _lagging{};
 
         Vector3 _targetPosition, _currentPosition, _positionT0;
