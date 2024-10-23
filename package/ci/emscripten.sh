@@ -15,6 +15,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCORRADE_WITH_INTERCONNECT=OFF \
     -DCORRADE_WITH_TESTSUITE=OFF \
+    $EXTRA_OPTS \
     -G Ninja
 ninja install
 cd ../..
@@ -44,6 +45,7 @@ cmake .. \
     -DMAGNUM_WITH_TRADE=ON \
     -DMAGNUM_WITH_EMSCRIPTENAPPLICATION=ON \
     -DMAGNUM_TARGET_GLES2=$TARGET_GLES2 \
+    $EXTRA_OPTS \
     -G Ninja
 ninja install
 cd ../..
@@ -64,6 +66,7 @@ cmake .. \
     -DMAGNUM_WITH_DART=OFF \
     -DMAGNUM_WITH_IMGUI=ON \
     -DMAGNUM_WITH_OVR=OFF \
+    $EXTRA_OPTS \
     -G Ninja
 ninja install
 cd ../..
@@ -80,6 +83,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
     -DMAGNUM_WITH_UI=OFF \
+    $EXTRA_OPTS \
     -G Ninja
 ninja install
 cd ../..
@@ -120,6 +124,7 @@ cmake .. \
     -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
     -DMAGNUM_WITH_VIEWER_EXAMPLE=OFF \
     -DMAGNUM_WITH_WEBXR_EXAMPLE=ON \
+    $EXTRA_OPTS \
     -G Ninja
 ninja $NINJA_JOBS
 
