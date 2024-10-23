@@ -232,9 +232,9 @@ class AreaLightsExample: public Platform::Application {
     private:
         void drawEvent() override;
 
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
         void textInputEvent(TextInputEvent& event) override;
@@ -277,7 +277,7 @@ class AreaLightsExample: public Platform::Application {
 
         /* Camera and interaction */
         Matrix4 _transformation, _projection, _view;
-        Vector2i _previousMousePosition;
+        Vector2 _previousPointerPosition;
 
         Vector3 _cameraPosition{0.0f, 1.0f, 7.6f};
         Vector3 _cameraDirection;
@@ -511,9 +511,10 @@ void AreaLightsExample::drawEvent() {
     if(!_cameraDirection.isZero()) redraw();
 }
 
-void AreaLightsExample::mousePressEvent(MouseEvent& event) {
-    if((event.button() == MouseEvent::Button::Left))
-        _previousMousePosition = event.position();
+void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
+    if(event.isPrimary() &&
+       (event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        _previousPointerPosition = event.position();
 
     if(!_ui.ui.pointerPressEvent(event))
         redraw();
@@ -522,7 +523,7 @@ void AreaLightsExample::mousePressEvent(MouseEvent& event) {
         redraw();
 }
 
-void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
+void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
     if(!_ui.ui.pointerReleaseEvent(event))
         redraw();
 
@@ -530,16 +531,18 @@ void AreaLightsExample::mouseReleaseEvent(MouseEvent& event) {
         redraw();
 }
 
-void AreaLightsExample::mouseMoveEvent(MouseMoveEvent& event) {
+void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
     if(_ui.ui.pointerMoveEvent(event)) {
         /* UI handles it */
 
-    } else if((event.buttons() & MouseMoveEvent::Button::Left)) {
+    } else if(event.isPrimary() &&
+              (event.pointers() & (Pointer::MouseLeft|Pointer::Finger))) {
         const Vector2 delta = 3.0f*
-            Vector2{event.position() - _previousMousePosition}/Vector2{GL::defaultFramebuffer.viewport().size()};
+            (event.position() - _previousPointerPosition)/
+            Vector2{GL::defaultFramebuffer.viewport().size()};
         _cameraRotation += delta;
 
-        _previousMousePosition = event.position();
+        _previousPointerPosition = event.position();
         redraw();
     }
 
@@ -553,41 +556,41 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
         /* Redraw at the end */
 
     /* Movement */
-    } else if(event.key() == KeyEvent::Key::W) {
+    } else if(event.key() == Key::W) {
         _cameraDirection = -_view.inverted().backward()*0.01f;
-    } else if(event.key() == KeyEvent::Key::S) {
+    } else if(event.key() == Key::S) {
         _cameraDirection = _view.inverted().backward()*0.01f;
-    } else if (event.key() == KeyEvent::Key::A) {
+    } else if (event.key() == Key::A) {
         _cameraDirection = Math::cross(_view.inverted().backward(), {0.0f, 1.0f, 0.0})*0.01f;
-    } else if (event.key() == KeyEvent::Key::D) {
+    } else if (event.key() == Key::D) {
         _cameraDirection = -Math::cross(_view.inverted().backward(), { 0.0f, 1.0f, 0.0 })*0.01f;
 
     /* Increase/decrease roughness */
-    } else if(event.key() == KeyEvent::Key::R) {
+    } else if(event.key() == Key::R) {
         _roughness = Math::clamp(
-            _roughness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            _roughness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setRoughness(_roughness);
         _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
 
     /* Increase/decrease metalness */
-    } else if(event.key() == KeyEvent::Key::M) {
+    } else if(event.key() == Key::M) {
         _metalness = Math::clamp(
-            _metalness + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            _metalness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setMetalness(_metalness);
         _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
 
     /* Increase/decrease f0 */
-    } else if(event.key() == KeyEvent::Key::F) {
+    } else if(event.key() == Key::F) {
         _f0 = Math::clamp(
-            _f0 + 0.01f*(event.modifiers() & KeyEvent::Modifier::Shift ? -1 : 1),
+            _f0 + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
             0.1f, 1.0f);
         _areaLightShader.setF0(_f0);
         _ui.f0.setText(Utility::formatString("{:.5}", _f0));
 
     /* Reload shader */
-    } else if(event.key() == KeyEvent::Key::F5) {
+    } else if(event.key() == Key::F5) {
         #ifdef CORRADE_IS_DEBUG_BUILD
         Utility::Resource::overrideGroup("arealights-data", "../src/arealights/resources.conf");
         _areaLightShader = AreaLightShader{};
@@ -599,8 +602,8 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::W || event.key() == KeyEvent::Key::S ||
-       event.key() == KeyEvent::Key::A || event.key() == KeyEvent::Key::D)
+    if(event.key() == Key::W || event.key() == Key::S ||
+       event.key() == Key::A || event.key() == Key::D)
         _cameraDirection = {};
     else return;
 
