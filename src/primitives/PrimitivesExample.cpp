@@ -48,7 +48,6 @@ class PrimitivesExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void pointerPressEvent(PointerEvent& event) override;
         void pointerReleaseEvent(PointerEvent& event) override;
         void pointerMoveEvent(PointerMoveEvent& event) override;
 
@@ -90,14 +89,6 @@ void PrimitivesExample::drawEvent() {
         .draw(_mesh);
 
     swapBuffers();
-}
-
-void PrimitivesExample::pointerPressEvent(PointerEvent& event) {
-    if(!event.isPrimary() ||
-       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
-        return;
-
-    event.setAccepted();
 }
 
 void PrimitivesExample::pointerReleaseEvent(PointerEvent& event) {

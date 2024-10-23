@@ -139,8 +139,7 @@ order to see any effect from the events. In case you'd want to draw constantly
 @relativeref{Platform::Sdl2Application,redraw()} directly in the
 @relativeref{Platform::Sdl2Application,drawEvent()}.
 
-@skip void PrimitivesExample::pointerPressEvent
-@until }
+@skip void PrimitivesExample::pointerReleaseEvent
 @until }
 @until }
 @until }
