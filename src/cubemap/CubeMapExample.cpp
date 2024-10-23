@@ -62,8 +62,8 @@ class CubeMapExample: public Platform::Application {
         void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
 
         CubeMapResourceManager _resourceManager;
         Scene3D _scene;
@@ -71,7 +71,7 @@ class CubeMapExample: public Platform::Application {
         Object3D* _cameraObject;
         SceneGraph::Camera3D* _camera;
 
-        Vector2i _previousMousePosition;
+        Vector2 _previousPointerPosition;
 };
 
 using namespace Math::Literals;
@@ -172,22 +172,22 @@ void CubeMapExample::keyPressEvent(KeyEvent& event) {
     redraw();
 }
 
-void CubeMapExample::mousePressEvent(MouseEvent& event) {
-    #ifndef CORRADE_TARGET_ANDROID
-    if(event.button() != MouseEvent::Button::Left) return;
-    #endif
+void CubeMapExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
-    _previousMousePosition = event.position();
+    _previousPointerPosition = event.position();
     event.setAccepted();
 }
 
-void CubeMapExample::mouseMoveEvent(MouseMoveEvent& event) {
-    #ifndef CORRADE_TARGET_ANDROID
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
-    #endif
+void CubeMapExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     const Vector2 delta = 3.0f*
-        Vector2{event.position() - _previousMousePosition}/
+        (event.position() - _previousPointerPosition)/
         Vector2{GL::defaultFramebuffer.viewport().size()};
 
     (*_cameraObject).rotate(Rad{delta.y()}, _cameraObject->transformation().right().normalized());
@@ -197,7 +197,7 @@ void CubeMapExample::mouseMoveEvent(MouseMoveEvent& event) {
         .rotateY(Rad{delta.x()})
         .translate(Vector3::yAxis(translationY));
 
-    _previousMousePosition = event.position();
+    _previousPointerPosition = event.position();
     event.setAccepted();
     redraw();
 }
