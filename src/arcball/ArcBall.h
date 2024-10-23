@@ -65,19 +65,19 @@ class ArcBall {
         Float lagging() const { return _lagging; }
         void setLagging(Float lagging);
 
-        /* Initialize the first (screen) mouse position for camera
-           transformation. This should be called in mouse pressed event. */
-        void initTransformation(const Vector2i& mousePos);
+        /* Initialize the first (screen) pointer position for camera
+           transformation. This should be called in pointer pressed event. */
+        void initTransformation(const Vector2& pointerPosition);
 
-        /* Rotate the camera from the previous (screen) mouse position to the
+        /* Rotate the camera from the previous (screen) pointer position to the
            current (screen) position */
-        void rotate(const Vector2i& mousePos);
+        void rotate(const Vector2& pointerPosition);
 
-        /* Translate the camera from the previous (screen) mouse position to
-           the current (screen) mouse position */
-        void translate(const Vector2i& mousePos);
+        /* Translate the camera from the previous (screen) pointer position to
+           the current (screen) position */
+        void translate(const Vector2& pointerPosition);
 
-        /* Translate the camera by the delta amount of (NDC) mouse position.
+        /* Translate the camera by the delta amount of (NDC) pointer position.
            Note that NDC position must be in [-1, -1] to [1, 1]. */
         void translateDelta(const Vector2& translationNDC);
 
@@ -113,12 +113,12 @@ class ArcBall {
         /* Transform from screen coordinate to NDC - normalized device
            coordinate. The top-left of the screen corresponds to [-1, 1] NDC,
            and the bottom right is [1, -1] NDC. */
-        Vector2 screenCoordToNDC(const Vector2i& mousePos) const;
+        Vector2 screenCoordToNDC(const Vector2& pointerPosition) const;
 
         Deg _fov;
         Vector2i _windowSize;
 
-        Vector2 _prevMousePosNDC;
+        Vector2 _prevPointerPositionNDC;
         Float _lagging{};
 
         Vector3 _targetPosition, _currentPosition, _positionT0;

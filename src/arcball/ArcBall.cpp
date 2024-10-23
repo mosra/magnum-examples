@@ -93,23 +93,23 @@ void ArcBall::setLagging(const Float lagging) {
     _lagging = lagging;
 }
 
-void ArcBall::initTransformation(const Vector2i& mousePos) {
-    _prevMousePosNDC = screenCoordToNDC(mousePos);
+void ArcBall::initTransformation(const Vector2& pointerPosition) {
+    _prevPointerPositionNDC = screenCoordToNDC(pointerPosition);
 }
 
-void ArcBall::rotate(const Vector2i& mousePos) {
-    const Vector2 mousePosNDC = screenCoordToNDC(mousePos);
-    const Quaternion currentQRotation = ndcToArcBall(mousePosNDC);
-    const Quaternion prevQRotation = ndcToArcBall(_prevMousePosNDC);
-    _prevMousePosNDC = mousePosNDC;
+void ArcBall::rotate(const Vector2& pointerPosition) {
+    const Vector2 pointerPositionNDC = screenCoordToNDC(pointerPosition);
+    const Quaternion currentQRotation = ndcToArcBall(pointerPositionNDC);
+    const Quaternion prevQRotation = ndcToArcBall(_prevPointerPositionNDC);
+    _prevPointerPositionNDC = pointerPositionNDC;
     _targetQRotation =
         (currentQRotation*prevQRotation*_targetQRotation).normalized();
 }
 
-void ArcBall::translate(const Vector2i& mousePos) {
-    const Vector2 mousePosNDC = screenCoordToNDC(mousePos);
-    const Vector2 translationNDC = mousePosNDC - _prevMousePosNDC;
-    _prevMousePosNDC = mousePosNDC;
+void ArcBall::translate(const Vector2& pointerPosition) {
+    const Vector2 mousePosNDC = screenCoordToNDC(pointerPosition);
+    const Vector2 translationNDC = mousePosNDC - _prevPointerPositionNDC;
+    _prevPointerPositionNDC = mousePosNDC;
     translateDelta(translationNDC);
 }
 
@@ -172,9 +172,9 @@ void ArcBall::updateInternalTransformations() {
     _inverseView = _view.inverted();
 }
 
-Vector2 ArcBall::screenCoordToNDC(const Vector2i& mousePos) const {
-    return {mousePos.x()*2.0f/_windowSize.x() - 1.0f,
-            1.0f - 2.0f*mousePos.y()/ _windowSize.y()};
+Vector2 ArcBall::screenCoordToNDC(const Vector2& pointerPosition) const {
+    return {pointerPosition.x()*2.0f/_windowSize.x() - 1.0f,
+            1.0f - 2.0f*pointerPosition.y()/ _windowSize.y()};
 }
 
 }}
