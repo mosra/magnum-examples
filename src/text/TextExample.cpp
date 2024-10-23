@@ -53,7 +53,7 @@ class TextExample: public Platform::Application {
     private:
         void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
 
         void updateText();
 
@@ -155,7 +155,7 @@ void TextExample::drawEvent() {
     swapBuffers();
 }
 
-void TextExample::mouseScrollEvent(MouseScrollEvent& event) {
+void TextExample::scrollEvent(ScrollEvent& event) {
     if(!event.offset().y()) return;
 
     if(event.offset().y() > 0)
