@@ -60,13 +60,13 @@ class MouseInteractionExample: public Platform::Application {
         explicit MouseInteractionExample(const Arguments& arguments);
 
     private:
-        Float depthAt(const Vector2i& windowPosition);
-        Vector3 unproject(const Vector2i& windowPosition, Float depth) const;
+        Float depthAt(const Vector2& windowPosition);
+        Vector3 unproject(const Vector2& windowPosition, Float depth) const;
 
         void keyPressEvent(KeyEvent& event) override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseScrollEvent(MouseScrollEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
         void drawEvent() override;
 
         Shaders::VertexColorGL3D _vertexColorShader{NoCreate};
@@ -79,7 +79,7 @@ class MouseInteractionExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
 
         Float _lastDepth;
-        Vector2i _lastPosition{-1};
+        Vector2 _lastPosition{Constants::nan()};
         Vector3 _rotationPoint, _translationPoint;
 };
 
@@ -176,11 +176,11 @@ MouseInteractionExample::MouseInteractionExample(const Arguments& arguments): Pl
     _lastDepth = ((_camera->projectionMatrix()*_camera->cameraMatrix()).transformPoint({}).z() + 1.0f)*0.5f;
 }
 
-Float MouseInteractionExample::depthAt(const Vector2i& windowPosition) {
+Float MouseInteractionExample::depthAt(const Vector2& windowPosition) {
     /* First scale the position from being relative to window size to being
        relative to framebuffer size as those two can be different on HiDPI
        systems */
-    const Vector2i position = windowPosition*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2i position = windowPosition*framebufferSize()/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
     GL::defaultFramebuffer.mapForRead(GL::DefaultFramebuffer::ReadAttachment::Front);
@@ -193,12 +193,12 @@ Float MouseInteractionExample::depthAt(const Vector2i& windowPosition) {
     return Math::min<Float>(data.pixels<Float>().asContiguous());
 }
 
-Vector3 MouseInteractionExample::unproject(const Vector2i& windowPosition, Float depth) const {
+Vector3 MouseInteractionExample::unproject(const Vector2& windowPosition, Float depth) const {
     /* We have to take window size, not framebuffer size, since the position is
        in window coordinates and the two can be different on HiDPI systems */
     const Vector2i viewSize = windowSize();
-    const Vector2i viewPosition{windowPosition.x(), viewSize.y() - windowPosition.y() - 1};
-    const Vector3 in{2*Vector2{viewPosition}/Vector2{viewSize} - Vector2{1.0f}, depth*2.0f - 1.0f};
+    const Vector2 viewPosition{windowPosition.x(), viewSize.y() - windowPosition.y() - 1};
+    const Vector3 in{2.0f*viewPosition/Vector2{viewSize} - Vector2{1.0f}, depth*2.0f - 1.0f};
 
     /*
         Use the following to get global coordinates instead of camera-relative:
@@ -210,7 +210,7 @@ Vector3 MouseInteractionExample::unproject(const Vector2i& windowPosition, Float
 
 void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
     /* Reset the transformation to the original view */
-    if(event.key() == KeyEvent::Key::NumZero) {
+    if(event.key() == Key::NumZero) {
         (*_cameraObject)
             .resetTransformation()
             .translate(Vector3::zAxis(5.0f))
@@ -220,22 +220,22 @@ void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
         return;
 
     /* Axis-aligned view */
-    } else if(event.key() == KeyEvent::Key::NumOne ||
-              event.key() == KeyEvent::Key::NumThree ||
-              event.key() == KeyEvent::Key::NumSeven)
+    } else if(event.key() == Key::NumOne ||
+              event.key() == Key::NumThree ||
+              event.key() == Key::NumSeven)
     {
         /* Start with current camera translation with the rotation inverted */
         const Vector3 viewTranslation = _cameraObject->transformation().rotationScaling().inverted()*_cameraObject->transformation().translation();
 
         /* Front/back */
-        const Float multiplier = event.modifiers() & KeyEvent::Modifier::Ctrl ? -1.0f : 1.0f;
+        const Float multiplier = event.modifiers() & Modifier::Ctrl ? -1.0f : 1.0f;
 
         Matrix4 transformation;
-        if(event.key() == KeyEvent::Key::NumSeven) /* Top/bottom */
+        if(event.key() == Key::NumSeven) /* Top/bottom */
             transformation = Matrix4::rotationX(-90.0_degf*multiplier);
-        else if(event.key() == KeyEvent::Key::NumOne) /* Front/back */
+        else if(event.key() == Key::NumOne) /* Front/back */
             transformation = Matrix4::rotationY(90.0_degf - 90.0_degf*multiplier);
-        else if(event.key() == KeyEvent::Key::NumThree) /* Right/left */
+        else if(event.key() == Key::NumThree) /* Right/left */
             transformation = Matrix4::rotationY(90.0_degf*multiplier);
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
@@ -244,7 +244,15 @@ void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
     }
 }
 
-void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
+void MouseInteractionExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
+    /* Update the move position on press as well so touch movement (that emits
+       no hover pointerMoveEvent()) works without jumps */
+    _lastPosition = event.position();
+
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     _translationPoint = unproject(event.position(), depth);
@@ -256,15 +264,18 @@ void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
     }
 }
 
-void MouseInteractionExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(_lastPosition == Vector2i{-1}) _lastPosition = event.position();
-    const Vector2i delta = event.position() - _lastPosition;
+void MouseInteractionExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
+    if(Math::isNan(_lastPosition).all())
+        _lastPosition = event.position();
+    const Vector2 delta = event.position() - _lastPosition;
     _lastPosition = event.position();
 
-    if(!event.buttons()) return;
-
     /* Translate */
-    if(event.modifiers() & MouseMoveEvent::Modifier::Shift) {
+    if(event.modifiers() & Modifier::Shift) {
         const Vector3 p = unproject(event.position(), _lastDepth);
         _cameraObject->translateLocal(_translationPoint - p); /* is Z always 0? */
         _translationPoint = p;
@@ -279,7 +290,7 @@ void MouseInteractionExample::mouseMoveEvent(MouseMoveEvent& event) {
     redraw();
 }
 
-void MouseInteractionExample::mouseScrollEvent(MouseScrollEvent& event) {
+void MouseInteractionExample::scrollEvent(ScrollEvent& event) {
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     const Vector3 p = unproject(event.position(), depth);
