@@ -94,9 +94,9 @@ class PickingExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
 
         Scene3D _scene;
         Object3D* _cameraObject;
@@ -113,7 +113,7 @@ class PickingExample: public Platform::Application {
         GL::Framebuffer _framebuffer;
         GL::Renderbuffer _color, _objectId, _depth;
 
-        Vector2i _previousMousePosition, _mousePressPosition;
+        Vector2 _previousPointerPosition, _pointerPressPosition;
 };
 
 PickingExample::PickingExample(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setTitle("Magnum object picking example")}, _framebuffer{GL::defaultFramebuffer.viewport()} {
@@ -188,38 +188,46 @@ void PickingExample::drawEvent() {
     swapBuffers();
 }
 
-void PickingExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left) return;
+void PickingExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
-    _previousMousePosition = _mousePressPosition = event.position();
+    _previousPointerPosition = _pointerPressPosition = event.position();
     event.setAccepted();
 }
 
-void PickingExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+void PickingExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     /* We have to take window size, not framebuffer size, since the position is
        in window coordinates and the two can be different on HiDPI systems */
     const Vector2 delta = 3.0f*
-        Vector2{event.position() - _previousMousePosition}/
+        Vector2{event.position() - _previousPointerPosition}/
         Vector2{windowSize()};
 
     (*_cameraObject)
         .rotate(Rad{-delta.y()}, _cameraObject->transformation().right().normalized())
         .rotateY(Rad{-delta.x()});
 
-    _previousMousePosition = event.position();
+    _previousPointerPosition = event.position();
     event.setAccepted();
     redraw();
 }
 
-void PickingExample::mouseReleaseEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left || _mousePressPosition != event.position()) return;
+void PickingExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)) ||
+       /* Allow slight movement when clicking */
+       (_pointerPressPosition - event.position()).dot() >= 3.0f)
+        return;
 
     /* First scale the position from being relative to window size to being
        relative to framebuffer size as those two can be different on HiDPI
        systems */
-    const Vector2i position = event.position()*Vector2{framebufferSize()}/Vector2{windowSize()};
+    const Vector2i position = event.position()*framebufferSize()/Vector2{windowSize()};
     const Vector2i fbPosition{position.x(), GL::defaultFramebuffer.viewport().sizeY() - position.y() - 1};
 
     /* Read object ID at given click position, and then switch to the color
