@@ -145,16 +145,16 @@ void CubeMapExample::drawEvent() {
 }
 
 void CubeMapExample::keyPressEvent(KeyEvent& event) {
-    if(event.key() == KeyEvent::Key::Up)
+    if(event.key() == Key::Up)
         _cameraObject->rotate(-10.0_degf, _cameraObject->transformation().right().normalized());
 
-    else if(event.key() == KeyEvent::Key::Down)
+    else if(event.key() == Key::Down)
         _cameraObject->rotate(10.0_degf, _cameraObject->transformation().right().normalized());
 
-    else if(event.key() == KeyEvent::Key::Left || event.key() == KeyEvent::Key::Right) {
+    else if(event.key() == Key::Left || event.key() == Key::Right) {
         Float translationY = _cameraObject->transformation().translation().y();
         _cameraObject->translate(Vector3::yAxis(-translationY))
-            .rotateY(event.key() == KeyEvent::Key::Left ? 10.0_degf : -10.0_degf)
+            .rotateY(event.key() == Key::Left ? 10.0_degf : -10.0_degf)
             .translate(Vector3::yAxis(translationY));
 
     } else return;
