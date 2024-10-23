@@ -48,9 +48,9 @@ class PrimitivesExample: public Platform::Application {
 
     private:
         void drawEvent() override;
-        void mousePressEvent(MouseEvent& event) override;
-        void mouseReleaseEvent(MouseEvent& event) override;
-        void mouseMoveEvent(MouseMoveEvent& event) override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
 
         GL::Mesh _mesh;
         Shaders::PhongGL _shader;
@@ -92,21 +92,29 @@ void PrimitivesExample::drawEvent() {
     swapBuffers();
 }
 
-void PrimitivesExample::mousePressEvent(MouseEvent& event) {
-    if(event.button() != MouseEvent::Button::Left) return;
+void PrimitivesExample::pointerPressEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     event.setAccepted();
 }
 
-void PrimitivesExample::mouseReleaseEvent(MouseEvent& event) {
+void PrimitivesExample::pointerReleaseEvent(PointerEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
+
     _color = Color3::fromHsv({_color.hue() + 50.0_degf, 1.0f, 1.0f});
 
     event.setAccepted();
     redraw();
 }
 
-void PrimitivesExample::mouseMoveEvent(MouseMoveEvent& event) {
-    if(!(event.buttons() & MouseMoveEvent::Button::Left)) return;
+void PrimitivesExample::pointerMoveEvent(PointerMoveEvent& event) {
+    if(!event.isPrimary() ||
+       !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
+        return;
 
     Vector2 delta = 3.0f*Vector2{event.relativePosition()}/Vector2{windowSize()};
 
