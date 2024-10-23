@@ -245,13 +245,6 @@ void MouseInteractionExample::keyPressEvent(KeyEvent& event) {
 }
 
 void MouseInteractionExample::mousePressEvent(MouseEvent& event) {
-    /* Due to compatibility reasons, scroll is also reported as a press event,
-       so filter that out. Could be removed once MouseEvent::Button::Wheel is
-       gone from Magnum. */
-    if(event.button() != MouseEvent::Button::Left &&
-       event.button() != MouseEvent::Button::Middle)
-        return;
-
     const Float currentDepth = depthAt(event.position());
     const Float depth = currentDepth == 1.0f ? _lastDepth : currentDepth;
     _translationPoint = unproject(event.position(), depth);
