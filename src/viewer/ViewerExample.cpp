@@ -325,7 +325,8 @@ void TexturedDrawable::draw(const Matrix4& transformationMatrix, SceneGraph::Cam
 }
 
 void ViewerExample::drawEvent() {
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|
+                                 GL::FramebufferClear::Depth);
 
     _camera->draw(_drawables);
 
@@ -367,9 +368,12 @@ void ViewerExample::scrollEvent(ScrollEvent& event) {
 }
 
 Vector3 ViewerExample::positionOnSphere(const Vector2& position) const {
-    const Vector2 positionNormalized = position/Vector2{_camera->viewport()} - Vector2{0.5f};
+    const Vector2 positionNormalized =
+        position/Vector2{_camera->viewport()} - Vector2{0.5f};
     const Float length = positionNormalized.length();
-    const Vector3 result(length > 1.0f ? Vector3(positionNormalized, 0.0f) : Vector3(positionNormalized, 1.0f - length));
+    const Vector3 result = length > 1.0f ?
+        Vector3{positionNormalized, 0.0f} :
+        Vector3{positionNormalized, 1.0f - length};
     return (result*Vector3::yScale(-1.0f)).normalized();
 }
 
@@ -381,7 +385,8 @@ void ViewerExample::pointerMoveEvent(PointerMoveEvent& event) {
     const Vector3 currentPosition = positionOnSphere(event.position());
     const Vector3 axis = Math::cross(_previousPosition, currentPosition);
 
-    if(_previousPosition.length() < 0.001f || axis.length() < 0.001f) return;
+    if(_previousPosition.isZero() || axis.isZero())
+        return;
 
     _manipulator.rotate(Math::angle(_previousPosition, currentPosition), axis.normalized());
     _previousPosition = currentPosition;
