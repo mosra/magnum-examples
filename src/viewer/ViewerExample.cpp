@@ -50,6 +50,7 @@
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
+#include <Magnum/Platform/Gesture.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -96,6 +97,9 @@ class ViewerExample: public Platform::Application {
         SceneGraph::Camera3D* _camera;
         SceneGraph::DrawableGroup3D _drawables;
         Vector3 _previousPosition;
+
+        /* Pinch to zoom */
+        Platform::TwoFingerGesture _gesture;
 };
 
 class ColoredDrawable: public SceneGraph::Drawable3D {
@@ -341,6 +345,8 @@ void ViewerExample::viewportEvent(ViewportEvent& event) {
 }
 
 void ViewerExample::pointerPressEvent(PointerEvent& event) {
+    _gesture.pressEvent(event);
+
     if(!event.isPrimary() ||
        !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         return;
@@ -349,6 +355,8 @@ void ViewerExample::pointerPressEvent(PointerEvent& event) {
 }
 
 void ViewerExample::pointerReleaseEvent(PointerEvent& event) {
+    _gesture.releaseEvent(event);
+
     if(!event.isPrimary() ||
        !(event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         return;
@@ -382,6 +390,20 @@ Vector3 ViewerExample::positionOnSphere(const Vector2& position) const {
 }
 
 void ViewerExample::pointerMoveEvent(PointerMoveEvent& event) {
+    _gesture.moveEvent(event);
+
+    if(_gesture) {
+        /* Distance to origin */
+        const Float distance = _cameraObject.transformation().translation().z();
+
+        _cameraObject.translate(Vector3::zAxis(
+            distance*(1.0f - _gesture.relativeScaling())));
+
+        event.setAccepted();
+        redraw();
+        return;
+    }
+
     if(!event.isPrimary() ||
        !(event.pointers() & (Pointer::MouseLeft|Pointer::Finger)))
         return;
@@ -395,6 +417,7 @@ void ViewerExample::pointerMoveEvent(PointerMoveEvent& event) {
     _manipulator.rotate(Math::angle(_previousPosition, currentPosition), axis.normalized());
     _previousPosition = currentPosition;
 
+    event.setAccepted();
     redraw();
 }
 

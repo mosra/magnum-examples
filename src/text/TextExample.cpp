@@ -43,6 +43,7 @@
 #else
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
+#include <Magnum/Platform/Gesture.h>
 #include <Magnum/Shaders/DistanceFieldVectorGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Text/AbstractFont.h>
@@ -60,6 +61,9 @@ class TextExample: public Platform::Application {
     private:
         void viewportEvent(ViewportEvent& event) override;
         void drawEvent() override;
+        void pointerPressEvent(PointerEvent& event) override;
+        void pointerReleaseEvent(PointerEvent& event) override;
+        void pointerMoveEvent(PointerMoveEvent& event) override;
         void scrollEvent(ScrollEvent& event) override;
 
         void updateText();
@@ -77,6 +81,9 @@ class TextExample: public Platform::Application {
         Matrix3 _transformationRotatingText,
             _projectionRotatingText,
             _transformationProjectionDynamicText;
+
+        /* Pinch to zoom and rotate */
+        Platform::TwoFingerGesture _gesture;
 };
 
 TextExample::TextExample(const Arguments& arguments):
@@ -175,6 +182,33 @@ void TextExample::drawEvent() {
         .draw(_dynamicText->mesh());
 
     swapBuffers();
+}
+
+void TextExample::pointerPressEvent(PointerEvent& event) {
+    _gesture.pressEvent(event);
+}
+
+void TextExample::pointerReleaseEvent(PointerEvent& event) {
+    _gesture.releaseEvent(event);
+}
+
+void TextExample::pointerMoveEvent(PointerMoveEvent& event) {
+    _gesture.moveEvent(event);
+
+    if(_gesture) {
+        _transformationRotatingText =
+            /* Event coordinates are Y down, invert the rotation to match the
+               Y up used for transformations */
+            Matrix3::from(_gesture.relativeRotation().inverted().toMatrix(), {})*
+            Matrix3::scaling(Vector2{_gesture.relativeScaling()})*
+            _transformationRotatingText;
+
+        updateText();
+
+        event.setAccepted();
+        redraw();
+        return;
+    }
 }
 
 void TextExample::scrollEvent(ScrollEvent& event) {
