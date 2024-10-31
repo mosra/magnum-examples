@@ -70,8 +70,9 @@ development build. The package is also in AUR as The package is also in AUR as
 It depends on @ref building-corrade-packages-arch "Corrade",
 @ref building-packages-arch "Magnum",
 @ref building-plugins-packages-arch "Magnum Plugins",
-@ref building-integration-packages-arch "Magnum Integration" and
-@ref building-extras-packages-arch "Magnum Extras" ArchLinux packages.
+@ref building-extras-packages-arch "Magnum Extras" and
+@ref building-integration-packages-arch "Magnum Integration" ArchLinux
+packages.
 
 There are also quite a few development packages for native builds or
 cross-compilation for Emscripten, Android and MinGW. See the PKGBUILD files in
@@ -105,11 +106,11 @@ The `package/debian/` directory contains all files needed for building Debian
 packages. You need @ref building-corrade-packages-deb "Corrade",
 @ref building-packages-deb "Magnum",
 @ref building-plugins-packages-deb "Magnum Plugins",
-@ref building-integration-packages-deb "Magnum Integration" and
-@ref building-extras-packages-deb "Magnum Extras" Debian packages installed and
-in addition also the `dpkg-dev` and `debhelper` packages. Building is easy,
-just change directory to package root, link or copy the `package/debian`
-directory there and run `dpkg-buildpackage`:
+@ref building-extras-packages-deb "Magnum Extras" and
+@ref building-integration-packages-deb "Magnum Integration" Debian packages
+installed and in addition also the `dpkg-dev` and `debhelper` packages.
+Building is easy, just change directory to package root, link or copy the
+`package/debian` directory there and run `dpkg-buildpackage`:
 
 @code{.sh}
 git clone https://github.com/mosra/magnum-examples && cd magnum-examples
@@ -135,9 +136,9 @@ Gentoo Git ebuild is available in the `package/gentoo` directory. Get the
 @ref building-corrade-packages-gentoo "Corrade",
 @ref building-packages-gentoo "Magnum",
 @ref building-plugins-packages-gentoo "Magnum Plugins",
-@ref building-integration-packages-gentoo "Magnum Integration" and
-@ref building-extras-packages-gentoo "Magnum Extras" Gentoo packages first and
-then build and install Magnum Examples like this:
+@ref building-extras-packages-gentoo "Magnum Extras" and
+@ref building-integration-packages-gentoo "Magnum Integration" Gentoo packages
+first and then build and install Magnum Examples like this:
 
 @code{.sh}
 git clone https://github.com/mosra/magnum-examples && cd magnum-examples
@@ -215,9 +216,9 @@ When installing from the `*.rb` files you need to install the
 @ref building-corrade-packages-brew "Corrade",
 @ref building-packages-brew "Magnum",
 @ref building-plugins-packages-brew "Magnum Plugins",
-@ref building-integration-packages-brew "Magnum Integration" and
-@ref building-extras-packages-brew "Magnum Extras" Homebrew packages first. If
-you want to pass additional flags to CMake or
+@ref building-extras-packages-brew "Magnum Extras" and
+@ref building-integration-packages-brew "Magnum Integration" Homebrew packages
+first. If you want to pass additional flags to CMake or
 @ref building-examples-features "enable / disable additional features", edit
 the `*.rb` file.
 
