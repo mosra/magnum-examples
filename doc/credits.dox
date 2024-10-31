@@ -50,6 +50,7 @@ namespace Magnum {
     original @ref examples-imgui example
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
     improvements to Debian package building experience
+-   **Igal Alkon** ([\@alkavan](https://github.com/alkavan)) --- RPM package
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- the
