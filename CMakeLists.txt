@@ -28,7 +28,14 @@
 #
 
 # Matches Corrade requirement, see its root CMakeLists for more information.
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.10)
+
+# CMake 3.12+ uses the policy max version specified in
+# cmake_minimum_required(), meaning that with ...3.10, everything until CMP0071
+# gets set to NEW implicitly. We however want to keep compatibility with
+# versions before 3.12, so the NEW policies are still being hand-picked. Also
+# don't want to do a blanket cmake_policy(VERSION) because that may break
+# behavior for existing projects that rely on the OLD behavior.
 
 # Don't restrict INTERPROCEDURAL_OPTIMIZATION only for icc on Linux
 if(POLICY CMP0069)
