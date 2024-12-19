@@ -173,7 +173,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
         Containers::Optional<Trade::ImageData2D> imageData =
             importer->image2D(textureData->image());
-        if(!imageData || !imageData->isCompressed()) {
+        if(!imageData || imageData->isCompressed()) {
             Warning{} << "Cannot load image" << textureData->image()
                 << importer->image2DName(textureData->image());
             continue;
