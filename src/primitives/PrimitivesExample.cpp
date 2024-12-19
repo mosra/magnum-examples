@@ -30,6 +30,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
+#include <Magnum/Math/Angle.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
@@ -40,7 +41,7 @@
 
 namespace Magnum { namespace Examples {
 
-using namespace Magnum::Math::Literals;
+using namespace Math::Literals;
 
 class PrimitivesExample: public Platform::Application {
     public:
