@@ -48,7 +48,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022, 2023, 2024
+#               2020, 2021, 2022, 2023, 2024, 2025
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 #
@@ -160,6 +160,11 @@ if(MagnumIntegration_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES MagnumIntegration_FIND_COMPONENTS)
 endif()
 
+# Special cases of include paths for header-only libraries. Libraries not
+# listed here have a path suffix and include name derived from the library name
+# in the loop below. Non-header-only libraries have a configure.h file.
+set(_MAGNUMINTEGRATION_EIGEN_INCLUDE_PATH_NAMES GeometryIntegration.h)
+
 # Find all components
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
@@ -170,9 +175,22 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(TARGET "MagnumIntegration::${_component}") # Quotes to fix KDE's hiliter
         set(MagnumIntegration_${_component}_FOUND TRUE)
     else()
-        # Find library includes. Each has a configure.h file so there doesn't
-        # need to be any specialized per-library handling.
-        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
+        # Find library include dir for header-only libraries
+        if(_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
+            # Include path names to find, unless specified above
+            if(NOT _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES)
+                set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ${_comp
+onent}Integration.h)
+            endif()
+
+            find_path(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR
+                NAMES ${_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES}
+                HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
+            mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE)
+
+        # Non-header-only libraries have a configure file which we need to
+        # subsequently read, so find that one directly
+        elseif(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
             find_file(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE configure.h
                 HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
             mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE)
@@ -230,10 +248,11 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         # library needing GLM was found, it likely also installed FindGLM for
         # itself.
         if(
-            # If the component is a library, it should have the configure file
-            _component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE AND (
-                # And it should be either header-only
-                _component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS OR
+            # If the component is a header-only library it should have an
+            # include dir
+            (_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR) OR
+            # Or, if it's a real library, it should have a configure file
+            (_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE AND (
                 # Or have a debug library, and a DLL found if expected
                 (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG AND (
                     NOT DEFINED MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG OR
@@ -241,7 +260,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
                 # Or have a release library, and a DLL found if expected
                 (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE AND (
                     NOT DEFINED MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE OR
-                    MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE)))
+                    MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE))))
         )
             set(MagnumIntegration_${_component}_FOUND TRUE)
         else()
