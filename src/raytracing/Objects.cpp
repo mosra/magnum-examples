@@ -81,7 +81,7 @@ bool ObjectList::intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInf
 }
 
 void ObjectList::addObject(Containers::Pointer<Object>&& object) {
-    arrayAppend(_objects, std::move(object));
+    arrayAppend(_objects, Utility::move(object));
 }
 
 }}

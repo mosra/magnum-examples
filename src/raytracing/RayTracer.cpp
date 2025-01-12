@@ -233,7 +233,7 @@ void RayTracer::generateSceneObjects() {
                     1.1f + 3.0f*Rnd::rand01());
 
                 _sceneObjects->addObject(Containers::pointer<Sphere>(
-                    center, radius, std::move(material)));
+                    center, radius, Utility::move(material)));
             }
         }
     }

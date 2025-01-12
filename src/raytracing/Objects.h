@@ -53,7 +53,7 @@ class Sphere: public Object {
     public:
         explicit Sphere(const Vector3& center, Float radius,
             Containers::Pointer<Material>&& material): _center{center},
-            _radiusSqr{radius*radius}, _material{std::move(material)} {}
+            _radiusSqr{radius*radius}, _material{Utility::move(material)} {}
 
         bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
 
@@ -73,5 +73,7 @@ class ObjectList: public Object {
     private:
         Containers::Array<Containers::Pointer<Object>> _objects;
 };
-} }
+
+}}
+
 #endif
