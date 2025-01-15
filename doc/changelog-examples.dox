@@ -108,6 +108,8 @@ namespace Magnum {
 -   Updated license link for Source Sans Pro used by the
     @ref examples-fluidsimulation2d, @ref examples-fluidsimulation3d,
     @ref examples-imgui and @ref examples-text examples (see [mosra/magnum-examples#95](https://github.com/mosra/magnum-examples/pull/95))
+-   Fixed a cut-off snippet in the @ref examples-viewer example (see
+    [mosra/magnum-examples#112](https://github.com/mosra/magnum-examples/pull/112))
 
 @section changelog-examples-2020-06 2020.06
 
