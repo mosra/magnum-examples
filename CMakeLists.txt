@@ -139,6 +139,7 @@ cmake_dependent_option(MAGNUM_WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example
 option(MAGNUM_WITH_OCTREE_EXAMPLE "Build Octree example" OFF)
 option(MAGNUM_WITH_OVR_EXAMPLE "Build OVR example" OFF)
 option(MAGNUM_WITH_PICKING_EXAMPLE "Build Picking example" OFF)
+option(MAGNUM_WITH_PONG_EXAMPLE "Build Pong example" ON)
 option(MAGNUM_WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
 option(MAGNUM_WITH_RAYTRACING_EXAMPLE "Build Ray Tracing example" OFF)
 option(MAGNUM_WITH_SHADOWS_EXAMPLE "Build Shadow Mapping example" OFF)
