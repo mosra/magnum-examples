@@ -48,7 +48,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022, 2023, 2024
+#               2020, 2021, 2022, 2023, 2024, 2025
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 #
@@ -160,12 +160,10 @@ if(MagnumIntegration_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES MagnumIntegration_FIND_COMPONENTS)
 endif()
 
-# Special cases of include paths. Libraries not listed here have a path suffix
-# and include name derived from the library name in the loop below.
-set(_MAGNUMINTEGRATION_BULLET_INCLUDE_PATH_NAMES MotionState.h)
+# Special cases of include paths for header-only libraries. Libraries not
+# listed here have a path suffix and include name derived from the library name
+# in the loop below. Non-header-only libraries have a configure.h file.
 set(_MAGNUMINTEGRATION_EIGEN_INCLUDE_PATH_NAMES GeometryIntegration.h)
-set(_MAGNUMINTEGRATION_GLM_INCLUDE_PATH_NAMES GtxIntegration.h)
-set(_MAGNUMINTEGRATION_IMGUI_INCLUDE_PATH_NAMES Widgets.h)
 
 # Find all components
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
@@ -174,39 +172,73 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     # Create imported target in case the library is found. If the project is
     # added as subproject to CMake, the target already exists and all the
     # required setup is already done from the build tree.
-    if(TARGET MagnumIntegration::${_component})
+    if(TARGET "MagnumIntegration::${_component}") # Quotes to fix KDE's hiliter
         set(MagnumIntegration_${_component}_FOUND TRUE)
     else()
-        # Library components
-        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
-            add_library(MagnumIntegration::${_component} UNKNOWN IMPORTED)
-
+        # Find library include dir for header-only libraries
+        if(_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
             # Include path names to find, unless specified above
             if(NOT _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES)
-                set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}Integration.h)
+                set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ${_comp
+onent}Integration.h)
             endif()
 
+            find_path(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR
+                NAMES ${_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES}
+                HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
+            mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE)
+
+        # Non-header-only libraries have a configure file which we need to
+        # subsequently read, so find that one directly
+        elseif(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
+            find_file(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE configure.h
+                HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
+            mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE)
+        endif()
+
+        # Library components
+        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
             # Try to find both debug and release version
             find_library(MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG Magnum${_component}Integration-d)
             find_library(MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE Magnum${_component}Integration)
             mark_as_advanced(MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG
                 MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE)
 
-        # Header-only library components
-        elseif(_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
-            add_library(MagnumIntegration::${_component} INTERFACE IMPORTED)
+            # Determine if the library is static or dynamic by reading the
+            # per-library config file. If the file wasn't found, skip this so
+            # it fails on the FPHSA below and not right here.
+            if(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE)
+                file(READ ${_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE} _magnumIntegrationConfigure)
+                string(REGEX REPLACE ";" "\\\\;" _magnumIntegrationConfigure "${_magnumIntegrationConfigure}")
+                string(REGEX REPLACE "\n" ";" _magnumIntegrationConfigure "${_magnumIntegrationConfigure}")
+                list(FIND _magnumIntegrationConfigure "#define MAGNUM_${_COMPONENT}INTEGRATION_BUILD_STATIC" _magnumIntegrationBuildStatic)
+                if(NOT _magnumIntegrationBuildStatic EQUAL -1)
+                    # The variable is inconsistently named between C++ and
+                    # CMake, so keep it underscored / private
+                    set(_MAGNUMINTEGRATION_${_COMPONENT}_BUILD_STATIC ON)
+                endif()
+            endif()
 
-        # Something unknown, skip. FPHSA will take care of handling this below.
-        else()
+            # On Windows, if we have a dynamic build of given library, find the
+            # DLLs as well. Abuse find_program() since the DLLs should be
+            # alongside usual executables. On MinGW they however have a lib
+            # prefix.
+            if(CORRADE_TARGET_WINDOWS AND NOT _MAGNUMINTEGRATION_${_COMPONENT}_BUILD_STATIC)
+                find_program(MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG ${CMAKE_SHARED_LIBRARY_PREFIX}Magnum${_component}Integration-d.dll)
+                find_program(MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE ${CMAKE_SHARED_LIBRARY_PREFIX}Magnum${_component}Integration.dll)
+                mark_as_advanced(MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG
+                    MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE)
+            # If not on Windows or on a static build, unset the DLL variables
+            # to avoid leaks when switching shared and static builds
+            else()
+                unset(MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG CACHE)
+                unset(MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE CACHE)
+            endif()
+
+        # If not a header-only component it's something unknown, skip. FPHSA
+        # will take care of handling this below.
+        elseif(NOT _component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
             continue()
-        endif()
-
-        # Find library includes
-        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
-            find_path(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR
-                NAMES ${_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES}
-                HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
-            mark_as_advanced(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
         # Decide if the library was found. If not, skip the rest, which
@@ -215,28 +247,58 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         # present in _MAGNUMPLUGINS_DEPENDENCY_MODULE_DIR -- given that the
         # library needing GLM was found, it likely also installed FindGLM for
         # itself.
-        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR AND (_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE))
+        if(
+            # If the component is a header-only library it should have an
+            # include dir
+            (_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR) OR
+            # Or, if it's a real library, it should have a configure file
+            (_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND _MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE AND (
+                # Or have a debug library, and a DLL found if expected
+                (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG AND (
+                    NOT DEFINED MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG OR
+                    MAGNUMINTEGRATION_${_COMPONENT}_DLL_DEBUG)) OR
+                # Or have a release library, and a DLL found if expected
+                (MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE AND (
+                    NOT DEFINED MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE OR
+                    MAGNUMINTEGRATION_${_COMPONENT}_DLL_RELEASE))))
+        )
             set(MagnumIntegration_${_component}_FOUND TRUE)
         else()
             set(MagnumIntegration_${_component}_FOUND FALSE)
             continue()
         endif()
 
-        # Library location
-        if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
-            if(MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE)
-                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    IMPORTED_CONFIGURATIONS RELEASE)
-                set_property(TARGET MagnumIntegration::${_component} PROPERTY
-                    IMPORTED_LOCATION_RELEASE ${MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_RELEASE})
+        # Target for header-only library components
+        if(_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
+            add_library(MagnumIntegration::${_component} INTERFACE IMPORTED)
+
+        # Target and location for libraries
+        elseif(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
+            if(_MAGNUMINTEGRATION_${_COMPONENT}_BUILD_STATIC)
+                add_library(MagnumIntegration::${_component} STATIC IMPORTED)
+            else()
+                add_library(MagnumIntegration::${_component} SHARED IMPORTED)
             endif()
 
-            if(MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG)
+            foreach(_CONFIG DEBUG RELEASE)
+                if(NOT MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_${_CONFIG})
+                    continue()
+                endif()
+
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
-                    IMPORTED_CONFIGURATIONS DEBUG)
-                set_property(TARGET MagnumIntegration::${_component} PROPERTY
-                    IMPORTED_LOCATION_DEBUG ${MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_DEBUG})
-            endif()
+                    IMPORTED_CONFIGURATIONS ${_CONFIG})
+                # Unfortunately for a DLL the two properties are swapped out,
+                # *.lib goes to IMPLIB, so it's duplicated like this
+                if(DEFINED MAGNUMINTEGRATION_${_COMPONENT}_DLL_${_CONFIG})
+                    # Quotes to "fix" KDE's higlighter
+                    set_target_properties("MagnumIntegration::${_component}" PROPERTIES
+                        IMPORTED_LOCATION_${_CONFIG} ${MAGNUMINTEGRATION_${_COMPONENT}_DLL_${_CONFIG}}
+                        IMPORTED_IMPLIB_${_CONFIG} ${MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_${_CONFIG}})
+                else()
+                    set_property(TARGET MagnumIntegration::${_component} PROPERTY
+                        IMPORTED_LOCATION_${_CONFIG} ${MAGNUMINTEGRATION_${_COMPONENT}_LIBRARY_${_CONFIG}})
+                endif()
+            endforeach()
         endif()
 
         # Bullet integration library
@@ -244,10 +306,8 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
             # On Emscripten, Bullet could be taken from ports. If that's the
             # case, propagate proper compiler flag.
             if(CORRADE_TARGET_EMSCRIPTEN)
-                find_file(_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE configure.h
-                    HINTS ${MAGNUMINTEGRATION_INCLUDE_DIR}/Magnum/${_component}Integration)
-                file(READ ${_MAGNUMINTEGRATION_${_COMPONENT}_CONFIGURE_FILE} _magnum${_component}IntegrationConfigure)
-                string(FIND "${_magnum${_component}IntegrationConfigure}" "#define MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET" _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET)
+                # The library-specific configure file was read above already
+                string(FIND "${_magnumIntegrationConfigure}" "#define MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET" _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET)
                 if(NOT _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET EQUAL -1)
                     set(MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET 1)
                 endif()

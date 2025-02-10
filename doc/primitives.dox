@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024
+                2020, 2021, 2022, 2023, 2024, 2025
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,9 +93,16 @@ can be accessed and how it all maps to a @ref GL::Mesh.
 
 As a final step in the constructor we specify the initial cube transformation,
 rotating it slightly for a 3D look. Earlier we used color literals from
-@ref Math::Literals, here we use angle literals. Magnum has strongly-typed
-angles, which allows us to conveniently use degrees even though APIs such as
-@ref Matrix4::rotationX() accept radians:
+@ref Math::Literals, here we use angle literals, so don't forget to pull in the
+namespace again. The literals are going to be used in multiple functions, so
+it's easiest to put it at the file scope, to not have to repeat it several
+times:
+
+@dontinclude primitives/PrimitivesExample.cpp
+@skipline using namespace Math
+
+Magnum has strongly-typed angles, which allows us to conveniently use degrees
+even though APIs such as @ref Matrix4::rotationX() accept radians.
 
 @skip _transformation =
 @until ;

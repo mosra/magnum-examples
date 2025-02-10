@@ -1,17 +1,4 @@
-#.rst:
-# Find Box2D
-# ----------
-#
-# Finds the Box2D library. This module defines:
-#
-#  Box2D_FOUND          - True if Box2D library is found
-#  Box2D::Box2D         - Box2D imported target
-#
-# Additionally these variables are defined for internal usage:
-#
-#  BOX2D_LIBRARY        - Box2D library
-#  BOX2D_INCLUDE_DIR    - Include dir
-#
+#!/bin/sh
 
 #
 #   This file is part of Magnum.
@@ -19,6 +6,8 @@
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
 #               2020, 2021, 2022, 2023, 2024, 2025
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2018, 2020, 2021, 2022, 2023, 2024
+#             Igal Alkon <igal.alkon@gmail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -39,32 +28,30 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Library
-find_library(BOX2D_LIBRARY
-    NAMES
-        box2d
-        # CamelCase naming used before Box2D 2.4
-        Box2D)
+set -e
 
-# Include dir
-find_path(BOX2D_INCLUDE_DIR
-    NAMES
-        box2d/box2d.h
-        # CamelCase naming used before Box2D 2.4
-        Box2D/Box2D.h)
+# Get version slug
+package_name=magnum-examples
+version_hash=$(git describe --match "v*" | sed 's/^v//' | sed 's/-/./g')
+echo "** repository hash: ${version_hash} ..."
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Box2D DEFAULT_MSG
-    BOX2D_LIBRARY
-    BOX2D_INCLUDE_DIR)
+# Create dir tree for rpmbuild in user dir
+rpmdev-setuptree
 
-mark_as_advanced(FORCE
-    BOX2D_LIBRARY
-    BOX2D_INCLUDE_DIR)
+# Archive repository
+(cd ../.. && git archive --format=tar.gz --prefix=${package_name}-${version_hash}/ -o ~/rpmbuild/SOURCES/${package_name}-${version_hash}.tar.gz HEAD)
+echo "** created archive: ~/rpmbuild/SOURCES/${package_name}-${version_hash}.tar.gz"
+sleep 2
 
-if(NOT TARGET Box2D::Box2D)
-    add_library(Box2D::Box2D UNKNOWN IMPORTED)
-    set_target_properties(Box2D::Box2D PROPERTIES
-        IMPORTED_LOCATION ${BOX2D_LIBRARY}
-        INTERFACE_INCLUDE_DIRECTORIES ${BOX2D_INCLUDE_DIR})
-endif()
+# Replace spec version
+sed -i "s/Version:.\+/Version: ${version_hash}/g" ${package_name}.spec
+echo "** building package version: ${version_hash}"
+
+# Check dependencies
+sudo dnf builddep -y ${package_name}.spec
+
+# Build package, let it automatically download extra sources
+rpmbuild --define "debug_package %{nil}" --undefine "_disable_source_fetch" --clean -bb ${package_name}.spec
+
+echo "** packages for ${package_name}-${version_hash} complete:"
+ls ~/rpmbuild/RPMS/$(uname -m)/${package_name}-*${version_hash}*.rpm | cat

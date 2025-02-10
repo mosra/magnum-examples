@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024
+                2020, 2021, 2022, 2023, 2024, 2025
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,6 +50,7 @@ namespace Magnum {
     original @ref examples-imgui example
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
     improvements to Debian package building experience
+-   **Igal Alkon** ([\@alkavan](https://github.com/alkavan)) --- RPM package
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- the
@@ -89,6 +90,8 @@ namespace Magnum {
     the @ref examples-triangle-vulkan example
 -   **Patrick Werner** ([\@boonto](https://github.com/boonto)) --- Android port
     of the @ref examples-viewer example
+-   **[\@petitgamedev](https://github.com/petitgamedev)** --- fixes to the
+    @ref examples-viewer example documentation
 -   **[\@scturtle](https://github.com/scturtle)** --- the
     @ref examples-mouseinteraction example
 -   **[\@ShaddyDC](https://github.com/ShaddyDC)** --- original

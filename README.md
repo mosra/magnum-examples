@@ -61,14 +61,21 @@ possible.
 -   E-mail — info@magnum.graphics
 -   Google Groups mailing list — magnum-engine@googlegroups.com
     ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
--   Twitter — https://twitter.com/czmosra and the
-    [#MagnumEngine](https://twitter.com/hashtag/MagnumEngine) hashtag
+-   Bluesky — https://bsky.app/profile/mosra.cz
 
 See also the Magnum Project [Contact & Support page](https://magnum.graphics/contact/)
 for further information.
 
 CREDITS
 =======
+
+[Detailed contributor list](https://doc.magnum.graphics/magnum/credits-contributors.html#examples)
+is maintained in the documentation. Big thanks to everyone involved!
+
+[The example documentation](https://doc.magnum.graphics/magnum/example-index.html)
+lists al third party components used in each example. There's also a list of
+[third party components](https://doc.magnum.graphics/magnum/credits-third-party.html)
+that affect public use of the project.
 
 See the [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone
 involved!

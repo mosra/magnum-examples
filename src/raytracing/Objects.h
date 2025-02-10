@@ -6,7 +6,8 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023, 2024 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023, 2024, 2025
+             — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
 
     This is free and unencumbered software released into the public domain.
@@ -52,7 +53,7 @@ class Sphere: public Object {
     public:
         explicit Sphere(const Vector3& center, Float radius,
             Containers::Pointer<Material>&& material): _center{center},
-            _radiusSqr{radius*radius}, _material{std::move(material)} {}
+            _radiusSqr{radius*radius}, _material{Utility::move(material)} {}
 
         bool intersect(const Ray& r, Float tMin, Float tMax, HitInfo& hitInfo) const override;
 
@@ -72,5 +73,7 @@ class ObjectList: public Object {
     private:
         Containers::Array<Containers::Pointer<Object>> _objects;
 };
-} }
+
+}}
+
 #endif

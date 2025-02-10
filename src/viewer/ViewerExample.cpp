@@ -4,7 +4,8 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023, 2024 — Vladimír Vondruš <mosra@centrum.cz>
+        2020, 2021, 2022, 2023, 2024, 2025
+             — Vladimír Vondruš <mosra@centrum.cz>
 
     This is free and unencumbered software released into the public domain.
 
@@ -179,7 +180,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
         Containers::Optional<Trade::ImageData2D> imageData =
             importer->image2D(textureData->image());
-        if(!imageData || !imageData->isCompressed()) {
+        if(!imageData || imageData->isCompressed()) {
             Warning{} << "Cannot load image" << textureData->image()
                 << importer->image2DName(textureData->image());
             continue;

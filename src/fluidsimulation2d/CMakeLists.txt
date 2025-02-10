@@ -4,7 +4,8 @@
 #   Original authors — credit is appreciated but not required:
 #
 #       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#       2020, 2021, 2022, 2023, 2024 — Vladimír Vondruš <mosra@centrum.cz>
+#       2020, 2021, 2022, 2023, 2024, 2025
+#            — Vladimír Vondruš <mosra@centrum.cz>
 #       2019 — Nghia Truong <nghiatruong.vn@gmail.com>
 #
 #   This is free and unencumbered software released into the public domain.
@@ -28,7 +29,7 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5...3.10)
 
 project(FluidSimulation2DExample CXX)
 
