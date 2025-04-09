@@ -357,7 +357,7 @@ void OctreeExample::drawSpheres() {
 }
 
 void OctreeExample::drawTreeNodeBoundingBoxes() {
-    arrayResize(_boxInstanceData, 0);
+    arrayClear(_boxInstanceData);
 
     /* Always draw the root node */
     arrayAppend(_boxInstanceData, InPlaceInit,

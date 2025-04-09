@@ -51,7 +51,7 @@ const OctreeNode& OctreeNode::childNode(const std::size_t childIdx) const {
 }
 
 void OctreeNode::removePointFromSubTree() {
-    arrayResize(_nodePoints, 0);
+    arrayClear(_nodePoints);
 
     if(!_isLeaf) for(std::size_t childIdx = 0; childIdx < 8; ++childIdx)
         _children->_nodes[childIdx].removePointFromSubTree();
@@ -185,7 +185,7 @@ void LooseOctree::clearPoints() {
     _rootNode.removePointFromSubTree();
 
     /* Clear the main point data array */
-    arrayResize(_octreePoints, NoInit, 0);
+    arrayClear(_octreePoints);
 }
 
 void LooseOctree::setPoints(Containers::Array<Vector3>& points) {

@@ -301,7 +301,7 @@ void Box2DExample::drawEvent() {
     #endif
 
     /* Populate instance data with transformations and colors */
-    arrayResize(_instanceData, 0);
+    arrayClear(_instanceData);
     _camera->draw(_drawables);
 
     /* Upload instance data to the GPU and draw everything in a single call */

@@ -263,8 +263,8 @@ void BulletExample::drawEvent() {
 
     if(_drawCubes) {
         /* Populate instance data with transformations and colors */
-        arrayResize(_boxInstanceData, 0);
-        arrayResize(_sphereInstanceData, 0);
+        arrayClear(_boxInstanceData);
+        arrayClear(_sphereInstanceData);
         _camera->draw(_drawables);
 
         _shader.setProjectionMatrix(_camera->projectionMatrix());
