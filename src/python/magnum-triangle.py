@@ -38,9 +38,9 @@ from magnum.platform.sdl2 import Application
 
 class TriangleExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.title = "Magnum Python Triangle Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Triangle Example"
+        ))
 
         buffer = gl.Buffer()
         buffer.set_data(array.array('f', [

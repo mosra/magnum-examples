@@ -36,9 +36,9 @@ from magnum.platform.sdl2 import Application
 
 class PrimitivesExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.title = "Magnum Python Primitives Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Primitives Example"
+        ))
 
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)

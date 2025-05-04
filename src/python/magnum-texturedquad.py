@@ -99,9 +99,9 @@ void main() {
 
 class TexturedQuadExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.title = "Magnum Python Textured Quad Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Textured Quad Example"
+        ))
 
         vertices = gl.Buffer()
         vertices.set_data(array.array('f', [

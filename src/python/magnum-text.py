@@ -38,10 +38,10 @@ from magnum.platform.sdl2 import Application
 
 class TextExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.window_flags |= self.Configuration.WindowFlag.RESIZABLE
-        configuration.title = "Magnum Python Text Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Text Example",
+            window_flags=self.Configuration.WindowFlags.RESIZABLE
+        ))
 
         # Load a TrueTypeFont plugin and open the font
         self._font = text.FontManager().load_and_instantiate('TrueTypeFont')

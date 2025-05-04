@@ -58,9 +58,9 @@ class CubeDrawable(scenegraph.Drawable3D):
 
 class PrimitivesSceneGraphExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.title = "Magnum Python Primitives + SceneGraph Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Primitives + SceneGraph Example"
+        ))
 
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)

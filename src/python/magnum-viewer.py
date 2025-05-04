@@ -58,9 +58,9 @@ class ColoredDrawable(scenegraph.Drawable3D):
 
 class ViewerExample(Application):
     def __init__(self):
-        configuration = self.Configuration()
-        configuration.title = "Magnum Python Viewer Example"
-        Application.__init__(self, configuration)
+        Application.__init__(self, self.Configuration(
+            title="Magnum Python Viewer Example"
+        ))
 
         gl.Renderer.enable(gl.Renderer.Feature.DEPTH_TEST)
         gl.Renderer.enable(gl.Renderer.Feature.FACE_CULLING)
