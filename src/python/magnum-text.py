@@ -57,30 +57,24 @@ class TextExample(Application):
 
         # Text that rotates using mouse wheel. Size relative to the window size
         # (1/10 of it) -- if you resize the window, it gets bigger
-        self._rotating_text = text.Renderer2D(self._font, self._cache, 0.2,
-                                              text.Alignment.MIDDLE_CENTER)
-        self._rotating_text.reserve(128)
+        self._rotating_text = text.RendererGL(self._cache)
+        self._rotating_text.alignment = text.Alignment.MIDDLE_CENTER
         self._rotating_text.render(
+            self._font.create_shaper(), 0.2,
             "Hello, world!\n"
             "Ahoj, světe!\n"
             "Привіт Світ!\n"
             "Γεια σου κόσμε!\n"
             "Hej Världen!")
-
-        # Dynamically updated text that shows rotation/zoom of the other. Size
-        # in points that stays the same if you resize the window. Aligned so
-        # top right of the bounding box is at mesh origin, and then transformed
-        # so the origin is at the top right corner of the window.
-        self._dynamic_text = text.Renderer2D(self._font, self._cache, 32.0,
-                                             text.Alignment.TOP_RIGHT)
-        self._dynamic_text.reserve(40)
-        self._transformation_projection_dynamic_text =\
-            Matrix3.projection(Vector2(self.window_size))@\
-            Matrix3.translation(Vector2(self.window_size)*0.5)
-
         self._transformation_rotating_text = Matrix3.rotation(Deg(-10.0))
-        self._projection_rotating_text = Matrix3.projection(
-            Vector2.x_scale(Vector2(self.window_size).aspect_ratio()))
+
+        # Dynamically updated text that shows rotation/zoom of the other.
+        # Positioned ten pixels from the top right corner of the window (but
+        # the window size is dynamic, so it's part of the projection), gets
+        # filled inside update_text() below.
+        self._dynamic_text = text.RendererGL(self._cache)
+        self._dynamic_text.alignment = text.Alignment.TOP_RIGHT_GLYPH_BOUNDS
+        self._dynamic_text.cursor = Vector2(-10.0)
 
         self._shader = shaders.DistanceFieldVectorGL2D()
 
@@ -99,7 +93,7 @@ class TextExample(Application):
         self._shader.bind_vector_texture(self._cache.texture)
 
         self._shader.transformation_projection_matrix = \
-            self._projection_rotating_text @ self._transformation_rotating_text
+            Matrix3.projection(Vector2.x_scale(Vector2(self.window_size).aspect_ratio())) @ self._transformation_rotating_text
         self._shader.color = [0.184, 0.514, 0.8]
         self._shader.outline_color = [0.863, 0.863, 0.863]
         self._shader.outline_range = (0.45, 0.35)
@@ -108,7 +102,8 @@ class TextExample(Application):
         self._shader.draw(self._rotating_text.mesh)
 
         self._shader.transformation_projection_matrix = \
-            self._transformation_projection_dynamic_text
+            Matrix3.projection(Vector2(self.window_size)) @\
+            Matrix3.translation(Vector2(self.window_size)*0.5)
         self._shader.color = [1.0, 1.0, 1.0]
         self._shader.outline_range = (0.5, 1.0)
         self._shader.smoothness = 0.075
@@ -118,12 +113,6 @@ class TextExample(Application):
 
     def viewport_event(self, event: Application.ViewportEvent):
         gl.default_framebuffer.viewport = ((Vector2i(), event.framebuffer_size))
-
-        self._projection_rotating_text = Matrix3.projection(
-            Vector2.x_scale(Vector2(self.window_size).aspect_ratio()))
-        self._transformation_projection_dynamic_text =\
-            Matrix3.projection(Vector2(self.window_size))@\
-            Matrix3.translation(Vector2(self.window_size)*0.5)
 
     def scroll_event(self, event: Application.ScrollEvent):
         if not event.offset.y: return
@@ -146,7 +135,9 @@ class TextExample(Application):
 
     def update_text(self):
         # TODO show rotation once Complex.from_matrix() is a thing
-        self._dynamic_text.render("Scale: {:.2}"
-            .format(self._transformation_rotating_text.uniform_scaling()))
+        self._dynamic_text.clear()
+        self._dynamic_text.render(self._font.create_shaper(), 32.0,
+            "Scale: {:.2}"
+                .format(self._transformation_rotating_text.uniform_scaling()))
 
 exit(TextExample().exec())
