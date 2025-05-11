@@ -47,7 +47,8 @@ class ArcBallCamera: public ArcBall {
             SceneGraph::Scene<Transformation>& scene,
             const Vector3& cameraPosition, const Vector3& viewCenter,
             const Vector3& upDir, Deg fov, const Vector2i& windowSize,
-            const Vector2i& viewportSize):
+            const Vector2i& viewportSize, 
+            Float near = 0.01f, Float far = 100.0f):
             ArcBall{cameraPosition, viewCenter, upDir, fov, windowSize}
         {
             /* Create a camera object of a concrete type */
@@ -55,7 +56,7 @@ class ArcBallCamera: public ArcBall {
             (*(_camera = new SceneGraph::Camera3D{*cameraObject}))
                 .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend)
                 .setProjectionMatrix(Matrix4::perspectiveProjection(
-                    fov, Vector2{windowSize}.aspectRatio(), 0.01f, 100.0f))
+                    fov, Vector2{windowSize}.aspectRatio(), near, far))
                 .setViewport(viewportSize);
 
             /* Save the abstract transformation interface and initialize the
