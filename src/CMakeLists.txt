@@ -113,6 +113,10 @@ if(MAGNUM_WITH_PICKING_EXAMPLE)
     add_subdirectory(picking)
 endif()
 
+if(MAGNUM_WITH_PONG_EXAMPLE)
+    add_subdirectory(pong)
+endif()
+
 if(MAGNUM_WITH_PRIMITIVES_EXAMPLE)
     add_subdirectory(primitives)
 endif()
