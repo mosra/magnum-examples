@@ -1,6 +1,6 @@
 class MagnumExamples < Formula
-  desc "Examples for the Magnum C++11/C++14 graphics engine"
-  homepage "https://github.com/mosra/magnum"
+  desc "Examples for the Magnum C++11 graphics engine"
+  homepage "https://magnum.graphics"
   # git describe <hash>, except the `v` prefix
   version "2020.06-291-gf2a72943"
   # There's no version.h for examples, can get just an archive
