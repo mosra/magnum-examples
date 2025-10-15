@@ -88,6 +88,24 @@ cmake .. ^
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. && cd ..
 
+rem Build Magnum Extras
+git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
+cd magnum-extras || exit /b
+mkdir build-rt && cd build-rt || exit /b
+cmake .. ^
+    -DCMAKE_SYSTEM_NAME=WindowsStore ^
+    -DCMAKE_SYSTEM_VERSION=10.0 ^
+    -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
+    -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
+    -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
+    -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
+    -DMAGNUM_WITH_UI=OFF ^
+    -G "%GENERATOR%" -A x64 || exit /b
+cmake --build . --config Release --target install -- /m /v:m || exit /b
+cd .. && cd ..
+
 rem Crosscompile Magnum Integration
 git clone --depth 1 https://github.com/mosra/magnum-integration.git || exit /b
 cd magnum-integration || exit /b
@@ -105,24 +123,6 @@ cmake .. ^
     -DMAGNUM_WITH_DARTINTEGRATION=OFF ^
     -DMAGNUM_WITH_IMGUIINTEGRATION=OFF ^
     -DMAGNUM_WITH_OVRINTEGRATION=OFF ^
-    -G "%GENERATOR%" -A x64 || exit /b
-cmake --build . --config Release --target install -- /m /v:m || exit /b
-cd .. && cd ..
-
-rem Build Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
-cd magnum-extras || exit /b
-mkdir build-rt && cd build-rt || exit /b
-cmake .. ^
-    -DCMAKE_SYSTEM_NAME=WindowsStore ^
-    -DCMAKE_SYSTEM_VERSION=10.0 ^
-    -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
-    -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
-    -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DMAGNUM_WITH_UI=OFF ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. && cd ..

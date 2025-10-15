@@ -41,6 +41,18 @@ cmake .. \
 ninja install
 cd ../..
 
+# Magnum Extras
+git clone --depth 1 https://github.com/mosra/magnum-extras.git
+cd magnum-extras
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DMAGNUM_WITH_UI=OFF \
+    -G Ninja
+ninja install
+cd ../..
+
 # Magnum Integration
 git clone --depth 1 https://github.com/mosra/magnum-integration.git
 cd magnum-integration
@@ -53,18 +65,6 @@ cmake .. \
     -DMAGNUM_WITH_DARTINTEGRATION=OFF \
     -DMAGNUM_WITH_IMGUIINTEGRATION=ON \
     -DMAGNUM_WITH_OVRINTEGRATION=OFF \
-    -G Ninja
-ninja install
-cd ../..
-
-# Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git
-cd magnum-extras
-mkdir build && cd build
-cmake .. \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DMAGNUM_WITH_UI=OFF \
     -G Ninja
 ninja install
 cd ../..

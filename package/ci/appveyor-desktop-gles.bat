@@ -67,6 +67,19 @@ cmake --build . || exit /b
 cmake --build . --target install || exit /b
 cd .. && cd ..
 
+rem Build Magnum Extras
+git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
+cd magnum-extras || exit /b
+mkdir build && cd build || exit /b
+cmake .. ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DMAGNUM_WITH_UI=OFF ^
+    -G Ninja || exit /b
+cmake --build . || exit /b
+cmake --build . --target install || exit /b
+cd .. && cd ..
+
 rem Build Magnum Integration
 git clone --depth 1 https://github.com/mosra/magnum-integration.git || exit /b
 cd magnum-integration || exit /b
@@ -80,19 +93,6 @@ cmake .. ^
     -DMAGNUM_WITH_DARTINTEGRATION=OFF ^
     -DMAGNUM_WITH_IMGUIINTEGRATION=ON ^
     -DMAGNUM_WITH_OVRINTEGRATION=OFF ^
-    -G Ninja || exit /b
-cmake --build . || exit /b
-cmake --build . --target install || exit /b
-cd .. && cd ..
-
-rem Build Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
-cd magnum-extras || exit /b
-mkdir build && cd build || exit /b
-cmake .. ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DMAGNUM_WITH_UI=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b
