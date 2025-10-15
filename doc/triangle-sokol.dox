@@ -43,7 +43,7 @@ depend on it off. See @ref building-features for more information.
 This example uses the [sokol_gfx](https://github.com/floooh/sokol)
 single-header C library that abstracts OpenGL (ES), D3D and Metal APIs. For
 simplicity only the OpenGL API together with extension loading using
-[GLEW](http://glew.sourceforge.net/) is used in this example.
+[GLEW](https://glew.sourceforge.net) is used in this example.
 
 The key part here is using just the core Magnum functionality and instructing
 the @ref Platform::Sdl2Application "Platform::Application" class to not do

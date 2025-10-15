@@ -338,7 +338,7 @@ onent}Integration.h)
             # Eigen3Config.cmake.in). See the YML files for an extended rant.
             # Also, FindEigen3 only defines EIGEN3_INCLUDE_DIR, not even
             # EIGEN3_INCLUDE_DIRS, so be extra careful.
-            # http://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.1
+            # https://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.1
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
 

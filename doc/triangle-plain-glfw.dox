@@ -40,7 +40,7 @@ existing OpenGL context and window surface provided by a third-party library.
 @m_class{m-note m-success}
 
 @par
-    In this case we're using [GLFW](http://www.glfw.org/). It also has a Magnum
+    In this case we're using [GLFW](https://www.glfw.org/). It also has a Magnum
     wrapper in @ref Platform::GlfwApplication, but here the point is to show
     how to use Magnum with third-party window and event handling, so we won't
     use it. Note that it's possible to use any windowing toolkit that provides
@@ -61,7 +61,7 @@ included last so its GL headers don't take priority over the Magnum ones.
 @until GLFW/glfw3.h
 
 The @cpp main() @ce function preamble is not much different from the
-[GLFW example code](http://www.glfw.org/documentation.html#example-code):
+[GLFW example code](https://www.glfw.org/documentation.html#example-code):
 
 @skipline main
 @until glfwMakeContextCurrent

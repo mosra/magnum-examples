@@ -27,7 +27,7 @@
 
 namespace Magnum {
 /** @page examples-bullet Bullet Physics
-@brief Integration of [Bullet Physics](http://www.bulletphysics.com) into Magnum.
+@brief Integration of [Bullet Physics](https://bulletphysics.com) into Magnum.
 
 @m_footernavigation
 

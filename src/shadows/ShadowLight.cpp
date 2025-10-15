@@ -110,7 +110,7 @@ Float ShadowLight::cutZ(const Int layer) const {
 }
 
 void ShadowLight::setupSplitDistances(const Float zNear, const Float zFar, const Float power) {
-    /* props http://stackoverflow.com/a/33465663 */
+    /* props https://stackoverflow.com/a/33465663 */
     for(std::size_t i = 0; i != _layers.size(); ++i) {
         const Float linearDepth = zNear + std::pow(Float(i + 1)/_layers.size(), power)*(zFar - zNear);
         const Float nonLinearDepth = (zFar + zNear - 2.0f*zNear*zFar/linearDepth)/(zFar - zNear);
