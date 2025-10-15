@@ -82,10 +82,10 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DIMGUI_DIR=$HOME/imgui \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
-    -DMAGNUM_WITH_BULLET=OFF \
-    -DMAGNUM_WITH_DART=OFF \
-    -DMAGNUM_WITH_OVR=OFF \
-    -DMAGNUM_WITH_IMGUI=ON \
+    -DMAGNUM_WITH_BULLETINTEGRATION=OFF \
+    -DMAGNUM_WITH_DARTINTEGRATION=OFF \
+    -DMAGNUM_WITH_OVRINTEGRATION=OFF \
+    -DMAGNUM_WITH_IMGUIINTEGRATION=ON \
     -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
