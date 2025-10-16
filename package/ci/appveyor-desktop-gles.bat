@@ -8,7 +8,10 @@ IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\2.86.1.zip appveyor DownloadFile https://gi
 7z x 2.86.1.zip || exit /b
 cd bullet3-2.86.1 || exit /b
 mkdir build && cd build || exit /b
+rem Can remove the 3.5 override once https://github.com/bulletphysics/bullet3/commit/d1a4256b3a019117f2bb6cb8c63d6367aaf512e2
+rem (from April 2023) reaches a stable version. So far it didn't (Sep 25).
 cmake .. ^
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DUSE_GRAPHICAL_BENCHMARK=OFF ^
