@@ -4,11 +4,11 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
-  # Images below 14.0.1 (and all x86 variants) are removed as of Nov 7, 2025
-  xcode-14_0:
-    macos:
-      xcode: 14.0.1
-    resource_class: macos.m1.medium.gen1
+  # As of November 7, 2025, M4 is the default, and the oldest version there is
+  # 14.3.1.
+  xcode-14_3:
+     macos:
+      xcode: 14.3.1
   emscripten:
     docker:
     # 2.0.27 is then the first that adds timestamps to events, which are needed
@@ -229,7 +229,7 @@ jobs:
         script: unix-desktop.sh
 
   macos:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
@@ -275,7 +275,7 @@ jobs:
         script: emscripten.sh
 
   ios-gles3:
-    executor: xcode-14_0
+    executor: xcode-14_3
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
