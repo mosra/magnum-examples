@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023, 2024, 2025
+        2020, 2021, 2022, 2023, 2024, 2025, 2026
              — Vladimír Vondruš <mosra@centrum.cz>
         2018 — Michal Mikula <miso.mikula@gmail.com>
 
@@ -60,6 +60,15 @@
 #if __has_include(<box2d/base.h>)
 #include <box2d/box2d.h>
 #define BOX2D_VERSION3
+/* Furthermore, version 3 randomly introduces breaking changes to base
+   structures, such as friction moving from b2ShapeDef to b2SurfaceMaterial in
+   https://github.com/erincatto/box2d/commit/6e9ba1f8c443bde6d505ec8985b5faa6d7c796bf,
+   again with no way to tell the actual version. The change happened between
+   3.0 and 3.1, and B2_HASH_INIT is another thing that was introduced between
+   3.0 and 3.1, hook to that to decide which version is actually used. Eugh. */
+#ifdef B2_HASH_INIT
+#define BOX2D_VERSION31
+#endif
 #elif __has_include(<box2d/box2d.h>)
 #include <box2d/box2d.h>
 #define BOX2D_VERSION24
@@ -155,7 +164,11 @@ b2BodyId Box2DExample::createBody(Object2D& object, const Vector2& halfSize, con
     b2Polygon box = b2MakeBox(halfSize.x(), halfSize.y());
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.density = density;
+    #ifdef BOX2D_VERSION31
+    shapeDef.material.friction = 0.8f;
+    #else
     shapeDef.friction = 0.8f;
+    #endif
     b2CreatePolygonShape(body, &shapeDef, &box);
 
     return body;
@@ -314,7 +327,7 @@ void Box2DExample::drawEvent() {
     #endif
 
     /* Populate instance data with transformations and colors */
-    arrayResize(_instanceData, 0);
+    arrayClear(_instanceData);
     _camera->draw(_drawables);
 
     /* Upload instance data to the GPU and draw everything in a single call */

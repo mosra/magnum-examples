@@ -65,6 +65,19 @@ cmake --build . || exit /b
 cmake --build . --target install || exit /b
 cd .. && cd ..
 
+rem Build Magnum Extras
+git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
+cd magnum-extras || exit /b
+mkdir build && cd build || exit /b
+cmake .. ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
+    -DMAGNUM_WITH_UI=ON ^
+    -G Ninja || exit /b
+cmake --build . || exit /b
+cmake --build . --target install || exit /b
+cd .. && cd ..
+
 rem Build Magnum Integration
 rem For MinGW it's not possible to use the OVR SDK directly, the Oculus Runtime
 rem is needed to be installed, but that's apparently not possible from a
@@ -78,23 +91,10 @@ cmake .. ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/bullet ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DIMGUI_DIR=%APPVEYOR_BUILD_FOLDER%/deps/imgui ^
-    -DMAGNUM_WITH_BULLET=ON ^
-    -DMAGNUM_WITH_DART=OFF ^
-    -DMAGNUM_WITH_IMGUI=ON ^
-    -DMAGNUM_WITH_OVR=OFF ^
-    -G Ninja || exit /b
-cmake --build . || exit /b
-cmake --build . --target install || exit /b
-cd .. && cd ..
-
-rem Build Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
-cd magnum-extras || exit /b
-mkdir build && cd build || exit /b
-cmake .. ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DMAGNUM_WITH_UI=ON ^
+    -DMAGNUM_WITH_BULLETINTEGRATION=ON ^
+    -DMAGNUM_WITH_DARTINTEGRATION=OFF ^
+    -DMAGNUM_WITH_IMGUIINTEGRATION=ON ^
+    -DMAGNUM_WITH_OVRINTEGRATION=OFF ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 cmake --build . --target install || exit /b

@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024, 2025
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -81,8 +81,8 @@ around the scene.
 @section examples-cubemap-credits Credits
 
 The sample images provided in this example are work of Emil Persson, aka Humus
---- [http://www.humus.name](http://www.humus.name), licensed under a
-[Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).
+--- [https://www.humus.name](https://www.humus.name), licensed under a
+[Creative Commons Attribution 3.0 Unported License](https://creativecommons.org/licenses/by/3.0/).
 
 @section examples-cubemap-source Source
 

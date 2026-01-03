@@ -91,30 +91,6 @@ cmake .. \
 make -j install
 cd ../..
 
-# Crosscompile Magnum Integration
-git clone --depth 1 https://github.com/mosra/magnum-integration.git
-cd magnum-integration
-mkdir build-android-arm && cd build-android-arm
-cmake .. \
-    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
-    -DCMAKE_SYSTEM_NAME=Android \
-    -DCMAKE_SYSTEM_VERSION=22 \
-    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
-    -DCMAKE_ANDROID_STL_TYPE=c++_static \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
-    -DIMGUI_DIR=$HOME/imgui \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
-    -DMAGNUM_WITH_BULLET=OFF \
-    -DMAGNUM_WITH_DART=OFF \
-    -DMAGNUM_WITH_IMGUI=ON \
-    -DMAGNUM_WITH_OVR=OFF \
-    -G Ninja
-ninja install
-cd ../..
-
 # Crosscompile Magnum Extras
 git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
@@ -132,6 +108,30 @@ cmake .. \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
     -DMAGNUM_WITH_UI=OFF \
+    -G Ninja
+ninja install
+cd ../..
+
+# Crosscompile Magnum Integration
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
+cd magnum-integration
+mkdir build-android-arm && cd build-android-arm
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DIMGUI_DIR=$HOME/imgui \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/android-ndk-r16b/sysroot/usr \
+    -DMAGNUM_WITH_BULLETINTEGRATION=OFF \
+    -DMAGNUM_WITH_DARTINTEGRATION=OFF \
+    -DMAGNUM_WITH_IMGUIINTEGRATION=ON \
+    -DMAGNUM_WITH_OVRINTEGRATION=OFF \
     -G Ninja
 ninja install
 cd ../..

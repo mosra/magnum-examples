@@ -98,9 +98,9 @@ cmake .. \
 set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
-# Crosscompile Magnum Integration
-git clone --depth 1 https://github.com/mosra/magnum-integration.git
-cd magnum-integration
+# Crosscompile Magnum Extras
+git clone --depth 1 https://github.com/mosra/magnum-extras.git
+cd magnum-extras
 mkdir build-ios && cd build-ios
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
@@ -113,9 +113,9 @@ cmake .. \
 set -o pipefail && cmake --build . --config Release --target install -j$XCODE_JOBS | xcbeautify
 cd ../..
 
-# Crosscompile Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git
-cd magnum-extras
+# Crosscompile Magnum Integration
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
+cd magnum-integration
 mkdir build-ios && cd build-ios
 cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \

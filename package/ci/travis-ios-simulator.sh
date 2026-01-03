@@ -88,27 +88,6 @@ cmake .. \
 set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
-# Crosscompile Magnum Integration
-git clone --depth 1 https://github.com/mosra/magnum-integration.git
-cd magnum-integration
-mkdir build-ios && cd build-ios
-cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
-    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
-    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DIMGUI_DIR=$HOME/imgui \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
-    -DMAGNUM_WITH_BULLET=OFF \
-    -DMAGNUM_WITH_DART=OFF \
-    -DMAGNUM_WITH_OVR=OFF \
-    -DMAGNUM_WITH_IMGUI=ON \
-    -DMAGNUM_BUILD_STATIC=ON \
-    -G Xcode
-set -o pipefail && cmake --build . --config Release --target install | xcpretty
-cd ../..
-
 # Crosscompile Magnum Extras
 git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
@@ -121,6 +100,27 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DMAGNUM_WITH_UI=OFF \
+    -DMAGNUM_BUILD_STATIC=ON \
+    -G Xcode
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
+cd ../..
+
+# Crosscompile Magnum Integration
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
+cd magnum-integration
+mkdir build-ios && cd build-ios
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
+    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DIMGUI_DIR=$HOME/imgui \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DMAGNUM_WITH_BULLETINTEGRATION=OFF \
+    -DMAGNUM_WITH_DARTINTEGRATION=OFF \
+    -DMAGNUM_WITH_OVRINTEGRATION=OFF \
+    -DMAGNUM_WITH_IMGUIINTEGRATION=ON \
     -DMAGNUM_BUILD_STATIC=ON \
     -G Xcode
 set -o pipefail && cmake --build . --config Release --target install | xcpretty

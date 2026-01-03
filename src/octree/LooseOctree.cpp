@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023, 2024, 2025
+        2020, 2021, 2022, 2023, 2024, 2025, 2026
              — Vladimír Vondruš <mosra@centrum.cz>
         2020 — Nghia Truong <nghiatruong.vn@gmail.com>
         2021 — grishavanika <grish.vanika@gmail.com>
@@ -51,7 +51,7 @@ const OctreeNode& OctreeNode::childNode(const std::size_t childIdx) const {
 }
 
 void OctreeNode::removePointFromSubTree() {
-    arrayResize(_nodePoints, 0);
+    arrayClear(_nodePoints);
 
     if(!_isLeaf) for(std::size_t childIdx = 0; childIdx < 8; ++childIdx)
         _children->_nodes[childIdx].removePointFromSubTree();
@@ -185,7 +185,7 @@ void LooseOctree::clearPoints() {
     _rootNode.removePointFromSubTree();
 
     /* Clear the main point data array */
-    arrayResize(_octreePoints, NoInit, 0);
+    arrayClear(_octreePoints);
 }
 
 void LooseOctree::setPoints(Containers::Array<Vector3>& points) {

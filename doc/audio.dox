@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024, 2025
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
@@ -52,8 +52,8 @@ keyboard.
 @section examples-audio-credits Credits
 
 This example was originally contributed by [Jonathan Hale](https://github.com/Squareys).
-The sound file used is a Chimes Sound Effect from http://www.orangefreesounds.com/chimes-sound-effect/ ,
-licensed under [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
+The sound file used is a Chimes Sound Effect from https://orangefreesounds.com/chimes-sound-effect/ ,
+licensed under [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 This example makes use of the OpenAL library, see the @ref Audio library
 documentation for license information.
 

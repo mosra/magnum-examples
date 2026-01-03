@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024, 2025
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2019 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
@@ -27,7 +27,7 @@
 
 namespace Magnum {
 /** @page examples-dart DART Physics
-@brief Integration of [DART Physics](http://dartsim.github.io/) into Magnum.
+@brief Integration of [DART Physics](https://dartsim.github.io) into Magnum.
 @m_since_{examples,2019,10}
 
 @m_footernavigation
@@ -56,7 +56,7 @@ to create towers of small colored boxes, showcasing the
 
 @section examples-dart-credits Credits
 
-This example is contributed by [Konstantinos Chatzilygeroudis](http://costashatz.github.io/).
+This example is contributed by [Konstantinos Chatzilygeroudis](https://costashatz.github.io).
 The example makes use of the DART Physics library, see documentation of the
 @ref DartIntegration namespace for license information. The KUKA manipulator
 URDF is a modified version of the one in the [iiwa_ros](https://github.com/epfl-lasa/iiwa_ros)

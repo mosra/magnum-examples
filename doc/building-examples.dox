@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024, 2025
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2024 Igal Alkon <igal.alkon@gmail.com>
 
@@ -279,10 +279,10 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     @ref examples-triangle "Triangle" example. Enabled by default.
 -   `MAGNUM_WITH_TRIANGLE_PLAIN_GLFW_EXAMPLE` --- Build the
     @ref examples-triangle-plain-glfw "Plain GLFW Triangle" example. Depends on
-    [GLFW](http://www.glfw.org/) and a `*Context` library for given platform.
+    [GLFW](https://www.glfw.org) and a `*Context` library for given platform.
 -   `MAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE` --- Build the
     @ref examples-triangle-sokol "sokol_gfx Triangle" example. Depends on
-    [GLEW](http://glew.sourceforge.net/).
+    [GLEW](https://glew.sourceforge.net).
 -   `MAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE` --- Build the
     @ref examples-triangle-vulkan "Vulkan Triangle" example. Requires the
     @ref ShaderTools, @ref Vk and @ref Trade libraries, the

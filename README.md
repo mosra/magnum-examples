@@ -1,5 +1,5 @@
-Here are various examples for the Magnum C++11/C++14 graphics engine,
-demonstrating its features, usage and capabilities.
+Here are various examples for the Magnum C++11 graphics engine, demonstrating
+its features, usage and capabilities.
 
 [![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://circleci.com/gh/mosra/magnum-examples.svg?style=shield)](https://circleci.com/gh/mosra/magnum-examples)
@@ -76,9 +76,6 @@ is maintained in the documentation. Big thanks to everyone involved!
 lists al third party components used in each example. There's also a list of
 [third party components](https://doc.magnum.graphics/magnum/credits-third-party.html)
 that affect public use of the project.
-
-See the [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone
-involved!
 
 LICENSE
 =======

@@ -4,12 +4,11 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
-  # Anything below 13.4.1 (and all x86 variants) are deprecated as of June 28th
-  # 2024
-  xcode-13_4:
-    macos:
-      xcode: 13.4.1
-    resource_class: macos.m1.medium.gen1
+  # As of November 7, 2025, M4 is the default, and the oldest version there is
+  # 14.3.1.
+  xcode-14_3:
+     macos:
+      xcode: 14.3.1
   emscripten:
     docker:
     # 2.0.27 is then the first that adds timestamps to events, which are needed
@@ -230,7 +229,7 @@ jobs:
         script: unix-desktop.sh
 
   ports-macos:
-    executor: xcode-13_4
+    executor: xcode-14_3
     environment:
       CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
@@ -276,14 +275,14 @@ jobs:
         script: emscripten.sh
 
   ports-ios-gles3:
-    executor: xcode-13_4
+    executor: xcode-14_3
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
       # Yep, xcodebuild is beyond stupid and just DOESN'T build in parallel by
-      # default. The default medium resource class has 4 CPUs and Ninja uses
-      # -j6, so do the same for xcodebuild.
-      XCODE_JOBS: 6
+      # default. The default M4 medium resource class has 6 CPUs and Ninja uses
+      # -j8, so do the same for xcodebuild.
+      XCODE_JOBS: 8
     steps:
     - install-base-macos:
         extra: xcbeautify

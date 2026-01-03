@@ -19,6 +19,7 @@
 #  Glm                          - GLM integration library
 #  ImGui                        - ImGui integration library
 #  Ovr                          - Oculus SDK integration library
+#  Yoga                         - Yoga Layout integration library
 #
 # Example usage with specifying additional components is:
 #
@@ -48,7 +49,7 @@
 #   This file is part of Magnum.
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-#               2020, 2021, 2022, 2023, 2024, 2025
+#               2020, 2021, 2022, 2023, 2024, 2025, 2026
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 #
@@ -72,7 +73,8 @@
 #
 
 # Magnum library dependencies
-set(_MAGNUMINTEGRATION_DEPENDENCIES )
+set(_MAGNUMINTEGRATION_MAGNUM_DEPENDENCIES )
+set(_MAGNUMINTEGRATION_MAGNUMEXTRAS_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
@@ -80,14 +82,17 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     elseif(_component STREQUAL ImGui)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL Shaders)
+    elseif(_component STREQUAL Yoga)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES GL Shaders)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUMEXTRAS_DEPENDENCIES Ui)
     endif()
 
-    list(APPEND _MAGNUMINTEGRATION_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
-    list(APPEND _MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_MAGNUM_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
+    list(APPEND _MAGNUMINTEGRATION_MAGNUMEXTRAS_DEPENDENCIES ${_MAGNUMINTEGRATION_${_component}_MAGNUMEXTRAS_DEPENDENCIES})
 endforeach()
-find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_DEPENDENCIES})
-if(_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES)
-    find_package(Magnum OPTIONAL_COMPONENTS ${_MAGNUMINTEGRATION_OPTIONAL_DEPENDENCIES})
+find_package(Magnum REQUIRED ${_MAGNUMINTEGRATION_MAGNUM_DEPENDENCIES})
+if(_MAGNUMINTEGRATION_MAGNUMEXTRAS_DEPENDENCIES)
+    find_package(MagnumExtras REQUIRED ${_MAGNUMINTEGRATION_MAGNUMEXTRAS_DEPENDENCIES})
 endif()
 
 # Global include dir that's unique to Magnum Integration. Often it will be
@@ -127,7 +132,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS Bullet Dart Eigen ImGui Glm)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS Bullet Dart Eigen ImGui Glm Yoga)
 if(CORRADE_TARGET_WINDOWS)
     list(APPEND _MAGNUMINTEGRATION_LIBRARY_COMPONENTS Ovr)
 endif()
@@ -179,8 +184,7 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
         if(_component IN_LIST _MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS)
             # Include path names to find, unless specified above
             if(NOT _MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES)
-                set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ${_comp
-onent}Integration.h)
+                set(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}Integration.h)
             endif()
 
             find_path(_MAGNUMINTEGRATION_${_COMPONENT}_INCLUDE_DIR
@@ -307,7 +311,7 @@ onent}Integration.h)
             # case, propagate proper compiler flag.
             if(CORRADE_TARGET_EMSCRIPTEN)
                 # The library-specific configure file was read above already
-                string(FIND "${_magnumIntegrationConfigure}" "#define MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET" _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET)
+                list(FIND _magnumIntegrationConfigure "#define MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET" _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET)
                 if(NOT _magnum${_component}Integration_USE_EMSCRIPTEN_PORTS_BULLET EQUAL -1)
                     set(MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET 1)
                 endif()
@@ -315,7 +319,7 @@ onent}Integration.h)
 
             if(MAGNUM_USE_EMSCRIPTEN_PORTS_BULLET)
                 if(CMAKE_VERSION VERSION_LESS 3.13)
-                    message(FATAL_ERROR "BulletIntegration was compiled against emscripten-ports version but linking to it requires CMake 3.13 at least")
+                    message(FATAL_ERROR "${_component}Integration was compiled against an emscripten-ports version of Bullet but linking to it requires CMake 3.13 at least")
                 endif()
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_COMPILE_OPTIONS "SHELL:-s USE_BULLET=1")
@@ -338,7 +342,7 @@ onent}Integration.h)
             # Eigen3Config.cmake.in). See the YML files for an extended rant.
             # Also, FindEigen3 only defines EIGEN3_INCLUDE_DIR, not even
             # EIGEN3_INCLUDE_DIRS, so be extra careful.
-            # http://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.1
+            # https://eigen.tuxfamily.org/index.php?title=ChangeLog#Eigen_3.3.1
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIR})
 
@@ -365,6 +369,15 @@ onent}Integration.h)
             find_package(OVR)
             set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES OVR::OVR)
+
+        # Yoga integration library
+        elseif(_component STREQUAL Yoga)
+            # Since 2.0.0 the project provides a CMake config file, force it.
+            # Before 2.0 it didn't even have an install target, so assume those
+            # versions just aren't used at all.
+            find_package(yoga CONFIG REQUIRED)
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES yoga::yogacore)
         endif()
 
         if(_component IN_LIST _MAGNUMINTEGRATION_LIBRARY_COMPONENTS)
@@ -375,6 +388,10 @@ onent}Integration.h)
             foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+            endforeach()
+            foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUMEXTRAS_DEPENDENCIES})
+                set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES MagnumExtras::${_dependency})
             endforeach()
             foreach(_dependency ${_MAGNUMINTEGRATION_${_component}_MAGNUM_OPTIONAL_DEPENDENCIES})
                 if(Magnum_${_dependency}_FOUND)
@@ -414,7 +431,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.16)
         #   misleading messages.
         elseif(NOT _component IN_LIST _MAGNUMINTEGRATION_IMPLICITLY_ENABLED_COMPONENTS)
             string(TOUPPER ${_component} _COMPONENT)
-            list(APPEND _MAGNUMINTEGRATION_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled MAGNUM_WITH_${_COMPONENT} when building Magnum Integration.")
+            list(APPEND _MAGNUMINTEGRATION_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled MAGNUM_WITH_${_COMPONENT}INTEGRATION when building Magnum Integration.")
         # Otherwise we have no idea. Better be silent than to print something
         # misleading.
         else()

@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022, 2023, 2024, 2025
+                2020, 2021, 2022, 2023, 2024, 2025, 2026
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 Jan Dupal <dupal.j@gmail.com>
 
@@ -27,7 +27,7 @@
 
 namespace Magnum {
 /** @page examples-bullet Bullet Physics
-@brief Integration of [Bullet Physics](http://www.bulletphysics.com) into Magnum.
+@brief Integration of [Bullet Physics](https://bulletphysics.com) into Magnum.
 
 @m_footernavigation
 

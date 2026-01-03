@@ -44,23 +44,6 @@ cmake .. \
 ninja install
 cd ../..
 
-# Magnum Integration
-git clone --depth 1 https://github.com/mosra/magnum-integration.git
-cd magnum-integration
-mkdir build && cd build
-cmake .. \
-    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_BUILD_TYPE=$CONFIGURATION \
-    -DIMGUI_DIR=$HOME/imgui \
-    -DMAGNUM_WITH_BULLET=ON \
-    -DMAGNUM_WITH_DART=$WITH_DART \
-    -DMAGNUM_WITH_IMGUI=ON \
-    -DMAGNUM_WITH_OVR=OFF \
-    -G Ninja
-ninja install
-cd ../..
-
 # Magnum Extras
 git clone --depth 1 https://github.com/mosra/magnum-extras.git
 cd magnum-extras
@@ -70,6 +53,23 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=$CONFIGURATION \
     -DMAGNUM_WITH_UI=ON \
+    -G Ninja
+ninja install
+cd ../..
+
+# Magnum Integration
+git clone --depth 1 https://github.com/mosra/magnum-integration.git
+cd magnum-integration
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=$CONFIGURATION \
+    -DIMGUI_DIR=$HOME/imgui \
+    -DMAGNUM_WITH_BULLETINTEGRATION=ON \
+    -DMAGNUM_WITH_DARTINTEGRATION=$WITH_DART \
+    -DMAGNUM_WITH_IMGUIINTEGRATION=ON \
+    -DMAGNUM_WITH_OVRINTEGRATION=OFF \
     -G Ninja
 ninja install
 cd ../..

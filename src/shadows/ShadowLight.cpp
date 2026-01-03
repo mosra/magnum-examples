@@ -4,7 +4,7 @@
     Original authors — credit is appreciated but not required:
 
         2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-        2020, 2021, 2022, 2023, 2024, 2025
+        2020, 2021, 2022, 2023, 2024, 2025, 2026
              — Vladimír Vondruš <mosra@centrum.cz>
         2016 — Bill Robinson <airbaggins@gmail.com>
 
@@ -110,7 +110,7 @@ Float ShadowLight::cutZ(const Int layer) const {
 }
 
 void ShadowLight::setupSplitDistances(const Float zNear, const Float zFar, const Float power) {
-    /* props http://stackoverflow.com/a/33465663 */
+    /* props https://stackoverflow.com/a/33465663 */
     for(std::size_t i = 0; i != _layers.size(); ++i) {
         const Float linearDepth = zNear + std::pow(Float(i + 1)/_layers.size(), power)*(zFar - zNear);
         const Float nonLinearDepth = (zFar + zNear - 2.0f*zNear*zFar/linearDepth)/(zFar - zNear);

@@ -62,13 +62,13 @@ install:
 - set PATH=C:/tools;%PATH%
 
 # OpenAL
-- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.19.1-bin.zip appveyor DownloadFile https://openal-soft.org/openal-binaries/openal-soft-1.19.1-bin.zip
-- IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.19.1-bin.zip && ren openal-soft-1.19.1-bin openal
+- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.22.2-bin.zip appveyor DownloadFile https://github.com/kcat/openal-soft/releases/download/1.22.2/openal-soft-1.22.2-bin.zip
+- IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.22.2-bin.zip && ren openal-soft-1.22.2-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
 
 # SDL2
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile https://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
 - IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
-- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
+- IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile https://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
 - IF NOT "%TARGET%" == "rt" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
 
 # GLFW
@@ -96,7 +96,6 @@ build_script:
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
-- openal-soft-1.19.1-bin.zip -> package/ci/appveyor-cache-reset.txt
 - SDL2-devel-2.0.9-VC.zip -> package/ci/appveyor-cache-reset.txt
 - SDL2-devel-2.0.9-mingw.zip -> package/ci/appveyor-cache-reset.txt
 - ovr_sdk_win_1.26.0_public_minimal.zip -> package/ci/appveyor-cache-reset.txt
