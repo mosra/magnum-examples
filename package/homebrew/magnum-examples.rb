@@ -2,11 +2,12 @@ class MagnumExamples < Formula
   desc "Examples for the Magnum C++11 graphics engine"
   homepage "https://magnum.graphics"
   # git describe <hash>, except the `v` prefix
-  version "2020.06-291-gf2a72943"
-  # There's no version.h for examples, can get just an archive
-  url "https://github.com/mosra/magnum-examples/archive/f2a72943.tar.gz"
-  # wget https://github.com/mosra/magnum-examples/archive/f2a72943.tar.gz -O - | sha256sum
-  sha256 "4d60e80f1d7db5039553141fba83051b155e31b03233fd5c46fdbc2c766fbf05"
+  version "2020.06-305-gaa850fe0"
+  # There's no version.h for examples, can get just an archive. Can't really
+  # automate the SHA1 retrieval in order to be able to calculate the checlsum.
+  url "https://github.com/mosra/magnum-examples/archive/aa850fe0.tar.gz"
+  # wget https://github.com/mosra/magnum-examples/archive/aa850fe0.tar.gz -O - | sha256sum
+  sha256 "aff595b25a40f520648a229b72119c66f6af9b5382ac78280da47d562654d9f5"
   head "https://github.com/mosra/magnum-examples.git"
 
   depends_on "cmake" => :build
