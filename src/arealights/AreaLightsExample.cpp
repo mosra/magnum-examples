@@ -69,6 +69,7 @@
 #include <Magnum/Ui/EventLayer.h>
 #include <Magnum/Ui/Input.h>
 #include <Magnum/Ui/Label.h>
+#include <Magnum/Ui/SnapLayout.h>
 #include <Magnum/Ui/SnapLayouter.h>
 #include <Magnum/Ui/Style.h>
 #include <Magnum/Ui/TextLayer.h> /** @todo remove once extra glyph cache fill is done better */
@@ -292,9 +293,9 @@ class AreaLightsExample: public Platform::Application {
         /* UI */
         struct {
             Ui::UserInterfaceGL ui{NoCreate};
-            Ui::Input metalness{NoCreate, ui},
-                roughness{NoCreate, ui},
-                f0{NoCreate, ui};
+            Ui::Input metalness{NoCreate},
+                roughness{NoCreate},
+                f0{NoCreate};
         } _ui;
 };
 
@@ -383,25 +384,38 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
         _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::McssDarkStyle{});
         /** @todo make a builtin API for this, or, better, make it automatic */
         CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(1, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
-        Ui::NodeHandle root = Ui::snap(_ui.ui, Ui::Snap::Fill|Ui::Snap::NoPad, {});
+
+        Ui::SnapLayoutColumnRight root = Ui::SnapLayout::root(_ui.ui, Ui::Snap::Fill);
 
         /** @todo some numeric-only validators, length restriction, once the UI
             lib is capable of that */
-        _ui.metalness = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::TopRight|Ui::Snap::Inside, root, WidgetSize), "0.5"};
-        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.metalness, WidgetSize), "Metalness", Text::Alignment::MiddleRight);
+        _ui.metalness = Ui::Input{root.child(WidgetSize), "0.5"};
+        Ui::label(
+            Ui::SnapLayout::sibling(Ui::Snap::Left, _ui.metalness, WidgetSize),
+            "Metalness", Text::Alignment::MiddleRight);
 
-        _ui.roughness = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::Bottom, _ui.metalness, WidgetSize), "0.25"};
-        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.roughness, WidgetSize), "Roughness", Text::Alignment::MiddleRight);
+        _ui.roughness = Ui::Input{root.child(WidgetSize), "0.25"};
+        Ui::label(
+            Ui::SnapLayout::sibling(Ui::Snap::Left, _ui.roughness, WidgetSize),
+            "Roughness", Text::Alignment::MiddleRight);
 
-        _ui.f0 = Ui::Input{Ui::snap(_ui.ui, Ui::Snap::Bottom, _ui.roughness, WidgetSize), "0.25"};
-        Ui::label(Ui::snap(_ui.ui, Ui::Snap::Left, _ui.f0, WidgetSize), "ƒ₀", Text::Alignment::MiddleRight);
+        _ui.f0 = Ui::Input{root.child(WidgetSize), "0.25"};
+        Ui::label(
+            Ui::SnapLayout::sibling(Ui::Snap::Left, _ui.f0, WidgetSize),
+            "ƒ₀", Text::Alignment::MiddleRight);
 
         /** @todo enable the Apply button only if something changes once the UI
             library has a way to signal that, or at least has onKeyPress etc */
-        Ui::NodeHandle apply = Ui::button(Ui::snap(_ui.ui, Ui::Snap::BottomRight|Ui::Snap::Inside, root, WidgetSize), "Apply", Ui::ButtonStyle::Primary);
+        Ui::Anchor apply = Ui::button(
+            /** @todo remove the NoPad once explicitly snapped layouts respect
+                parent's PropagateLayout flag as well */
+            Ui::SnapLayout::child(Ui::Snap::BottomRight|Ui::Snap::NoPad, root, WidgetSize),
+            "Apply", Ui::ButtonStyle::Primary);
         _ui.ui.eventLayer().onTapOrClick(apply, {*this, &AreaLightsExample::apply});
 
-        Ui::NodeHandle reset = Ui::button(Ui::snap(_ui.ui, Ui::Snap::Top, apply, WidgetSize), "Reset", Ui::ButtonStyle::Danger);
+        Ui::NodeHandle reset = Ui::button(
+            Ui::SnapLayout::sibling(Ui::Snap::Top, apply, WidgetSize),
+            "Reset", Ui::ButtonStyle::Danger);
         _ui.ui.eventLayer().onTapOrClick(reset, {*this, &AreaLightsExample::reset});
     }
 
