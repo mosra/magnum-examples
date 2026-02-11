@@ -97,6 +97,13 @@ cmake .. \
     -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    `# Make libc++ remove transitive includes, both for faster build times` \
+    `# and to detect if we're missing a transitive include. Works with` \
+    `# libc++ 16+, which is used by Emscripten 3.1.18+ (i.e., will get used` \
+    `# next time emsdk is bumped). Not doing this for the Corrade, Magnum` \
+    `# etc. builds, as that'd only add extra friction with no possibility of` \
+    `# fixing from here.` \
+    -DCMAKE_CXX_FLAGS="-D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES" \
     -DIMGUI_DIR=$HOME/imgui \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \

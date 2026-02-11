@@ -117,3 +117,5 @@ cd ../..
 
 export ANDROID_NDK_HOME=$TRAVIS_BUILD_DIR/android-ndk-r16b
 export CMAKE_PREFIX_PATH=$HOME/deps-native/
+
+# TODO enable -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES for the actual build

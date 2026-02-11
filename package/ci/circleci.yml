@@ -232,6 +232,11 @@ jobs:
     executor: xcode-14_3
     environment:
       CONFIGURATION: Debug
+      # Make libc++ remove transitive includes, both for faster build times and
+      # to detect if we're missing a transitive include. Works with libc++ 16+,
+      # which is used by Xcode 15 (i.e., will get used on the next CircleCI
+      # executor update).
+      CMAKE_CXX_FLAGS: -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES
       PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
