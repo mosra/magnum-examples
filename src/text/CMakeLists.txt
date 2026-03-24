@@ -59,6 +59,13 @@ target_link_libraries(magnum-text PRIVATE
     Magnum::Shaders
     Magnum::Text)
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET MagnumPlugins::StbTrueTypeFont)
+    add_dependencies(magnum-text MagnumPlugins::StbTrueTypeFont)
+endif()
+
 install(TARGETS magnum-text DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
 # Make the executable a default target to build & run in Visual Studio

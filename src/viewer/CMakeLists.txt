@@ -59,6 +59,22 @@ target_link_libraries(magnum-viewer PRIVATE
     Magnum::Shaders
     Magnum::Trade)
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET Magnum::AnyImageImporter)
+    add_dependencies(magnum-viewer Magnum::AnyImageImporter)
+endif()
+if(TARGET Magnum::AnySceneImporter)
+    add_dependencies(magnum-viewer Magnum::AnySceneImporter)
+endif()
+if(TARGET MagnumPlugins::GltfImporter)
+    add_dependencies(magnum-viewer MagnumPlugins::GltfImporter)
+endif()
+if(TARGET MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-viewer MagnumPlugins::StbImageImporter)
+endif()
+
 install(TARGETS magnum-viewer DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 install(FILES scene.glb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/examples/viewer)
 
