@@ -105,6 +105,9 @@ cmake .. \
     `# fixing from here.` \
     -DCMAKE_CXX_FLAGS="-D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES" \
     -DIMGUI_DIR=$HOME/imgui \
+    `# Explicitly disable the self-contained build to prevent accidentally` \
+    `# building everything twice.` \
+    -DMAGNUM_BUILD_SELFCONTAINED=OFF \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF \

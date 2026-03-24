@@ -134,6 +134,9 @@ cmake .. \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
     -DCMAKE_PREFIX_PATH=$HOME/deps \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    `# Explicitly disable the self-contained build to prevent accidentally` \
+    `# building everything twice.` \
+    -DMAGNUM_BUILD_SELFCONTAINED=OFF \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF \
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF \
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF \

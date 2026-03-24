@@ -101,12 +101,14 @@ cmake --build . || exit /b
 cmake --build . --target install || exit /b
 cd .. && cd ..
 
-rem Build
+rem Build. Explicitly disable the self-contained build to prevent accidentally
+rem building everything twice.
 mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/deps;%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal;%APPVEYOR_BUILD_FOLDER%/bullet" ^
     -DIMGUI_DIR=%APPVEYOR_BUILD_FOLDER%/deps/imgui ^
+    -DMAGNUM_BUILD_SELFCONTAINED=OFF ^
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON ^
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON ^
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=ON ^

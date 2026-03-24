@@ -4,11 +4,19 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
+  # Used by the self-contained build, as it requires CMake 3.28
+  ubuntu-24_04:
+    docker:
+    - image: ubuntu:noble-20260217
   # As of November 7, 2025, M4 is the default, and the oldest version there is
   # 14.3.1.
   xcode-14_3:
-     macos:
+    macos:
       xcode: 14.3.1
+  # Used by the self-contained build, as it requires CMake 3.28
+  xcode-15_4:
+    macos:
+      xcode: 15.4.0
   emscripten:
     docker:
     # 2.0.27 is then the first that adds timestamps to events, which are needed
@@ -28,8 +36,7 @@ commands:
         # Git is needed always for cloning Corrade, Magnum etc
         command: |
           apt update
-          # libidn11 needed by CMake
-          apt install -y git ninja-build libidn11 << parameters.extra >>
+          apt install -y git ninja-build << parameters.extra >>
 
   # TODO this might get resolved with 1.11.1:
   #   https://github.com/ninja-build/ninja/pull/1827
@@ -154,8 +161,9 @@ jobs:
       # TODO: investigate and re-enable on 18.04
       WITH_DART: "OFF"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
     # OOMs during compilation of random files
     # TODO revisit once deprecated includes are dropped (non-deprecated build
     # doesn't fail)
@@ -166,6 +174,15 @@ jobs:
     - install-imgui
     - build:
         script: unix-desktop.sh
+
+  linux-selfcontained:
+    executor: ubuntu-24_04
+    steps:
+    # libxext-dev requested by the SDL build
+    - install-base-linux:
+        extra: libgl1-mesa-dev g++ cmake libxext-dev
+    - build:
+        script: unix-desktop-selfcontained.sh
 
   linux-gles2:
     executor: ubuntu-18_04
@@ -178,8 +195,9 @@ jobs:
       # Disabled due to GCC 4/5 ABI mismatch, see above
       WITH_DART: "OFF"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -198,8 +216,9 @@ jobs:
       # Disabled due to GCC 4/5 ABI mismatch, see above
       WITH_DART: "OFF"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev wget
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -219,8 +238,9 @@ jobs:
       # Disabled due to GCC 4/5 ABI mismatch, see above
       WITH_DART: "OFF"
     steps:
+    # libidn11 needed by CMake
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
+        extra: libidn11 libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libbullet-dev libbox2d-dev libvulkan-dev wget
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -244,6 +264,13 @@ jobs:
     - install-imgui
     - build:
         script: unix-desktop.sh
+
+  macos-selfcontained:
+    executor: xcode-15_4
+    steps:
+    - install-base-macos
+    - build:
+        script: unix-desktop-selfcontained.sh
 
   emscripten-webgl1:
     executor: emscripten
@@ -305,6 +332,10 @@ workflows:
     jobs:
     - linux
     - linux-nondeprecated
+    - linux-selfcontained:
+        requires:
+        - linux
+        - linux-nondeprecated
     - linux-gles2:
         requires:
         - linux
@@ -317,6 +348,9 @@ workflows:
         requires:
         - linux
         - linux-nondeprecated
+    - macos-selfcontained:
+        requires:
+        - macos
     - emscripten-webgl1:
         requires:
         - linux-gles2

@@ -127,7 +127,8 @@ cmake .. ^
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. && cd ..
 
-rem Crosscompile
+rem Crosscompile. Explicitly disable the self-contained build to prevent
+rem accidentally building everything twice.
 mkdir build-rt && cd build-rt || exit /b
 cmake .. ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
@@ -137,6 +138,7 @@ cmake .. ^
     -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
     -DSDL2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/X64/Release/SDL-UWP/SDL2.lib ^
     -DSDL2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/SDL/include ^
+    -DMAGNUM_BUILD_SELFCONTAINED=OFF ^
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=OFF ^
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=OFF ^
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=OFF ^
