@@ -83,13 +83,13 @@ class AreaLightShader: public GL::AbstractShaderProgram {
         explicit AreaLightShader(NoCreateT): GL::AbstractShaderProgram{NoCreate} {}
 
         explicit AreaLightShader() {
-            MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL430);
+            MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL410);
 
             /* Load and compile shaders from compiled-in resource */
             Utility::Resource rs("arealights-data");
 
-            GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
-            GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
+            GL::Shader vert{GL::Version::GL410, GL::Shader::Type::Vertex};
+            GL::Shader frag{GL::Version::GL410, GL::Shader::Type::Fragment};
 
             vert.addSource(Utility::format(
                     "#define POSITION_ATTRIBUTE_LOCATION {}\n"
@@ -104,6 +104,9 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             attachShaders({vert, frag});
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+
+            setUniform(uniformLocation("s_texLTCMat"), LtcMatTextureUnit);
+            setUniform(uniformLocation("s_texLTCAmp"), LtcAmpTextureUnit);
 
             /* Get uniform locations */
             _transformationMatrixUniform = uniformLocation("u_transformationMatrix");

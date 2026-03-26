@@ -45,8 +45,8 @@ uniform float u_lightIntensity;
 uniform float u_twoSided;
 uniform vec3 u_quadPoints[4];
 
-layout(binding = 0) uniform sampler2D s_texLTCMat;
-layout(binding = 1) uniform sampler2D s_texLTCAmp;
+uniform sampler2D s_texLTCMat;
+uniform sampler2D s_texLTCAmp;
 
 #define M_PI 3.14159265359
 #define LUT_SIZE 32.0
@@ -55,7 +55,7 @@ out vec4 fragmentColor;
 
 /* Get uv coordinates into LTC lookup texture */
 vec2 ltcCoords(float cosTheta, float roughness) {
-    const float theta = acos(cosTheta);
+    float theta = acos(cosTheta);
     vec2 coords = vec2(roughness, theta/(0.5*M_PI));
 
     /* Scale and bias coordinates, for correct filtered lookup */
@@ -66,7 +66,7 @@ vec2 ltcCoords(float cosTheta, float roughness) {
 
 /** Get inverse matrix from LTC lookup texture */
 mat3 ltcMatrix(sampler2D tex, vec2 coord) {
-    const vec4 t = texture(tex, coord);
+    vec4 t = texture(tex, coord);
     mat3 Minv = mat3(
         vec3(  1,   0, t.y),
         vec3(  0, t.z,   0),
@@ -81,9 +81,9 @@ float integrateEdge(vec3 v1, vec3 v2) {
     float cosTheta = dot(v1, v2);
     cosTheta = clamp(cosTheta, -0.9999, 0.9999);
 
-    const float theta = acos(cosTheta);
+    float theta = acos(cosTheta);
     /* For theta <= 0.001 `theta/sin(theta)` is approximated as 1.0 */
-    const float res = cross(v1, v2).z*((theta > 0.001) ? theta/sin(theta) : 1.0);
+    float res = cross(v1, v2).z*((theta > 0.001) ? theta/sin(theta) : 1.0);
     return res;
 }
 
@@ -179,8 +179,8 @@ int clipQuadToHorizon(inout vec3 L[5]) {
  */
 float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool twoSided) {
     /* Construct orthonormal basis around N */
-    const vec3 T1 = normalize(V - N*dot(V, N));
-    const vec3 T2 = cross(N, T1);
+    vec3 T1 = normalize(V - N*dot(V, N));
+    vec3 T2 = cross(N, T1);
 
     /* Rotate area light in (T1, T2, R) basis */
     Minv = Minv*transpose(mat3(T1, T2, N));
@@ -223,21 +223,21 @@ float ltcEvaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4], bool twoSid
 }
 
 void main() {
-    const vec3 pos = v_position.xyz;
-    const vec3 viewDir = normalize(u_viewPosition - pos);
+    vec3 pos = v_position.xyz;
+    vec3 viewDir = normalize(u_viewPosition - pos);
 
-    const vec3 diffColor = u_baseColor*(1.0 - u_metalness);
-    const vec3 specColor = mix(vec3(u_f0, u_f0, u_f0), u_baseColor, u_metalness);
+    vec3 diffColor = u_baseColor*(1.0 - u_metalness);
+    vec3 specColor = mix(vec3(u_f0, u_f0, u_f0), u_baseColor, u_metalness);
 
     /* Create coords into LTC LUT, get inverse matrix from texture and compute radiance of light */
-    const vec2 coords = ltcCoords(dot(viewDir, v_normal), u_roughness);
+    vec2 coords = ltcCoords(dot(viewDir, v_normal), u_roughness);
 
     /* Get matrix to transform light polygon into a clamped cosine distribution space */
-    const mat3 invMat = ltcMatrix(s_texLTCMat, coords);
+    mat3 invMat = ltcMatrix(s_texLTCMat, coords);
     float Lo_i = ltcEvaluate(v_normal, viewDir, pos, invMat, u_quadPoints, u_twoSided > 0.0);
 
     /* Apply BRDF scale terms (BRDF magnitude and Schlick Fresnel) */
-    const vec2 schlick = texture(s_texLTCAmp, coords).xy;
+    vec2 schlick = texture(s_texLTCAmp, coords).xy;
     vec3 color = (u_lightIntensity*Lo_i)*(specColor*schlick.x + (1.0 - specColor)*schlick.y);
 
     /* Normalize */

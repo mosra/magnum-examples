@@ -43,7 +43,7 @@ uniform mat4 u_viewMatrix;
 uniform mat3 u_normalMatrix;
 
 void main() {
-    const vec4 pos = u_transformationMatrix*position;
+    vec4 pos = u_transformationMatrix*position;
     v_position = pos;
     v_normal = normalize(u_normalMatrix*normal);
     gl_Position = u_projectionMatrix*u_viewMatrix*pos;
