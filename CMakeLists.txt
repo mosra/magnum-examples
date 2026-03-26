@@ -156,10 +156,8 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.28 AND (MAGNUM_BUILD_SELFCONTAINED OR (NOT M
         GIT_REPOSITORY https://github.com/mosra/magnum
         # No GIT_TAG, picking latest master
         EXCLUDE_FROM_ALL)
-    # Like above. Not strictly needed but playing it safe in case FindMagnum
-    # starts producing non-cache variables we rely on.
-    file(WRITE ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/MagnumExtra.cmake
-        "include(\${magnum_SOURCE_DIR}/modules/FindMagnum.cmake)\n")
+    # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we don't
+    # need to provide the Extra.cmake module to redirect back to FindMagnum.
     set(MAGNUM_WITH_SDL2APPLICATION ON)
     if(MAGNUM_WITH_AREALIGHTS_EXAMPLE OR # TODO drop once Ui has icon font
        MAGNUM_WITH_CUBEMAP_EXAMPLE OR
@@ -187,8 +185,10 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.28 AND (MAGNUM_BUILD_SELFCONTAINED OR (NOT M
             GIT_REPOSITORY https://github.com/mosra/magnum-plugins
             # No GIT_TAG, picking latest master
             EXCLUDE_FROM_ALL)
-        # FindMagnumPlugins isn't used for anything, so not producing any
-        # MagnumPluginsExtra.cmake here.
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumPlugins. Moreover, nothing actually uses find_package()
+        # for the plugins anyway.
         if(MAGNUM_WITH_AREALIGHTS_EXAMPLE)
             set(MAGNUM_WITH_DDSIMPORTER ON)
         endif()
@@ -215,10 +215,9 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.28 AND (MAGNUM_BUILD_SELFCONTAINED OR (NOT M
             GIT_REPOSITORY https://github.com/mosra/magnum-extras
             # No GIT_TAG, picking latest master
             EXCLUDE_FROM_ALL)
-        # Like above. Not strictly needed but playing it safe in case
-        # FindMagnumExtras starts producing non-cache variables we rely on.
-        file(WRITE ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/MagnumExtrasExtra.cmake
-            "include(\${magnumextras_SOURCE_DIR}/modules/FindMagnumExtras.cmake)\n")
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumExtras.
         set(MAGNUM_WITH_UI ON)
         FetchContent_MakeAvailable(MagnumExtras)
     endif()
