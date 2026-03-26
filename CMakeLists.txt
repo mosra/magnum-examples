@@ -221,6 +221,34 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.28 AND (MAGNUM_BUILD_SELFCONTAINED OR (NOT M
         set(MAGNUM_WITH_UI ON)
         FetchContent_MakeAvailable(MagnumExtras)
     endif()
+
+    # Include also ImGui and magnum-integration for these examples
+    if(MAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE OR
+       MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE OR
+       MAGNUM_WITH_IMGUI_EXAMPLE)
+        FetchContent_Declare(
+            ImGui
+            GIT_REPOSITORY https://github.com/ocornut/imgui
+            # TODO bump to a newer version once
+            # https://github.com/mosra/magnum-integration/pull/119 is merged
+            GIT_TAG f5befd2d29e66809cd1110a152e375a7f1981f06) # v1.91.9b
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumExtras.
+        FetchContent_Declare(
+            MagnumIntegration
+            GIT_REPOSITORY https://github.com/mosra/magnum-integration
+            # No GIT_TAG, picking latest master
+            EXCLUDE_FROM_ALL)
+
+        # The imgui_SOURCE_DIR variable is only set once
+        # FetchContent_MakeAvailable() is called, so cannot do it together with
+        # MagnumIntegration below
+        FetchContent_MakeAvailable(ImGui)
+        set(IMGUI_DIR ${imgui_SOURCE_DIR})
+        set(MAGNUM_WITH_IMGUIINTEGRATION ON)
+        FetchContent_MakeAvailable(MagnumIntegration)
+    endif()
 endif()
 
 include(CMakeDependentOption)
