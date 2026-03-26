@@ -333,33 +333,33 @@ workflows:
     # they pass, the rest of the jobs gets gradually executed, with further
     # dependencies especially for the macOS jobs that take the most credits.
     jobs:
-    - linux
-    - linux-nondeprecated
-    - linux-selfcontained:
-        requires:
-        - linux
-        - linux-nondeprecated
-    - linux-gles2:
-        requires:
-        - linux
-        - linux-nondeprecated
-    - linux-gles3:
-        requires:
-        - linux
-        - linux-nondeprecated
-    - macos:
-        requires:
-        - linux
-        - linux-nondeprecated
-    - macos-selfcontained:
-        requires:
-        - macos
-    - emscripten-webgl1:
-        requires:
-        - linux-gles2
-    - emscripten-webgl2:
-        requires:
-        - linux-gles3
+    # - linux
+    # - linux-nondeprecated
+    - linux-selfcontained
+    #     requires:
+    #     - linux
+    #     - linux-nondeprecated
+    # - linux-gles2:
+    #     requires:
+    #     - linux
+    #     - linux-nondeprecated
+    # - linux-gles3:
+    #     requires:
+    #     - linux
+    #     - linux-nondeprecated
+    # - macos:
+    #     requires:
+    #     - linux
+    #     - linux-nondeprecated
+    - macos-selfcontained
+    #     requires:
+    #     - macos
+    # - emscripten-webgl1:
+    #     requires:
+    #     - linux-gles2
+    # - emscripten-webgl2:
+    #     requires:
+    #     - linux-gles3
     # - ios-gles3:
     #     requires:
     #     - macos
