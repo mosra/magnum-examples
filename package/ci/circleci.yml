@@ -181,6 +181,9 @@ jobs:
     # libxext-dev requested by the SDL build
     - install-base-linux:
         extra: libgl1-mesa-dev g++ cmake libxext-dev
+    # It gets stuck in the middle otherwise. FFS, even Ninja 1.11.1 still
+    # misdetects the core count.
+    - cap-ninja-jobs
     - build:
         script: unix-desktop-selfcontained.sh
 
