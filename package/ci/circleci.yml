@@ -175,6 +175,7 @@ jobs:
     - build:
         script: unix-desktop.sh
 
+  # This doesn't get built right now, too many combinations
   ports-linux-selfcontained:
     executor: ubuntu-24_04
     steps:
@@ -251,6 +252,7 @@ jobs:
     - build:
         script: unix-desktop.sh
 
+  # This doesn't get built right now, too many combinations
   ports-macos:
     executor: xcode-14_3
     environment:
@@ -335,10 +337,11 @@ workflows:
     jobs:
     - ports-linux
     - ports-linux-nondeprecated
-    - ports-linux-selfcontained:
-        requires:
-        - ports-linux
-        - ports-linux-nondeprecated
+    # This doesn't get built right now, too many combinations
+    # - ports-linux-selfcontained:
+    #     requires:
+    #     - ports-linux
+    #     - ports-linux-nondeprecated
     - ports-linux-gles2:
         requires:
         - ports-linux
@@ -351,9 +354,10 @@ workflows:
         requires:
         - ports-linux
         - ports-linux-nondeprecated
-    - ports-macos-selfcontained:
-        requires:
-        - ports-macos
+    # This doesn't get built right now, too many combinations
+    # - ports-macos-selfcontained:
+    #     requires:
+    #     - ports-macos
     - ports-emscripten-webgl1:
         requires:
         - ports-linux-gles2

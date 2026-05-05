@@ -22,10 +22,11 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
     APPVEYOR_JOB_NAME: ports-windows-msvc2022
     ENABLE_VULKAN: ON
-  - TARGET: desktop-selfcontained
-    COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-    APPVEYOR_JOB_NAME: ports-windows-selfcontained-msvc2022
+  # This doesn't get built right now, too many combinations
+  # - TARGET: desktop-selfcontained
+  #   COMPILER: msvc
+  #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+  #   APPVEYOR_JOB_NAME: ports-windows-selfcontained-msvc2022
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
