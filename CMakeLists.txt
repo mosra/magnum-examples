@@ -68,7 +68,188 @@ project(MagnumExamples CXX)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
-find_package(Magnum REQUIRED)
+
+# If Magnum is not found, fetch all dependencies directly so people can clone &
+# build the examples directly. Only on CMake 3.28+ tho so we can use
+# EXCLUDE_FROM_ALL, SYSTEM and fallback to find_package().
+if(CMAKE_VERSION VERSION_LESS 3.28)
+    find_package(Magnum REQUIRED)
+elseif(NOT MAGNUM_BUILD_SELFCONTAINED)
+    # Find Corrade first, and only if found try to find Magnum. Do it this way
+    # because FindMagnum.cmake internally has find_package(Corrade REQUIRED)
+    # which would make the process fail with error instead of falling back to
+    # fetching them.
+    # TODO fix in the Find modules themselves, same for FindMagnumPlugins etc.
+    find_package(Corrade)
+    if(Corrade_FOUND)
+        find_package(Magnum)
+    endif()
+endif()
+if(NOT CMAKE_VERSION VERSION_LESS 3.28 AND (MAGNUM_BUILD_SELFCONTAINED OR (NOT Magnum_FOUND AND NOT DEFINED MAGNUM_BUILD_SELFCONTAINED)))
+    # If a self-contained build wasn't explicitly requested, print a message to
+    # let the user know and explicitly set the option to not have the message
+    # printed every time.
+    if(NOT DEFINED MAGNUM_BUILD_SELFCONTAINED)
+        set(MAGNUM_BUILD_SELFCONTAINED ON CACHE BOOL "")
+        message(WARNING "Magnum not found, downloading and building a local copy along with other dependencies. Pass -DMAGNUM_BUILD_SELFCONTAINED=OFF to CMake during the initial run to disable this fallback.")
+    endif()
+
+    include(FetchContent)
+    # Note that while CMAKE_ARGS is supported by ExternalProject_Add(), it
+    # isn't by FetchContent_Declare() and have to set the options as regular
+    # varibles, with caveats, because ugh of course nothing is ever simple.
+    #   https://discourse.cmake.org/t/fetchcontent-declare-with-cmake-args-does-not-work/11227/5
+
+    FetchContent_Declare(
+        Corrade
+        GIT_REPOSITORY https://github.com/mosra/corrade
+        # No GIT_TAG, picking latest master
+        EXCLUDE_FROM_ALL
+        # This makes the thing try find_package(Corrade) first, and not
+        # download anything if found. In particular, the find_package(Magnum)
+        # above might find Corrade (and thus make its Corrade:: targets
+        # available) but not Magnum. Having Corrade then downloaded and added
+        # as a subproject would cause the Corrade:: targets to conflict.
+        #
+        # Also requiring at least the Utility component, as otherwise it'll
+        # succeed as soon as add_subdirectory(corrade) is done at least once
+        # due to Corrade's CMakeLists setting INTERNAL CACHE variables for
+        # FindCorrade to work when Corrade is a subproject. Which means, it'd
+        # do the right thing in the initial run, but in subsequent runs
+        # find_package(Corrade) alone would succeed, making FetchContent think
+        # the package is available in the system, resulting in it skipping the
+        # add_subdirectory(corrade) altogether, resulting in Corrade not being
+        # actually made available at all.
+        FIND_PACKAGE_ARGS COMPONENTS Utility)
+    # Finally, FetchContent_MakeAvailable() overrides find_package(Corrade)
+    # with some no-op stupidity. That we *do not* want because FindCorrade is
+    # populating essential variables such as CORRADE_TARGET_*.
+    file(WRITE ${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/CorradeExtra.cmake
+        "include(\${corrade_SOURCE_DIR}/modules/FindCorrade.cmake)\n")
+
+    FetchContent_Declare(
+        SDL2
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL
+        GIT_TAG 5d249570393f7a37e037abf22cd6012a4cc56a71  # release-2.32.10
+        EXCLUDE_FROM_ALL
+        SYSTEM
+        # This makes the thing try find_package(SDL2) first, and not download
+        # anything if found
+        FIND_PACKAGE_ARGS )
+    # Keep in sync with what's in Sdl2Application docs. The CACHE BOOL "" FORCE
+    # is still needed because SDL itself doesn't enable the CMP0077 policy.
+    set(SDL_ATOMIC OFF CACHE BOOL "" FORCE)
+    set(SDL_AUDIO OFF CACHE BOOL "" FORCE)
+    set(SDL_CPUINFO OFF CACHE BOOL "" FORCE)
+    set(SDL_EVENT OFF CACHE BOOL "" FORCE)
+    set(SDL_FILE OFF CACHE BOOL "" FORCE)
+    set(SDL_FILESYSTEM OFF CACHE BOOL "" FORCE)
+    set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
+    set(SDL_LOCALE OFF CACHE BOOL "" FORCE)
+    set(SDL_POWER OFF CACHE BOOL "" FORCE)
+    set(SDL_RENDER OFF CACHE BOOL "" FORCE)
+    set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
+    set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+
+    FetchContent_Declare(
+        Magnum
+        GIT_REPOSITORY https://github.com/mosra/magnum
+        # No GIT_TAG, picking latest master
+        EXCLUDE_FROM_ALL)
+    # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we don't
+    # need to provide the Extra.cmake module to redirect back to FindMagnum.
+    set(MAGNUM_WITH_SDL2APPLICATION ON)
+    if(MAGNUM_WITH_AREALIGHTS_EXAMPLE OR # TODO drop once Ui has icon font
+       MAGNUM_WITH_CUBEMAP_EXAMPLE OR
+       MAGNUM_WITH_VIEWER_EXAMPLE)
+        set(MAGNUM_WITH_ANYIMAGEIMPORTER ON)
+    endif()
+    if(MAGNUM_WITH_VIEWER_EXAMPLE)
+        set(MAGNUM_WITH_ANYSCENEIMPORTER ON)
+    endif()
+    if(MAGNUM_WITH_TEXTUREDQUAD_EXAMPLE)
+        set(MAGNUM_WITH_TGAIMPORTER ON)
+    endif()
+
+    # These need to be listed in dependency order
+    FetchContent_MakeAvailable(Corrade SDL2 Magnum)
+
+    # Include also Magnum Plugins if these examples are enabled
+    if(MAGNUM_WITH_ANIMATED_GIF_EXAMPLE OR
+       MAGNUM_WITH_AREALIGHTS_EXAMPLE OR
+       MAGNUM_WITH_CUBEMAP_EXAMPLE OR
+       MAGNUM_WITH_TEXT_EXAMPLE OR
+       MAGNUM_WITH_VIEWER_EXAMPLE)
+        FetchContent_Declare(
+            MagnumPlugins
+            GIT_REPOSITORY https://github.com/mosra/magnum-plugins
+            # No GIT_TAG, picking latest master
+            EXCLUDE_FROM_ALL)
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumPlugins. Moreover, nothing actually uses find_package()
+        # for the plugins anyway.
+        if(MAGNUM_WITH_AREALIGHTS_EXAMPLE)
+            set(MAGNUM_WITH_DDSIMPORTER ON)
+        endif()
+        if(MAGNUM_WITH_VIEWER_EXAMPLE)
+            set(MAGNUM_WITH_GLTFIMPORTER ON)
+        endif()
+        if(MAGNUM_WITH_AREALIGHTS_EXAMPLE OR # TODO drop once Ui has icon font
+           MAGNUM_WITH_ANIMATED_GIF_EXAMPLE OR
+           MAGNUM_WITH_CUBEMAP_EXAMPLE OR
+           MAGNUM_WITH_VIEWER_EXAMPLE)
+            set(MAGNUM_WITH_STBIMAGEIMPORTER ON)
+        endif()
+        if(MAGNUM_WITH_AREALIGHTS_EXAMPLE OR
+           MAGNUM_WITH_TEXT_EXAMPLE)
+            set(MAGNUM_WITH_STBTRUETYPEFONT ON)
+        endif()
+        FetchContent_MakeAvailable(MagnumPlugins)
+    endif()
+
+    # Include also magnum-extras for these examples
+    if(MAGNUM_WITH_AREALIGHTS_EXAMPLE)
+        FetchContent_Declare(
+            MagnumExtras
+            GIT_REPOSITORY https://github.com/mosra/magnum-extras
+            # No GIT_TAG, picking latest master
+            EXCLUDE_FROM_ALL)
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumExtras.
+        set(MAGNUM_WITH_UI ON)
+        FetchContent_MakeAvailable(MagnumExtras)
+    endif()
+
+    # Include also ImGui and magnum-integration for these examples
+    if(MAGNUM_WITH_FLUIDSIMULATION2D_EXAMPLE OR
+       MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE OR
+       MAGNUM_WITH_IMGUI_EXAMPLE)
+        FetchContent_Declare(
+            ImGui
+            GIT_REPOSITORY https://github.com/ocornut/imgui
+            # TODO bump to a newer version once
+            # https://github.com/mosra/magnum-integration/pull/119 is merged
+            GIT_TAG f5befd2d29e66809cd1110a152e375a7f1981f06) # v1.91.9b
+        # Compared to Corrade, Magnum doesn't have FIND_PACKAGE_ARGS so we
+        # don't need to provide the Extra.cmake module to redirect back to
+        # FindMagnumExtras.
+        FetchContent_Declare(
+            MagnumIntegration
+            GIT_REPOSITORY https://github.com/mosra/magnum-integration
+            # No GIT_TAG, picking latest master
+            EXCLUDE_FROM_ALL)
+
+        # The imgui_SOURCE_DIR variable is only set once
+        # FetchContent_MakeAvailable() is called, so cannot do it together with
+        # MagnumIntegration below
+        FetchContent_MakeAvailable(ImGui)
+        set(IMGUI_DIR ${imgui_SOURCE_DIR})
+        set(MAGNUM_WITH_IMGUIINTEGRATION ON)
+        FetchContent_MakeAvailable(MagnumIntegration)
+    endif()
+endif()
 
 include(CMakeDependentOption)
 

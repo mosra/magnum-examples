@@ -79,6 +79,12 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         MagnumPlugins::StbVorbisAudioImporter)
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds for simplicity.
+if(TARGET MagnumPlugins::StbVorbisAudioImporter)
+    add_dependencies(magnum-audio MagnumPlugins::StbVorbisAudioImporter)
+endif()
+
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)

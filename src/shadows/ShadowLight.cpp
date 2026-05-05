@@ -38,6 +38,7 @@
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/Math/Functions.h>
 #include <Magnum/SceneGraph/FeatureGroup.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
 #include <Magnum/SceneGraph/Scene.h>

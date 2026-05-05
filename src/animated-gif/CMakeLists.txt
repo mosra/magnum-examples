@@ -66,6 +66,14 @@ target_link_libraries(magnum-animated-gif-console PRIVATE
     Magnum::Magnum
     Magnum::Trade)
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-animated-gif MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-animated-gif-console MagnumPlugins::StbImageImporter)
+endif()
+
 install(TARGETS
     magnum-animated-gif
     magnum-animated-gif-console

@@ -75,6 +75,13 @@ if(MAGNUM_BUILD_STATIC)
         Magnum::MagnumFont)
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET MagnumPlugins::StbTrueTypeFont)
+    add_dependencies(magnum-text MagnumPlugins::StbTrueTypeFont)
+endif()
+
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)

@@ -84,6 +84,9 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=$CONFIGURATION \
     -DIMGUI_DIR=$HOME/imgui \
+    `# Explicitly disable the self-contained build to prevent accidentally` \
+    `# building everything twice.` \
+    -DMAGNUM_BUILD_SELFCONTAINED=OFF \
     -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
     -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON \
     -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=ON \

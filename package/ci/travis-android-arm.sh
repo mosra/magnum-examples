@@ -158,3 +158,5 @@ cd ../..
 cd src/viewer
 gradle build
 cd ../..
+
+# TODO enable -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES for the actual build

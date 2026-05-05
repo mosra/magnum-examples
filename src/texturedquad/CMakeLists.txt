@@ -91,6 +91,13 @@ if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_IOS)
     target_link_libraries(magnum-texturedquad PRIVATE Magnum::TgaImporter)
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET Magnum::TgaImporter)
+    add_dependencies(magnum-texturedquad Magnum::TgaImporter)
+endif()
+
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)

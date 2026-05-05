@@ -74,6 +74,24 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         MagnumPlugins::StbTrueTypeFont)
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+# TODO remove the AnyImageImporter and StbImageImporter once the UI library
+#   has an icon font instead of images
+if(TARGET Magnum::AnyImageImporter)
+    add_dependencies(magnum-arealights Magnum::AnyImageImporter)
+endif()
+if(TARGET MagnumPlugins::DdsImporter)
+    add_dependencies(magnum-arealights MagnumPlugins::DdsImporter)
+endif()
+if(TARGET MagnumPlugins::StbTrueTypeFont)
+    add_dependencies(magnum-arealights MagnumPlugins::StbTrueTypeFont)
+endif()
+if(TARGET MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-arealights MagnumPlugins::StbImageImporter)
+endif()
+
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
 if(CORRADE_TARGET_EMSCRIPTEN)

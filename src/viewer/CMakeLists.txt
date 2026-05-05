@@ -84,6 +84,22 @@ if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     target_link_libraries(magnum-viewer PRIVATE MagnumPlugins::GltfImporter)
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET Magnum::AnyImageImporter)
+    add_dependencies(magnum-viewer Magnum::AnyImageImporter)
+endif()
+if(TARGET Magnum::AnySceneImporter)
+    add_dependencies(magnum-viewer Magnum::AnySceneImporter)
+endif()
+if(TARGET MagnumPlugins::GltfImporter)
+    add_dependencies(magnum-viewer MagnumPlugins::GltfImporter)
+endif()
+if(TARGET MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-viewer MagnumPlugins::StbImageImporter)
+endif()
+
 # Gradle-free Android build
 if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
     include(${PROJECT_SOURCE_DIR}/../../toolchains/modules/UseAndroid.cmake)

@@ -110,6 +110,16 @@ if(CORRADE_TARGET_IOS)
         XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
 endif()
 
+# If the plugins are a subproject, make sure they get built as a dependency if
+# they're enabled. Deliberately not dealing with static builds or other plugin
+# candidates for simplicity.
+if(TARGET Magnum::AnyImageImporter)
+    add_dependencies(magnum-cubemap Magnum::AnyImageImporter)
+endif()
+if(TARGET MagnumPlugins::StbImageImporter)
+    add_dependencies(magnum-cubemap MagnumPlugins::StbImageImporter)
+endif()
+
 # Installation for desktop
 if(NOT CORRADE_TARGET_IOS)
     install(TARGETS magnum-cubemap DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
