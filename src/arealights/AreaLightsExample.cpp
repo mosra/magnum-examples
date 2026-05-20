@@ -368,7 +368,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Create the UI */
     {
-        _ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::DarkTheme{});
+        _ui.create(*this, Ui::DarkTheme{});
         /** @todo make a builtin API for this, or, better, make it automatic */
         CORRADE_INTERNAL_ASSERT(_ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.textLayer().shared().glyphCache(), "ƒ₀"));
 
