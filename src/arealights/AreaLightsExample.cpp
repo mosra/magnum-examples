@@ -517,16 +517,14 @@ void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
        (event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         _previousPointerPosition = event.position();
 
-    if(!_ui.pointerPressEvent(event))
-        redraw();
+    _ui.pointerPressEvent(event);
 
     if(_ui.state())
         redraw();
 }
 
 void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
-    if(!_ui.pointerReleaseEvent(event))
-        redraw();
+    _ui.pointerReleaseEvent(event);
 
     if(_ui.state())
         redraw();
@@ -559,9 +557,8 @@ void AreaLightsExample::scrollEvent(ScrollEvent& event) {
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
-    /* If the UI accepts an input event, pass them only there  */
     if(_ui.keyPressEvent(event)) {
-        /* Redraw at the end */
+        /* UI handles it */
 
     /* Movement */
     } else if(event.key() == Key::W) {
@@ -588,10 +585,15 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(event.key() == Key::W || event.key() == Key::S ||
-       event.key() == Key::A || event.key() == Key::D)
+    if(_ui.keyPressEvent(event)) {
+        /* UI handles it */
+
+    /* Movement */
+    } else if(event.key() == Key::W || event.key() == Key::S ||
+              event.key() == Key::A || event.key() == Key::D) {
         _cameraDirection = {};
-    else return;
+
+    } else return;
 
     redraw();
 }
