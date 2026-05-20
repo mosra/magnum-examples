@@ -35,10 +35,9 @@
 #include <Corrade/Containers/Function.h>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/Math/Color.h>
@@ -66,8 +65,10 @@
 #include <Magnum/Ui/Anchor.h>
 #include <Magnum/Ui/Application.h>
 #include <Magnum/Ui/Button.h>
+#include <Magnum/Ui/Formatter.h>
 #include <Magnum/Ui/Input.h>
 #include <Magnum/Ui/Label.h>
+#include <Magnum/Ui/NumericStorage.h>
 #include <Magnum/Ui/SnapLayout.h>
 #include <Magnum/Ui/SnapLayouter.h>
 #include <Magnum/Ui/TextLayer.h> /** @todo remove once extra glyph cache fill is done better */
@@ -226,15 +227,13 @@ class AreaLightsExample: public Platform::Application {
     public:
         explicit AreaLightsExample(const Arguments& arguments);
 
-        void apply();
-        void reset();
-
     private:
         void drawEvent() override;
 
         void pointerPressEvent(PointerEvent& event) override;
         void pointerReleaseEvent(PointerEvent& event) override;
         void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
         void textInputEvent(TextInputEvent& event) override;
@@ -283,17 +282,9 @@ class AreaLightsExample: public Platform::Application {
         Vector3 _cameraDirection;
         Vector2 _cameraRotation;
 
-        /* Material properties */
-        Float _metalness = 0.5f;
-        Float _roughness = 0.25f;
-        Float _f0 = 0.25f; /* Specular reflection coefficient */
-
         /* UI */
         struct {
             Ui::UserInterfaceGL ui{NoCreate};
-            Ui::Input metalness{NoCreate},
-                roughness{NoCreate},
-                f0{NoCreate};
         } _ui;
 };
 
@@ -383,33 +374,62 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
         /** @todo make a builtin API for this, or, better, make it automatic */
         CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
 
+        /* Material properties */
+        Ui::NumericStorage<Float> metalness{_ui.ui, DirectInit, 0.5f};
+        metalness
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        Ui::NumericStorage<Float> roughness{_ui.ui, DirectInit, 0.25f};
+        roughness
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        /* Specular reflection coefficient */
+        Ui::NumericStorage<Float> f0{_ui.ui, DirectInit, 0.5f};
+        f0
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        Ui::FloatFormatter formatter{Ui::FloatFormatter::Flag::Decimal};
+        formatter
+            .setPrecision(2);
+
+        /* Reflect updates directly to the shader uniforms */
+        metalness->onUpdate([&](Float value) {
+            _areaLightShader.setMetalness(value);
+        });
+        roughness->onUpdate([&](Float value) {
+            _areaLightShader.setRoughness(value);
+        });
+        f0->onUpdate([&](Float value) {
+            _areaLightShader.setF0(value);
+        });
+
         Ui::SnapLayoutColumnRight root = Ui::SnapLayout::snapRoot(_ui.ui, Ui::Snap::Fill);
 
-        /** @todo some numeric-only validators, length restriction, once the UI
-            lib is capable of that */
         {
             Ui::SnapLayoutRow row = root.child();
             Ui::label(row.child(), "Metalness");
-            _ui.metalness = Ui::Input{row.child({80, 0}), "0.5"};
+            Ui::input(row.child({80, 0}), metalness, formatter);
         } {
             Ui::SnapLayoutRow row = root.child();
             Ui::label(row.child(), "Roughness");
-            _ui.roughness = Ui::Input{row.child({80, 0}), "0.25"};
+            Ui::input(row.child({80, 0}), roughness, formatter);
         } {
             Ui::SnapLayoutRow row = root.child();
             Ui::label(row.child(), "ƒ₀");
-            _ui.f0 = Ui::Input{row.child({80, 0}), "0.25"};
+            Ui::input(row.child({80, 0}), f0, formatter);
         }
 
         /* Empty fill node to push the buttons all the way to the bottom */
         root.child(Ui::Snap::FillY);
 
-        /** @todo enable the Apply button only if something changes once the UI
-            library has a way to signal that, or at least has onKeyPress etc */
-        Ui::button(root.child({80, 0}),
-            "Apply", {*this, &AreaLightsExample::apply}, Ui::ButtonStyle::Primary);
-        Ui::button(root.child({80, 0}),
-            "Reset", {*this, &AreaLightsExample::reset}, Ui::ButtonStyle::Danger);
+        Ui::button(root.child({80, 0}), "Reset", [this, metalness, roughness, f0]{
+            metalness->reset();
+            roughness->reset();
+            f0->reset();
+
+            _cameraRotation = {};
+            _cameraPosition = {0.0f, 1.0f, 7.6f};
+        }, Ui::ButtonStyle::Danger);
     }
 
     /* On Emscripten we need to explicitly startTextInput() in order to get any
@@ -418,39 +438,14 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     startTextInput();
     #endif
-
-    /* Apply the default values */
-    apply();
-}
-
-void AreaLightsExample::apply() {
-    _metalness = Math::clamp(std::stof(_ui.metalness.text()), 0.1f, 1.0f);
-    _roughness = Math::clamp(std::stof(_ui.roughness.text()), 0.1f, 1.0f);
-    _f0 = Math::clamp(std::stof(_ui.f0.text()), 0.1f, 1.0f);
-
-    _areaLightShader.setMetalness(_metalness)
-        .setRoughness(_roughness)
-        .setF0(_f0);
-
-    /* Set the clamped values back */
-    _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
-    _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
-    _ui.f0.setText(Utility::formatString("{:.5}", _f0));
-}
-
-void AreaLightsExample::reset() {
-    _ui.metalness.setText("0.5");
-    _ui.roughness.setText("0.25");
-    _ui.f0.setText("0.25");
-
-    _cameraRotation = {};
-    _cameraPosition = {0.0f, 1.0f, 7.6f};
-
-    apply();
 }
 
 void AreaLightsExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+
+    /* Trigger UI update first to have any material property changes reflected
+       to the shader uniforms */
+    _ui.ui.update();
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -558,6 +553,13 @@ void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
         redraw();
 }
 
+void AreaLightsExample::scrollEvent(ScrollEvent& event) {
+    _ui.ui.scrollEvent(event);
+
+    if(_ui.ui.state())
+        redraw();
+}
+
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
     /* If the UI accepts an input event, pass them only there  */
     if(_ui.ui.keyPressEvent(event)) {
@@ -574,30 +576,6 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
     } else if(event.key() == Key::D) {
         _cameraDirection = -Math::cross(_view.inverted().backward(),
                                         Vector3::yAxis())*0.01f;
-
-    /* Increase/decrease roughness */
-    } else if(event.key() == Key::R) {
-        _roughness = Math::clamp(
-            _roughness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setRoughness(_roughness);
-        _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
-
-    /* Increase/decrease metalness */
-    } else if(event.key() == Key::M) {
-        _metalness = Math::clamp(
-            _metalness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setMetalness(_metalness);
-        _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
-
-    /* Increase/decrease f0 */
-    } else if(event.key() == Key::F) {
-        _f0 = Math::clamp(
-            _f0 + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setF0(_f0);
-        _ui.f0.setText(Utility::formatString("{:.5}", _f0));
 
     /* Reload shader */
     } else if(event.key() == Key::F5) {

@@ -44,16 +44,10 @@ different orientation and parameters.
 -   @m_class{m-label m-default} **W** / @m_class{m-label m-default} **A** /
     @m_class{m-label m-default} **S** / @m_class{m-label m-default} **D** ---
     move camera
--   @m_class{m-label m-default} **Mouse drag** --- look around
--   @m_class{m-label m-default} **R** / @m_class{m-label m-warning} **Shift**
-    @m_class{m-label m-default} **R** --- increase / decrease roughness of the
-    plane
--   @m_class{m-label m-default} **M** / @m_class{m-label m-warning} **Shift**
-    @m_class{m-label m-default} **M** --- increase / decrease metalness of the
-    plane
--   @m_class{m-label m-default} **F** / @m_class{m-label m-warning} **Shift**
-    @m_class{m-label m-default} **F** --- increase / decrease @f$ f_0 @f$
-    (specular reflection coefficient) of the plane
+-   @m_class{m-label m-default} **Drag** --- look around
+-   @m_class{m-label m-default} **Scroll** on any inputs --- increase /
+    decrease the roughness, metalness and @f$ f_0 @f$ (specular reflection
+    coefficient)
 -   @m_class{m-label m-default} **F5** --- reload shaders
 
 Roughness, metallness and @f$ f_0 @f$ can be also configured through the UI.
