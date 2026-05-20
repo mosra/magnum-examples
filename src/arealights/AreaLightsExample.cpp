@@ -283,9 +283,7 @@ class AreaLightsExample: public Platform::Application {
         Vector2 _cameraRotation;
 
         /* UI */
-        struct {
-            Ui::UserInterfaceGL ui{NoCreate};
-        } _ui;
+        Ui::UserInterfaceGL _ui{NoCreate};
 };
 
 constexpr struct {
@@ -370,21 +368,21 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Create the UI */
     {
-        _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::DarkTheme{});
+        _ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), Ui::DarkTheme{});
         /** @todo make a builtin API for this, or, better, make it automatic */
-        CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
+        CORRADE_INTERNAL_ASSERT(_ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.textLayer().shared().glyphCache(), "ƒ₀"));
 
         /* Material properties */
-        Ui::NumericStorage<Float> metalness{_ui.ui, DirectInit, 0.5f};
+        Ui::NumericStorage<Float> metalness{_ui, DirectInit, 0.5f};
         metalness
             .setRange(0.1f, 1.0f)
             .setStep(0.05f);
-        Ui::NumericStorage<Float> roughness{_ui.ui, DirectInit, 0.25f};
+        Ui::NumericStorage<Float> roughness{_ui, DirectInit, 0.25f};
         roughness
             .setRange(0.1f, 1.0f)
             .setStep(0.05f);
         /* Specular reflection coefficient */
-        Ui::NumericStorage<Float> f0{_ui.ui, DirectInit, 0.5f};
+        Ui::NumericStorage<Float> f0{_ui, DirectInit, 0.5f};
         f0
             .setRange(0.1f, 1.0f)
             .setStep(0.05f);
@@ -403,7 +401,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
             _areaLightShader.setF0(value);
         });
 
-        Ui::SnapLayoutColumnRight root = Ui::SnapLayout::snapRoot(_ui.ui, Ui::Snap::Fill);
+        Ui::SnapLayoutColumnRight root = Ui::SnapLayout::snapRoot(_ui, Ui::Snap::Fill);
 
         {
             Ui::SnapLayoutRow row = root.child();
@@ -445,7 +443,7 @@ void AreaLightsExample::drawEvent() {
 
     /* Trigger UI update first to have any material property changes reflected
        to the shader uniforms */
-    _ui.ui.update();
+    _ui.update();
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -505,7 +503,7 @@ void AreaLightsExample::drawEvent() {
     /* Draw the UI */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-    _ui.ui.draw();
+    _ui.draw();
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
@@ -519,23 +517,23 @@ void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
        (event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         _previousPointerPosition = event.position();
 
-    if(!_ui.ui.pointerPressEvent(event))
+    if(!_ui.pointerPressEvent(event))
         redraw();
 
-    if(_ui.ui.state())
+    if(_ui.state())
         redraw();
 }
 
 void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
-    if(!_ui.ui.pointerReleaseEvent(event))
+    if(!_ui.pointerReleaseEvent(event))
         redraw();
 
-    if(_ui.ui.state())
+    if(_ui.state())
         redraw();
 }
 
 void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
-    if(_ui.ui.pointerMoveEvent(event)) {
+    if(_ui.pointerMoveEvent(event)) {
         /* UI handles it */
 
     } else if(event.isPrimary() &&
@@ -549,20 +547,20 @@ void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
         redraw();
     }
 
-    if(_ui.ui.state())
+    if(_ui.state())
         redraw();
 }
 
 void AreaLightsExample::scrollEvent(ScrollEvent& event) {
-    _ui.ui.scrollEvent(event);
+    _ui.scrollEvent(event);
 
-    if(_ui.ui.state())
+    if(_ui.state())
         redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
     /* If the UI accepts an input event, pass them only there  */
-    if(_ui.ui.keyPressEvent(event)) {
+    if(_ui.keyPressEvent(event)) {
         /* Redraw at the end */
 
     /* Movement */
@@ -599,9 +597,9 @@ void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::textInputEvent(TextInputEvent& event) {
-    _ui.ui.textInputEvent(event);
+    _ui.textInputEvent(event);
 
-    if(_ui.ui.state())
+    if(_ui.state())
         redraw();
 }
 
