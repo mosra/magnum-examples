@@ -290,7 +290,7 @@ class AreaLightsExample: public Platform::Application {
         /* Material properties */
         Float _metalness = 0.5f;
         Float _roughness = 0.25f;
-        Float _f0 = 0.5f; /* Specular reflection coefficient */
+        Float _f0 = 0.25f; /* Specular reflection coefficient */
 
         /* UI */
         struct {
@@ -451,7 +451,7 @@ void AreaLightsExample::reset() {
     _ui.f0.setText("0.25");
 
     _cameraRotation = {};
-    _cameraPosition = {0.0f, 1.0f, 6.0f};
+    _cameraPosition = {0.0f, 1.0f, 7.6f};
 
     apply();
 }
