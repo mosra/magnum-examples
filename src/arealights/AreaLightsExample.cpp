@@ -220,9 +220,6 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             _lightQuadUniform;
 };
 
-/* Base UI plane */
-constexpr Vector2 WidgetSize{80, 32};
-
 using namespace Math::Literals;
 
 class AreaLightsExample: public Platform::Application {
@@ -391,31 +388,28 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
         /** @todo some numeric-only validators, length restriction, once the UI
             lib is capable of that */
-        _ui.metalness = Ui::Input{root.child(WidgetSize), "0.5"};
-        Ui::label(
-            Ui::SnapLayout{_ui.metalness}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "Metalness", Text::Alignment::MiddleRight);
+        {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "Metalness");
+            _ui.metalness = Ui::Input{row.child({80, 0}), "0.5"};
+        } {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "Roughness");
+            _ui.roughness = Ui::Input{row.child({80, 0}), "0.25"};
+        } {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "ƒ₀");
+            _ui.f0 = Ui::Input{row.child({80, 0}), "0.25"};
+        }
 
-        _ui.roughness = Ui::Input{root.child(WidgetSize), "0.25"};
-        Ui::label(
-            Ui::SnapLayout{_ui.roughness}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "Roughness", Text::Alignment::MiddleRight);
-
-        _ui.f0 = Ui::Input{root.child(WidgetSize), "0.25"};
-        Ui::label(
-            Ui::SnapLayout{_ui.f0}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "ƒ₀", Text::Alignment::MiddleRight);
+        /* Empty fill node to push the buttons all the way to the bottom */
+        root.child(Ui::Snap::FillY);
 
         /** @todo enable the Apply button only if something changes once the UI
             library has a way to signal that, or at least has onKeyPress etc */
-        Ui::Anchor apply = Ui::button(
-            /** @todo remove the NoPad once explicitly snapped layouts respect
-                parent's PropagateLayout flag as well */
-            root.snapChild(Ui::Snap::BottomRight|Ui::Snap::NoPad, WidgetSize),
+        Ui::button(root.child({80, 0}),
             "Apply", {*this, &AreaLightsExample::apply}, Ui::ButtonStyle::Primary);
-
-        Ui::button(
-            Ui::SnapLayout{apply}.snapSibling(Ui::Snap::Top, WidgetSize),
+        Ui::button(root.child({80, 0}),
             "Reset", {*this, &AreaLightsExample::reset}, Ui::ButtonStyle::Danger);
     }
 
