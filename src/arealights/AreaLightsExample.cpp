@@ -226,7 +226,6 @@ class AreaLightsExample: public Platform::Application {
     public:
         explicit AreaLightsExample(const Arguments& arguments);
 
-        void enableApplyButton(const std::string&);
         void apply();
         void reset();
 
@@ -413,8 +412,8 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
             "Reset", {*this, &AreaLightsExample::reset}, Ui::ButtonStyle::Danger);
     }
 
-    /* On Emscritpten we need to explicitly startTextInput() in order to get
-       any text input events */
+    /* On Emscripten we need to explicitly startTextInput() in order to get any
+       text input events */
     /** @todo call this from the UI directly */
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     startTextInput();
