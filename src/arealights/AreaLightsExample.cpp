@@ -520,14 +520,14 @@ void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
 
     _ui.pointerPressEvent(event);
 
-    if(_ui.state())
+    if(_ui)
         redraw();
 }
 
 void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
     _ui.pointerReleaseEvent(event);
 
-    if(_ui.state())
+    if(_ui)
         redraw();
 }
 
@@ -546,14 +546,14 @@ void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
         redraw();
     }
 
-    if(_ui.state())
+    if(_ui)
         redraw();
 }
 
 void AreaLightsExample::scrollEvent(ScrollEvent& event) {
     _ui.scrollEvent(event);
 
-    if(_ui.state())
+    if(_ui)
         redraw();
 }
 
@@ -602,7 +602,7 @@ void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
 void AreaLightsExample::textInputEvent(TextInputEvent& event) {
     _ui.textInputEvent(event);
 
-    if(_ui.state())
+    if(_ui)
         redraw();
 }
 
