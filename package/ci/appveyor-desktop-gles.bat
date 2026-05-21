@@ -71,7 +71,7 @@ cmake --build . --target install || exit /b
 cd .. && cd ..
 
 rem Build Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git || exit /b
+git clone --depth 1 --branch next https://github.com/mosra/magnum-extras.git || exit /b
 cd magnum-extras || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^

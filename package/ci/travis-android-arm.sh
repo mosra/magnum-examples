@@ -71,7 +71,7 @@ ninja install
 cd ../..
 
 # Crosscompile Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git
+git clone --depth 1 --branch next https://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build-android-arm && cd build-android-arm
 cmake .. \

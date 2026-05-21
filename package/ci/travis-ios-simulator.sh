@@ -71,7 +71,7 @@ set -o pipefail && cmake --build . --config Release --target install | xcpretty
 cd ../..
 
 # Crosscompile Magnum Extras
-git clone --depth 1 https://github.com/mosra/magnum-extras.git
+git clone --depth 1 --branch next https://github.com/mosra/magnum-extras.git
 cd magnum-extras
 mkdir build-ios && cd build-ios
 cmake .. \
