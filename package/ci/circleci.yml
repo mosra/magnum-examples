@@ -354,6 +354,7 @@ workflows:
     - macos-selfcontained:
         requires:
         - macos
+        - linux-selfcontained
     - emscripten-webgl1:
         requires:
         - linux-gles2
