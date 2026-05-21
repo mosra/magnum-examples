@@ -509,7 +509,8 @@ void AreaLightsExample::drawEvent() {
 
     /* Redraw only if moving somewhere */
     swapBuffers();
-    if(!_cameraDirection.isZero()) redraw();
+    if(!_cameraDirection.isZero())
+        redraw();
 }
 
 void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
