@@ -358,6 +358,7 @@ workflows:
     # - ports-macos-selfcontained:
     #     requires:
     #     - ports-macos
+    #     - ports-linux-selfcontained
     - ports-emscripten-webgl1:
         requires:
         - ports-linux-gles2

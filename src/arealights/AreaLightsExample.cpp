@@ -31,18 +31,15 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Function.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
-#include <Magnum/Math/Color.h>
-#include <Magnum/Math/Matrix3.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>
@@ -54,7 +51,10 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/GL/Version.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Matrix4.h>
+#include <Magnum/Math/TimeStl.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/EmscriptenApplication.h>
 #else
@@ -70,8 +70,10 @@
 #include <Magnum/Ui/Anchor.h>
 #include <Magnum/Ui/Application.h>
 #include <Magnum/Ui/Button.h>
+#include <Magnum/Ui/Formatter.h>
 #include <Magnum/Ui/Input.h>
 #include <Magnum/Ui/Label.h>
+#include <Magnum/Ui/NumericStorage.h>
 #include <Magnum/Ui/SnapLayout.h>
 #include <Magnum/Ui/SnapLayouter.h>
 #include <Magnum/Ui/TextLayer.h> /** @todo remove once extra glyph cache fill is done better */
@@ -84,7 +86,7 @@
 #include <Magnum/Math/Half.h>
 #endif
 
-namespace Magnum { namespace Examples {
+namespace Magnum { namespace Examples { namespace {
 
 /* Class for the area light shader */
 class AreaLightShader: public GL::AbstractShaderProgram {
@@ -238,18 +240,11 @@ class AreaLightShader: public GL::AbstractShaderProgram {
             _lightQuadUniform;
 };
 
-/* Base UI plane */
-constexpr Vector2 WidgetSize{80, 32};
-
 using namespace Math::Literals;
 
 class AreaLightsExample: public Platform::Application {
     public:
         explicit AreaLightsExample(const Arguments& arguments);
-
-        void enableApplyButton(const std::string&);
-        void apply();
-        void reset();
 
     private:
         void drawEvent() override;
@@ -257,6 +252,7 @@ class AreaLightsExample: public Platform::Application {
         void pointerPressEvent(PointerEvent& event) override;
         void pointerReleaseEvent(PointerEvent& event) override;
         void pointerMoveEvent(PointerMoveEvent& event) override;
+        void scrollEvent(ScrollEvent& event) override;
         void keyPressEvent(KeyEvent& event) override;
         void keyReleaseEvent(KeyEvent& event) override;
         void textInputEvent(TextInputEvent& event) override;
@@ -277,7 +273,8 @@ class AreaLightsExample: public Platform::Application {
             Matrix4::rotationY(-30.0_degf)*
             Matrix4::rotationX(5.0_degf)*
             Matrix4::rotationZ(-10.0_degf)*
-            Matrix4::scaling({0.75f, 1.25f, 1.0f})};
+            Matrix4::scaling({0.75f, 1.25f, 1.0f})
+        };
 
         Color3 _lightColor[3]{0xc7cf2f_rgbf, 0x2f83cc_rgbf, 0x3bd267_rgbf};
 
@@ -286,7 +283,6 @@ class AreaLightsExample: public Platform::Application {
         bool _lightTwoSided[3]{true, false, true};
 
         /* Plane mesh */
-        GL::Buffer _vertices{NoCreate};
         GL::Mesh _plane{NoCreate};
 
         /* Shaders */
@@ -305,29 +301,23 @@ class AreaLightsExample: public Platform::Application {
         Vector3 _cameraDirection;
         Vector2 _cameraRotation;
 
-        /* Material properties */
-        Float _metalness = 0.5f;
-        Float _roughness = 0.25f;
-        Float _f0 = 0.5f; /* Specular reflection coefficient */
-
         /* UI */
-        struct {
-            Ui::UserInterfaceGL ui{NoCreate};
-            Ui::Input metalness{NoCreate},
-                roughness{NoCreate},
-                f0{NoCreate};
-        } _ui;
+        Ui::UserInterfaceGL _ui{NoCreate};
 };
 
 constexpr struct {
     Vector3 position;
     Vector3 normal;
-} LightVertices[] = {
+} LightVertices[]{
     {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{ 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{ 1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
 };
+
+Nanoseconds now() {
+    return Nanoseconds{std::chrono::steady_clock::now()};
+}
 
 AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try to create multisampled context, but be nice and fall back if not
@@ -350,22 +340,25 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Setup the plane mesh, which will be used for both the floor and light
        visualization */
-    _vertices = GL::Buffer{};
-    _vertices.setData(LightVertices, GL::BufferUsage::StaticDraw);
-    _plane = GL::Mesh{};
-    _plane.setPrimitive(GL::MeshPrimitive::TriangleFan)
-        .addVertexBuffer(_vertices, 0, Shaders::GenericGL3D::Position{}, Shaders::GenericGL3D::Normal{})
+    _plane = GL::Mesh{GL::MeshPrimitive::TriangleFan};
+    _plane
+        .addVertexBuffer(GL::Buffer{LightVertices}, 0,
+            Shaders::GenericGL3D::Position{},
+            Shaders::GenericGL3D::Normal{})
         .setCount(Containers::arraySize(LightVertices));
 
     /* Setup project and floor plane tranformation matrix */
     _projection = Matrix4::perspectiveProjection(60.0_degf, 4.0f/3.0f, 0.1f, 50.0f);
-    _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
+    _transformation =
+        Matrix4::rotationX(-90.0_degf)*
+        Matrix4::scaling(Vector3{25.0f});
 
     /* Load LTC matrix and BRDF textures. The shader assumes the data is
        Y-down, so disable Y-flipping in the importer. */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
-    if(!importer) std::exit(1);
+    if(!importer)
+        std::exit(1);
     importer->configuration().setValue("assumeYUpZBackward", true);
 
     const Utility::Resource rs{"arealights-data"};
@@ -433,82 +426,85 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
     {
         /* We don't use the icons for anything, load the theme without to not
            need to link to image importers on the web */
-        Ui::DarkTheme theme;
-        _ui.ui.create(Vector2{windowSize()}/dpiScaling(), Vector2{windowSize()}, framebufferSize(), theme, theme.features() & ~Ui::ThemeFeature::TextLayerImages);
+        Ui::DarkTheme theme{Ui::DarkTheme::Feature::Animations};
+        _ui.create(*this, theme, theme.features() & ~Ui::ThemeFeature::TextLayerImages);
         /** @todo make a builtin API for this, or, better, make it automatic */
-        CORRADE_INTERNAL_ASSERT(_ui.ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.ui.textLayer().shared().glyphCache(), "ƒ₀"));
+        CORRADE_INTERNAL_ASSERT(_ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.textLayer().shared().glyphCache(), "ƒ₀"));
 
-        Ui::SnapLayoutColumnRight root = Ui::SnapLayout::snapRoot(_ui.ui, Ui::Snap::Fill);
+        /* Material properties */
+        Ui::NumericStorage<Float> metalness{_ui, DirectInit, 0.5f};
+        metalness
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        Ui::NumericStorage<Float> roughness{_ui, DirectInit, 0.25f};
+        roughness
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        /* Specular reflection coefficient */
+        Ui::NumericStorage<Float> f0{_ui, DirectInit, 0.5f};
+        f0
+            .setRange(0.1f, 1.0f)
+            .setStep(0.05f);
+        Ui::FloatFormatter formatter{Ui::FloatFormatter::Flag::Decimal};
+        formatter
+            .setPrecision(2);
 
-        /** @todo some numeric-only validators, length restriction, once the UI
-            lib is capable of that */
-        _ui.metalness = Ui::Input{root.child(WidgetSize), "0.5"};
-        Ui::label(
-            Ui::SnapLayout{_ui.metalness}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "Metalness", Text::Alignment::MiddleRight);
+        /* Reflect updates directly to the shader uniforms */
+        metalness->onUpdate([&](Float value) {
+            _areaLightShader.setMetalness(value);
+        });
+        roughness->onUpdate([&](Float value) {
+            _areaLightShader.setRoughness(value);
+        });
+        f0->onUpdate([&](Float value) {
+            _areaLightShader.setF0(value);
+        });
 
-        _ui.roughness = Ui::Input{root.child(WidgetSize), "0.25"};
-        Ui::label(
-            Ui::SnapLayout{_ui.roughness}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "Roughness", Text::Alignment::MiddleRight);
+        Ui::SnapLayoutColumnRight root = Ui::SnapLayout::snapRoot(_ui, Ui::Snap::Fill);
 
-        _ui.f0 = Ui::Input{root.child(WidgetSize), "0.25"};
-        Ui::label(
-            Ui::SnapLayout{_ui.f0}.snapSibling(Ui::Snap::Left, WidgetSize),
-            "ƒ₀", Text::Alignment::MiddleRight);
+        {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "Metalness");
+            Ui::input(row.child({80, 0}), metalness, formatter);
+        } {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "Roughness");
+            Ui::input(row.child({80, 0}), roughness, formatter);
+        } {
+            Ui::SnapLayoutRow row = root.child();
+            Ui::label(row.child(), "ƒ₀");
+            Ui::input(row.child({80, 0}), f0, formatter);
+        } {
+            Ui::SnapLayoutRow row = Ui::SnapLayout::snapRoot(_ui, Ui::Snap::Bottom|Ui::Snap::FillX);
+            Ui::label(row.child(Ui::Snap::FillX),
+                "WASD + mouse to move, edit or scroll over the inputs to change parameters.", Text::Alignment::MiddleLeft);
+            Ui::button(row.child({80, 0}), "Reset", [this, metalness, roughness, f0]{
+                metalness->reset();
+                roughness->reset();
+                f0->reset();
 
-        /** @todo enable the Apply button only if something changes once the UI
-            library has a way to signal that, or at least has onKeyPress etc */
-        Ui::Anchor apply = Ui::button(
-            /** @todo remove the NoPad once explicitly snapped layouts respect
-                parent's PropagateLayout flag as well */
-            root.snapChild(Ui::Snap::BottomRight|Ui::Snap::NoPad, WidgetSize),
-            "Apply", {*this, &AreaLightsExample::apply}, Ui::ButtonStyle::Primary);
-
-        Ui::button(
-            Ui::SnapLayout{apply}.snapSibling(Ui::Snap::Top, WidgetSize),
-            "Reset", {*this, &AreaLightsExample::reset}, Ui::ButtonStyle::Danger);
+                _cameraRotation = {};
+                _cameraPosition = {0.0f, 1.0f, 7.6f};
+            }, Ui::ButtonStyle::Danger);
+        }
     }
 
-    /* On Emscritpten we need to explicitly startTextInput() in order to get
-       any text input events */
+    /* On Emscripten we need to explicitly startTextInput() in order to get any
+       text input events */
     /** @todo call this from the UI directly */
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     startTextInput();
     #endif
-
-    /* Apply the default values */
-    apply();
-}
-
-void AreaLightsExample::apply() {
-    _metalness = Math::clamp(std::stof(_ui.metalness.text()), 0.1f, 1.0f);
-    _roughness = Math::clamp(std::stof(_ui.roughness.text()), 0.1f, 1.0f);
-    _f0 = Math::clamp(std::stof(_ui.f0.text()), 0.1f, 1.0f);
-
-    _areaLightShader.setMetalness(_metalness)
-        .setRoughness(_roughness)
-        .setF0(_f0);
-
-    /* Set the clamped values back */
-    _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
-    _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
-    _ui.f0.setText(Utility::formatString("{:.5}", _f0));
-}
-
-void AreaLightsExample::reset() {
-    _ui.metalness.setText("0.5");
-    _ui.roughness.setText("0.25");
-    _ui.f0.setText("0.25");
-
-    _cameraRotation = {};
-    _cameraPosition = {0.0f, 1.0f, 6.0f};
-
-    apply();
 }
 
 void AreaLightsExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+
+    /* Trigger UI update first to have any material property changes reflected
+       to the shader uniforms */
+    _ui
+        .advanceAnimations(now())
+        .update();
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -568,13 +564,14 @@ void AreaLightsExample::drawEvent() {
     /* Draw the UI */
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-    _ui.ui.draw();
+    _ui.draw();
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
-    /* Redraw only if moving somewhere */
+    /* Redraw only if the UI wants to or moving somewhere */
     swapBuffers();
-    if(!_cameraDirection.isZero()) redraw();
+    if(_ui || !_cameraDirection.isZero())
+        redraw();
 }
 
 void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
@@ -582,23 +579,21 @@ void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
        (event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         _previousPointerPosition = event.position();
 
-    if(!_ui.ui.pointerPressEvent(event))
-        redraw();
+    _ui.pointerPressEvent(event, now());
 
-    if(_ui.ui.state())
+    if(_ui)
         redraw();
 }
 
 void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
-    if(!_ui.ui.pointerReleaseEvent(event))
-        redraw();
+    _ui.pointerReleaseEvent(event, now());
 
-    if(_ui.ui.state())
+    if(_ui)
         redraw();
 }
 
 void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
-    if(_ui.ui.pointerMoveEvent(event)) {
+    if(_ui.pointerMoveEvent(event, now())) {
         /* UI handles it */
 
     } else if(event.isPrimary() &&
@@ -612,14 +607,20 @@ void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
         redraw();
     }
 
-    if(_ui.ui.state())
+    if(_ui)
+        redraw();
+}
+
+void AreaLightsExample::scrollEvent(ScrollEvent& event) {
+    _ui.scrollEvent(event, now());
+
+    if(_ui)
         redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
-    /* If the UI accepts an input event, pass them only there  */
-    if(_ui.ui.keyPressEvent(event)) {
-        /* Redraw at the end */
+    if(_ui.keyPressEvent(event, now())) {
+        /* UI handles it */
 
     /* Movement */
     } else if(event.key() == Key::W) {
@@ -632,30 +633,6 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
     } else if(event.key() == Key::D) {
         _cameraDirection = -Math::cross(_view.inverted().backward(),
                                         Vector3::yAxis())*0.1f;
-
-    /* Increase/decrease roughness */
-    } else if(event.key() == Key::R) {
-        _roughness = Math::clamp(
-            _roughness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setRoughness(_roughness);
-        _ui.roughness.setText(Utility::formatString("{:.5}", _roughness));
-
-    /* Increase/decrease metalness */
-    } else if(event.key() == Key::M) {
-        _metalness = Math::clamp(
-            _metalness + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setMetalness(_metalness);
-        _ui.metalness.setText(Utility::formatString("{:.5}", _metalness));
-
-    /* Increase/decrease f0 */
-    } else if(event.key() == Key::F) {
-        _f0 = Math::clamp(
-            _f0 + 0.01f*(event.modifiers() & Modifier::Shift ? -1 : 1),
-            0.1f, 1.0f);
-        _areaLightShader.setF0(_f0);
-        _ui.f0.setText(Utility::formatString("{:.5}", _f0));
 
     /* Reload shader */
     } else if(event.key() == Key::F5) {
@@ -670,21 +647,26 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(event.key() == Key::W || event.key() == Key::S ||
-       event.key() == Key::A || event.key() == Key::D)
+    if(_ui.keyReleaseEvent(event, now())) {
+        /* UI handles it */
+
+    /* Movement */
+    } else if(event.key() == Key::W || event.key() == Key::S ||
+              event.key() == Key::A || event.key() == Key::D) {
         _cameraDirection = {};
-    else return;
+
+    } else return;
 
     redraw();
 }
 
 void AreaLightsExample::textInputEvent(TextInputEvent& event) {
-    _ui.ui.textInputEvent(event);
+    _ui.textInputEvent(event, now());
 
-    if(_ui.ui.state())
+    if(_ui)
         redraw();
 }
 
-}}
+}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::AreaLightsExample)
