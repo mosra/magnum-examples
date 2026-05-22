@@ -586,7 +586,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(_ui.keyPressEvent(event)) {
+    if(_ui.keyReleaseEvent(event)) {
         /* UI handles it */
 
     /* Movement */
