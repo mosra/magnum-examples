@@ -415,19 +415,19 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
             Ui::SnapLayoutRow row = root.child();
             Ui::label(row.child(), "ƒ₀");
             Ui::input(row.child({80, 0}), f0, formatter);
+        } {
+            Ui::SnapLayoutRow row = Ui::SnapLayout::snapRoot(_ui, Ui::Snap::Bottom|Ui::Snap::FillX);
+            Ui::label(row.child(Ui::Snap::FillX),
+                "WASD + mouse to move, edit or scroll over the inputs to change parameters.", Text::Alignment::MiddleLeft);
+            Ui::button(row.child({80, 0}), "Reset", [this, metalness, roughness, f0]{
+                metalness->reset();
+                roughness->reset();
+                f0->reset();
+
+                _cameraRotation = {};
+                _cameraPosition = {0.0f, 1.0f, 7.6f};
+            }, Ui::ButtonStyle::Danger);
         }
-
-        /* Empty fill node to push the buttons all the way to the bottom */
-        root.child(Ui::Snap::FillY);
-
-        Ui::button(root.child({80, 0}), "Reset", [this, metalness, roughness, f0]{
-            metalness->reset();
-            roughness->reset();
-            f0->reset();
-
-            _cameraRotation = {};
-            _cameraPosition = {0.0f, 1.0f, 7.6f};
-        }, Ui::ButtonStyle::Danger);
     }
 
     /* On Emscripten we need to explicitly startTextInput() in order to get any
