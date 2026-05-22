@@ -42,6 +42,7 @@
 #include <Magnum/ImageView.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix3.h>
+#include <Magnum/Math/TimeStl.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>
@@ -76,7 +77,7 @@
 #include <Magnum/Ui/TextProperties.h>
 #include <Magnum/Ui/UserInterfaceGL.h>
 
-namespace Magnum { namespace Examples {
+namespace Magnum { namespace Examples { namespace {
 
 /* Class for the area light shader */
 class AreaLightShader: public GL::AbstractShaderProgram {
@@ -296,6 +297,10 @@ constexpr struct {
     {{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
 };
 
+Nanoseconds now() {
+    return Nanoseconds{std::chrono::steady_clock::now()};
+}
+
 AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     /* Try to create multisampled context, but be nice and fall back if not
        available. Enable only 2x MSAA if we have enough DPI. */
@@ -368,7 +373,7 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Create the UI */
     {
-        _ui.create(*this, Ui::DarkTheme{});
+        _ui.create(*this, Ui::DarkTheme{Ui::DarkTheme::Feature::Animations});
         /** @todo make a builtin API for this, or, better, make it automatic */
         CORRADE_INTERNAL_ASSERT(_ui.textLayer().shared().font(Ui::fontHandle(2, 1)).fillGlyphCache(_ui.textLayer().shared().glyphCache(), "ƒ₀"));
 
@@ -443,7 +448,9 @@ void AreaLightsExample::drawEvent() {
 
     /* Trigger UI update first to have any material property changes reflected
        to the shader uniforms */
-    _ui.update();
+    _ui
+        .advanceAnimations(now())
+        .update();
 
     /* Update view matrix */
     _cameraPosition += _cameraDirection;
@@ -507,9 +514,9 @@ void AreaLightsExample::drawEvent() {
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
-    /* Redraw only if moving somewhere */
+    /* Redraw only if the UI wants to or moving somewhere */
     swapBuffers();
-    if(!_cameraDirection.isZero())
+    if(_ui || !_cameraDirection.isZero())
         redraw();
 }
 
@@ -518,21 +525,21 @@ void AreaLightsExample::pointerPressEvent(PointerEvent& event) {
        (event.pointer() & (Pointer::MouseLeft|Pointer::Finger)))
         _previousPointerPosition = event.position();
 
-    _ui.pointerPressEvent(event);
+    _ui.pointerPressEvent(event, now());
 
     if(_ui)
         redraw();
 }
 
 void AreaLightsExample::pointerReleaseEvent(PointerEvent& event) {
-    _ui.pointerReleaseEvent(event);
+    _ui.pointerReleaseEvent(event, now());
 
     if(_ui)
         redraw();
 }
 
 void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
-    if(_ui.pointerMoveEvent(event)) {
+    if(_ui.pointerMoveEvent(event, now())) {
         /* UI handles it */
 
     } else if(event.isPrimary() &&
@@ -551,14 +558,14 @@ void AreaLightsExample::pointerMoveEvent(PointerMoveEvent& event) {
 }
 
 void AreaLightsExample::scrollEvent(ScrollEvent& event) {
-    _ui.scrollEvent(event);
+    _ui.scrollEvent(event, now());
 
     if(_ui)
         redraw();
 }
 
 void AreaLightsExample::keyPressEvent(KeyEvent& event) {
-    if(_ui.keyPressEvent(event)) {
+    if(_ui.keyPressEvent(event, now())) {
         /* UI handles it */
 
     /* Movement */
@@ -586,7 +593,7 @@ void AreaLightsExample::keyPressEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
-    if(_ui.keyReleaseEvent(event)) {
+    if(_ui.keyReleaseEvent(event, now())) {
         /* UI handles it */
 
     /* Movement */
@@ -600,12 +607,12 @@ void AreaLightsExample::keyReleaseEvent(KeyEvent& event) {
 }
 
 void AreaLightsExample::textInputEvent(TextInputEvent& event) {
-    _ui.textInputEvent(event);
+    _ui.textInputEvent(event, now());
 
     if(_ui)
         redraw();
 }
 
-}}
+}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Examples::AreaLightsExample)
