@@ -31,18 +31,15 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Function.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/ImageView.h>
-#include <Magnum/Math/Color.h>
-#include <Magnum/Math/Matrix3.h>
-#include <Magnum/Math/TimeStl.h>
 #include <Magnum/GL/AbstractShaderProgram.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Context.h>
@@ -54,7 +51,10 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/GL/Version.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Matrix4.h>
+#include <Magnum/Math/TimeStl.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Shaders/FlatGL.h>
 #include <Magnum/Text/AbstractFont.h> /** @todo remove once extra glyph cache fill is done better */
@@ -255,7 +255,8 @@ class AreaLightsExample: public Platform::Application {
             Matrix4::rotationY(-30.0_degf)*
             Matrix4::rotationX(5.0_degf)*
             Matrix4::rotationZ(-10.0_degf)*
-            Matrix4::scaling({0.75f, 1.25f, 1.0f})};
+            Matrix4::scaling({0.75f, 1.25f, 1.0f})
+        };
 
         Color3 _lightColor[3]{0xc7cf2f_rgbf, 0x2f83cc_rgbf, 0x3bd267_rgbf};
 
@@ -264,7 +265,6 @@ class AreaLightsExample: public Platform::Application {
         bool _lightTwoSided[3]{true, false, true};
 
         /* Plane mesh */
-        GL::Buffer _vertices{NoCreate};
         GL::Mesh _plane{NoCreate};
 
         /* Shaders */
@@ -290,7 +290,7 @@ class AreaLightsExample: public Platform::Application {
 constexpr struct {
     Vector3 position;
     Vector3 normal;
-} LightVertices[] = {
+} LightVertices[]{
     {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{ 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{ 1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
@@ -322,22 +322,25 @@ AreaLightsExample::AreaLightsExample(const Arguments& arguments): Platform::Appl
 
     /* Setup the plane mesh, which will be used for both the floor and light
        visualization */
-    _vertices = GL::Buffer{};
-    _vertices.setData(LightVertices, GL::BufferUsage::StaticDraw);
-    _plane = GL::Mesh{};
-    _plane.setPrimitive(GL::MeshPrimitive::TriangleFan)
-        .addVertexBuffer(_vertices, 0, Shaders::GenericGL3D::Position{}, Shaders::GenericGL3D::Normal{})
+    _plane = GL::Mesh{GL::MeshPrimitive::TriangleFan};
+    _plane
+        .addVertexBuffer(GL::Buffer{LightVertices}, 0,
+            Shaders::GenericGL3D::Position{},
+            Shaders::GenericGL3D::Normal{})
         .setCount(Containers::arraySize(LightVertices));
 
     /* Setup project and floor plane tranformation matrix */
     _projection = Matrix4::perspectiveProjection(60.0_degf, 4.0f/3.0f, 0.1f, 50.0f);
-    _transformation = Matrix4::rotationX(-90.0_degf)*Matrix4::scaling(Vector3{25.0f});
+    _transformation =
+        Matrix4::rotationX(-90.0_degf)*
+        Matrix4::scaling(Vector3{25.0f});
 
     /* Load LTC matrix and BRDF textures. The shader assumes the data is
        Y-down, so disable Y-flipping in the importer. */
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("DdsImporter");
-    if(!importer) std::exit(1);
+    if(!importer)
+        std::exit(1);
     importer->configuration().setValue("assumeYUpZBackward", true);
 
     const Utility::Resource rs{"arealights-data"};
