@@ -169,12 +169,14 @@ int main(int argc, char** argv) {
     PluginManager::Manager<Trade::AbstractImporter> manager;
     Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate("StbImageImporter");
-    if(!importer) return 1;
+    if(!importer)
+        return 1;
 
     /* Load the texture. Force expansion to RGBA because that's what Vulkan
        wants. */
     const Utility::Resource rs{"textured-triangle-data"};
-    if(!importer->openData(rs.getRaw("stone.tga"))) return 2;
+    if(!importer->openData(rs.getRaw("stone.tga")))
+        return 2;
     importer->configuration().setValue("forceChannelCount", 4);
     Containers::Optional<Trade::ImageData2D> data = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(data);

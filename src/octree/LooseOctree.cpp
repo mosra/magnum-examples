@@ -58,7 +58,8 @@ void OctreeNode::removePointFromSubTree() {
 }
 
 void OctreeNode::split() {
-    if(!_isLeaf || _depth == _maxDepth) return;
+    if(!_isLeaf || _depth == _maxDepth)
+        return;
 
     if(_isLeaf) {
         /*    6-------7
@@ -102,7 +103,8 @@ void OctreeNode::split() {
 }
 
 void OctreeNode::removeAllDescendants() {
-    if(_isLeaf) return;
+    if(_isLeaf)
+        return;
 
     for(std::size_t childIdx = 0; childIdx < 8; ++childIdx)
         _children->_nodes[childIdx].removeAllDescendants();
@@ -112,7 +114,8 @@ void OctreeNode::removeAllDescendants() {
 }
 
 void OctreeNode::removeEmptyDescendants() {
-    if(_isLeaf) return;
+    if(_isLeaf)
+        return;
 
     bool allEmpty = true;
     bool allLeaves = true;
@@ -149,8 +152,8 @@ void OctreeNode::insertPoint(OctreePoint& point) {
     /* Compute the index of the child node that contains this point */
     const Vector3 ppos = point.position();
     std::size_t childIdx = 0;
-    for(std::size_t dim = 0; dim < 3; ++dim)
-        if(_center[dim] < ppos[dim]) childIdx |= (1ull << dim);
+    for(std::size_t dim = 0; dim < 3; ++dim) if(_center[dim] < ppos[dim])
+        childIdx |= (1ull << dim);
 
     _children->_nodes[childIdx].insertPoint(point);
 }
@@ -232,9 +235,11 @@ void LooseOctree::build() {
 }
 
 void LooseOctree::update() {
-    if(!_completeBuild) build();
+    if(!_completeBuild)
+        build();
 
-    if(_alwaysRebuild) rebuild();
+    if(_alwaysRebuild)
+        rebuild();
     else incrementalUpdate();
 }
 
@@ -302,8 +307,8 @@ void LooseOctree::removeInvalidPointsFromNodes() {
 }
 
 void LooseOctree::reinsertInvalidPointsToNodes() {
-    for(OctreePoint& point: _octreePoints)
-        if(!point.isValid()) _rootNode.insertPoint(point);
+    for(OctreePoint& point: _octreePoints) if(!point.isValid())
+        _rootNode.insertPoint(point);
 }
 
 OctreeNodeBlock* LooseOctree::requestChildrenFromPool() {

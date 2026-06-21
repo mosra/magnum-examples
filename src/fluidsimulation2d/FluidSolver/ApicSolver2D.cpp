@@ -120,7 +120,8 @@ void ApicSolver2D::addRepulsiveVelocity(const Vector2& p0, const Vector2& p1, Fl
 
     for(Int j = fromCell.y(); j <= toCell.y(); ++j) {
         for(Int i = fromCell.x(); i <= toCell.x(); ++i) {
-            if(!_grid.isValidCellIdx(i, j)) continue;
+            if(!_grid.isValidCellIdx(i, j))
+                continue;
 
             const std::vector<UnsignedInt>& particleIdxs = _grid.cellParticles(i, j);
             for(UnsignedInt p: particleIdxs) {
@@ -294,7 +295,8 @@ void ApicSolver2D::computeFluidSDF() {
 
         for(Int j = gridPos.y() - 2; j <= gridPos.y() + 2; ++j) {
             for(Int i = gridPos.x() - 2; i <= gridPos.x() + 2; ++i) {
-                if(!_grid.isValidCellIdx(i, j)) continue;
+                if(!_grid.isValidCellIdx(i, j))
+                    continue;
 
                 const Vector2 cellCenter = _grid.getWorldPos({i + 0.5f, j + 0.5f});
                 const Float sdfVal = (cellCenter - ppos).length() - _particles.particleRadius;
@@ -463,7 +465,8 @@ void ApicSolver2D::relaxParticlePositions(Float dt) {
         Vector2 spring = Vector2{0.0f};
 
         _grid.loopNeigborParticles(gridCoord.x(), gridCoord.y(), -1, 1, -1, 1, [&](UnsignedInt q) {
-            if(p == q) return;
+            if(p == q)
+                return;
 
             const Vector2 xpq  = ppos - _particles.positions[q];
             const auto distSqr = xpq.dot();

@@ -74,7 +74,8 @@ class ArcBallCamera: public ArcBall {
         /* Update the SceneGraph camera if arcball has been changed */
         bool update() {
             /* call the internal update */
-            if(!updateTransformation()) return false;
+            if(!updateTransformation())
+                return false;
 
             (*_cameraObject)
                 .resetTransformation()

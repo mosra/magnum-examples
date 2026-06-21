@@ -243,7 +243,8 @@ void FluidSimulation2DExample::drawEvent() {
     if(!_pausedSimulation) {
         constexpr Float frameTime = 1.0f/60.0f;
         /* pause for a while before starting simulation */
-        if(_evolvedTime > 1.0f) _fluidSolver->advanceFrame(frameTime*_speed);
+        if(_evolvedTime > 1.0f)
+            _fluidSolver->advanceFrame(frameTime*_speed);
         _evolvedTime += frameTime;
 
         /* Emit particles automatically */
@@ -260,7 +261,8 @@ void FluidSimulation2DExample::drawEvent() {
     }
 
     /* Menu for parameters */
-    if(_showMenu) showMenu();
+    if(_showMenu)
+        showMenu();
 
     /* Update application cursor */
     _imGuiContext.updateApplicationCursor(*this);

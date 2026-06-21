@@ -52,7 +52,8 @@ ParticleGroup::ParticleGroup(const std::vector<Vector3>& points, float particleR
 }
 
 ParticleGroup& ParticleGroup::draw(Containers::Pointer<SceneGraph::Camera3D>& camera, const Vector2i& viewportSize) {
-    if(_points.empty()) return *this;
+    if(_points.empty())
+        return *this;
 
     if(_dirty) {
         Containers::ArrayView<const float> data(reinterpret_cast<const float*>(&_points[0]), _points.size() * 3);

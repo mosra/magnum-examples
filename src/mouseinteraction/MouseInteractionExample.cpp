@@ -303,7 +303,8 @@ void MouseInteractionExample::scrollEvent(ScrollEvent& event) {
     }
 
     const Float direction = event.offset().y();
-    if(!direction) return;
+    if(!direction)
+        return;
 
     /* Move towards/backwards the rotation point in cam coords */
     _cameraObject->translateLocal(_rotationPoint*direction*0.1f);

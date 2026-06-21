@@ -233,7 +233,8 @@ void OvrExample::drawEvent() {
     }
 
     /* Provide some rotation, but only without real devices to avoid VR sickness ;) */
-    if(_session->isDebugHmd()) _cameraRotation += 0.1_degf;
+    if(_session->isDebugHmd())
+        _cameraRotation += 0.1_degf;
 
     redraw();
 }

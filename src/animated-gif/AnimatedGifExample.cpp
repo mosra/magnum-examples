@@ -101,7 +101,8 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
 
     /* Get the first image */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
-    if(!image) std::exit(2);
+    if(!image)
+        std::exit(2);
 
     /* Query total image count and allocate a 2D texture */
     const Int imageCount = importer->image2DCount();
@@ -116,7 +117,8 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
 
     /* Upload remaining images */
     for(Int i = 1; i != imageCount; ++i) {
-        if(!(image = importer->image2D(i))) std::exit(3);
+        if(!(image = importer->image2D(i)))
+            std::exit(3);
         CORRADE_INTERNAL_ASSERT(image->size() == _imageSize);
 
         _texture.setSubImage(0,

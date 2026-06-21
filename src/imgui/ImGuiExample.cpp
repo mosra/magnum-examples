@@ -170,23 +170,28 @@ void ImGuiExample::viewportEvent(ViewportEvent& event) {
 }
 
 void ImGuiExample::keyPressEvent(KeyEvent& event) {
-    if(_imgui.handleKeyPressEvent(event)) return;
+    if(_imgui.handleKeyPressEvent(event))
+        return;
 }
 
 void ImGuiExample::keyReleaseEvent(KeyEvent& event) {
-    if(_imgui.handleKeyReleaseEvent(event)) return;
+    if(_imgui.handleKeyReleaseEvent(event))
+        return;
 }
 
 void ImGuiExample::pointerPressEvent(PointerEvent& event) {
-    if(_imgui.handlePointerPressEvent(event)) return;
+    if(_imgui.handlePointerPressEvent(event))
+        return;
 }
 
 void ImGuiExample::pointerReleaseEvent(PointerEvent& event) {
-    if(_imgui.handlePointerReleaseEvent(event)) return;
+    if(_imgui.handlePointerReleaseEvent(event))
+        return;
 }
 
 void ImGuiExample::pointerMoveEvent(PointerMoveEvent& event) {
-    if(_imgui.handlePointerMoveEvent(event)) return;
+    if(_imgui.handlePointerMoveEvent(event))
+        return;
 }
 
 void ImGuiExample::scrollEvent(ScrollEvent& event) {
@@ -198,7 +203,8 @@ void ImGuiExample::scrollEvent(ScrollEvent& event) {
 }
 
 void ImGuiExample::textInputEvent(TextInputEvent& event) {
-    if(_imgui.handleTextInputEvent(event)) return;
+    if(_imgui.handleTextInputEvent(event))
+        return;
 }
 
 }}

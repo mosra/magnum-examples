@@ -243,9 +243,11 @@ void FluidSimulation3DExample::drawEvent() {
         /* Adjust the substep number to maximize CPU usage each frame */
         const Float lastAvgStepTime = _timeline.previousFrameDuration()/Float(_substeps);
         const Int newSubsteps = lastAvgStepTime > 0 ? Int(1.0f/60.0f/lastAvgStepTime) + 1 : 1;
-        if(Math::abs(newSubsteps - _substeps) > 1) _substeps = newSubsteps;
+        if(Math::abs(newSubsteps - _substeps) > 1)
+            _substeps = newSubsteps;
 
-        for(Int i = 0; i < _substeps; ++i) simulationStep();
+        for(Int i = 0; i < _substeps; ++i)
+            simulationStep();
     }
 
     /* Draw objects */
@@ -260,7 +262,8 @@ void FluidSimulation3DExample::drawEvent() {
     }
 
     /* Menu for parameters */
-    if(_showMenu) showMenu();
+    if(_showMenu)
+        showMenu();
 
     /* Update application cursor */
     _imGuiContext.updateApplicationCursor(*this);
@@ -550,7 +553,8 @@ void FluidSimulation3DExample::initializeScene() {
     }
 
     /* Reset domain */
-    if(_dynamicBoundary) _boundaryOffset = 0.0f;
+    if(_dynamicBoundary)
+        _boundaryOffset = 0.0f;
     _drawableBox->setTransformation(
         Matrix4::scaling(Vector3{1.5f, 1.5f, 0.5f})*
         Matrix4::translation(Vector3(1)));

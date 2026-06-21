@@ -240,7 +240,8 @@ void PickingExample::pointerReleaseEvent(PointerEvent& event) {
     _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
 
     /* Highlight object under mouse and deselect all other */
-    for(auto* o: _objects) o->setSelected(false);
+    for(auto* o: _objects)
+        o->setSelected(false);
     UnsignedInt id = data.pixels<UnsignedInt>()[0][0];
     if(id > 0 && id < ObjectCount + 1)
         _objects[id - 1]->setSelected(true);

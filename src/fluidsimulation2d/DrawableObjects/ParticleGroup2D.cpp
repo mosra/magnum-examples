@@ -55,7 +55,8 @@ ParticleGroup2D::ParticleGroup2D(const std::vector<Vector2>& points, Float parti
 }
 
 ParticleGroup2D& ParticleGroup2D::draw(Containers::Pointer<SceneGraph::Camera2D>& camera, Int screenHeight, Int projectionHeight) {
-    if(_points.empty()) return *this;
+    if(_points.empty())
+        return *this;
 
     if(_dirty) {
         Containers::ArrayView<const float> data(reinterpret_cast<const float*>(&_points[0]), _points.size() * 2);

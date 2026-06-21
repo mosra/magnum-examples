@@ -185,7 +185,8 @@ void ArcBallExample::drawEvent() {
     _arcballCamera->draw(_drawables);
     swapBuffers();
 
-    if(camChanged) redraw();
+    if(camChanged)
+        redraw();
 }
 
 void ArcBallExample::viewportEvent(ViewportEvent& event) {
@@ -257,7 +258,8 @@ void ArcBallExample::pointerMoveEvent(PointerMoveEvent& event) {
 
 void ArcBallExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
-    if(Math::abs(delta) < 1.0e-2f) return;
+    if(Math::abs(delta) < 1.0e-2f)
+        return;
 
     _arcballCamera->zoom(delta);
 

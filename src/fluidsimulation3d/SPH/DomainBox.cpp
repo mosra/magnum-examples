@@ -79,20 +79,24 @@ void DomainBox::findNeighbors(const std::vector<Vector3>& positions,
         const Vector3i cellIdx = getCellIndex(ppos);
         for(Int k = -1; k <= 1; ++k) {
             Int zIdx = cellIdx[2] + k;
-            if(!isValidIndex<2>(zIdx)) continue;
+            if(!isValidIndex<2>(zIdx))
+                continue;
 
             for(Int j = -1; j <= 1; ++j) {
                 Int yIdx = cellIdx[1] + j;
-                if(!isValidIndex<1>(yIdx)) continue;
+                if(!isValidIndex<1>(yIdx))
+                    continue;
 
                 for(Int i = -1; i <= 1; ++i) {
                     Int xIdx = cellIdx[0] + i;
-                    if(!isValidIndex<0>(xIdx)) continue;
+                    if(!isValidIndex<0>(xIdx))
+                        continue;
 
                     const std::vector<UnsignedInt>& cell = _cells[getFlatIndex(xIdx, yIdx, zIdx)];
                     for(UnsignedInt q: cell) {
                         /* Exclude particle p from its neighbor list */
-                        if(UnsignedInt(p) == q) continue;
+                        if(UnsignedInt(p) == q)
+                            continue;
 
                         const Vector3 qpos = positions[q];
                         const Vector3 r = ppos - qpos;
@@ -202,7 +206,8 @@ void DomainBox::collectIndices(const std::vector<Vector3>& positions) {
 }
 
 void DomainBox::tightenGrid(const std::vector<Vector3>& positions) {
-    if(positions.size() == 0) return;
+    if(positions.size() == 0)
+        return;
 
     /* Compute the particles axis-aligned bounding box */
     auto lowerBound = positions[0];

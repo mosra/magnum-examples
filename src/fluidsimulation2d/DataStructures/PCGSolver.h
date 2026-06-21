@@ -43,7 +43,8 @@ template<class T> class PCGSolver {
 
         bool solve(SparseMatrix<T>& matrix, const std::vector<T>& rhs, std::vector<T>& result) {
             UnsignedInt rows = matrix.size;
-            if(rows == 0) return false;
+            if(rows == 0)
+                return false;
 
             if(_m.size() != rows) {
                 _m.resize(rows);

@@ -113,7 +113,8 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
 }
 
 void RayTracingExample::drawEvent() {
-    if(_paused) return;
+    if(_paused)
+        return;
 
     /* Call arcball update in every frame. This will do nothing if the camera
        has not been changed; otherwise camera transformation will be propagated
@@ -126,7 +127,8 @@ void RayTracingExample::drawEvent() {
     swapBuffers();
 
     /* Draw again if the raytracer is not done with all samples yet */
-    if(!_rayTracer->done()) redraw();
+    if(!_rayTracer->done())
+        redraw();
 }
 
 void RayTracingExample::renderAndUpdateBlockPixels() {
@@ -226,7 +228,8 @@ void RayTracingExample::pointerMoveEvent(PointerMoveEvent& event) {
 
 void RayTracingExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
-    if(Math::abs(delta) < 1.0e-2f) return;
+    if(Math::abs(delta) < 1.0e-2f)
+        return;
 
     _arcballCamera->zoom(delta);
     event.setAccepted();

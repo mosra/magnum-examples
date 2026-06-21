@@ -135,7 +135,8 @@ WebXrExample::WebXrExample(const Arguments& arguments):
 }
 
 WebXrExample::~WebXrExample() {
-    if(_inXR) webxr_request_exit();
+    if(_inXR)
+        webxr_request_exit();
 }
 
 void WebXrExample::drawWebXRFrame(WebXRView* views) {
@@ -212,7 +213,8 @@ void WebXrExample::drawEvent() {
 }
 
 void WebXrExample::sessionStart() {
-    if(_inXR) return;
+    if(_inXR)
+        return;
     _inXR = true;
 
     Debug{} << "Entered VR";

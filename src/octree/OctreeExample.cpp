@@ -262,7 +262,8 @@ void OctreeExample::drawEvent() {
     swapBuffers();
 
     /* If the camera is moving or the animation is running, redraw immediately */
-    if(moving || _animation) redraw();
+    if(moving || _animation)
+        redraw();
 }
 
 void OctreeExample::collisionDetectionAndHandlingBruteForce() {
@@ -299,7 +300,8 @@ void OctreeExample::collisionDetectionAndHandlingUsingOctree() {
 void OctreeExample::checkCollisionWithSubTree(const OctreeNode& node,
     std::size_t i, const Vector3& ppos, const Vector3& pvel, const Range3D& bounds)
 {
-    if(!node.looselyOverlaps(bounds)) return;
+    if(!node.looselyOverlaps(bounds))
+        return;
 
     if(!node.isLeaf()) {
         for(std::size_t childIdx = 0; childIdx < 8; ++childIdx) {
@@ -408,10 +410,12 @@ void OctreeExample::keyPressEvent(KeyEvent& event) {
             Debug{} << "Collision detection using brute force";
         /* Reset the profiler to avoid measurements of the two methods mixed
            together */
-        if(_profiler.isEnabled()) _profiler.enable();
+        if(_profiler.isEnabled())
+            _profiler.enable();
 
     } else if(event.key() == Key::P) {
-        if(_profiler.isEnabled()) _profiler.disable();
+        if(_profiler.isEnabled())
+            _profiler.disable();
         else _profiler.enable();
 
     } else if(event.key() == Key::R) {
@@ -464,7 +468,8 @@ void OctreeExample::pointerMoveEvent(PointerMoveEvent& event) {
 
 void OctreeExample::scrollEvent(ScrollEvent& event) {
     const Float delta = event.offset().y();
-    if(Math::abs(delta) < 1.0e-2f) return;
+    if(Math::abs(delta) < 1.0e-2f)
+        return;
 
     _arcballCamera->zoom(delta);
 

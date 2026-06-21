@@ -405,7 +405,8 @@ void ShadowsExample::setShadowSplitExponent(const Float power) {
     _shadowLight.setupSplitDistances(MainCameraNear, MainCameraFar, power);
     std::string buf;
     for(std::size_t layer = 0; layer != _shadowLight.layerCount(); ++layer) {
-        if(layer) buf += ", ";
+        if(layer)
+            buf += ", ";
         buf += std::to_string(_shadowLight.cutDistance(MainCameraNear, MainCameraFar, layer));
     }
 

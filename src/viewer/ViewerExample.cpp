@@ -275,7 +275,8 @@ ViewerExample::ViewerExample(const Arguments& arguments):
         Object3D* object = objects[meshMaterial.first()];
         Containers::Optional<GL::Mesh>& mesh =
             _meshes[meshMaterial.second().first()];
-        if(!object || !mesh) continue;
+        if(!object || !mesh)
+            continue;
 
         Int materialId = meshMaterial.second().second();
 
@@ -356,7 +357,8 @@ void ViewerExample::pointerReleaseEvent(PointerEvent& event) {
 }
 
 void ViewerExample::scrollEvent(ScrollEvent& event) {
-    if(!event.offset().y()) return;
+    if(!event.offset().y())
+        return;
 
     /* Distance to origin */
     const Float distance = _cameraObject.transformation().translation().z();

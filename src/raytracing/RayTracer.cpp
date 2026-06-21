@@ -136,7 +136,8 @@ void RayTracer::clearBuffers() {
 }
 
 void RayTracer::renderBlock() {
-    if(_numRenderPass >= _maxSamplesPerPixel) return;
+    if(_numRenderPass >= _maxSamplesPerPixel)
+        return;
 
     /* Wait if there's any buffer is currently resized */
     while(_busy.load()) {}

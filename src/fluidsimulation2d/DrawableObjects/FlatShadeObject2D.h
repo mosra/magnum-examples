@@ -48,7 +48,8 @@ class FlatShadeObject2D: public SceneGraph::Drawable2D {
             SceneGraph::Drawable2D{object, drawables}, _shader(shader), _color(color), _mesh(mesh) {}
 
         void draw(const Matrix3& transformation, SceneGraph::Camera2D& camera) override {
-            if(!_bEnabled) return;
+            if(!_bEnabled)
+                return;
 
             _shader
                 .setColor(_color)

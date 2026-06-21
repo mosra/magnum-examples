@@ -75,7 +75,8 @@ TriangleSokolExample::TriangleSokolExample(const Arguments& arguments):
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     _context = SDL_GL_CreateContext(window());
-    if(!_context) Fatal{} << "Can not create context:" << SDL_GetError();
+    if(!_context)
+        Fatal{} << "Can not create context:" << SDL_GetError();
     SDL_GL_MakeCurrent(window(), _context);
 
     flextInit();

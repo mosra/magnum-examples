@@ -61,7 +61,8 @@ class ThreadPool {
                             _condition.wait(lock, [threadIdx, this] {
                                 return _bStop || _threadTaskReady[threadIdx] == 1;
                             });
-                            if(_bStop && !_threadTaskReady[threadIdx]) return;
+                            if(_bStop && !_threadTaskReady[threadIdx])
+                                return;
                         }
 
                         _tasks[threadIdx](); /* run task */
@@ -84,7 +85,8 @@ class ThreadPool {
             }
 
             _condition.notify_all();
-            for(std::thread& worker: _workerThreads) worker.join();
+            for(std::thread& worker: _workerThreads)
+                worker.join();
         }
 
         void parallel_for(std::size_t size, std::function<void(std::size_t)>&& func) {

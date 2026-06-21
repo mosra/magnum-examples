@@ -40,7 +40,8 @@ using namespace Magnum;
 
 int main(int argc, char** argv) {
     /* Initialize the library */
-    if(!glfwInit()) return -1;
+    if(!glfwInit())
+        return -1;
 
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* const window = glfwCreateWindow(

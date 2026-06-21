@@ -78,7 +78,8 @@ void SPHSolver::advance() {
 void SPHSolver::computeDensities() {
     TaskScheduler::forEach(_positions.size(), [&](const std::size_t p) {
         const std::vector<Vector3>& relPositions = _relPositions[p];
-        if(relPositions.size() == 0) return;
+        if(relPositions.size() == 0)
+            return;
 
         auto pdensity = _kernels.W0();
         for(const Vector3& xpq: relPositions)
@@ -93,7 +94,8 @@ void SPHSolver::computeDensities() {
 void SPHSolver::velocityIntegration(float timestep) {
     auto pressure = [](const Float rho) {
         const Float ratio = rho/RestDensity;
-        if(ratio < 1.0f) return 0.0f;
+        if(ratio < 1.0f)
+            return 0.0f;
 
         const Float ratioExp2 = ratio*ratio;
         const Float ratioExp4 = ratioExp2*ratioExp2;

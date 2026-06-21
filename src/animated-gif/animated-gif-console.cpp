@@ -66,7 +66,8 @@ int main(int argc, char** argv) {
     /* Get the first image, decide how many pixels to cut away to fit on 80
        chars */
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
-    if(!image) return 3;
+    if(!image)
+        return 3;
 
     #ifndef CORRADE_NO_ASSERT
     const Vector2i imageSize = image->size();
@@ -79,7 +80,8 @@ int main(int argc, char** argv) {
        StbImageImporter frame delays as ints in its importer state. If nothing
        is there, this is not an animation -- print just the first image and
        exit. */
-    if(!importer->importerState()) return 0;
+    if(!importer->importerState())
+        return 0;
 
     /* Query total image count, frame delays in milliseconds */
     const Int imageCount = importer->image2DCount();
@@ -88,7 +90,8 @@ int main(int argc, char** argv) {
 
     /* Loop through the images, print them */
     for(Int i = 1; i != imageCount; ++i) {
-        if(!(image = importer->image2D(i))) return 3;
+        if(!(image = importer->image2D(i)))
+            return 3;
         CORRADE_INTERNAL_ASSERT(image->size() == imageSize);
 
         /* Move the cursor back */

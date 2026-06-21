@@ -110,7 +110,8 @@ void LeapMotionExample::drawEvent() {
             for(const Leap::Finger& finger : hand.fingers()) {
                 for(int b = 0; b < 4; ++b) {
                     /* Leave out first bones of ring and middle finger, looks better */
-                    if(b == 0 && (finger.type() == Leap::Finger::Type::TYPE_MIDDLE || finger.type() == Leap::Finger::Type::TYPE_RING)) continue;
+                    if(b == 0 && (finger.type() == Leap::Finger::Type::TYPE_MIDDLE || finger.type() == Leap::Finger::Type::TYPE_RING))
+                        continue;
 
                     const auto& bone = finger.bone(Leap::Bone::Type(b));
                     /* Only draw end on last bones */
