@@ -31,7 +31,6 @@
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Resource.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/TextureArray.h>
 #include <Magnum/SceneGraph/Camera.h>
