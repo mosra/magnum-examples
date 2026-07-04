@@ -84,10 +84,6 @@ install:
 - IF NOT "%TARGET%" == "desktop-selfcontained" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui-1.88.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/v1.88.zip -FileName imgui-1.88.zip
 - IF NOT "%TARGET%" == "desktop-selfcontained" 7z x imgui-1.88.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-1.88 imgui
 
-# OVR SDK. Desktop build only.
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ovr_sdk_win_1.26.0_public_minimal.zip appveyor DownloadFile https://ci.magnum.graphics/ovr_sdk_win_1.26.0_public_minimal.zip
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x ovr_sdk_win_1.26.0_public_minimal.zip -o%APPVEYOR_BUILD_FOLDER%\deps
-
 # Vulkan loader
 - IF "%ENABLE_VULKAN%" == "ON" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\vulkan-loader-1.2.153-windows-2019.zip appveyor DownloadFile https://ci.magnum.graphics/vulkan-loader-1.2.153-windows-2019.zip
 - IF "%ENABLE_VULKAN%" == "ON" 7z x vulkan-loader-1.2.153-windows-2019.zip -o%APPVEYOR_BUILD_FOLDER%\deps

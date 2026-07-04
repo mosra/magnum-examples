@@ -59,8 +59,8 @@ namespace Magnum {
     fixes
 -   **John Laxson** ([\@jlaxson](https://github.com/jlaxson)) --- Homebrew
     package improvements
--   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the
-    @ref examples-ovr, @ref examples-audio, @ref examples-arealights,
+-   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- the OVR,
+    @ref examples-audio, @ref examples-arealights,
     @ref examples-leapmotion, @ref examples-imgui, WebVR and @ref examples-webxr
     examples, porting to @ref Platform::EmscriptenApplication
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))

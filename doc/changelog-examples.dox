@@ -103,6 +103,12 @@ namespace Magnum {
     builds with @ref MAGNUM_BUILD_DEPRECATED enabled, but will produce a
     warning. Use `MAGNUM_WITH_TEXTUREDQUAD_EXAMPLE` instead.
 
+@subsection changelog-examples-latest-compatibility Removed APIs
+
+-   Removed the OVR example, as it's made for the original, no-longer-supported
+    Oculus hardware, and the associated @ref OvrIntegration library the example
+    uses is now deprecated and scheduled for removal as well.
+
 @subsection changelog-examples-latest-documentation Documentation
 
 -   Updated license link for Source Sans Pro used by the
@@ -257,9 +263,8 @@ Released 2018-10-23, tagged as
     of the deprecated `Shapes` library.
 -   The @ref examples-viewer tutorial is greatly simplified to make use only of
     the most essential APIs needed to make it working
--   The @ref examples-ovr and @ref examples-leapmotion examples were updated to
-    not depend on deprecated functionality (see
-    [mosra/magnum-examples#49](https://github.com/mosra/magnum-examples/pull/49))
+-   The OVR and @ref examples-leapmotion examples were updated to not depend on
+    deprecated functionality (see [mosra/magnum-examples#49](https://github.com/mosra/magnum-examples/pull/49))
 -   The @ref examples-viewer example is now ported to Android (see
     [mosra/magnum-examples#50](https://github.com/mosra/magnum-examples/pull/50))
 

@@ -255,8 +255,6 @@ integration libraries, see @ref building-plugins, @ref building-integration and
 -   `MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE` --- Build the
     @ref examples-mouseinteraction example.
 -   `MAGNUM_WITH_OCTREE_EXAMPLE` --- Build the @ref examples-octree example.
--   `MAGNUM_WITH_OVR_EXAMPLE` --- Build the @ref examples-ovr example. Requires
-    the @ref OvrIntegration library.
 -   `MAGNUM_WITH_PICKING_EXAMPLE` --- Build the @ref examples-picking example.
 -   `MAGNUM_WITH_PRIMITIVES_EXAMPLE` --- Build the
     @ref examples-primitives "Primitives" example.

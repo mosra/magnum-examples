@@ -53,8 +53,8 @@ Released 2018-05-01, tagged as
 
 @subsection changelog-examples-2018-04-changes Changes and improvements
 
--   Simplified the @ref examples-ovr example to a single file with minimal
-    dependencies (see [mosra/magnum-examples#39](https://github.com/mosra/magnum-examples/pull/39))
+-   Simplified the OVR example to a single file with minimal dependencies (see
+    [mosra/magnum-examples#39](https://github.com/mosra/magnum-examples/pull/39))
 
 @subsection changelog-examples-2018-04-buildsystem Build system
 
@@ -104,9 +104,8 @@ for a high-level overview.
         [mosra/magnum-examples#18](https://github.com/mosra/magnum-examples/pull/18),
         [mosra/magnum-examples#21](https://github.com/mosra/magnum-examples/pull/21),
         [mosra/magnum-examples#32](https://github.com/mosra/magnum-examples/pull/32))
-    -   @ref examples-ovr example showing integration with Oculus VR using
-        @ref OvrIntegration (see
-        [mosra/magnum-examples#10](https://github.com/mosra/magnum-examples/pull/10),
+    -   OVR example showing integration with Oculus VR using `OvrIntegration`
+        (see [mosra/magnum-examples#10](https://github.com/mosra/magnum-examples/pull/10),
         [mosra/magnum-examples#11](https://github.com/mosra/magnum-examples/pull/11),
         [mosra/magnum-examples#13](https://github.com/mosra/magnum-examples/pull/13),
         [mosra/magnum-examples#15](https://github.com/mosra/magnum-examples/pull/15),

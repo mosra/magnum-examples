@@ -33,9 +33,6 @@ namespace Magnum {
 
 @image html leapmotion.png
 
-Note that there is also a @ref examples-ovr "Oculus SDK example". Combined with
-this, you can have your hands in virtual reality!
-
 @section examples-leapmotion-usage Usage
 
 This example requires you to have the [Orion beta](https://developer.leapmotion.com/get-started) or
