@@ -142,7 +142,7 @@ AnimatedGifExample::AnimatedGifExample(const Arguments& arguments):
         const auto frameDelays = Containers::arrayView(
             reinterpret_cast<const Int*>(importer->importerState()), imageCount);
 
-        Containers::Array<std::pair<Float, Int>> frames{std::size_t(imageCount)};
+        Containers::Array<std::pair<Float, Int>> frames{ValueInit, std::size_t(imageCount)};
         Float frameTime = 0.0f;
         for(std::size_t i = 0; i != frames.size(); ++i) {
             frames[i] = {frameTime, i};

@@ -162,7 +162,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
 
     /* Load all textures. Textures that fail to load will be NullOpt. */
     _textures = Containers::Array<Containers::Optional<GL::Texture2D>>{
-        importer->textureCount()};
+        ValueInit, importer->textureCount()};
     for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
         Containers::Optional<Trade::TextureData> textureData =
             importer->texture(i);
@@ -195,7 +195,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
        temporary array as the material attributes will be stored directly in
        drawables later. */
     Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials{
-        importer->materialCount()};
+        ValueInit, importer->materialCount()};
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         Containers::Optional<Trade::MaterialData> materialData;
         if(!(materialData = importer->material(i))) {
@@ -210,7 +210,7 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     /* Load all meshes. Meshes that fail to load will be NullOpt. Generate
        normals if not present. */
     _meshes = Containers::Array<Containers::Optional<GL::Mesh>>{
-        importer->meshCount()};
+        ValueInit, importer->meshCount()};
     for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
         Containers::Optional<Trade::MeshData> meshData;
         if(!(meshData = importer->mesh(i))) {
@@ -245,7 +245,8 @@ ViewerExample::ViewerExample(const Arguments& arguments):
     }
 
     /* Allocate objects that are part of the hierarchy */
-    Containers::Array<Object3D*> objects{std::size_t(scene->mappingBound())};
+    Containers::Array<Object3D*> objects{ValueInit,
+        std::size_t(scene->mappingBound())};
     Containers::Array<Containers::Pair<UnsignedInt, Int>> parents
         = scene->parentsAsArray();
     for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
