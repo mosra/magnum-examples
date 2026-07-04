@@ -18,8 +18,12 @@
 #  Eigen                        - Eigen integration library
 #  Glm                          - GLM integration library
 #  ImGui                        - ImGui integration library
-#  Ovr                          - Oculus SDK integration library
 #  Yoga                         - Yoga Layout integration library
+#
+# If Magnum is built with MAGNUM_BUILD_DEPRECATED enabled, these additional
+# libraries are available for backwards compatibility purposes:
+#
+#  Ovr                          - Oculus SDK integration library
 #
 # Example usage with specifying additional components is:
 #
@@ -133,15 +137,17 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS Bullet Dart Eigen ImGui Glm Yoga)
-if(CORRADE_TARGET_WINDOWS)
-    list(APPEND _MAGNUMINTEGRATION_LIBRARY_COMPONENTS Ovr)
-endif()
 set(_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS Eigen)
 # Nothing is enabled by default right now
 set(_MAGNUMINTEGRATION_IMPLICITLY_ENABLED_COMPONENTS )
 
 # Inter-component dependencies (none yet)
 # set(_MAGNUMINTEGRATION_Component_DEPENDENCIES Dependency)
+
+# Ovr is available only on a deprecated build, and is Windows-only
+if(MAGNUM_BUILD_DEPRECATED AND CORRADE_TARGET_WINDOWS)
+    list(APPEND _MAGNUMINTEGRATION_LIBRARY_COMPONENTS Ovr)
+endif()
 
 # Ensure that all inter-component dependencies are specified as well
 set(_MAGNUMINTEGRATION_ADDITIONAL_COMPONENTS )
