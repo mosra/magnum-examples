@@ -4,7 +4,7 @@ EGIT_REPO_URI="https://github.com/mosra/magnum-examples.git"
 
 inherit cmake-utils git-r3
 
-DESCRIPTION="Examples for the Magnum C++11/C++14 graphics engine"
+DESCRIPTION="Examples for the Magnum C++11 graphics engine"
 HOMEPAGE="https://magnum.graphics"
 
 LICENSE="public-domain"
