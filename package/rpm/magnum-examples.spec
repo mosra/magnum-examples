@@ -1,6 +1,6 @@
 Name: magnum-examples
 Version: 2020.06.262.g11b0c81d
-Release: 1
+Release: 1%{?dist}
 Summary: Examples for the Magnum C++11 graphics engine
 License: MIT
 Source: %{name}-%{version}.tar.gz
