@@ -7,7 +7,7 @@
 #               2020, 2021, 2022, 2023, 2024, 2025, 2026
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2018, 2020, 2021, 2022, 2023, 2024
-#             Igal Alkon <igal.alkon@gmail.com>
+#             Igal Alkon <igal@alkontek.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
