@@ -81,8 +81,8 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
 # ImGui. Everywhere except the self-contained build.
-- IF NOT "%TARGET%" == "desktop-selfcontained" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui-1.88.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/v1.88.zip -FileName imgui-1.88.zip
-- IF NOT "%TARGET%" == "desktop-selfcontained" 7z x imgui-1.88.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-1.88 imgui
+- IF NOT "%TARGET%" == "desktop-selfcontained" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\imgui-1.91.0.zip appveyor DownloadFile https://github.com/ocornut/imgui/archive/v1.91.0.zip -FileName imgui-1.91.0.zip
+- IF NOT "%TARGET%" == "desktop-selfcontained" 7z x imgui-1.91.0.zip -o%APPVEYOR_BUILD_FOLDER%\deps && ren %APPVEYOR_BUILD_FOLDER%\deps\imgui-1.91.0 imgui
 
 # Vulkan loader
 - IF "%ENABLE_VULKAN%" == "ON" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\vulkan-loader-1.2.153-windows-2019.zip appveyor DownloadFile https://ci.magnum.graphics/vulkan-loader-1.2.153-windows-2019.zip

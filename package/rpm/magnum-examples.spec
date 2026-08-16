@@ -7,7 +7,7 @@ Source: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: magnum, magnum-plugins, magnum-integration, magnum-extras, Box2D
 BuildRequires: magnum-devel, magnum-integration-devel, magnum-extras-devel, cmake, git, gcc-c++, Box2D-devel
-Source1: https://github.com/ocornut/imgui/archive/v1.88.zip
+Source1: https://github.com/ocornut/imgui/archive/v1.91.0.zip
 
 %description
 Here are various examples for the Magnum C++11 graphics engine, demonstrating
@@ -24,7 +24,7 @@ mkdir build && cd build
 cmake ../%{name}-%{version} \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-  -DIMGUI_DIR=%{_builddir}/imgui-1.88 \
+  -DIMGUI_DIR=%{_builddir}/imgui-1.91.0 \
   -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
   -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON \
   -DMAGNUM_WITH_AREALIGHTS_EXAMPLE=ON \
@@ -66,7 +66,7 @@ strip $RPM_BUILD_ROOT/%{_bindir}/*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-rm -rf %{_builddir}/imgui-1.88
+rm -rf %{_builddir}/imgui-1.91.0
 
 %files
 %defattr(-,root,root,-)
