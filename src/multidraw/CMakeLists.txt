@@ -27,7 +27,7 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.5...3.10)
 
 project(MagnumMultiDrawExample CXX)
 
@@ -43,12 +43,26 @@ find_package(Magnum REQUIRED
     MeshTools
     Shaders
     SceneGraph
-    Trade
-    Sdl2Application)
+    SceneTools
+    Trade)
+find_package(MagnumExtras REQUIRED Ui)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    find_package(Magnum REQUIRED EmscriptenApplication)
+    find_package(MagnumPlugins REQUIRED
+        GltfImporter
+        StbTrueTypeFont)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(magnum-multidraw WIN32 MultiDrawExample.cpp)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    corrade_add_resource(MagnumMultiDraw_RESOURCES resources.conf)
+    target_sources(magnum-multidraw PRIVATE ${MagnumMultiDraw_RESOURCES})
+endif()
+
 target_link_libraries(magnum-multidraw PRIVATE
     Corrade::Main
     Magnum::Application
@@ -57,10 +71,40 @@ target_link_libraries(magnum-multidraw PRIVATE
     Magnum::Magnum
     Magnum::MeshTools
     Magnum::SceneGraph
+    Magnum::SceneTools
     Magnum::Shaders
-    Magnum::Trade)
-
-install(TARGETS magnum-multidraw DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    Magnum::Trade
+    MagnumExtras::Ui)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    if(CMAKE_VERSION VERSION_LESS 3.13)
+        message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
+    endif()
+    target_link_libraries(magnum-multidraw PRIVATE
+        MagnumPlugins::GltfImporter
+        MagnumPlugins::StbTrueTypeFont)
+    target_link_options(magnum-multidraw PRIVATE
+        "SHELL:-s ALLOW_MEMORY_GROWTH=1")
+    add_custom_command(TARGET magnum-multidraw POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${MAGNUM_WEBAPPLICATION_CSS}
+            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+            $<TARGET_FILE_DIR:magnum-multidraw>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/multidraw.html"
+            "$<TARGET_FILE_DIR:magnum-multidraw>/magnum-multidraw.html")
+    install(FILES multidraw.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-multidraw RENAME index.html)
+    install(TARGETS magnum-multidraw DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-multidraw)
+    install(FILES
+        $<TARGET_FILE_DIR:magnum-multidraw>/magnum-multidraw.js.mem
+        $<TARGET_FILE_DIR:magnum-multidraw>/magnum-multidraw.wasm
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-multidraw OPTIONAL)
+    install(FILES
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
+        DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-multidraw)
+else()
+    install(TARGETS magnum-multidraw DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT magnum-multidraw)
