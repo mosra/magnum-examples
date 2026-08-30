@@ -10,3 +10,6 @@ CMakeLists.txt.user*
 # Android-specific stuff
 .externalNativeBuild
 .gradle
+
+# JetBrains
+.idea
