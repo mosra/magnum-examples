@@ -316,6 +316,7 @@ option(MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE "Build Mouse Interaction example" OF
 cmake_dependent_option(MAGNUM_WITH_MOTIONBLUR_EXAMPLE "Build Motion Blur example" OFF "NOT MAGNUM_TARGET_GLES" OFF)
 option(MAGNUM_WITH_OCTREE_EXAMPLE "Build Octree example" OFF)
 option(MAGNUM_WITH_PICKING_EXAMPLE "Build Picking example" OFF)
+option(MAGNUM_WITH_PONG_EXAMPLE "Build Pong example" ON)
 option(MAGNUM_WITH_PRIMITIVES_EXAMPLE "Build Primitives example" OFF)
 option(MAGNUM_WITH_RAYTRACING_EXAMPLE "Build Ray Tracing example" OFF)
 option(MAGNUM_WITH_SHADOWS_EXAMPLE "Build Shadow Mapping example" OFF)
