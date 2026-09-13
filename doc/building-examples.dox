@@ -248,8 +248,6 @@ integration libraries, see @ref building-plugins, @ref building-integration and
     Requires the @ref DartIntegration library.
 -   `MAGNUM_WITH_FLUIDSIMULATION3D_EXAMPLE` -- Build the
     @ref examples-fluidsimulation3d example.
--   `MAGNUM_WITH_LEAPMOTION_EXAMPLE` --- Build the @ref examples-leapmotion
-    example.
 -   `MAGNUM_WITH_MOTIONBLUR_EXAMPLE` --- Build the @ref examples-motionblur
     example. Not available on OpenGL ES.
 -   `MAGNUM_WITH_MOUSEINTERACTION_EXAMPLE` --- Build the
