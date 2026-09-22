@@ -46,8 +46,6 @@ namespace Magnum {
     fixes
 -   **[\@grishavanika](https://github.com/grishavanika)** --- fixes in the
     @ref examples-octree example
--   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
-    original @ref examples-imgui example
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
     improvements to Debian package building experience
 -   **Igal Alkon** ([\@alkavan](https://github.com/alkavan)) --- RPM package
