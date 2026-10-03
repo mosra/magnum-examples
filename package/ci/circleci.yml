@@ -8,12 +8,7 @@ executors:
   ubuntu-24_04:
     docker:
     - image: ubuntu:noble-20260217
-  # As of November 7, 2025, M4 is the default, and the oldest version there is
-  # 14.3.1.
-  xcode-14_3:
-    macos:
-      xcode: 14.3.1
-  # Used by the self-contained build, as it requires CMake 3.28
+  # As of October 2026 the oldest version there is 15.4.0
   xcode-15_4:
     macos:
       xcode: 15.4.0
@@ -252,13 +247,12 @@ jobs:
         script: unix-desktop.sh
 
   macos:
-    executor: xcode-14_3
+    executor: xcode-15_4
     environment:
       CONFIGURATION: Debug
       # Make libc++ remove transitive includes, both for faster build times and
       # to detect if we're missing a transitive include. Works with libc++ 16+,
-      # which is used by Xcode 15 (i.e., will get used on the next CircleCI
-      # executor update).
+      # which is used by Xcode 15.
       CMAKE_CXX_FLAGS: -D_LIBCPP_REMOVE_TRANSITIVE_INCLUDES
       PLATFORM_GL_API: CGL
     steps:
@@ -310,7 +304,7 @@ jobs:
         script: emscripten.sh
 
   ios-gles3:
-    executor: xcode-14_3
+    executor: xcode-15_4
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
