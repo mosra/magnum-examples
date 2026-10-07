@@ -75,7 +75,7 @@ class TextExample: public Platform::Application {
 TextExample::TextExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("Magnum Text Example")
-        .setWindowFlags(Configuration::WindowFlag::Resizable)}
+        .addWindowFlags(WindowFlag::Resizable)}
 {
     /* Load a TrueTypeFont plugin and open the font */
     Utility::Resource rs("fonts");

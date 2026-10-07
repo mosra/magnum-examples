@@ -113,7 +113,7 @@ ArcBallExample::ArcBallExample(const Arguments& arguments) :
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum ArcBall Camera Example")
-            .setWindowFlags(Configuration::WindowFlag::Resizable);
+            .addWindowFlags(WindowFlag::Resizable);
         GLConfiguration glConf;
         glConf.setSampleCount(dpiScaling.max() < 2.0f ? 8 : 2);
         if(!tryCreate(conf, glConf)) {

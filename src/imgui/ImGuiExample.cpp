@@ -78,7 +78,7 @@ class ImGuiExample: public Platform::Application {
 
 ImGuiExample::ImGuiExample(const Arguments& arguments): Platform::Application{arguments,
     Configuration{}.setTitle("Magnum ImGui Example")
-                   .setWindowFlags(Configuration::WindowFlag::Resizable)}
+                   .addWindowFlags(WindowFlag::Resizable)}
 {
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
         windowSize(), framebufferSize());

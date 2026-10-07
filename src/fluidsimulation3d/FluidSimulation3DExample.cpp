@@ -136,7 +136,7 @@ FluidSimulation3DExample::FluidSimulation3DExample(const Arguments& arguments): 
         const Vector2 dpiScaling = this->dpiScaling({});
         Configuration conf;
         conf.setTitle("Magnum 3D Fluid Simulation Example")
-            .setWindowFlags(Configuration::WindowFlag::Resizable);
+            .addWindowFlags(WindowFlag::Resizable);
         GLConfiguration glConf;
         glConf.setSampleCount(dpiScaling.max() < 2.0f ? 8 : 2);
         if(!tryCreate(conf, glConf)) {

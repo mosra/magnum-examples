@@ -40,7 +40,7 @@ class TextExample(Application):
     def __init__(self):
         Application.__init__(self, self.Configuration(
             title="Magnum Python Text Example",
-            window_flags=self.Configuration.WindowFlags.RESIZABLE
+            window_flags=self.WindowFlags.RESIZABLE
         ))
 
         # Load a TrueTypeFont plugin and open the font

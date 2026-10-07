@@ -91,7 +91,7 @@ RayTracingExample::RayTracingExample(const Arguments& arguments):
        the engine startup log */
     create(Configuration{}
         .setTitle("Magnum Ray Tracing Example")
-        .setWindowFlags(Configuration::WindowFlag::Resizable));
+        .addWindowFlags(WindowFlag::Resizable));
 
     /* Set up the camera and ray tracer */
     {

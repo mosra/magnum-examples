@@ -118,7 +118,7 @@ class TexturedDrawable: public SceneGraph::Drawable3D {
 ViewerExample::ViewerExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}
         .setTitle("Magnum Viewer Example")
-        .setWindowFlags(Configuration::WindowFlag::Resizable)}
+        .addWindowFlags(WindowFlag::Resizable)}
 {
     Utility::Arguments args;
     args.addArgument("file").setHelp("file", "file to load")
