@@ -415,9 +415,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         const Containers::Optional<Trade::MaterialData> material = importer->material(i);
         CORRADE_INTERNAL_ASSERT(material);
         auto&& phong = material->as<Trade::PhongMaterialData>();
-        _direct.materials[i].ambientColor = phong.ambientColor();
-        _direct.materials[i].diffuseColor = phong.diffuseColor();
-        _direct.materials[i].specularColor = phong.specularColor();
+        _direct.materials[i].setDiffuseColor(phong.diffuseColor());
         if(phong.isDoubleSided())
             shaderFlags |= Shaders::PhongGL::Flag::DoubleSided;
     }
