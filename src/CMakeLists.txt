@@ -156,3 +156,7 @@ endif()
 if(MAGNUM_WITH_WEBXR_EXAMPLE)
     add_subdirectory(webxr)
 endif()
+
+if(MAGNUM_WITH_BOX3D_EXAMPLE)
+    add_subdirectory(box3d)
+endif()
