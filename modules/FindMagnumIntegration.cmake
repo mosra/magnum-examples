@@ -14,6 +14,7 @@
 # This command alone is useless without specifying the components:
 #
 #  Bullet                       - Bullet Physics integration library
+#  Jolt                         - Jolt Physics integration library
 #  Dart                         - Dart Physics integration library
 #  Eigen                        - Eigen integration library
 #  Glm                          - GLM integration library
@@ -82,6 +83,8 @@ set(_MAGNUMINTEGRATION_MAGNUMEXTRAS_DEPENDENCIES )
 foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
     if(_component STREQUAL Bullet)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
+    elseif(_component STREQUAL Jolt)
+        set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Shaders GL)
     elseif(_component STREQUAL Dart)
         set(_MAGNUMINTEGRATION_${_component}_MAGNUM_DEPENDENCIES SceneGraph Primitives MeshTools GL)
     elseif(_component STREQUAL ImGui)
@@ -136,7 +139,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS Bullet Dart Eigen ImGui Glm Yoga)
+set(_MAGNUMINTEGRATION_LIBRARY_COMPONENTS Bullet Jolt Dart Eigen ImGui Glm Yoga)
 set(_MAGNUMINTEGRATION_HEADER_ONLY_COMPONENTS Eigen)
 # Nothing is enabled by default right now
 set(_MAGNUMINTEGRATION_IMPLICITLY_ENABLED_COMPONENTS )
@@ -336,6 +339,12 @@ foreach(_component ${MagnumIntegration_FIND_COMPONENTS})
                 set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Bullet::LinearMath)
             endif()
+
+        # Jolt integration library
+        elseif(_component STREQUAL Jolt)
+            find_package(Jolt REQUIRED)
+            set_property(TARGET MagnumIntegration::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Jolt::Jolt)
 
         # Eigen integration library
         elseif(_component STREQUAL Eigen)
