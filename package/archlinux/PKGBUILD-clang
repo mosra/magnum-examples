@@ -13,21 +13,34 @@ provides=('magnum-examples-git')
 
 _rootdir=$startdir/../../
 
+_buildtype=Release
+# _buildtype=RelWithDebInfo
+
 build() {
     if [ ! -d "$_rootdir/build-clang" ] ; then
         mkdir "$_rootdir/build-clang"
         cd "$_rootdir/build-clang"
 
+        # RelWithDebInfo is enabled but not built -- it's meant for profiling
+        # from within the build dir
         cmake .. \
+            -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
+            -DCMAKE_CROSS_CONFIGS=all \
+            -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer" \
             -DCMAKE_CXX_COMPILER=clang++ \
-            -G Ninja
+            -G "Ninja Multi-Config"
     fi
 
     cd "$_rootdir/build-clang"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output, alternatively you can set the
+    # GCC_COLORS= (empty) env variable to temporarily disable colors. The
+    # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
+    # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
-        -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DIMGUI_DIR=/opt/imgui \
         -DMAGNUM_WITH_ANIMATED_GIF_EXAMPLE=ON \
         -DMAGNUM_WITH_ARCBALL_EXAMPLE=ON \
@@ -56,12 +69,23 @@ build() {
         -DMAGNUM_WITH_TRIANGLE_SOKOL_EXAMPLE=OFF \
         -DMAGNUM_WITH_TRIANGLE_VULKAN_EXAMPLE=ON \
         -DMAGNUM_WITH_VIEWER_EXAMPLE=ON
-    ninja
+    ninja all:Debug all:$_buildtype
 }
 
 package() {
     cd "$_rootdir/build-clang"
-    DESTDIR="$pkgdir/" ninja install
+    DESTDIR="$pkgdir/" ninja install:Debug
+
+    # Prevent the Release build from overwriting Debug binaries
+    for i in $(ls $pkgdir/usr/bin/magnum-*); do
+        mv ${i}{,d}
+    done
+
+    if [ "$_buildtype" = RelWithDebInfo ]; then
+        DESTDIR="$pkgdir/" ninja install:$_buildtype
+    else
+        DESTDIR="$pkgdir/" ninja install/strip:$_buildtype
+    fi
 
     # Install the UNLICENSE because Arch has no pre-defined license for Public
     # Domain
