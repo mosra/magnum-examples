@@ -45,7 +45,6 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/CompressIndices.h>
-#include <Magnum/MeshTools/Copy.h>
 #include <Magnum/MeshTools/FlipNormals.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Primitives/Cube.h>
@@ -164,14 +163,8 @@ CubeMapExample::CubeMapExample(const Arguments& arguments): Platform::Applicatio
     if(!importer)
         Fatal{} << "Cannot load an image importer plugin";
 
-    /* Cube mesh. We'll look at it from the inside, so flip face winding. The
-       cube primitive references constant memory, so we have to make the data
-       owned & mutable first. */
-    {
-        Trade::MeshData cubeData = MeshTools::copy(Primitives::cubeSolid());
-        MeshTools::flipFaceWindingInPlace(cubeData.mutableIndices());
-        _cubeMesh = MeshTools::compile(cubeData);
-    }
+    /* Cube mesh. We'll look at it from the inside, so flip face winding */
+    _cubeMesh = MeshTools::compile(MeshTools::flipFaceWinding(Primitives::cubeSolid()));
 
     /* Reflector mesh */
     _reflectorMesh = MeshTools::compile(MeshTools::compressIndices(
