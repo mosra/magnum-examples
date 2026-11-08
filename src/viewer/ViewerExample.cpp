@@ -44,6 +44,7 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
+#include <Magnum/MeshTools/GenerateNormals.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
@@ -218,10 +219,11 @@ ViewerExample::ViewerExample(const Arguments& arguments):
             continue;
         }
 
-        MeshTools::CompileFlags flags;
         if(!meshData->hasAttribute(Trade::MeshAttribute::Normal))
-            flags |= MeshTools::CompileFlag::GenerateFlatNormals;
-        _meshes[i] = MeshTools::compile(*meshData, flags);
+            meshData = meshData->isIndexed() ?
+                MeshTools::generateSmoothNormals(*meshData) :
+                MeshTools::generateFlatNormals(*meshData);
+        _meshes[i] = MeshTools::compile(*meshData);
     }
 
     /* The format has no scene support, display just the first loaded mesh with

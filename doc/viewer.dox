@@ -211,9 +211,11 @@ we're looking for.
 @subsection examples-viewer-import-meshes Importing meshes
 
 Next thing is loading meshes. This is easy to do with @ref MeshTools::compile()
-that was introduced previously, but we additionally tell it to generate
-normals if they're not present (as is sometimes the case with Stanford PLY
-files) --- if we wouldn't, the mesh would render completely black.
+that was introduced previously, but we additionally generate normals with
+either @ref MeshTools::generateFlatNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags) "MeshTools::generateFlatNormals()"
+or @ref MeshTools::generateSmoothNormals(const Trade::MeshData&, UnsignedInt, Int, InterleaveFlags) "generateSmoothNormals()"
+if they're not present (as is sometimes the case with Stanford PLY files) ---
+if we wouldn't, the mesh would render completely black.
 
 @skip _meshes =
 @until }
