@@ -523,11 +523,12 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     {
         class Drawable: public SceneGraph::Drawable3D {
             public:
-                explicit Drawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, const Color4& color, bool flippedWinding, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _color{color}, _flippedWinding{flippedWinding} {}
+                explicit Drawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, const Color4& color, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _color{color} {}
 
             private:
                 void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override {
-                    if(_flippedWinding)
+                    const bool flippedWinding = transformationMatrix.determinant() < 0.0f;
+                    if(flippedWinding)
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
 
                     _shader
@@ -545,14 +546,13 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
                         .draw(_mesh);
 
                     /* Reset back, assuming most draws use the default CCW */
-                    if(_flippedWinding)
+                    if(flippedWinding)
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
                 }
 
                 Shaders::PhongGL& _shader;
                 GL::Mesh& _mesh;
                 Color4 _color;
-                bool _flippedWinding;
         };
 
         _sceneGraph.cameraObject
@@ -590,7 +590,6 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
             new Drawable{*objects[meshMaterial.first()], _shader,
                 _meshes[meshMaterial.second().first()],
                 materialColors[meshMaterial.second().second()],
-                _direct.firstFlippedWindingDraw <= i,
                 _sceneGraph.drawables};
         }
     }
