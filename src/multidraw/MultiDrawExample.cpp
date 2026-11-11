@@ -517,9 +517,10 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         _direct.draws[i].setMaterialId(meshesMaterials[i].second().second());
     }
 
-    /* At last, SceneGraph setup. Uhh, so much typing. Yes, it's a local class
-       to have all the abstraction overhead nicely visible from a single
-       place. */
+    /* At last, SceneGraph setup. A local class to have all the abstraction
+       overhead nicely visible from a single place, for clarity it also queries
+       transformations and mesh/material assignment from the SceneData instance
+       again instead of reusing the data used for direct drawing above. */
     {
         class Drawable: public SceneGraph::Drawable3D {
             public:
@@ -577,14 +578,13 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
             objects[parent.first()]->setParent(
                 parent.second() == -1 ? &_sceneGraph.manipulator : objects[parent.second()]);
-        for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: transformations)
+        for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: scene.transformations3DAsArray())
             objects[transformation.first()]->setTransformation(transformation.second());
 
         /* Assign drawables to the created objects. This is not a 1:1 mapping,
            i.e. there can be more than one mesh assigned to the same object, or
            none at all. */
-        for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
-            const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& meshMaterial = meshesMaterials[i];
+        for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& meshMaterial: scene.meshesMaterialsAsArray()) {
             CORRADE_INTERNAL_ASSERT(meshMaterial.second().second() != -1);
 
             new Drawable{*objects[meshMaterial.first()], _shader,
