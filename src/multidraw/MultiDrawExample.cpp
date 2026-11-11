@@ -689,7 +689,6 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     >()) {
         _shaderUniformBufferMultiDraw = Shaders::PhongGL{Shaders::PhongGL::Configuration{}
             .setFlags(shaderFlags|
-                      Shaders::PhongGL::Flag::UniformBuffers|
                       Shaders::PhongGL::Flag::MultiDraw)
             .setLightCount(_direct.lights.size())
             .setMaterialCount(_direct.materials.size())
