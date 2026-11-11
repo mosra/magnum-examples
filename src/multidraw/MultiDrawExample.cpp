@@ -190,6 +190,7 @@ class MultiDrawExample: public Platform::Application {
         GL::Mesh _combinedMesh;
         Containers::Array<GL::MeshView> _meshViews;
 
+        /* Stuff needed by the SceneGraph code path only */
         struct {
             Scene3D scene;
             Object3D manipulator, cameraObject;
@@ -197,6 +198,8 @@ class MultiDrawExample: public Platform::Application {
             SceneGraph::DrawableGroup3D drawables;
         } _sceneGraph;
 
+        /* Stuff needed by everything except SceneGraph */
+        constexpr static std::size_t UniformMultiCount = 3;
         struct {
             /* (Object ID, parent ID or -1), ordered so parents are before
                their children */
@@ -231,69 +234,71 @@ class MultiDrawExample: public Platform::Application {
                order */
             Containers::Array<UnsignedInt> absoluteTransformationMapping;
             Containers::Array<Shaders::TransformationUniform3D> absoluteTransformations;
+
+            /* Used for UBO upload right before every draw, every time
+               containing just the data for the next draw. Not doing any
+               multi-buffering here as there would need to be thousands of
+               buffers to prevent stalls. */
+            struct {
+                GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+                    Shaders::ProjectionUniform3D{}
+                }};
+                GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+                    Shaders::TransformationUniform3D{}
+                }};
+                GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+                    Shaders::PhongDrawUniform{}
+                }};
+                GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+                    Shaders::PhongMaterialUniform{}
+                }};
+                GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
+                    Shaders::PhongLightUniform{},
+                    Shaders::PhongLightUniform{}
+                }};
+            } uniformSingle;
+
+            /* Used for UBO / SSBO upload once per frame and then either
+               rebinding them with an offset before each draw or
+               (multi-)drawing with a dynamic draw offset. Rotating multiple
+               buffers so the (relatively large) upload isn't blocking if the
+               GPU is busy rendering the previous frame.
+
+               The *Storage + *Staging buffers are used to make UBOs / SSBOs in
+               GPU-local memory and then copy to them from CPU-accessible
+               memory, which is only possible with buffer storage
+               extensions. */
+            struct {
+                /* These two are immutable, i.e. filled with either
+                   setStorage() or setData() upfront and then never changed
+                   after, so there doesn't need to be multiple variants */
+                GL::Buffer projectionUniform;
+                GL::Buffer materialUniform;
+
+                GL::Buffer transformationUniform[UniformMultiCount];
+                #ifndef MAGNUM_TARGET_WEBGL
+                Containers::StaticArray<UniformMultiCount, GL::Buffer>
+                           transformationUniformStorage{DirectInit, NoCreate};
+                GL::Buffer transformationUniformStaging{NoCreate};
+                #endif
+
+                GL::Buffer drawUniform[UniformMultiCount];
+                #ifndef MAGNUM_TARGET_WEBGL
+                Containers::StaticArray<UniformMultiCount, GL::Buffer>
+                           drawUniformStorage{DirectInit, NoCreate};
+                GL::Buffer drawUniformStaging{NoCreate};
+                #endif
+
+                GL::Buffer lightUniform[UniformMultiCount];
+                #ifndef MAGNUM_TARGET_WEBGL
+                Containers::StaticArray<UniformMultiCount, GL::Buffer>
+                           lightUniformStorage{DirectInit, NoCreate};
+                GL::Buffer lightUniformStaging{NoCreate};
+                #endif
+
+                UnsignedInt frameId = 0;
+            } uniformMulti;
         } _direct;
-
-        /* Used for UBO upload right before every draw, every time containing
-           just the data for the next draw. Not doing any multi-buffering here
-           as there would need to be thousands of buffers to prevent stalls. */
-        struct {
-            GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
-                Shaders::ProjectionUniform3D{}
-            }};
-            GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
-                Shaders::TransformationUniform3D{}
-            }};
-            GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
-                Shaders::PhongDrawUniform{}
-            }};
-            GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
-                Shaders::PhongMaterialUniform{}
-            }};
-            GL::Buffer lightUniform{GL::Buffer::TargetHint::Uniform, {
-                Shaders::PhongLightUniform{},
-                Shaders::PhongLightUniform{}
-            }};
-        } _uniformSingle;
-
-        /* Used for UBO / SSBO upload once per frame and then either rebinding
-           them with an offset before each draw or (multi-)drawing with a
-           dynamic draw offset. Rotating multiple buffers so the (relatively
-           large) upload isn't blocking if the GPU is busy rendering the
-           previous frame.
-
-           The *Storage + *Staging buffers are used to make UBOs / SSBOs in
-           GPU-local memory and then copy to them from CPU-accessible memory,
-           which is only possible with buffer storage extensions. */
-        constexpr static std::size_t UniformMultiCount = 3;
-        struct {
-            /* These two are immutable, i.e. filled with either setStorage() or
-               setData() upfront and then never changed after, so there doesn't
-               need to be multiple variants */
-            GL::Buffer projectionUniform;
-            GL::Buffer materialUniform;
-
-            GL::Buffer transformationUniform[UniformMultiCount];
-            #ifndef MAGNUM_TARGET_WEBGL
-            Containers::StaticArray<UniformMultiCount, GL::Buffer>
-                       transformationUniformStorage{DirectInit, NoCreate};
-            GL::Buffer transformationUniformStaging{NoCreate};
-            #endif
-
-            GL::Buffer drawUniform[UniformMultiCount];
-            #ifndef MAGNUM_TARGET_WEBGL
-            Containers::StaticArray<UniformMultiCount, GL::Buffer>
-                       drawUniformStorage{DirectInit, NoCreate};
-            GL::Buffer drawUniformStaging{NoCreate};
-            #endif
-
-            GL::Buffer lightUniform[UniformMultiCount];
-            #ifndef MAGNUM_TARGET_WEBGL
-            Containers::StaticArray<UniformMultiCount, GL::Buffer>
-                       lightUniformStorage{DirectInit, NoCreate};
-            GL::Buffer lightUniformStaging{NoCreate};
-            #endif
-        } _uniformMulti;
-        UnsignedInt _uniformMultiFrameId = 0;
 
         Vector3 _previousPosition;
         Matrix4
@@ -594,8 +599,9 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         }
     }
 
-    /* Set up shaders. The multi-draw shaders and uniform storage are set up
-       based on the data count we have. */
+    /* Set up shaders for both scene graph and direct drawing. The multi-draw
+       shaders and uniform storage are set up based on the data count we
+       have. */
     _shader = Shaders::PhongGL{Shaders::PhongGL::Configuration{}
         .setFlags(shaderFlags)
         .setLightCount(2)};
@@ -661,33 +667,33 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         GL::Extensions::EXT::buffer_storage
         #endif
     >()) {
-        _uniformMulti.projectionUniform.setStorage(_direct.projection, {});
-        _uniformMulti.materialUniform.setStorage(_direct.materials, {});
+        _direct.uniformMulti.projectionUniform.setStorage(_direct.projection, {});
+        _direct.uniformMulti.materialUniform.setStorage(_direct.materials, {});
         for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-            _uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
-            _uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
-            _uniformMulti.drawUniformStorage[i] = GL::Buffer{};
-            _uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
-            _uniformMulti.lightUniformStorage[i] = GL::Buffer{};
-            _uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
+            _direct.uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
+            _direct.uniformMulti.drawUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
+            _direct.uniformMulti.lightUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
         }
-        _uniformMulti.transformationUniformStaging = GL::Buffer{};
-        _uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
-        _uniformMulti.drawUniformStaging = GL::Buffer{};
-        _uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
-        _uniformMulti.lightUniformStaging = GL::Buffer{};
-        _uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
+        _direct.uniformMulti.transformationUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
+        _direct.uniformMulti.drawUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
+        _direct.uniformMulti.lightUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
     } else
     #endif
     {
-        _uniformMulti.projectionUniform.setData(_direct.projection);
-        _uniformMulti.materialUniform.setData(_direct.materials);
+        _direct.uniformMulti.projectionUniform.setData(_direct.projection);
+        _direct.uniformMulti.materialUniform.setData(_direct.materials);
     }
 
     for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-        _uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
-        _uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
-        _uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
+        _direct.uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
+        _direct.uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
+        _direct.uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
     }
 
     /* Create the UI */
@@ -976,25 +982,25 @@ void MultiDrawExample::drawEvent() {
                 GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
 
         } else if(_drawType == DrawType::UboPerDraw) {
-            _uniformSingle.projectionUniform.setSubData(0, _direct.projection);
-            _uniformSingle.lightUniform.setSubData(0, _direct.lights);
+            _direct.uniformSingle.projectionUniform.setSubData(0, _direct.projection);
+            _direct.uniformSingle.lightUniform.setSubData(0, _direct.lights);
             _shaderUniformBufferSingle
-                .bindProjectionBuffer(_uniformSingle.projectionUniform)
-                .bindLightBuffer(_uniformSingle.lightUniform);
+                .bindProjectionBuffer(_direct.uniformSingle.projectionUniform)
+                .bindLightBuffer(_direct.uniformSingle.lightUniform);
 
             for(std::size_t i = 0; i != _direct.draws.size(); ++i) {
                 if(i == _direct.firstFlippedWindingDraw)
                     GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
 
-                _uniformSingle.transformationUniform.setSubData(0, _direct.absoluteTransformations.sliceSize(i, 1));
-                _uniformSingle.materialUniform.setSubData(0, _direct.materials.sliceSize(_direct.draws[i].materialId, 1));
+                _direct.uniformSingle.transformationUniform.setSubData(0, _direct.absoluteTransformations.sliceSize(i, 1));
+                _direct.uniformSingle.materialUniform.setSubData(0, _direct.materials.sliceSize(_direct.draws[i].materialId, 1));
                 /* The shader is using a single material, so the material ID is
                    unused */
-                _uniformSingle.drawUniform.setSubData(0, _direct.draws.sliceSize(i, 1));
+                _direct.uniformSingle.drawUniform.setSubData(0, _direct.draws.sliceSize(i, 1));
                 _shaderUniformBufferSingle
-                    .bindTransformationBuffer(_uniformSingle.transformationUniform)
-                    .bindMaterialBuffer(_uniformSingle.materialUniform)
-                    .bindDrawBuffer(_uniformSingle.drawUniform)
+                    .bindTransformationBuffer(_direct.uniformSingle.transformationUniform)
+                    .bindMaterialBuffer(_direct.uniformSingle.materialUniform)
+                    .bindDrawBuffer(_direct.uniformSingle.drawUniform)
                     .draw(*_direct.meshViews[i]);
             }
 
@@ -1007,38 +1013,38 @@ void MultiDrawExample::drawEvent() {
         {
             #ifndef MAGNUM_TARGET_WEBGL
             if(_stagingBuffers) {
-                _uniformMulti.lightUniformStaging.setSubData(0, _direct.lights);
-                _uniformMulti.transformationUniformStaging.setSubData(0, _direct.absoluteTransformations);
-                _uniformMulti.drawUniformStaging.setSubData(0, _direct.draws);
+                _direct.uniformMulti.lightUniformStaging.setSubData(0, _direct.lights);
+                _direct.uniformMulti.transformationUniformStaging.setSubData(0, _direct.absoluteTransformations);
+                _direct.uniformMulti.drawUniformStaging.setSubData(0, _direct.draws);
                 GL::Buffer::copy(
-                    _uniformMulti.lightUniformStaging,
-                    _uniformMulti.lightUniformStorage[_uniformMultiFrameId],
-                    0, 0, _uniformMulti.lightUniformStaging.size());
+                    _direct.uniformMulti.lightUniformStaging,
+                    _direct.uniformMulti.lightUniformStorage[_direct.uniformMulti.frameId],
+                    0, 0, _direct.uniformMulti.lightUniformStaging.size());
                 GL::Buffer::copy(
-                    _uniformMulti.transformationUniformStaging,
-                    _uniformMulti.transformationUniformStorage[_uniformMultiFrameId],
-                    0, 0, _uniformMulti.transformationUniformStaging.size());
+                    _direct.uniformMulti.transformationUniformStaging,
+                    _direct.uniformMulti.transformationUniformStorage[_direct.uniformMulti.frameId],
+                    0, 0, _direct.uniformMulti.transformationUniformStaging.size());
                 GL::Buffer::copy(
-                    _uniformMulti.drawUniformStaging,
-                    _uniformMulti.drawUniformStorage[_uniformMultiFrameId],
-                    0, 0, _uniformMulti.drawUniformStaging.size());
+                    _direct.uniformMulti.drawUniformStaging,
+                    _direct.uniformMulti.drawUniformStorage[_direct.uniformMulti.frameId],
+                    0, 0, _direct.uniformMulti.drawUniformStaging.size());
             } else
             #endif
             {
-                _uniformMulti.lightUniform[_uniformMultiFrameId].setSubData(0, _direct.lights);
-                _uniformMulti.transformationUniform[_uniformMultiFrameId].setSubData(0, _direct.absoluteTransformations);
-                _uniformMulti.drawUniform[_uniformMultiFrameId].setSubData(0, _direct.draws);
+                _direct.uniformMulti.lightUniform[_direct.uniformMulti.frameId].setSubData(0, _direct.lights);
+                _direct.uniformMulti.transformationUniform[_direct.uniformMulti.frameId].setSubData(0, _direct.absoluteTransformations);
+                _direct.uniformMulti.drawUniform[_direct.uniformMulti.frameId].setSubData(0, _direct.draws);
             }
 
             if(_drawType == DrawType::UboBindOffset) {
                 _shaderUniformBufferSingle
-                    .bindProjectionBuffer(_uniformMulti.projectionUniform)
+                    .bindProjectionBuffer(_direct.uniformMulti.projectionUniform)
                     .bindLightBuffer(
                         #ifndef MAGNUM_TARGET_WEBGL
                         _stagingBuffers ?
-                            _uniformMulti.lightUniformStorage[_uniformMultiFrameId] :
+                            _direct.uniformMulti.lightUniformStorage[_direct.uniformMulti.frameId] :
                         #endif
-                            _uniformMulti.lightUniform[_uniformMultiFrameId]);
+                            _direct.uniformMulti.lightUniform[_direct.uniformMulti.frameId]);
                 for(std::size_t i = 0; i != _direct.draws.size(); ++i) {
                     if(i == _direct.firstFlippedWindingDraw)
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
@@ -1046,17 +1052,17 @@ void MultiDrawExample::drawEvent() {
                     _shaderUniformBufferSingle.bindTransformationBuffer(
                             #ifndef MAGNUM_TARGET_WEBGL
                             _stagingBuffers ?
-                                _uniformMulti.transformationUniformStorage[_uniformMultiFrameId] :
+                                _direct.uniformMulti.transformationUniformStorage[_direct.uniformMulti.frameId] :
                             #endif
-                                _uniformMulti.transformationUniform[_uniformMultiFrameId],
+                                _direct.uniformMulti.transformationUniform[_direct.uniformMulti.frameId],
                             i*sizeof(Shaders::TransformationUniform3D), sizeof(Shaders::TransformationUniform3D))
-                        .bindMaterialBuffer(_uniformMulti.materialUniform, _direct.draws[i].materialId*sizeof(Shaders::PhongMaterialUniform), sizeof(Shaders::PhongMaterialUniform))
+                        .bindMaterialBuffer(_direct.uniformMulti.materialUniform, _direct.draws[i].materialId*sizeof(Shaders::PhongMaterialUniform), sizeof(Shaders::PhongMaterialUniform))
                         .bindDrawBuffer(
                             #ifndef MAGNUM_TARGET_WEBGL
                             _stagingBuffers ?
-                                _uniformMulti.drawUniformStorage[_uniformMultiFrameId] :
+                                _direct.uniformMulti.drawUniformStorage[_direct.uniformMulti.frameId] :
                             #endif
-                                _uniformMulti.drawUniform[_uniformMultiFrameId],
+                                _direct.uniformMulti.drawUniform[_direct.uniformMulti.frameId],
                             i*sizeof(Shaders::PhongDrawUniform), sizeof(Shaders::PhongDrawUniform))
                         .draw(*_direct.meshViews[i]);
                 }
@@ -1083,26 +1089,26 @@ void MultiDrawExample::drawEvent() {
                 else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
                 (*shader)
-                    .bindProjectionBuffer(_uniformMulti.projectionUniform)
-                    .bindMaterialBuffer(_uniformMulti.materialUniform)
+                    .bindProjectionBuffer(_direct.uniformMulti.projectionUniform)
+                    .bindMaterialBuffer(_direct.uniformMulti.materialUniform)
                     .bindLightBuffer(
                         #ifndef MAGNUM_TARGET_WEBGL
                         _stagingBuffers ?
-                            _uniformMulti.lightUniformStorage[_uniformMultiFrameId] :
+                            _direct.uniformMulti.lightUniformStorage[_direct.uniformMulti.frameId] :
                         #endif
-                            _uniformMulti.lightUniform[_uniformMultiFrameId])
+                            _direct.uniformMulti.lightUniform[_direct.uniformMulti.frameId])
                     .bindTransformationBuffer(
                         #ifndef MAGNUM_TARGET_WEBGL
                         _stagingBuffers ?
-                            _uniformMulti.transformationUniformStorage[_uniformMultiFrameId] :
+                            _direct.uniformMulti.transformationUniformStorage[_direct.uniformMulti.frameId] :
                         #endif
-                            _uniformMulti.transformationUniform[_uniformMultiFrameId])
+                            _direct.uniformMulti.transformationUniform[_direct.uniformMulti.frameId])
                     .bindDrawBuffer(
                         #ifndef MAGNUM_TARGET_WEBGL
                         _stagingBuffers ?
-                            _uniformMulti.drawUniformStorage[_uniformMultiFrameId] :
+                            _direct.uniformMulti.drawUniformStorage[_direct.uniformMulti.frameId] :
                         #endif
-                            _uniformMulti.drawUniform[_uniformMultiFrameId]);
+                            _direct.uniformMulti.drawUniform[_direct.uniformMulti.frameId]);
 
                 /* With UBOs we're limited to 64k per uniform buffer, which is
                    1024 draws at most. With SSBOs the sky is the limit, but the
@@ -1143,7 +1149,7 @@ void MultiDrawExample::drawEvent() {
 
                 } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
-                _uniformMultiFrameId = (_uniformMultiFrameId + 1) % UniformMultiCount;
+                _direct.uniformMulti.frameId = (_direct.uniformMulti.frameId + 1) % UniformMultiCount;
             }
 
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
