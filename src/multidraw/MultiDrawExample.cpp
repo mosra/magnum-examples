@@ -448,127 +448,133 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     for(UnsignedInt i = 0; i != meshData.size(); ++i)
         _meshes[i] = MeshTools::compile(meshData[i]);
 
-    /* Combined GL mesh and views onto it for direct drawing */
-    _direct.combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
+    /* Direct draw setup */
     {
-        UnsignedInt offset = 0;
-        for(UnsignedInt i = 0; i != meshData.size(); ++i) {
-            arrayAppend(_direct.meshViews, GL::MeshView{_direct.combinedMesh})
-                .setIndexOffset(offset)
-                .setCount(meshData[i].indexCount());
-            offset += meshData[i].indexCount();
+        /* Combined GL mesh and views onto it */
+        _direct.combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
+        {
+            UnsignedInt offset = 0;
+            for(UnsignedInt i = 0; i != meshData.size(); ++i) {
+                arrayAppend(_direct.meshViews, GL::MeshView{_direct.combinedMesh})
+                    .setIndexOffset(offset)
+                    .setCount(meshData[i].indexCount());
+                offset += meshData[i].indexCount();
+            }
         }
-    }
 
-    /* Projection, light setup and materials uniforms for direct drawing. Just
-       two lights right now. */
-    _direct.projection = Containers::Array<Shaders::ProjectionUniform3D>{ValueInit, 1};
-    _direct.lights = Containers::Array<Shaders::PhongLightUniform>{ValueInit, 2};
-    _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, materialColors.size()};
-    Utility::copy(materialColors, stridedArrayView(_direct.materials).slice(&Shaders::PhongMaterialUniform::diffuseColor));
+        /* Projection, light setup and materials uniforms. Just two lights
+           right now. */
+        _direct.projection = Containers::Array<Shaders::ProjectionUniform3D>{ValueInit, 1};
+        _direct.lights = Containers::Array<Shaders::PhongLightUniform>{ValueInit, 2};
+        _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, materialColors.size()};
+        Utility::copy(materialColors, stridedArrayView(_direct.materials).slice(&Shaders::PhongMaterialUniform::diffuseColor));
 
-    /* (Object ID, transformation) pairs and (Object ID, (mesh, material))
-       tuples, both in no particular order. The mesh / material array gets
-       subsequently partitioned based on whether negative scaling is used. */
-    const Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformations = scene.transformations3DAsArray();
-    /*mutable*/ Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> meshesMaterials = scene.meshesMaterialsAsArray();
+        /* (Object ID, transformation) pairs and (Object ID, (mesh, material))
+           tuples, both in no particular order. The mesh / material array gets
+           subsequently partitioned based on whether negative scaling is
+           used. */
+        const Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformations = scene.transformations3DAsArray();
+        /*mutable*/ Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> meshesMaterials = scene.meshesMaterialsAsArray();
 
-    /* For everything other than SceneGraph we need an (object ID, parent ID)
-       mapping ordered in a way that puts parents before their children, which
-       is going to get used for hierarchical transformation calculation */
-    _direct.parentOrder = SceneTools::parentsBreadthFirst(scene);
+        /* For efficient hierarchical transformation calculation we need an
+           (object ID, parent ID) mapping ordered in a way that puts parents
+           before their children */
+        _direct.parentOrder = SceneTools::parentsBreadthFirst(scene);
 
-    /* Object transformations, and a temporary array for calculating absolute
-       transformations by non-SceneGraph code paths. This array will get fully
-       overwritten every draw but keeping it as a member to avoid reallocating
-       it every frame. */
-    _direct.objectTransformations = Containers::Array<Matrix4>{ValueInit, std::size_t(scene.mappingBound())};
-    for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: transformations)
-        _direct.objectTransformations[transformation.first()] = transformation.second();
-    _direct.rootObjectAbsoluteTransformations = Containers::Array<Matrix4>{NoInit, std::size_t(scene.mappingBound()) + 1};
+        /* Object transformations, and a temporary array for calculating
+           absolute transformations. This array will get fully overwritten
+           every draw but keeping it as a member to avoid reallocating it every
+           frame. */
+        _direct.objectTransformations = Containers::Array<Matrix4>{ValueInit, std::size_t(scene.mappingBound())};
+        for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: transformations)
+            _direct.objectTransformations[transformation.first()] = transformation.second();
+        _direct.rootObjectAbsoluteTransformations = Containers::Array<Matrix4>{NoInit, std::size_t(scene.mappingBound()) + 1};
 
-    /* Heavily instanced scenes often contain meshes rendered with negative
-       scaling for mirrored portions, calculate absolute transformations for
-       all draws and filter out draws with negative scaling. To have lighting
-       correct for those we need to switch face winding from CCW to CW. */
-    /** @todo have a SceneTools utility producing a bitmask for this (or even
-        directly partitioning a scene field?) directly, internally it can
-        likely just combine determinant signs instead of doing full matrix
-        multiplications */
-    {
-        _direct.rootObjectAbsoluteTransformations[0] = {};
-        for(Containers::Pair<UnsignedInt, Int> objectParent: _direct.parentOrder)
-            _direct.rootObjectAbsoluteTransformations[objectParent.first() + 1] = _direct.rootObjectAbsoluteTransformations[objectParent.second() + 1]*_direct.objectTransformations[objectParent.first()];
+        /* Heavily instanced scenes often contain meshes rendered with negative
+           scaling for mirrored portions, calculate absolute transformations
+           for all draws and filter out draws with negative scaling. To have
+           lighting correct for those we need to switch face winding from CCW
+           to CW. */
+        /** @todo have a SceneTools utility producing a bitmask for this (or
+            even directly partitioning a scene field?) directly, internally it
+            can likely just combine determinant signs instead of doing full
+            matrix multiplications */
+        {
+            _direct.rootObjectAbsoluteTransformations[0] = {};
+            for(Containers::Pair<UnsignedInt, Int> objectParent: _direct.parentOrder)
+                _direct.rootObjectAbsoluteTransformations[objectParent.first() + 1] = _direct.rootObjectAbsoluteTransformations[objectParent.second() + 1]*_direct.objectTransformations[objectParent.first()];
 
-        /* Negative determinant signalizes that a negative scaling is used. To
-           reduce state changes, take the draw list and partition it to have
-           the flipped windings (i.e., for which the lambda returns false) all
-           together at the end. */
-        _direct.firstFlippedWindingDraw = std::partition(meshesMaterials.begin(), meshesMaterials.end(), [&](const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& i) {
-            /* Plus one because the first element is the root transformation */
-            return _direct.rootObjectAbsoluteTransformations[i.first() + 1].determinant() >= 0.0f;
-        }) - meshesMaterials.begin();
-    }
+            /* Negative determinant signalizes that a negative scaling is used.
+               To reduce state changes, take the draw list and partition it to
+               have the flipped windings (i.e., for which the lambda returns
+               false) all together at the end. */
+            _direct.firstFlippedWindingDraw = std::partition(meshesMaterials.begin(), meshesMaterials.end(), [&](const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& i) {
+                /* Plus one because the first element is the root
+                   transformation */
+                return _direct.rootObjectAbsoluteTransformations[i.first() + 1].determinant() >= 0.0f;
+            }) - meshesMaterials.begin();
+        }
 
-    /* Direct drawing is simply done in the order of the meshesMaterials list,
-       so we also have to populate a mapping from those to transformations
-       indexed by object ID */
-    _direct.absoluteTransformationMapping = Containers::Array<UnsignedInt>{NoInit, meshesMaterials.size()};
-    _direct.absoluteTransformations = Containers::Array<Shaders::TransformationUniform3D>{ValueInit, meshesMaterials.size()};
-    arrayReserve(_direct.drawMeshes, meshesMaterials.size());
-    arrayReserve(_direct.drawMeshViews, meshesMaterials.size());
-    _direct.draws = Containers::Array<Shaders::PhongDrawUniform>{ValueInit, meshesMaterials.size()};
-    for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
-        /* The rootObjectAbsoluteTransformations array contains a root
-           transformation at index 0, so add 1 to the object ID */
-        _direct.absoluteTransformationMapping[i] = meshesMaterials[i].first() + 1;
-        CORRADE_INTERNAL_ASSERT(meshesMaterials[i].second().second() != -1);
-        arrayAppend(_direct.drawMeshes, _meshes[meshesMaterials[i].second().first()]);
-        arrayAppend(_direct.drawMeshViews, _direct.meshViews[meshesMaterials[i].second().first()]);
-        _direct.draws[i].setMaterialId(meshesMaterials[i].second().second());
-    }
+        /* Direct drawing is simply done in the order of the meshesMaterials
+           list, so we also have to populate a mapping from those to
+           transformations indexed by object ID */
+        _direct.absoluteTransformationMapping = Containers::Array<UnsignedInt>{NoInit, meshesMaterials.size()};
+        _direct.absoluteTransformations = Containers::Array<Shaders::TransformationUniform3D>{ValueInit, meshesMaterials.size()};
+        arrayReserve(_direct.drawMeshes, meshesMaterials.size());
+        arrayReserve(_direct.drawMeshViews, meshesMaterials.size());
+        _direct.draws = Containers::Array<Shaders::PhongDrawUniform>{ValueInit, meshesMaterials.size()};
+        for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
+            /* The rootObjectAbsoluteTransformations array contains a root
+               transformation at index 0, so add 1 to the object ID */
+            _direct.absoluteTransformationMapping[i] = meshesMaterials[i].first() + 1;
+            CORRADE_INTERNAL_ASSERT(meshesMaterials[i].second().second() != -1);
+            arrayAppend(_direct.drawMeshes, _meshes[meshesMaterials[i].second().first()]);
+            arrayAppend(_direct.drawMeshViews, _direct.meshViews[meshesMaterials[i].second().first()]);
+            _direct.draws[i].setMaterialId(meshesMaterials[i].second().second());
+        }
 
-    /* Set up uniforms */
-    _direct.projection[0].projectionMatrix = _projection;
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<
-        #ifndef MAGNUM_TARGET_GLES
-        GL::Extensions::ARB::buffer_storage
-        #else
-        GL::Extensions::EXT::buffer_storage
+        /* Set up uniforms */
+        _direct.projection[0].projectionMatrix = _projection;
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(GL::Context::current().isExtensionSupported<
+            #ifndef MAGNUM_TARGET_GLES
+            GL::Extensions::ARB::buffer_storage
+            #else
+            GL::Extensions::EXT::buffer_storage
+            #endif
+        >()) {
+            _direct.uniformMulti.projectionUniform.setStorage(_direct.projection, {});
+            _direct.uniformMulti.materialUniform.setStorage(_direct.materials, {});
+            for(std::size_t i = 0; i != UniformMultiCount; ++i) {
+                _direct.uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
+                _direct.uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
+                _direct.uniformMulti.drawUniformStorage[i] = GL::Buffer{};
+                _direct.uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
+                _direct.uniformMulti.lightUniformStorage[i] = GL::Buffer{};
+                _direct.uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
+            }
+            _direct.uniformMulti.transformationUniformStaging = GL::Buffer{};
+            _direct.uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
+            _direct.uniformMulti.drawUniformStaging = GL::Buffer{};
+            _direct.uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
+            _direct.uniformMulti.lightUniformStaging = GL::Buffer{};
+            _direct.uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
+        } else
         #endif
-    >()) {
-        _direct.uniformMulti.projectionUniform.setStorage(_direct.projection, {});
-        _direct.uniformMulti.materialUniform.setStorage(_direct.materials, {});
-        for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-            _direct.uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
-            _direct.uniformMulti.drawUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
-            _direct.uniformMulti.lightUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
+        {
+            _direct.uniformMulti.projectionUniform.setData(_direct.projection);
+            _direct.uniformMulti.materialUniform.setData(_direct.materials);
         }
-        _direct.uniformMulti.transformationUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
-        _direct.uniformMulti.drawUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
-        _direct.uniformMulti.lightUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
-    } else
-    #endif
-    {
-        _direct.uniformMulti.projectionUniform.setData(_direct.projection);
-        _direct.uniformMulti.materialUniform.setData(_direct.materials);
+
+        for(std::size_t i = 0; i != UniformMultiCount; ++i) {
+            _direct.uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
+            _direct.uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
+            _direct.uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
+        }
     }
 
-    for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-        _direct.uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
-        _direct.uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
-        _direct.uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
-    }
-
-    /* At last, SceneGraph setup. A local class to have all the abstraction
-       overhead nicely visible from a single place, for clarity it also queries
+    /* SceneGraph setup. A local class to have all the abstraction overhead
+       nicely visible from a single place, for clarity it also queries
        transformations and mesh/material assignment from the SceneData instance
        again instead of reusing the data used for direct drawing above. */
     {
