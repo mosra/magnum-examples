@@ -205,10 +205,12 @@ class MultiDrawExample: public Platform::Application {
             GL::Mesh combinedMesh;
             Containers::Array<GL::MeshView> meshViews;
 
-            /* (Object ID, parent ID or -1), ordered so parents are before
-               their children */
-            Containers::Array<Containers::Pair<UnsignedInt, Int>> parentOrder;
-            /* Relative transformations indexed by object ID */
+            /* Parent indices for each object, indexed by object ID. The object
+               IDs are translated so that `objectParents[id] < id`,
+               additionally objects with the same parent ID are clustered
+               together which helps hierarchical transform processing. */
+            Containers::Array<Int> objectParents;
+            /* Relative transformations, indexed by object ID */
             Containers::Array<Matrix4> objectTransformations;
             /* Root transformation and then absolute transformations indexed by
                object ID + 1 (i.e., one item more than the
@@ -469,23 +471,43 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, materialColors.size()};
         Utility::copy(materialColors, stridedArrayView(_direct.materials).slice(&Shaders::PhongMaterialUniform::diffuseColor));
 
-        /* (Object ID, transformation) pairs and (Object ID, (mesh, material))
-           tuples, both in no particular order. The mesh / material array gets
-           subsequently partitioned based on whether negative scaling is
-           used. */
-        const Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformations = scene.transformations3DAsArray();
+        /* (Object ID, transformation) pairs and (object ID, (mesh, material))
+           tuples, both in no particular order. The object IDs get subsequently
+           remapped below, the mesh / material array gets furthermore
+           partitioned based on whether negative scaling is used. */
+        /*mutable*/ Containers::Array<Containers::Pair<UnsignedInt, Matrix4>> transformations = scene.transformations3DAsArray();
         /*mutable*/ Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>> meshesMaterials = scene.meshesMaterialsAsArray();
 
         /* For efficient hierarchical transformation calculation we need an
            (object ID, parent ID) mapping ordered in a way that puts parents
            before their children */
-        _direct.parentOrder = SceneTools::parentsBreadthFirst(scene);
+        const Containers::Array<Containers::Pair<UnsignedInt, Int>> parentOrder = SceneTools::parentsBreadthFirst(scene);
+
+        /* Translate object IDs based on the above, i.e. an object now has an
+           ID equal to the index at which the original object ID was in the
+           `parentOrder` list. Use the mapping to update the `transformations`
+           and `meshesMaterials` lists above. */
+        Containers::Array<UnsignedInt> objectIdMapping{NoInit, std::size_t(scene.mappingBound())};
+        for(std::size_t i = 0; i != parentOrder.size(); ++i)
+            objectIdMapping[parentOrder[i].first()] = i;
+        for(Containers::Pair<UnsignedInt, Matrix4>& i: transformations)
+            i.first() = objectIdMapping[i.first()];
+        for(Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& i: meshesMaterials)
+            i.first() = objectIdMapping[i.first()];
+
+        /* Create a parent mapping that's just parent ID alone with the object
+           ID being implicit, instead of an (object ID, parent ID) tuple
+           above. */
+        _direct.objectParents = Containers::Array<Int>{NoInit, parentOrder.size()};
+        for(std::size_t i = 0; i != parentOrder.size(); ++i)
+            _direct.objectParents[i] = parentOrder[i].second() == -1 ?
+                -1 : objectIdMapping[parentOrder[i].second()];
 
         /* Object transformations, and a temporary array for calculating
            absolute transformations. This array will get fully overwritten
            every draw but keeping it as a member to avoid reallocating it every
            frame. */
-        _direct.objectTransformations = Containers::Array<Matrix4>{ValueInit, std::size_t(scene.mappingBound())};
+        _direct.objectTransformations = Containers::Array<Matrix4>{NoInit, parentOrder.size()};
         for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: transformations)
             _direct.objectTransformations[transformation.first()] = transformation.second();
         _direct.rootObjectAbsoluteTransformations = Containers::Array<Matrix4>{NoInit, std::size_t(scene.mappingBound()) + 1};
@@ -501,8 +523,8 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
             matrix multiplications */
         {
             _direct.rootObjectAbsoluteTransformations[0] = {};
-            for(Containers::Pair<UnsignedInt, Int> objectParent: _direct.parentOrder)
-                _direct.rootObjectAbsoluteTransformations[objectParent.first() + 1] = _direct.rootObjectAbsoluteTransformations[objectParent.second() + 1]*_direct.objectTransformations[objectParent.first()];
+            for(std::size_t i = 0; i != _direct.objectParents.size(); ++i)
+                _direct.rootObjectAbsoluteTransformations[i + 1] = _direct.rootObjectAbsoluteTransformations[_direct.objectParents[i] + 1]*_direct.objectTransformations[i];
 
             /* Negative determinant signalizes that a negative scaling is used.
                To reduce state changes, take the draw list and partition it to
@@ -909,8 +931,8 @@ void MultiDrawExample::drawEvent() {
            transform that's applied to all others, so all other indices are
            shifted by 1. */
         _direct.rootObjectAbsoluteTransformations[0] = _cameraTransformation.invertedRigid()*_manipulatorTransformation;
-        for(Containers::Pair<UnsignedInt, Int> objectParent: _direct.parentOrder)
-            _direct.rootObjectAbsoluteTransformations[objectParent.first() + 1] = _direct.rootObjectAbsoluteTransformations[objectParent.second() + 1]*_direct.objectTransformations[objectParent.first()];
+        for(std::size_t i = 0; i != _direct.objectParents.size(); ++i)
+            _direct.rootObjectAbsoluteTransformations[i + 1] = _direct.rootObjectAbsoluteTransformations[_direct.objectParents[i] + 1]*_direct.objectTransformations[i];
 
         /* Then copy those to corresponding draws. The mapping is not 1:1 so
            a single transformation may be used for multiple meshes but also
