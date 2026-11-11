@@ -433,26 +433,28 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     /* Load all meshes */
     Containers::Array<Trade::MeshData> meshData;
     arrayReserve(meshData, importer->meshCount());
-    _meshes = Containers::Array<GL::Mesh>{ValueInit, importer->meshCount()};
-    Containers::Array<UnsignedInt> meshOffsets{ValueInit, importer->meshCount() + 1};
-    UnsignedInt offset = 0;
-    meshOffsets[0] = 0;
-    for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
+    for(UnsignedInt i = 0; i != importer->meshCount(); ++i)
         arrayAppend(meshData, *importer->mesh(i));
-        _meshes[i] = MeshTools::compile(meshData[i]);
-
-        offset += meshData[i].indexCount();
-        meshOffsets[i + 1] = offset;
-    }
-    _combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
-    for(UnsignedInt i = 0; i != _meshes.size(); ++i) {
-        arrayAppend(_meshViews, GL::MeshView{_combinedMesh})
-            .setIndexOffset(meshOffsets[i])
-            .setCount(meshOffsets[i + 1] - meshOffsets[i]);
-    }
 
     /* Load the scene */
     const Trade::SceneData scene = *CORRADE_INTERNAL_ASSERT_EXPRESSION(importer->scene(importer->defaultScene()));
+
+    /* Create separate GL meshes for both SceneGraph and direct drawing */
+    _meshes = Containers::Array<GL::Mesh>{ValueInit, importer->meshCount()};
+    for(UnsignedInt i = 0; i != meshData.size(); ++i)
+        _meshes[i] = MeshTools::compile(meshData[i]);
+
+    /* Combined GL mesh and views onto it for direct drawing */
+    _combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
+    {
+        UnsignedInt offset = 0;
+        for(UnsignedInt i = 0; i != meshData.size(); ++i) {
+            arrayAppend(_meshViews, GL::MeshView{_combinedMesh})
+                .setIndexOffset(offset)
+                .setCount(meshData[i].indexCount());
+            offset += meshData[i].indexCount();
+        }
+    }
 
     /* Projection, light setup and materials uniforms for direct drawing. Just
        two lights right now. */
