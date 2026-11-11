@@ -673,8 +673,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     #endif
         _shaderUniformBufferMultipleShaderStorage = Shaders::PhongGL{Shaders::PhongGL::Configuration{}
             .setFlags(shaderFlags|
-                      Shaders::PhongGL::Flag::ShaderStorageBuffers|
-                      Shaders::PhongGL::Flag::MultiDraw)
+                      Shaders::PhongGL::Flag::ShaderStorageBuffers)
             .setLightCount(_direct.lights.size())};
     #endif
     /* Compile the multidraw shader only if gl_DrawID is available. It isn't
