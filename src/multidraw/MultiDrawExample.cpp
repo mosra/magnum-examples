@@ -786,8 +786,8 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
             /* Calculate total triangle count across all draws to show in the
                stats */
             UnsignedInt drawnTriangles = 0;
-            for(Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>> meshMaterial: meshesMaterials)
-                drawnTriangles += _direct.meshes[meshMaterial.second().first()]->count()/3;
+            for(const GL::Mesh& mesh: _direct.meshes)
+                drawnTriangles += mesh.count()/3;
 
             Ui::SnapLayoutColumnLeft column = info.child();
             Ui::label(column.child(), Utility::format(
@@ -797,12 +797,12 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
                 "Drawn triangles: {}",
                 importer->materialCount(),
                 importer->meshCount(),
-                meshesMaterials.size(),
+                _direct.draws.size(),
                 drawnTriangles), Text::Alignment::MiddleLeft);
             #ifdef CORRADE_IS_DEBUG_BUILD
             Ui::label(column.child(), "Running a debug build", Text::Alignment::MiddleLeft, Ui::LabelStyle::Warning);
             #endif
-            if(meshesMaterials.size() > 1024)
+            if(_direct.draws.size() > 1024)
                 _uboLimitLabel = Ui::label(column.child(), "UBOs limited to 1024 draws", Text::Alignment::MiddleLeft, Ui::LabelStyle::Danger);
         }
 
