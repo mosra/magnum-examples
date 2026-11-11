@@ -29,6 +29,8 @@
 */
 
 #include <algorithm>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Reference.h>
@@ -37,6 +39,7 @@
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/Memory.h>
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <Corrade/Utility/Resource.h>
 #endif
@@ -507,33 +510,22 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
            absolute transformations. This array will get fully overwritten
            every draw but keeping it as a member to avoid reallocating it every
            frame. */
-        _direct.objectTransformations = Containers::Array<Matrix4>{NoInit, parentOrder.size()};
+        _direct.objectTransformations = Utility::allocateAligned<Matrix4, 64>(NoInit, parentOrder.size());
         for(const Containers::Pair<UnsignedInt, Matrix4>& transformation: transformations)
             _direct.objectTransformations[transformation.first()] = transformation.second();
-        _direct.rootObjectAbsoluteTransformations = Containers::Array<Matrix4>{NoInit, std::size_t(scene.mappingBound()) + 1};
+        _direct.rootObjectAbsoluteTransformations = Utility::allocateAligned<Matrix4, 64>(NoInit, std::size_t(scene.mappingBound()) + 1);
 
         /* Heavily instanced scenes often contain meshes rendered with negative
            scaling for mirrored portions, calculate absolute transformations
            for all draws and filter out draws with negative scaling. To have
            lighting correct for those we need to switch face winding from CCW
-           to CW. */
-        /** @todo have a SceneTools utility producing a bitmask for this (or
-            even directly partitioning a scene field?) directly, internally it
-            can likely just combine determinant signs instead of doing full
-            matrix multiplications */
+           to CW. To reduce state changes, take the draw list and partition it
+           to have the flipped windings (i.e., for which the object mask is
+           true) all together at the end. */
         {
-            _direct.rootObjectAbsoluteTransformations[0] = {};
-            for(std::size_t i = 0; i != _direct.objectParents.size(); ++i)
-                _direct.rootObjectAbsoluteTransformations[i + 1] = _direct.rootObjectAbsoluteTransformations[_direct.objectParents[i] + 1]*_direct.objectTransformations[i];
-
-            /* Negative determinant signalizes that a negative scaling is used.
-               To reduce state changes, take the draw list and partition it to
-               have the flipped windings (i.e., for which the lambda returns
-               false) all together at the end. */
+            const Containers::BitArray absoluteTransformationScalingSigns = SceneTools::absoluteTransformationScalingSigns3D(_direct.objectTransformations, _direct.objectParents);
             _direct.firstFlippedWindingDraw = std::partition(meshesMaterials.begin(), meshesMaterials.end(), [&](const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& i) {
-                /* Plus one because the first element is the root
-                   transformation */
-                return _direct.rootObjectAbsoluteTransformations[i.first() + 1].determinant() >= 0.0f;
+                return !absoluteTransformationScalingSigns[i.first()];
             }) - meshesMaterials.begin();
         }
 
@@ -930,9 +922,10 @@ void MultiDrawExample::drawEvent() {
            The first index in rootObjectAbsoluteTransformations is the root
            transform that's applied to all others, so all other indices are
            shifted by 1. */
-        _direct.rootObjectAbsoluteTransformations[0] = _cameraTransformation.invertedRigid()*_manipulatorTransformation;
-        for(std::size_t i = 0; i != _direct.objectParents.size(); ++i)
-            _direct.rootObjectAbsoluteTransformations[i + 1] = _direct.rootObjectAbsoluteTransformations[_direct.objectParents[i] + 1]*_direct.objectTransformations[i];
+        SceneTools::absoluteTransformations3DInto(
+            _direct.objectTransformations,
+            _direct.objectParents,
+            _direct.rootObjectAbsoluteTransformations, _cameraTransformation.invertedRigid()*_manipulatorTransformation);
 
         /* Then copy those to corresponding draws. The mapping is not 1:1 so
            a single transformation may be used for multiple meshes but also
