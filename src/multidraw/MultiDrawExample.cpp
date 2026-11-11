@@ -174,6 +174,8 @@ class MultiDrawExample: public Platform::Application {
         bool _shaderStorageBuffers;
         #endif
 
+        /* The _shader and _meshes are used by both SceneGraph and direct
+           drawing, other shaders only by direct drawing. */
         Shaders::PhongGL
             _shader{NoCreate},
             _shaderUniformBufferSingle{NoCreate},
@@ -187,8 +189,6 @@ class MultiDrawExample: public Platform::Application {
             #endif
             ;
         Containers::Array<GL::Mesh> _meshes;
-        GL::Mesh _combinedMesh;
-        Containers::Array<GL::MeshView> _meshViews;
 
         /* Stuff needed by the SceneGraph code path only */
         struct {
@@ -201,6 +201,10 @@ class MultiDrawExample: public Platform::Application {
         /* Stuff needed by everything except SceneGraph */
         constexpr static std::size_t UniformMultiCount = 3;
         struct {
+            /* Combined mesh and views into it for use by direct drawing */
+            GL::Mesh combinedMesh;
+            Containers::Array<GL::MeshView> meshViews;
+
             /* (Object ID, parent ID or -1), ordered so parents are before
                their children */
             Containers::Array<Containers::Pair<UnsignedInt, Int>> parentOrder;
@@ -218,8 +222,8 @@ class MultiDrawExample: public Platform::Application {
             Containers::Array<Shaders::PhongMaterialUniform> materials;
 
             /* Actual meshes / mesh views to draw and associated draw data */
-            Containers::Array<Containers::Reference<GL::Mesh>> meshes;
-            Containers::Array<Containers::Reference<GL::MeshView>> meshViews;
+            Containers::Array<Containers::Reference<GL::Mesh>> drawMeshes;
+            Containers::Array<Containers::Reference<GL::MeshView>> drawMeshViews;
             /** @todo option to use indirect multi draw instead of MeshView
                 instances */
             Containers::Array<Shaders::PhongDrawUniform> draws;
@@ -445,11 +449,11 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         _meshes[i] = MeshTools::compile(meshData[i]);
 
     /* Combined GL mesh and views onto it for direct drawing */
-    _combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
+    _direct.combinedMesh = MeshTools::compile(MeshTools::concatenate(meshData));
     {
         UnsignedInt offset = 0;
         for(UnsignedInt i = 0; i != meshData.size(); ++i) {
-            arrayAppend(_meshViews, GL::MeshView{_combinedMesh})
+            arrayAppend(_direct.meshViews, GL::MeshView{_direct.combinedMesh})
                 .setIndexOffset(offset)
                 .setCount(meshData[i].indexCount());
             offset += meshData[i].indexCount();
@@ -511,16 +515,16 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
        indexed by object ID */
     _direct.absoluteTransformationMapping = Containers::Array<UnsignedInt>{NoInit, meshesMaterials.size()};
     _direct.absoluteTransformations = Containers::Array<Shaders::TransformationUniform3D>{ValueInit, meshesMaterials.size()};
-    arrayReserve(_direct.meshes, meshesMaterials.size());
-    arrayReserve(_direct.meshViews, meshesMaterials.size());
+    arrayReserve(_direct.drawMeshes, meshesMaterials.size());
+    arrayReserve(_direct.drawMeshViews, meshesMaterials.size());
     _direct.draws = Containers::Array<Shaders::PhongDrawUniform>{ValueInit, meshesMaterials.size()};
     for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
         /* The rootObjectAbsoluteTransformations array contains a root
            transformation at index 0, so add 1 to the object ID */
         _direct.absoluteTransformationMapping[i] = meshesMaterials[i].first() + 1;
         CORRADE_INTERNAL_ASSERT(meshesMaterials[i].second().second() != -1);
-        arrayAppend(_direct.meshes, _meshes[meshesMaterials[i].second().first()]);
-        arrayAppend(_direct.meshViews, _meshViews[meshesMaterials[i].second().first()]);
+        arrayAppend(_direct.drawMeshes, _meshes[meshesMaterials[i].second().first()]);
+        arrayAppend(_direct.drawMeshViews, _direct.meshViews[meshesMaterials[i].second().first()]);
         _direct.draws[i].setMaterialId(meshesMaterials[i].second().second());
     }
 
@@ -786,7 +790,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
             /* Calculate total triangle count across all draws to show in the
                stats */
             UnsignedInt drawnTriangles = 0;
-            for(const GL::Mesh& mesh: _direct.meshes)
+            for(const GL::Mesh& mesh: _direct.drawMeshes)
                 drawnTriangles += mesh.count()/3;
 
             Ui::SnapLayoutColumnLeft column = info.child();
@@ -940,7 +944,7 @@ void MultiDrawExample::drawEvent() {
                     .setTransformationMatrix(_direct.absoluteTransformations[i].transformationMatrix)
                     .setNormalMatrix(Matrix3x3{_direct.draws[i].normalMatrix})
                     .setProjectionMatrix(_projection)
-                    .draw(*_direct.meshes[i]);
+                    .draw(*_direct.drawMeshes[i]);
 
                 if(i >= _direct.firstFlippedWindingDraw)
                     GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
@@ -974,9 +978,9 @@ void MultiDrawExample::drawEvent() {
                     .setNormalMatrix(Matrix3x3{_direct.draws[i].normalMatrix});
 
                 if(_drawType == DrawType::DeduplicatedLoop)
-                    _shader.draw(*_direct.meshes[i]);
+                    _shader.draw(*_direct.drawMeshes[i]);
                 else if(_drawType == DrawType::DeduplicatedLoopMeshViews)
-                    _shader.draw(*_direct.meshViews[i]);
+                    _shader.draw(*_direct.drawMeshViews[i]);
                 else CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE();
             }
 
@@ -1003,7 +1007,7 @@ void MultiDrawExample::drawEvent() {
                     .bindTransformationBuffer(_direct.uniformSingle.transformationUniform)
                     .bindMaterialBuffer(_direct.uniformSingle.materialUniform)
                     .bindDrawBuffer(_direct.uniformSingle.drawUniform)
-                    .draw(*_direct.meshViews[i]);
+                    .draw(*_direct.drawMeshViews[i]);
             }
 
             if(_direct.draws.size() > _direct.firstFlippedWindingDraw)
@@ -1066,7 +1070,7 @@ void MultiDrawExample::drawEvent() {
                             #endif
                                 _direct.uniformMulti.drawUniform[_direct.uniformMulti.frameId],
                             i*sizeof(Shaders::PhongDrawUniform), sizeof(Shaders::PhongDrawUniform))
-                        .draw(*_direct.meshViews[i]);
+                        .draw(*_direct.drawMeshViews[i]);
                 }
 
                 if(_direct.draws.size() > _direct.firstFlippedWindingDraw)
@@ -1128,7 +1132,7 @@ void MultiDrawExample::drawEvent() {
 
                         (*shader)
                             .setDrawOffset(i)
-                            .draw(*_direct.meshViews[i]);
+                            .draw(*_direct.drawMeshViews[i]);
                     }
 
                     if(drawCount > _direct.firstFlippedWindingDraw)
@@ -1137,14 +1141,14 @@ void MultiDrawExample::drawEvent() {
                 } else if(_drawType == DrawType::MultiDraw) {
                     (*shader)
                         .setDrawOffset(0)
-                        .draw(_direct.meshViews.prefix(Math::min(drawCount, _direct.firstFlippedWindingDraw)));
+                        .draw(_direct.drawMeshViews.prefix(Math::min(drawCount, _direct.firstFlippedWindingDraw)));
 
                     if(drawCount > _direct.firstFlippedWindingDraw) {
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
 
                         (*shader)
                             .setDrawOffset(_direct.firstFlippedWindingDraw)
-                            .draw(_direct.meshViews.slice(_direct.firstFlippedWindingDraw, drawCount));
+                            .draw(_direct.drawMeshViews.slice(_direct.firstFlippedWindingDraw, drawCount));
 
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
                     }
