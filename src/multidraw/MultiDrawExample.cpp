@@ -528,6 +528,45 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
         _direct.draws[i].setMaterialId(meshesMaterials[i].second().second());
     }
 
+    /* Set up uniforms */
+    _direct.projection[0].projectionMatrix = _projection;
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(GL::Context::current().isExtensionSupported<
+        #ifndef MAGNUM_TARGET_GLES
+        GL::Extensions::ARB::buffer_storage
+        #else
+        GL::Extensions::EXT::buffer_storage
+        #endif
+    >()) {
+        _direct.uniformMulti.projectionUniform.setStorage(_direct.projection, {});
+        _direct.uniformMulti.materialUniform.setStorage(_direct.materials, {});
+        for(std::size_t i = 0; i != UniformMultiCount; ++i) {
+            _direct.uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
+            _direct.uniformMulti.drawUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
+            _direct.uniformMulti.lightUniformStorage[i] = GL::Buffer{};
+            _direct.uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
+        }
+        _direct.uniformMulti.transformationUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
+        _direct.uniformMulti.drawUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
+        _direct.uniformMulti.lightUniformStaging = GL::Buffer{};
+        _direct.uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
+    } else
+    #endif
+    {
+        _direct.uniformMulti.projectionUniform.setData(_direct.projection);
+        _direct.uniformMulti.materialUniform.setData(_direct.materials);
+    }
+
+    for(std::size_t i = 0; i != UniformMultiCount; ++i) {
+        _direct.uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
+        _direct.uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
+        _direct.uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
+    }
+
     /* At last, SceneGraph setup. A local class to have all the abstraction
        overhead nicely visible from a single place, for clarity it also queries
        transformations and mesh/material assignment from the SceneData instance
@@ -663,43 +702,6 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
                           Shaders::PhongGL::Flag::MultiDraw)
                 .setLightCount(_direct.lights.size())};
         #endif
-    }
-    _direct.projection[0].projectionMatrix = _projection;
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<
-        #ifndef MAGNUM_TARGET_GLES
-        GL::Extensions::ARB::buffer_storage
-        #else
-        GL::Extensions::EXT::buffer_storage
-        #endif
-    >()) {
-        _direct.uniformMulti.projectionUniform.setStorage(_direct.projection, {});
-        _direct.uniformMulti.materialUniform.setStorage(_direct.materials, {});
-        for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-            _direct.uniformMulti.transformationUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.transformationUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::TransformationUniform3D), {});
-            _direct.uniformMulti.drawUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.drawUniformStorage[i].setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), {});
-            _direct.uniformMulti.lightUniformStorage[i] = GL::Buffer{};
-            _direct.uniformMulti.lightUniformStorage[i].setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), {});
-        }
-        _direct.uniformMulti.transformationUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.transformationUniformStaging.setStorage(_direct.absoluteTransformations.size()*sizeof(Shaders::TransformationUniform3D), GL::Buffer::StorageFlag::DynamicStorage);
-        _direct.uniformMulti.drawUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.drawUniformStaging.setStorage(_direct.draws.size()*sizeof(Shaders::PhongDrawUniform), GL::Buffer::StorageFlag::DynamicStorage);
-        _direct.uniformMulti.lightUniformStaging = GL::Buffer{};
-        _direct.uniformMulti.lightUniformStaging.setStorage(_direct.lights.size()*sizeof(Shaders::PhongLightUniform), GL::Buffer::StorageFlag::DynamicStorage);
-    } else
-    #endif
-    {
-        _direct.uniformMulti.projectionUniform.setData(_direct.projection);
-        _direct.uniformMulti.materialUniform.setData(_direct.materials);
-    }
-
-    for(std::size_t i = 0; i != UniformMultiCount; ++i) {
-        _direct.uniformMulti.transformationUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::TransformationUniform3D)}, GL::BufferUsage::DynamicDraw);
-        _direct.uniformMulti.drawUniform[i].setData({nullptr, _direct.draws.size()*sizeof(Shaders::PhongDrawUniform)}, GL::BufferUsage::DynamicDraw);
-        _direct.uniformMulti.lightUniform[i].setData({nullptr, _direct.lights.size()*sizeof(Shaders::PhongLightUniform)}, GL::BufferUsage::DynamicDraw);
     }
 
     /* Create the UI */
