@@ -946,7 +946,7 @@ void MultiDrawExample::drawEvent() {
                     .setTransformationMatrix(_direct.absoluteTransformations[i].transformationMatrix)
                     .setNormalMatrix(Matrix3x3{_direct.draws[i].normalMatrix})
                     .setProjectionMatrix(_projection)
-                    .draw(*_direct.drawMeshes[i]);
+                    .draw(_direct.drawMeshes[i]);
 
                 if(i >= _direct.firstFlippedWindingDraw)
                     GL::Renderer::setFrontFace(GL::Renderer::FrontFace::CounterClockWise);
@@ -980,9 +980,9 @@ void MultiDrawExample::drawEvent() {
                     .setNormalMatrix(Matrix3x3{_direct.draws[i].normalMatrix});
 
                 if(_drawType == DrawType::DeduplicatedLoop)
-                    _shader.draw(*_direct.drawMeshes[i]);
+                    _shader.draw(_direct.drawMeshes[i]);
                 else if(_drawType == DrawType::DeduplicatedLoopMeshViews)
-                    _shader.draw(*_direct.drawMeshViews[i]);
+                    _shader.draw(_direct.drawMeshViews[i]);
                 else CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE();
             }
 
@@ -1009,7 +1009,7 @@ void MultiDrawExample::drawEvent() {
                     .bindTransformationBuffer(_direct.uniformSingle.transformationUniform)
                     .bindMaterialBuffer(_direct.uniformSingle.materialUniform)
                     .bindDrawBuffer(_direct.uniformSingle.drawUniform)
-                    .draw(*_direct.drawMeshViews[i]);
+                    .draw(_direct.drawMeshViews[i]);
             }
 
             if(_direct.draws.size() > _direct.firstFlippedWindingDraw)
@@ -1072,7 +1072,7 @@ void MultiDrawExample::drawEvent() {
                             #endif
                                 _direct.uniformMulti.drawUniform[_direct.uniformMulti.frameId],
                             i*sizeof(Shaders::PhongDrawUniform), sizeof(Shaders::PhongDrawUniform))
-                        .draw(*_direct.drawMeshViews[i]);
+                        .draw(_direct.drawMeshViews[i]);
                 }
 
                 if(_direct.draws.size() > _direct.firstFlippedWindingDraw)
@@ -1134,7 +1134,7 @@ void MultiDrawExample::drawEvent() {
 
                         (*shader)
                             .setDrawOffset(i)
-                            .draw(*_direct.drawMeshViews[i]);
+                            .draw(_direct.drawMeshViews[i]);
                     }
 
                     if(drawCount > _direct.firstFlippedWindingDraw)
