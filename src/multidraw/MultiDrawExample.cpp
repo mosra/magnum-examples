@@ -409,13 +409,13 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
 
     /* Load just the basic color info from all materials. To simplify, if any
        material has the double sided flag, use it for all draws. */
-    _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, importer->materialCount()};
+    Containers::Array<Color4> materialColors{NoInit, importer->materialCount()};
     Shaders::PhongGL::Flags shaderFlags;
     for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
         const Containers::Optional<Trade::MaterialData> material = importer->material(i);
         CORRADE_INTERNAL_ASSERT(material);
         auto&& phong = material->as<Trade::PhongMaterialData>();
-        _direct.materials[i].setDiffuseColor(phong.diffuseColor());
+        materialColors[i] = phong.diffuseColor();
         if(phong.isDoubleSided())
             shaderFlags |= Shaders::PhongGL::Flag::DoubleSided;
     }
@@ -449,9 +449,12 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     /* Load the scene */
     const Trade::SceneData scene = *CORRADE_INTERNAL_ASSERT_EXPRESSION(importer->scene(importer->defaultScene()));
 
-    /* Projection, light setup. Just two lights right now. */
+    /* Projection, light setup and materials uniforms for direct drawing. Just
+       two lights right now. */
     _direct.projection = Containers::Array<Shaders::ProjectionUniform3D>{ValueInit, 1};
     _direct.lights = Containers::Array<Shaders::PhongLightUniform>{ValueInit, 2};
+    _direct.materials = Containers::Array<Shaders::PhongMaterialUniform>{ValueInit, materialColors.size()};
+    Utility::copy(materialColors, stridedArrayView(_direct.materials).slice(&Shaders::PhongMaterialUniform::diffuseColor));
 
     /* (Object ID, transformation) pairs and (Object ID, (mesh, material))
        tuples, both in no particular order. The mesh / material array gets
@@ -586,7 +589,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
 
             new Drawable{*objects[meshMaterial.first()], _shader,
                 _meshes[meshMaterial.second().first()],
-                _direct.materials[meshMaterial.second().second()].diffuseColor,
+                materialColors[meshMaterial.second().second()],
                 _direct.firstFlippedWindingDraw <= i,
                 _sceneGraph.drawables};
         }
