@@ -520,7 +520,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
     {
         class Drawable: public SceneGraph::Drawable3D {
             public:
-                explicit Drawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, const Color4& ambient, const Color4& diffuse, const Color3& specular, Float shininess, bool flippedWinding, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _ambient{ambient}, _diffuse{diffuse}, _specular{specular}, _shininess{shininess}, _flippedWinding{flippedWinding} {}
+                explicit Drawable(Object3D& object, Shaders::PhongGL& shader, GL::Mesh& mesh, const Color4& color, bool flippedWinding, SceneGraph::DrawableGroup3D& group): SceneGraph::Drawable3D{object, &group}, _shader(shader), _mesh(mesh), _color{color}, _flippedWinding{flippedWinding} {}
 
             private:
                 void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override {
@@ -528,10 +528,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
                         GL::Renderer::setFrontFace(GL::Renderer::FrontFace::ClockWise);
 
                     _shader
-                        .setAmbientColor(_ambient)
-                        .setDiffuseColor(_diffuse)
-                        .setSpecularColor(_specular)
-                        .setShininess(_shininess)
+                        .setDiffuseColor(_color)
                         .setLightPositions({
                             {-300.0f, 100.0f, 100.0f, 0.0f},
                             {300.0f, 100.0f, 100.0f, 0.0f}
@@ -551,9 +548,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
 
                 Shaders::PhongGL& _shader;
                 GL::Mesh& _mesh;
-                Color4 _ambient, _diffuse;
-                Color3 _specular;
-                Float _shininess;
+                Color4 _color;
                 bool _flippedWinding;
         };
 
@@ -591,10 +586,7 @@ UboBindOffset, UboDrawOffset, MultiDraw.)")
 
             new Drawable{*objects[meshMaterial.first()], _shader,
                 _meshes[meshMaterial.second().first()],
-                _direct.materials[meshMaterial.second().second()].ambientColor,
                 _direct.materials[meshMaterial.second().second()].diffuseColor,
-                _direct.materials[meshMaterial.second().second()].specularColor.rgb(),
-                _direct.materials[meshMaterial.second().second()].shininess,
                 _direct.firstFlippedWindingDraw <= i,
                 _sceneGraph.drawables};
         }
